@@ -68,25 +68,25 @@ class ApiClient {
         phone?: string;
         role?: string;
     }) {
-        return this.request('/auth/register', {
+        return this.request<any>('/auth/register', {
             method: 'POST',
             body: JSON.stringify(userData),
         });
     }
 
     async login(email: string, password: string) {
-        return this.request('/auth/login', {
+        return this.request<any>('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
         });
     }
 
     async getProfile() {
-        return this.request('/auth/profile', { method: 'GET' });
+        return this.request<any>('/auth/profile', { method: 'GET' });
     }
 
     async updateProfile(data: { first_name?: string; last_name?: string; phone?: string }) {
-        return this.request('/auth/profile', {
+        return this.request<any>('/auth/profile', {
             method: 'PUT',
             body: JSON.stringify(data),
         });
@@ -103,7 +103,7 @@ class ApiClient {
 
     // Form submission
     async submitForm(formData: { form_type: string; form_data: any }) {
-        return this.request('/forms', {
+        return this.request<any>('/forms', {
             method: 'POST',
             body: JSON.stringify(formData),
         });
