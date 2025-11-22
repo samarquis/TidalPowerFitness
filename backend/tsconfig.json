@@ -5,33 +5,22 @@
     "module": "commonjs",
     "target": "ES2020",
     "lib": [
-      "ES2020"
+      "ES2020",
+      "DOM"
     ],
     "types": [
       "node"
     ],
-    {
-      "compilerOptions": {
-        "rootDir": "./src",
-        "outDir": "./dist",
-        "module": "commonjs",
-        "target": "ES2020",
-        "lib": [
-          "ES2020"
-        ],
-        "types": [
-          "node"
-        ],
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "sourceMap": true,
-        "declaration": true,
-        "declarationMap": true,
-        "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": false,
-        "strict": false,
-        "isolatedModules": true,
-        "moduleDetection": "force",
-        "skipLibCheck": true
-      }
-    }
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
+    "strict": false,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  }
+}
