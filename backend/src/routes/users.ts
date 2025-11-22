@@ -36,11 +36,22 @@ router.get('/', authenticate, authorize('admin'), async (req: Request, res: Resp
     } catch (error) {
         console.error('Get users error:', error);
         res.status(500).json({ error: 'Failed to get users' });
-        res.status(200).json({ message: 'User deactivated successfully' });
-    } catch (error) {
-        console.error('Deactivate user error:', error);
-        res.status(500).json({ error: 'Failed to deactivate user' });
-    }
-});
+        // Deactivate user (admin only)
+        router.delete('/:id', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+            try {
+                const { id } = req.params;
+                const success = await User.delete(id);
 
-export default router;
+                if (!success) {
+                    res.status(404).json({ error: 'User not found' });
+                    return;
+                }
+
+                res.status(200).json({ message: 'User deactivated successfully' });
+            } catch (error) {
+                console.error('Deactivate user error:', error);
+                res.status(500).json({ error: 'Failed to deactivate user' });
+            }
+        });
+
+        export default router;
