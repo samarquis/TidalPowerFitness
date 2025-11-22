@@ -1,26 +1,25 @@
-import { Pool, PoolClient, QueryResult } from 'pg';
-import dotenv from 'dotenv';
+import { Pool, QueryResult } from 'pg';
 
-dotenv.config();
+// Support both individual env vars (local) and DATABASE_URL (production)
+const pool = process.env.DATABASE_URL
+    ? new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    })
+    : new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        database: process.env.DB_NAME || 'tidal_power_fitness',
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD,
+    });
 
-// Database configuration
-const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    database: process.env.DB_NAME || 'titan_power_fitness',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD,
-    max: 20, // Maximum number of clients in the pool
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-});
-
-// Test database connection
+// Test connection
 pool.on('connect', () => {
-    console.log('Database connected successfully');
+    console.log('Connected to PostgreSQL database');
 });
 
-pool.on('error', (err: Error) => {
+pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
     process.exit(-1);
 });
@@ -34,21 +33,19 @@ export const query = async (text: string, params?: any[]): Promise<QueryResult> 
         console.log('Executed query', { text, duration, rows: res.rowCount });
         return res;
     } catch (error) {
-        console.error('Database query error:', error);
+        console.error('Query error', { text, error });
         throw error;
     }
 };
 
-// Get a client from the pool for transactions
-export const getClient = async (): Promise<PoolClient> => {
-    const client = await pool.connect();
-    return client;
+// Get a client from the pool
+export const getClient = async () => {
+    return await pool.connect();
 };
 
-// Close pool (for graceful shutdown)
-export const closePool = async (): Promise<void> => {
+// Close pool
+export const closePool = async () => {
     await pool.end();
-    console.log('Database pool closed');
 };
 
 export default pool;
