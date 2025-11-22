@@ -32,7 +32,7 @@ class ApiClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<ApiResponse<T>> {
-        const headers: HeadersInit = {
+        const headers: any = {
             'Content-Type': 'application/json',
             ...options.headers,
         };
