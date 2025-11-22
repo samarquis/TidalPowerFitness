@@ -1,4 +1,4 @@
-# Tital Power Fitness
+# Tidal Power Fitness
 
 A modern fitness training platform with integrated scheduling and payment processing.
 

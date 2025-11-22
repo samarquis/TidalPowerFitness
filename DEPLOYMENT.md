@@ -1,4 +1,4 @@
-# Tital Power Fitness - Deployment Guide
+# Tidal Power Fitness - Deployment Guide
 
 ## Quick Start with Docker
 
