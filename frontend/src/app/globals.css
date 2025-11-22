@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, rgb(6 182 212), rgb(14 165 233));
+  }
+
+  .glass {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    background-image: linear-gradient(to right, rgb(6 182 212), rgb(14 165 233));
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    transform-origin: center;
+  }
+
+  .btn-primary:hover {
+    background-image: linear-gradient(to right, rgb(8 145 178), rgb(2 132 199));
+    transform: scale(1.05);
+  }
+
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgba(6, 182, 212, 0.1);
+    border-color: rgba(6, 182, 212, 0.5);
+  }
+}
