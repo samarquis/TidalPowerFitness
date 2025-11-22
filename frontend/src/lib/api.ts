@@ -94,11 +94,11 @@ class ApiClient {
 
     // Trainer endpoints
     async getTrainers() {
-        return this.request('/trainers', { method: 'GET' });
+        return this.request<any>('/trainers', { method: 'GET' });
     }
 
     async getTrainer(userId: string) {
-        return this.request(`/trainers/${userId}`, { method: 'GET' });
+        return this.request<any>(`/trainers/${userId}`, { method: 'GET' });
     }
 
     // Form submission
