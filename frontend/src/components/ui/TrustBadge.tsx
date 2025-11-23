@@ -29,7 +29,7 @@ export default function TrustBadge({ type, name, logo, year }: TrustBadgeProps) 
             {logo ? (
                 <img src={logo} alt={name} className="w-12 h-12 object-contain" />
             ) : (
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center text-white">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-teal-6 to-teal-6 flex items-center justify-center text-white">
                     {icons[type]}
                 </div>
             )}

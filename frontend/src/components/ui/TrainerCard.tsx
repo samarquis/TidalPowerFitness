@@ -19,7 +19,7 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
     return (
         <div className="glass rounded-2xl overflow-hidden hover:bg-white/10 transition-all transform hover:scale-105 group">
             {/* Trainer Image */}
-            <div className="relative h-80 bg-gradient-to-br from-cyan-600 to-blue-600 overflow-hidden">
+            <div className="relative h-80 bg-gradient-to-br from-teal-6 to-teal-6 overflow-hidden">
                 {trainer.profile_image_url ? (
                     <img
                         src={trainer.profile_image_url}
@@ -63,7 +63,7 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
                             {trainer.specialties.slice(0, 3).map((specialty, index) => (
                                 <span
                                     key={index}
-                                    className="px-3 py-1 bg-cyan-600/20 text-cyan-400 rounded-full text-xs font-medium"
+                                    className="px-3 py-1 bg-teal-6/20 text-teal-4 rounded-full text-xs font-medium"
                                 >
                                     {specialty}
                                 </span>
@@ -84,7 +84,7 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
                         <div className="flex flex-wrap gap-2">
                             {trainer.certifications.slice(0, 2).map((cert, index) => (
                                 <div key={index} className="flex items-center gap-1 text-xs text-gray-400">
-                                    <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg className="w-4 h-4 text-teal-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                     </svg>
                                     <span>{cert}</span>
@@ -98,7 +98,7 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
                 <div className="flex gap-2 mt-6">
                     <Link
                         href="/contact"
-                        className="flex-1 text-center px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+                        className="flex-1 text-center px-4 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
                     >
                         Book Session
                     </Link>

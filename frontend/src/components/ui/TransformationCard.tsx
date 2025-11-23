@@ -38,7 +38,7 @@ export default function TransformationCard({
                         alt={`${name} after`}
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2 right-2 bg-gradient-to-r from-cyan-600 to-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-teal-6 to-teal-6 px-3 py-1 rounded-full text-sm font-semibold">
                         After
                     </div>
                 </div>
@@ -47,7 +47,7 @@ export default function TransformationCard({
             {/* Content */}
             <div className="p-6">
                 <h3 className="text-2xl font-bold mb-2">{name}</h3>
-                <p className="text-cyan-400 mb-4">{timeframe}</p>
+                <p className="text-teal-4 mb-4">{timeframe}</p>
 
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">

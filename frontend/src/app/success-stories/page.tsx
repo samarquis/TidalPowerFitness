@@ -140,7 +140,7 @@ export default function SuccessStoriesPage() {
                                 key={goal}
                                 onClick={() => setSelectedGoal(goal)}
                                 className={`px-6 py-3 rounded-lg font-medium transition-all ${selectedGoal === goal
-                                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
+                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white shadow-lg'
                                         : 'glass hover:bg-white/10'
                                     }`}
                             >
@@ -182,7 +182,7 @@ export default function SuccessStoriesPage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a
                             href="/register"
-                            className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                            className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
                         >
                             Start Your Transformation
                         </a>
@@ -220,7 +220,7 @@ export default function SuccessStoriesPage() {
                             {/* Header */}
                             <div className="text-center mb-8">
                                 <h2 className="text-4xl font-bold mb-2">{selectedStory.name}'s Journey</h2>
-                                <p className="text-cyan-400 text-lg">{selectedStory.goal} • {selectedStory.timeframe}</p>
+                                <p className="text-teal-4 text-lg">{selectedStory.goal} • {selectedStory.timeframe}</p>
                             </div>
 
                             {/* Before/After Images */}
@@ -233,7 +233,7 @@ export default function SuccessStoriesPage() {
                                 </div>
                                 <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
                                     <img src={selectedStory.afterImage} alt="After" className="w-full h-full object-cover" />
-                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-2 rounded-full font-semibold">
+                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-6 to-teal-6 px-4 py-2 rounded-full font-semibold">
                                         After
                                     </div>
                                 </div>
@@ -257,12 +257,12 @@ export default function SuccessStoriesPage() {
 
                             {/* Testimonial */}
                             <div className="glass rounded-xl p-6 mb-8">
-                                <svg className="w-10 h-10 text-cyan-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-10 h-10 text-teal-4 mb-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                                 </svg>
                                 <p className="text-xl italic text-gray-200 mb-4">"{selectedStory.testimonial}"</p>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-6 to-teal-6 flex items-center justify-center text-white font-bold">
                                         {selectedStory.name.charAt(0)}
                                     </div>
                                     <div>
@@ -276,7 +276,7 @@ export default function SuccessStoriesPage() {
                             <div className="text-center">
                                 <a
                                     href="/register"
-                                    className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                                    className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
                                 >
                                     Start Your Journey Today
                                 </a>
