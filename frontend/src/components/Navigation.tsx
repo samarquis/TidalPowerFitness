@@ -15,9 +15,9 @@ export default function Navigation() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2">
                         <div className="w-10 h-10 bg-gradient-to-br from-teal-5 to-teal-5 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">TP</span>
+                            <span className="text-white font-bold text-xl">TPF</span>
                         </div>
-                        <span className="text-white font-bold text-xl hidden sm:block">Tidal Power</span>
+                        <span className="text-white font-bold text-xl hidden sm:block">Tidal Power Fitness, LLC</span>
                     </Link>
 
                     {/* Desktop Navigation */}
