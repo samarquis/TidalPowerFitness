@@ -114,65 +114,54 @@ const goalCategories = ['All Stories', 'Weight Loss', 'Muscle Building', 'Athlet
 export default function SuccessStoriesPage() {
     const [selectedGoal, setSelectedGoal] = useState('All Stories');
     const [selectedStory, setSelectedStory] = useState<typeof successStories[0] | null>(null);
+    <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+        Real people. Real transformations. Real results. See how our clients achieved their fitness goals with dedication and expert guidance.
+    </p>
+                </div >
 
-    const filteredStories = selectedGoal === 'All Stories'
-        ? successStories
-        : successStories.filter(story => story.goal === selectedGoal);
+        {/* Filter by goal */ }
+        < div className = "mb-12" >
+            <div className="flex flex-wrap justify-center gap-3">
+                {goalCategories.map((goal) => (
+                    <button
+                        key={goal}
+                        onClick={() => setSelectedGoal(goal)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-all ${selectedGoal === goal
+                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white shadow-lg'
+                            : 'glass hover:bg-white/10'
+                            }`}
+                    >
+                        {goal}
+                    </button>
+                ))}
+            </div>
+                </div >
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <h1 className="text-5xl font-bold mb-4">
-                        Success <span className="text-gradient">Stories</span>
-                    </h1>
-                    <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                        Real people. Real transformations. Real results. See how our clients achieved their fitness goals with dedication and expert guidance.
-                    </p>
+        {/* Results count */ }
+        < div className = "mb-8 text-center text-gray-400" >
+            Showing { filteredStories.length } { filteredStories.length === 1 ? 'story' : 'stories' }
+                </div >
+
+        {/* Stories Grid */ }
+        < div className = "grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20" >
+        {
+            filteredStories.map((story) => (
+                <div key={story.id} onClick={() => setSelectedStory(story)} className="cursor-pointer">
+                    <TransformationCard
+                        name={story.name}
+                        beforeImage={story.beforeImage}
+                        afterImage={story.afterImage}
+                        timeframe={story.timeframe}
+                        stats={story.stats}
+                        story={story.story}
+                    />
                 </div>
+            ))
+        }
+                </div >
 
-                {/* Filter by goal */}
-                <div className="mb-12">
-                    <div className="flex flex-wrap justify-center gap-3">
-                        {goalCategories.map((goal) => (
-                            <button
-                                key={goal}
-                                onClick={() => setSelectedGoal(goal)}
-                                className={`px-6 py-3 rounded-lg font-medium transition-all ${selectedGoal === goal
-                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white shadow-lg'
-                                        : 'glass hover:bg-white/10'
-                                    }`}
-                            >
-                                {goal}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Results count */}
-                <div className="mb-8 text-center text-gray-400">
-                    Showing {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'}
-                </div>
-
-                {/* Stories Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-                    {filteredStories.map((story) => (
-                        <div key={story.id} onClick={() => setSelectedStory(story)} className="cursor-pointer">
-                            <TransformationCard
-                                name={story.name}
-                                beforeImage={story.beforeImage}
-                                afterImage={story.afterImage}
-                                timeframe={story.timeframe}
-                                stats={story.stats}
-                                story={story.story}
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                {/* CTA Section */}
-                <div className="text-center glass rounded-2xl p-12">
+        {/* CTA Section */ }
+        < div className = "text-center glass rounded-2xl p-12" >
                     <h2 className="text-3xl font-bold mb-4">
                         Ready to Write <span className="text-gradient">Your Success Story?</span>
                     </h2>
@@ -193,98 +182,100 @@ export default function SuccessStoriesPage() {
                             Meet Our Trainers
                         </a>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
 
-            {/* Story Modal */}
-            {selectedStory && (
+        {/* Story Modal */ }
+    {
+        selectedStory && (
+            <div
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => setSelectedStory(null)}
+            >
                 <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={() => setSelectedStory(null)}
+                    className="glass rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <div
-                        className="glass rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-                        onClick={(e) => e.stopPropagation()}
+                    {/* Close button */}
+                    <button
+                        onClick={() => setSelectedStory(null)}
+                        className="absolute top-4 right-4 w-10 h-10 rounded-full glass hover:bg-white/20 flex items-center justify-center transition-all"
                     >
-                        {/* Close button */}
-                        <button
-                            onClick={() => setSelectedStory(null)}
-                            className="absolute top-4 right-4 w-10 h-10 rounded-full glass hover:bg-white/20 flex items-center justify-center transition-all"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <div className="p-8">
+                        {/* Header */}
+                        <div className="text-center mb-8">
+                            <h2 className="text-4xl font-bold mb-2">{selectedStory.name}'s Journey</h2>
+                            <p className="text-teal-4 text-lg">{selectedStory.goal} • {selectedStory.timeframe}</p>
+                        </div>
+
+                        {/* Before/After Images */}
+                        <div className="grid md:grid-cols-2 gap-4 mb-8">
+                            <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
+                                <img src={selectedStory.beforeImage} alt="Before" className="w-full h-full object-cover" />
+                                <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm px-4 py-2 rounded-full font-semibold">
+                                    Before
+                                </div>
+                            </div>
+                            <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
+                                <img src={selectedStory.afterImage} alt="After" className="w-full h-full object-cover" />
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-6 to-teal-6 px-4 py-2 rounded-full font-semibold">
+                                    After
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                            {selectedStory.stats.map((stat, index) => (
+                                <div key={index} className="glass rounded-xl p-6 text-center">
+                                    <div className="text-3xl font-bold text-gradient mb-2">{stat.value}</div>
+                                    <div className="text-gray-400">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Full Story */}
+                        <div className="mb-8">
+                            <h3 className="text-2xl font-bold mb-4">The Journey</h3>
+                            <p className="text-gray-300 leading-relaxed text-lg">{selectedStory.fullStory}</p>
+                        </div>
+
+                        {/* Testimonial */}
+                        <div className="glass rounded-xl p-6 mb-8">
+                            <svg className="w-10 h-10 text-teal-4 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                             </svg>
-                        </button>
-
-                        <div className="p-8">
-                            {/* Header */}
-                            <div className="text-center mb-8">
-                                <h2 className="text-4xl font-bold mb-2">{selectedStory.name}'s Journey</h2>
-                                <p className="text-teal-4 text-lg">{selectedStory.goal} • {selectedStory.timeframe}</p>
-                            </div>
-
-                            {/* Before/After Images */}
-                            <div className="grid md:grid-cols-2 gap-4 mb-8">
-                                <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
-                                    <img src={selectedStory.beforeImage} alt="Before" className="w-full h-full object-cover" />
-                                    <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm px-4 py-2 rounded-full font-semibold">
-                                        Before
-                                    </div>
+                            <p className="text-xl italic text-gray-200 mb-4">"{selectedStory.testimonial}"</p>
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-6 to-teal-6 flex items-center justify-center text-white font-bold">
+                                    {selectedStory.name.charAt(0)}
                                 </div>
-                                <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
-                                    <img src={selectedStory.afterImage} alt="After" className="w-full h-full object-cover" />
-                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-6 to-teal-6 px-4 py-2 rounded-full font-semibold">
-                                        After
-                                    </div>
+                                <div>
+                                    <div className="font-bold">{selectedStory.name}</div>
+                                    <div className="text-sm text-gray-400">Trained by {selectedStory.trainer}</div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Stats */}
-                            <div className="grid grid-cols-2 gap-4 mb-8">
-                                {selectedStory.stats.map((stat, index) => (
-                                    <div key={index} className="glass rounded-xl p-6 text-center">
-                                        <div className="text-3xl font-bold text-gradient mb-2">{stat.value}</div>
-                                        <div className="text-gray-400">{stat.label}</div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Full Story */}
-                            <div className="mb-8">
-                                <h3 className="text-2xl font-bold mb-4">The Journey</h3>
-                                <p className="text-gray-300 leading-relaxed text-lg">{selectedStory.fullStory}</p>
-                            </div>
-
-                            {/* Testimonial */}
-                            <div className="glass rounded-xl p-6 mb-8">
-                                <svg className="w-10 h-10 text-teal-4 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                                </svg>
-                                <p className="text-xl italic text-gray-200 mb-4">"{selectedStory.testimonial}"</p>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-6 to-teal-6 flex items-center justify-center text-white font-bold">
-                                        {selectedStory.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <div className="font-bold">{selectedStory.name}</div>
-                                        <div className="text-sm text-gray-400">Trained by {selectedStory.trainer}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* CTA */}
-                            <div className="text-center">
-                                <a
-                                    href="/register"
-                                    className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
-                                >
-                                    Start Your Journey Today
-                                </a>
-                            </div>
+                        {/* CTA */}
+                        <div className="text-center">
+                            <a
+                                href="/register"
+                                className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                            >
+                                Start Your Journey Today
+                            </a>
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            </div>
+        )
+    }
+        </div >
     );
 }

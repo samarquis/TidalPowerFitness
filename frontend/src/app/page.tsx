@@ -40,7 +40,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen logo-watermark">
       {/* Hero Section - Enhanced */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Animated background */}

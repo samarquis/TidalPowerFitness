@@ -13,11 +13,13 @@ export default function Navigation() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-teal-5 to-teal-5 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">TPF</span>
-                        </div>
-                        <span className="text-white font-bold text-xl hidden sm:block">Tidal Power Fitness, LLC</span>
+                    <Link href="/" className="flex items-center space-x-3">
+                        <img
+                            src="/logo.jpg"
+                            alt="Tidal Power Fitness Logo"
+                            className="h-12 w-auto object-contain"
+                        />
+                        <span className="text-white font-bold text-lg hidden sm:block">Tidal Power Fitness, LLC</span>
                     </Link>
 
                     {/* Desktop Navigation */}
