@@ -1,4 +1,4 @@
--- Titan Power Fitness Database Initialization Script
+-- Tidal Power Fitness Database Initialization Script
 -- PostgreSQL 14+
 
 -- Enable UUID extension

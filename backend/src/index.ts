@@ -26,7 +26,7 @@ app.get('/health', (req: any, res: any) => {
 
 // API routes
 app.get('/api', (req: any, res: any) => {
-    res.json({ message: 'Titan Power Fitness API' });
+    res.json({ message: 'Tidal Power Fitness API' });
 });
 
 // Authentication routes

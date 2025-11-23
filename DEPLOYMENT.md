@@ -11,7 +11,7 @@
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd TitanPowerFitness
+   cd TidalPowerFitness
    ```
 
 2. **Set up environment variables**

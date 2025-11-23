@@ -5,7 +5,7 @@ A modern fitness training platform with integrated scheduling and payment proces
 ## Project Structure
 
 ```
-TitanPowerFitness/
+TidalPowerFitness/
 ├── frontend/          # Next.js frontend application
 ├── backend/           # Node.js/Express backend API
 └── README.md
