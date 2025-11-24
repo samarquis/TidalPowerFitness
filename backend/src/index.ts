@@ -9,6 +9,7 @@ const trainerRoutes = require('./routes/trainers');
 const appointmentRoutes = require('./routes/appointments');
 const paymentRoutes = require('./routes/payments');
 const classRoutes = require('./routes/classes');
+const setupRoutes = require('./routes/setup');
 
 dotenv.config();
 
@@ -47,6 +48,9 @@ app.use('/api/payments', paymentRoutes.default || paymentRoutes);
 
 // Classes routes
 app.use('/api/classes', classRoutes.default || classRoutes);
+
+// Setup routes (one-time use)
+app.use('/api/setup', setupRoutes.default || setupRoutes);
 
 // Start server
 app.listen(PORT, () => {
