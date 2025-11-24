@@ -3,9 +3,6 @@
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  TestimonialCarousel,
-  TransformationCard,
-  StatsCounter,
   CTAButton,
   TrustBadge,
   ProcessStep
@@ -13,31 +10,6 @@ import {
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
-
-  // Sample testimonials data
-  const testimonials = [
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      role: 'Lost 45 lbs in 6 months',
-      content: 'Tidal Power completely transformed my life. The trainers are incredibly knowledgeable and supportive. I never thought I could achieve these results!',
-      rating: 5
-    },
-    {
-      id: '2',
-      name: 'Mike Chen',
-      role: 'Gained 20 lbs of muscle',
-      content: 'Best investment I\'ve ever made. The personalized training program and nutrition guidance helped me build the physique I always wanted.',
-      rating: 5
-    },
-    {
-      id: '3',
-      name: 'Emily Rodriguez',
-      role: 'Marathon finisher',
-      content: 'From couch to marathon in one year! The trainers helped me build endurance safely and effectively. Couldn\'t have done it without them.',
-      rating: 5
-    }
-  ];
 
   return (
     <div className="min-h-screen logo-watermark">
@@ -53,21 +25,7 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Trust indicators */}
-          <div className="flex justify-center gap-4 mb-6 text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-teal-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span>500+ 5-Star Reviews</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <svg className="w-5 h-5 text-teal-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span>1,000+ Clients Transformed</span>
-            </div>
-          </div>
+
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
             Transform Your Body,
@@ -111,17 +69,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section - NEW */}
-      <section className="py-20 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <StatsCounter end={1000} suffix="+" label="Clients Transformed" />
-            <StatsCounter end={15} suffix=" Years" label="Experience" />
-            <StatsCounter end={50} suffix="K+" label="Workouts Completed" />
-            <StatsCounter end={98} suffix="%" label="Success Rate" />
-          </div>
-        </div>
-      </section>
+
 
       {/* How It Works Section - NEW */}
       <section className="py-20 bg-gradient-to-b from-black to-gray-900">
@@ -179,72 +127,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section - NEW */}
-      <section className="py-20 bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-4">
-            Real People, <span className="text-gradient">Real Results</span>
-          </h2>
-          <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
-            Don't just take our word for it. Hear from clients who've transformed their lives.
-          </p>
-          <TestimonialCarousel testimonials={testimonials} />
-        </div>
-      </section>
 
-      {/* Transformation Stories - NEW */}
-      <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-4">
-            Incredible <span className="text-gradient">Transformations</span>
-          </h2>
-          <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
-            See the amazing results our clients have achieved with dedication and expert guidance.
-          </p>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <TransformationCard
-              name="John Martinez"
-              beforeImage="/api/placeholder/400/600"
-              afterImage="/api/placeholder/400/600"
-              timeframe="12 Weeks"
-              stats={[
-                { label: 'Weight Lost', value: '45 lbs' },
-                { label: 'Body Fat', value: '-12%' }
-              ]}
-              story="I never thought I could look like this. The trainers pushed me beyond what I thought was possible."
-            />
-            <TransformationCard
-              name="Lisa Thompson"
-              beforeImage="/api/placeholder/400/600"
-              afterImage="/api/placeholder/400/600"
-              timeframe="16 Weeks"
-              stats={[
-                { label: 'Muscle Gained', value: '15 lbs' },
-                { label: 'Strength', value: '+85%' }
-              ]}
-              story="Building strength changed everything. I feel confident and powerful for the first time in my life."
-            />
-            <TransformationCard
-              name="David Park"
-              beforeImage="/api/placeholder/400/600"
-              afterImage="/api/placeholder/400/600"
-              timeframe="20 Weeks"
-              stats={[
-                { label: 'Weight Lost', value: '60 lbs' },
-                { label: 'Energy', value: '+200%' }
-              ]}
-              story="This program gave me my life back. I can play with my kids and feel amazing every day."
-            />
-          </div>
 
-          <div className="text-center">
-            <CTAButton href="/success-stories" variant="outline" size="lg">
-              View All Success Stories
-            </CTAButton>
-          </div>
-        </div>
-      </section>
 
       {/* Features Section - Enhanced */}
       <section className="py-20 bg-black">

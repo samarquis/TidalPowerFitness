@@ -30,9 +30,7 @@ export default function Navigation() {
                         <Link href="/trainers" className="text-gray-300 hover:text-white transition-colors">
                             Trainers
                         </Link>
-                        <Link href="/success-stories" className="text-gray-300 hover:text-white transition-colors">
-                            Success Stories
-                        </Link>
+
                         <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
                             Contact
                         </Link>
@@ -93,9 +91,7 @@ export default function Navigation() {
                         <Link href="/trainers" className="block text-gray-300 hover:text-white transition-colors py-2">
                             Trainers
                         </Link>
-                        <Link href="/success-stories" className="block text-gray-300 hover:text-white transition-colors py-2">
-                            Success Stories
-                        </Link>
+
                         <Link href="/contact" className="block text-gray-300 hover:text-white transition-colors py-2">
                             Contact
                         </Link>
