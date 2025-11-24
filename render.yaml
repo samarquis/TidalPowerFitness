@@ -39,7 +39,7 @@ services:
 
   # Frontend Next.js App
   - type: web
-    name: tidal-power-frontend
+    name: tidal-power-frontend-app
     runtime: node
     plan: free
     buildCommand: npm install && npm run build
