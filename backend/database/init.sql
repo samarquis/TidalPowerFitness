@@ -99,6 +99,178 @@ CREATE TABLE classes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ============================================
+-- WORKOUT TRACKING SYSTEM TABLES
+-- ============================================
+
+-- Workout types reference table
+CREATE TABLE workout_types (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Body focus areas reference table
+CREATE TABLE body_focus_areas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Exercise library
+CREATE TABLE exercises (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    workout_type_id UUID REFERENCES workout_types(id),
+    primary_muscle_group UUID REFERENCES body_focus_areas(id),
+    equipment_required VARCHAR(100),
+    difficulty_level VARCHAR(20),
+    video_url VARCHAR(255),
+    instructions TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout templates (reusable workout plans)
+CREATE TABLE workout_templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    trainer_id UUID NOT NULL REFERENCES users(id),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    workout_type_id UUID REFERENCES workout_types(id),
+    estimated_duration_minutes INTEGER,
+    difficulty_level VARCHAR(20),
+    is_public BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Template exercises (junction table)
+CREATE TABLE template_exercises (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    template_id UUID NOT NULL REFERENCES workout_templates(id) ON DELETE CASCADE,
+    exercise_id UUID NOT NULL REFERENCES exercises(id),
+    order_in_template INTEGER NOT NULL,
+    suggested_sets INTEGER,
+    suggested_reps INTEGER,
+    suggested_weight_lbs DECIMAL(6,2),
+    suggested_rest_seconds INTEGER,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Template body focus (junction table)
+CREATE TABLE template_body_focus (
+    template_id UUID NOT NULL REFERENCES workout_templates(id) ON DELETE CASCADE,
+    body_focus_id UUID NOT NULL REFERENCES body_focus_areas(id),
+    PRIMARY KEY (template_id, body_focus_id)
+);
+
+-- Workout sessions (actual workout instances)
+CREATE TABLE workout_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    trainer_id UUID NOT NULL REFERENCES users(id),
+    class_id UUID REFERENCES classes(id),
+    template_id UUID REFERENCES workout_templates(id),
+    workout_type_id UUID REFERENCES workout_types(id),
+    session_date DATE NOT NULL,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    duration_minutes INTEGER,
+    notes TEXT,
+    is_published BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Session participants (junction table)
+CREATE TABLE session_participants (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id UUID NOT NULL REFERENCES workout_sessions(id) ON DELETE CASCADE,
+    client_id UUID NOT NULL REFERENCES users(id),
+    attended BOOLEAN DEFAULT true,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(session_id, client_id)
+);
+
+-- Session body focus (junction table)
+CREATE TABLE session_body_focus (
+    session_id UUID NOT NULL REFERENCES workout_sessions(id) ON DELETE CASCADE,
+    body_focus_id UUID NOT NULL REFERENCES body_focus_areas(id),
+    PRIMARY KEY (session_id, body_focus_id)
+);
+
+-- Session exercises (exercises in a specific session)
+CREATE TABLE session_exercises (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id UUID NOT NULL REFERENCES workout_sessions(id) ON DELETE CASCADE,
+    exercise_id UUID NOT NULL REFERENCES exercises(id),
+    order_in_session INTEGER NOT NULL,
+    planned_sets INTEGER,
+    planned_reps INTEGER,
+    planned_weight_lbs DECIMAL(6,2),
+    rest_seconds INTEGER,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Exercise logs (individual set performance tracking)
+CREATE TABLE exercise_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_exercise_id UUID NOT NULL REFERENCES session_exercises(id) ON DELETE CASCADE,
+    client_id UUID NOT NULL REFERENCES users(id),
+    set_number INTEGER NOT NULL,
+    reps_completed INTEGER,
+    weight_used_lbs DECIMAL(6,2),
+    duration_seconds INTEGER,
+    distance_miles DECIMAL(6,2),
+    rest_taken_seconds INTEGER,
+    rpe SMALLINT,
+    form_rating SMALLINT,
+    notes TEXT,
+    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    logged_by UUID REFERENCES users(id)
+);
+
+-- Client progress metrics (body measurements)
+CREATE TABLE client_progress_metrics (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID NOT NULL REFERENCES users(id),
+    log_date DATE NOT NULL,
+    weight_lbs DECIMAL(5,2),
+    body_fat_percentage DECIMAL(4,2),
+    muscle_mass_lbs DECIMAL(5,2),
+    chest_inches DECIMAL(4,2),
+    waist_inches DECIMAL(4,2),
+    hips_inches DECIMAL(4,2),
+    bicep_inches DECIMAL(4,2),
+    thigh_inches DECIMAL(4,2),
+    photo_url VARCHAR(255),
+    notes TEXT,
+    recorded_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Personal records tracking (automatic PR detection)
+CREATE TABLE personal_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID NOT NULL REFERENCES users(id),
+    exercise_id UUID NOT NULL REFERENCES exercises(id),
+    record_type VARCHAR(20) NOT NULL, -- 'max_weight', 'max_reps', 'max_volume'
+    value DECIMAL(8,2) NOT NULL,
+    achieved_at TIMESTAMP NOT NULL,
+    exercise_log_id UUID REFERENCES exercise_logs(id),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(client_id, exercise_id, record_type)
+);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
@@ -115,6 +287,29 @@ CREATE INDEX idx_classes_day_of_week ON classes(day_of_week);
 CREATE INDEX idx_classes_instructor_id ON classes(instructor_id);
 CREATE INDEX idx_classes_is_active ON classes(is_active);
 CREATE INDEX idx_classes_category ON classes(category);
+
+-- Workout tracking indexes
+CREATE INDEX idx_exercises_workout_type ON exercises(workout_type_id);
+CREATE INDEX idx_exercises_muscle_group ON exercises(primary_muscle_group);
+CREATE INDEX idx_exercises_active ON exercises(is_active);
+CREATE INDEX idx_workout_templates_trainer ON workout_templates(trainer_id);
+CREATE INDEX idx_workout_templates_type ON workout_templates(workout_type_id);
+CREATE INDEX idx_template_exercises_template ON template_exercises(template_id);
+CREATE INDEX idx_template_exercises_order ON template_exercises(template_id, order_in_template);
+CREATE INDEX idx_workout_sessions_trainer ON workout_sessions(trainer_id);
+CREATE INDEX idx_workout_sessions_class ON workout_sessions(class_id);
+CREATE INDEX idx_workout_sessions_date ON workout_sessions(session_date);
+CREATE INDEX idx_session_participants_session ON session_participants(session_id);
+CREATE INDEX idx_session_participants_client ON session_participants(client_id);
+CREATE INDEX idx_session_exercises_session ON session_exercises(session_id);
+CREATE INDEX idx_session_exercises_order ON session_exercises(session_id, order_in_session);
+CREATE INDEX idx_exercise_logs_session_exercise ON exercise_logs(session_exercise_id);
+CREATE INDEX idx_exercise_logs_client ON exercise_logs(client_id);
+CREATE INDEX idx_exercise_logs_date ON exercise_logs(logged_at);
+CREATE INDEX idx_progress_metrics_client ON client_progress_metrics(client_id);
+CREATE INDEX idx_progress_metrics_date ON client_progress_metrics(log_date);
+CREATE INDEX idx_personal_records_client ON personal_records(client_id);
+CREATE INDEX idx_personal_records_exercise ON personal_records(exercise_id);
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -139,4 +334,14 @@ CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_classes_updated_at BEFORE UPDATE ON classes
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Workout tracking triggers
+CREATE TRIGGER update_exercises_updated_at BEFORE UPDATE ON exercises
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_workout_templates_updated_at BEFORE UPDATE ON workout_templates
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_workout_sessions_updated_at BEFORE UPDATE ON workout_sessions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
