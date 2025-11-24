@@ -195,16 +195,23 @@ export default function TemplateDetailsPage() {
                 )}
 
                 {/* Actions */}
-                {user?.id === template.trainer_id && (
-                    <div className="flex gap-4">
+                <div className="flex gap-4">
+                    <Link
+                        href={`/workouts/active?template=${template.id}`}
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all text-center"
+                    >
+                        Start Workout
+                    </Link>
+                    {user?.id === template.trainer_id && (
                         <button
                             onClick={handleDelete}
                             className="px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-bold rounded-lg transition-all"
                         >
-                            Delete Template
+                            Delete
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
+
             </div>
         </div>
     );
