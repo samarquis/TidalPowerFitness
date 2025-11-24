@@ -114,6 +114,24 @@ export default function ClassScheduleSection() {
                             ))}
                         </div>
 
+                        {/* Color Legend */}
+                        {classes.length > 0 && (
+                            <div className="glass rounded-lg p-6 mb-8">
+                                <h3 className="text-lg font-bold mb-4 text-center">Class Legend</h3>
+                                <div className="flex flex-wrap justify-center gap-3">
+                                    {Array.from(new Set(classes.map(c => c.name))).map((className) => (
+                                        <div
+                                            key={className}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <div className={`w-4 h-4 rounded bg-gradient-to-r ${getClassColor(className)}`}></div>
+                                            <span className="text-sm text-gray-300">{className}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* CTA */}
                         <div className="text-center">
                             <Link

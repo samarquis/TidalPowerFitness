@@ -443,7 +443,7 @@ export default function AdminClassesPage() {
                                                     ? 'bg-green-500/20 text-green-400'
                                                     : 'bg-gray-500/20 text-gray-400'
                                                     }`}>
-                                                    {classItem.is_active ? 'Active' : 'Inactive'}
+                                                    {classItem.is_active ? 'Published' : 'Draft'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
@@ -461,7 +461,7 @@ export default function AdminClassesPage() {
                                                             : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
                                                             }`}
                                                     >
-                                                        {classItem.is_active ? 'Deactivate' : 'Activate'}
+                                                        {classItem.is_active ? 'Unpublish' : 'Publish'}
                                                     </button>
                                                 </div>
                                             </td>

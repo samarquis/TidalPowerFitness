@@ -11,13 +11,11 @@
   - Trainer bios section (`frontend/src/components/TrainerBiosSection.tsx`)
   - Admin quick-access buttons (`frontend/src/app/page.tsx`)
 - **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx` (lines 615-629)
+- **Trainer Availability Scheduling** - Trainers can set weekly availability slots (`frontend/src/app/trainer/availability/page.tsx`, `backend/src/models/TrainerAvailability.ts`)
 
 ## ⏳ Pending
 
 ### Class Scheduling & Calendar (High Priority)
-- [ ] Trainer availability scheduling interface
-  - [ ] Allow trainers to set days/times when their classes are available
-  - [ ] Backend API for trainer availability management
 - [ ] Public class calendar view
   - [ ] Display published classes on a calendar
   - [ ] Assign consistent colors to each class type
