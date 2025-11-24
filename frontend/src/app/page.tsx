@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import ClassScheduleSection from '@/components/ClassScheduleSection';
+import TrainerBiosSection from '@/components/TrainerBiosSection';
 import {
   CTAButton,
   TrustBadge,
@@ -9,10 +11,35 @@ import {
 } from '@/components/ui';
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="min-h-screen logo-watermark">
+      {/* Admin Quick Access Banner */}
+      {isAdmin && (
+        <div className="fixed top-20 right-4 z-50 flex flex-col gap-2">
+          <Link
+            href="/admin/classes"
+            className="glass px-4 py-2 rounded-lg text-sm font-semibold hover:bg-white/20 transition-all flex items-center gap-2 backdrop-blur-md"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Class
+          </Link>
+          <Link
+            href="/admin/users"
+            className="glass px-4 py-2 rounded-lg text-sm font-semibold hover:bg-white/20 transition-all flex items-center gap-2 backdrop-blur-md"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Manage Users
+          </Link>
+        </div>
+      )}
+
       {/* Hero Section - Enhanced */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Animated background */}
@@ -69,7 +96,8 @@ export default function HomePage() {
         </div>
       </section>
 
-
+      {/* Class Schedule Section - NEW */}
+      <ClassScheduleSection />
 
       {/* How It Works Section - NEW */}
       <section className="py-20 bg-gradient-to-b from-black to-gray-900">
@@ -179,6 +207,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Trainer Bios Section - NEW */}
+      <TrainerBiosSection />
 
       {/* Trust Badges Section - NEW */}
       <section className="py-16 bg-gradient-to-b from-black to-gray-900">
