@@ -1,8 +1,30 @@
 import express, { Request, Response } from 'express';
 import TrainerProfile from '../models/TrainerProfile';
+import UserModel from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
 
 const router = express.Router();
+
+// Get all users with trainer role (admin only - for class management dropdown)
+router.get('/users', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const trainers = await UserModel.findByRole('trainer');
+
+        // Return only necessary fields for the dropdown
+        const trainerList = trainers.map(trainer => ({
+            id: trainer.id,
+            first_name: trainer.first_name,
+            last_name: trainer.last_name,
+            email: trainer.email,
+            full_name: `${trainer.first_name} ${trainer.last_name}`
+        }));
+
+        res.status(200).json(trainerList);
+    } catch (error) {
+        console.error('Get trainer users error:', error);
+        res.status(500).json({ error: 'Failed to get trainer users' });
+    }
+});
 
 // Get all active trainers (public)
 router.get('/', async (req: Request, res: Response): Promise<void> => {
