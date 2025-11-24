@@ -25,13 +25,9 @@
 - **Class Publishing Workflow** - Admins can publish/unpublish classes with color legend (`frontend/src/app/admin/classes/page.tsx`, `frontend/src/components/ClassScheduleSection.tsx`)
 - **Workout Templates** - Create, view, and manage workout templates (`frontend/src/app/workouts/templates/`)
 - **Active Workout Session** - Real-time workout tracking with rest timer (`frontend/src/app/workouts/active/`)
+- **Workout History** - View past sessions and details (`frontend/src/app/workouts/history/`)
 
 ## ⏳ Pending
-
-### Workout Tracking System
-#### Workout History
-- [ ] History List page (`/workouts/history`)
-- [ ] Session Details view
 
 ### Future Integrations
 - [ ] Acuity Scheduling webhooks integration

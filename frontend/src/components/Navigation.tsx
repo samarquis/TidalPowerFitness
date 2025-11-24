@@ -51,12 +51,20 @@ export default function Navigation() {
                                     </Link>
                                 )}
                                 {(user?.role === 'trainer' || user?.role === 'admin') && (
-                                    <Link
-                                        href="/workouts/templates"
-                                        className="text-gray-300 hover:text-white transition-colors font-semibold"
-                                    >
-                                        Workouts
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href="/workouts/templates"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Workouts
+                                        </Link>
+                                        <Link
+                                            href="/workouts/history"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            History
+                                        </Link>
+                                    </>
                                 )}
                                 <Link
                                     href="/profile"
@@ -169,13 +177,22 @@ export default function Navigation() {
                                         </Link>
                                     )}
                                     {(user?.role === 'trainer' || user?.role === 'admin') && (
-                                        <Link
-                                            href="/workouts/templates"
-                                            className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Workouts
-                                        </Link>
+                                        <>
+                                            <Link
+                                                href="/workouts/templates"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Workouts
+                                            </Link>
+                                            <Link
+                                                href="/workouts/history"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                History
+                                            </Link>
+                                        </>
                                     )}
                                     <Link
                                         href="/profile"
