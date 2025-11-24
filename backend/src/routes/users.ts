@@ -39,6 +39,76 @@ router.get('/', authenticate, authorize('admin'), async (req: Request, res: Resp
     }
 });
 
+// Update user role (admin only)
+router.patch('/:id/role', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+
+        if (!role || !['client', 'trainer', 'admin'].includes(role)) {
+            res.status(400).json({ error: 'Invalid role. Must be client, trainer, or admin' });
+            return;
+        }
+
+        const updatedUser = await User.update(id, { role });
+
+        if (!updatedUser) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
+        res.status(200).json({
+            message: 'User role updated successfully',
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                first_name: updatedUser.first_name,
+                last_name: updatedUser.last_name,
+                role: updatedUser.role,
+                is_active: updatedUser.is_active,
+            },
+        });
+    } catch (error) {
+        console.error('Update role error:', error);
+        res.status(500).json({ error: 'Failed to update user role' });
+    }
+});
+
+// Toggle user activation (admin only)
+router.patch('/:id/activate', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { is_active } = req.body;
+
+        if (typeof is_active !== 'boolean') {
+            res.status(400).json({ error: 'is_active must be a boolean' });
+            return;
+        }
+
+        const updatedUser = await User.update(id, { is_active });
+
+        if (!updatedUser) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
+        res.status(200).json({
+            message: `User ${is_active ? 'activated' : 'deactivated'} successfully`,
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                first_name: updatedUser.first_name,
+                last_name: updatedUser.last_name,
+                role: updatedUser.role,
+                is_active: updatedUser.is_active,
+            },
+        });
+    } catch (error) {
+        console.error('Toggle activation error:', error);
+        res.status(500).json({ error: 'Failed to toggle user activation' });
+    }
+});
+
 // Deactivate user (admin only)
 router.delete('/:id', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
     try {

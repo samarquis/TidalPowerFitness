@@ -28,6 +28,7 @@ export interface UpdateUserInput {
     first_name?: string;
     last_name?: string;
     phone?: string;
+    role?: 'client' | 'trainer' | 'admin';
     is_active?: boolean;
 }
 

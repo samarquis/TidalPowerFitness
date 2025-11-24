@@ -40,6 +40,14 @@ export default function Navigation() {
 
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-4">
+                                {user?.role === 'admin' && (
+                                    <Link
+                                        href="/admin/users"
+                                        className="text-gray-300 hover:text-white transition-colors"
+                                    >
+                                        Users
+                                    </Link>
+                                )}
                                 <span className="text-gray-400 text-sm">
                                     {user?.first_name} {user?.last_name}
                                 </span>
