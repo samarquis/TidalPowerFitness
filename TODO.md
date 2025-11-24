@@ -10,19 +10,11 @@
   - Class schedule/calendar display with color-coding (`frontend/src/components/ClassScheduleSection.tsx`)
   - Trainer bios section (`frontend/src/components/TrainerBiosSection.tsx`)
   - Admin quick-access buttons (`frontend/src/app/page.tsx`)
-- **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx` (lines 615-629)
+- **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx`
 - **Trainer Availability Scheduling** - Trainers can set weekly availability slots (`frontend/src/app/trainer/availability/page.tsx`, `backend/src/models/TrainerAvailability.ts`)
+- **Class Publishing Workflow** - Admins can publish/unpublish classes with color legend (`frontend/src/app/admin/classes/page.tsx`, `frontend/src/components/ClassScheduleSection.tsx`)
 
 ## ⏳ Pending
-
-### Class Scheduling & Calendar (High Priority)
-- [ ] Public class calendar view
-  - [ ] Display published classes on a calendar
-  - [ ] Assign consistent colors to each class type
-  - [ ] Filter/legend for class types
-- [ ] Class publishing workflow
-  - [ ] Mark classes as "published" to show on calendar
-  - [ ] Admin controls for publishing/unpublishing
 
 ### Workout Tracking System
 #### Workout Templates
