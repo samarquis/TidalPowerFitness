@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Admin - Tidal Power Fitness</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #4fd1c5;
+            margin-bottom: 20px;
+        }
+        button {
+            background: linear-gradient(to right, #4fd1c5, #4fd1c5);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #7f1d1d;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 14px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Setup Admin Account</h1>
+        
+        <div class="info" style="display: block;">
+            <strong>Instructions:</strong><br>
+            1. Enter your backend URL (from Render)<br>
+            2. Click "Create Admin Account"<br>
+            3. Login with samarquis4@gmail.com
+        </div>
+
+        <label for="backendUrl">Backend URL:</label>
+        <input 
+            type="text" 
+            id="backendUrl" 
+            placeholder="https://your-backend.onrender.com"
+            value="http://localhost:5000"
+        >
+
+        <button id="setupBtn" onclick="setupAdmin()">
+            Create Admin Account
+        </button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function setupAdmin() {
+            const btn = document.getElementById('setupBtn');
+            const result = document.getElementById('result');
+            const backendUrl = document.getElementById('backendUrl').value.trim();
+
+            if (!backendUrl) {
+                showResult('Please enter your backend URL', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Creating admin account...';
+            result.style.display = 'none';
+
+            try {
+                const response = await fetch(`${backendUrl}/api/setup/create-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        secret: 'TidalPower2024Setup'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    let message = `✅ ${data.message}<br><br>`;
+                    message += `<strong>Login Details:</strong><br>`;
+                    message += `Email: samarquis4@gmail.com<br>`;
+                    if (data.tempPassword) {
+                        message += `Password: ${data.tempPassword}<br><br>`;
+                        message += `⚠️ Change your password after first login!`;
+                    } else {
+                        message += `Password: (use your existing password)`;
+                    }
+                    showResult(message, 'success');
+                } else {
+                    showResult(`❌ Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Failed to connect to backend: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Admin Account';
+            }
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.innerHTML = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
