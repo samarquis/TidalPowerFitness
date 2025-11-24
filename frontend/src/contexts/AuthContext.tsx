@@ -31,20 +31,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Check if user is logged in on mount
         const checkAuth = async () => {
-            const storedToken = localStorage.getItem('auth_token');
-            if (storedToken) {
-                setToken(storedToken);
-                apiClient.setToken(storedToken);
-                const response = await apiClient.getProfile();
-                if (response.data) {
-                    setUser(response.data.user);
-                } else {
-                    localStorage.removeItem('auth_token');
-                    apiClient.setToken(null);
-                    setToken(null);
+            try {
+                const storedToken = localStorage.getItem('auth_token');
+                if (storedToken) {
+                    setToken(storedToken);
+                    apiClient.setToken(storedToken);
+                    const response = await apiClient.getProfile();
+                    if (response.data) {
+                        setUser(response.data.user);
+                    } else {
+                        localStorage.removeItem('auth_token');
+                        apiClient.setToken(null);
+                        setToken(null);
+                    }
                 }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('auth_token');
+                apiClient.setToken(null);
+                setToken(null);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         checkAuth();
