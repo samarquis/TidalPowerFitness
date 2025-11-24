@@ -80,6 +80,25 @@ CREATE TABLE forms (
     reviewed_at TIMESTAMP
 );
 
+-- Classes table
+CREATE TABLE classes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    category VARCHAR(100),
+    instructor_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    instructor_name VARCHAR(200),
+    day_of_week INTEGER NOT NULL, -- 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+    start_time TIME NOT NULL,
+    duration_minutes INTEGER NOT NULL DEFAULT 45,
+    max_capacity INTEGER DEFAULT 20,
+    price_cents INTEGER DEFAULT 1200, -- $12.00 default
+    is_active BOOLEAN DEFAULT true,
+    acuity_appointment_type_id VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
@@ -92,6 +111,10 @@ CREATE INDEX idx_payments_user_id ON payments(user_id);
 CREATE INDEX idx_payments_status ON payments(status);
 CREATE INDEX idx_forms_user_id ON forms(user_id);
 CREATE INDEX idx_forms_form_type ON forms(form_type);
+CREATE INDEX idx_classes_day_of_week ON classes(day_of_week);
+CREATE INDEX idx_classes_instructor_id ON classes(instructor_id);
+CREATE INDEX idx_classes_is_active ON classes(is_active);
+CREATE INDEX idx_classes_category ON classes(category);
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -113,4 +136,7 @@ CREATE TRIGGER update_appointments_updated_at BEFORE UPDATE ON appointments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_classes_updated_at BEFORE UPDATE ON classes
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

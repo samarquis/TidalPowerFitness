@@ -65,3 +65,12 @@ SELECT
     CURRENT_TIMESTAMP + INTERVAL '3 days',
     30,
     'scheduled';
+
+-- Insert sample classes based on Acuity schedule
+INSERT INTO classes (name, description, category, instructor_name, day_of_week, start_time, duration_minutes, max_capacity, price_cents, acuity_appointment_type_id) VALUES
+('Barre w/ Michelle', 'A low-impact, full-body workout using a ballet barre for support. It focuses on small, high-repetition movements and isometric holds to build muscular endurance, sculpt lean muscle, and improve flexibility.', 'Barre', 'Michelle', 1, '18:00:00', 45, 12, 1200, '83401674'),
+('Tsunami Strength w/ Lisa', 'Increase your strength and improve cardiovascular fitness with this circuit class. You''ll move through a variety of timed stations using free weights and your own bodyweight to challenge every major muscle group.', 'Circuits', 'Lisa', 3, '17:30:00', 45, 4, 1200, '83397040'),
+('Power Bounce w/ Kalee', 'Get ready for a super fun and effective workout! In this Power Rebounding class, you''ll use a mini-trampoline to get a heart-pumping, full-body sweat without the joint stress of high-impact exercises.', 'Power Bounce', 'Kalee', 5, '09:00:00', 45, 5, 1200, '83401870'),
+('Vinyasa Yoga w/ Edna', 'Join us on the mat for a joyful Vinyasa experience, blending mindful movement with good vibes. This class is an invitation for everyone to explore their practice with a sense of curiosity and playfulness.', 'Yoga', 'Edna', 2, '18:30:00', 45, 10, 1200, '85964720'),
+('GLOW Pound w/ Michelle', 'Unleash your inner rockstar! A dynamic, fun, and high-energy workout. This is a full-body cardio jam session that will make you feel amazing.', 'Pop up', 'Michelle', 5, '19:00:00', 45, 12, 1000, '84715151'),
+('Zumba w/ Tamara', 'Ditch the workout and join the party! This is a high-energy, feel-good session combining red-hot international rhythms (Salsa, Merengue, Hip-Hop, and more) with easy-to-follow moves for a total body workout.', 'Pop up', 'Tamara', 6, '10:00:00', 45, 8, 1000, '85964992');

@@ -8,6 +8,7 @@ const userRoutes = require('./routes/users');
 const trainerRoutes = require('./routes/trainers');
 const appointmentRoutes = require('./routes/appointments');
 const paymentRoutes = require('./routes/payments');
+const classRoutes = require('./routes/classes');
 
 dotenv.config();
 
@@ -43,6 +44,9 @@ app.use('/api/appointments', appointmentRoutes.default || appointmentRoutes);
 
 // Payment routes (Square integration)
 app.use('/api/payments', paymentRoutes.default || paymentRoutes);
+
+// Classes routes
+app.use('/api/classes', classRoutes.default || classRoutes);
 
 // Start server
 app.listen(PORT, () => {
