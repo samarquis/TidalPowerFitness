@@ -50,6 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const response = await apiClient.login(email, password);
         if (response.data) {
             const { token, user } = response.data;
+            // Save token to localStorage and apiClient
+            localStorage.setItem('auth_token', token);
             apiClient.setToken(token);
             setUser(user);
             return { success: true };
@@ -61,6 +63,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const response = await apiClient.register(userData);
         if (response.data) {
             const { token, user } = response.data;
+            // Save token to localStorage and apiClient
+            localStorage.setItem('auth_token', token);
             apiClient.setToken(token);
             setUser(user);
             return { success: true };
@@ -69,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = () => {
+        localStorage.removeItem('auth_token');
         apiClient.setToken(null);
         setUser(null);
     };
