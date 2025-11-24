@@ -4,7 +4,7 @@
 -- Insert admin users
 -- Scott Marquis - Primary Admin (password: admin123 - hashed with bcrypt)
 INSERT INTO users (email, password_hash, first_name, last_name, role, phone) VALUES
-('scott@tidalpowerfitness.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Scott', 'Marquis', 'admin', '555-0001'),
+('samarquis4@gmail.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Scott', 'Marquis', 'admin', '555-0001'),
 ('admin@titanpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Admin', 'User', 'admin', '555-0100');
 
 -- Insert sample trainers
