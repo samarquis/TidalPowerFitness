@@ -13,6 +13,7 @@ interface User {
 
 interface AuthContextType {
     user: User | null;
+    token: string | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     register: (userData: any) => Promise<{ success: boolean; error?: string }>;
@@ -24,20 +25,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Check if user is logged in on mount
         const checkAuth = async () => {
-            const token = localStorage.getItem('auth_token');
-            if (token) {
-                apiClient.setToken(token);
+            const storedToken = localStorage.getItem('auth_token');
+            if (storedToken) {
+                setToken(storedToken);
+                apiClient.setToken(storedToken);
                 const response = await apiClient.getProfile();
                 if (response.data) {
                     setUser(response.data.user);
                 } else {
                     localStorage.removeItem('auth_token');
                     apiClient.setToken(null);
+                    setToken(null);
                 }
             }
             setLoading(false);
@@ -49,10 +53,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = async (email: string, password: string) => {
         const response = await apiClient.login(email, password);
         if (response.data) {
-            const { token, user } = response.data;
+            const { token: newToken, user } = response.data;
             // Save token to localStorage and apiClient
-            localStorage.setItem('auth_token', token);
-            apiClient.setToken(token);
+            localStorage.setItem('auth_token', newToken);
+            apiClient.setToken(newToken);
+            setToken(newToken);
             setUser(user);
             return { success: true };
         }
@@ -62,10 +67,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const register = async (userData: any) => {
         const response = await apiClient.register(userData);
         if (response.data) {
-            const { token, user } = response.data;
+            const { token: newToken, user } = response.data;
             // Save token to localStorage and apiClient
-            localStorage.setItem('auth_token', token);
-            apiClient.setToken(token);
+            localStorage.setItem('auth_token', newToken);
+            apiClient.setToken(newToken);
+            setToken(newToken);
             setUser(user);
             return { success: true };
         }
@@ -75,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         localStorage.removeItem('auth_token');
         apiClient.setToken(null);
+        setToken(null);
         setUser(null);
     };
 
@@ -82,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider
             value={{
                 user,
+                token,
                 loading,
                 login,
                 register,

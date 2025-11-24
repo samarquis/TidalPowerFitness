@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import TrainerProfile from '../models/TrainerProfile';
 import UserModel from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
+import trainerController from '../controllers/trainerController';
 
 const router = express.Router();
 
@@ -25,6 +26,9 @@ router.get('/users', authenticate, authorize('admin'), async (req: Request, res:
         res.status(500).json({ error: 'Failed to get trainer users' });
     }
 });
+
+// Create new trainer (admin only)
+router.post('/', authenticate, authorize('admin'), trainerController.createTrainer);
 
 // Get all active trainers (public)
 router.get('/', async (req: Request, res: Response): Promise<void> => {

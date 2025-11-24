@@ -27,16 +27,27 @@ export default function Navigation() {
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-6">
                                 {user?.role === 'admin' && (
-                                    <Link
-                                        href="/admin/classes"
-                                        className="text-gray-300 hover:text-white transition-colors font-semibold"
-                                    >
-                                        Admin
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href="/admin/classes"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Classes
+                                        </Link>
+                                        <Link
+                                            href="/admin/trainers"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Trainers
+                                        </Link>
+                                    </>
                                 )}
-                                <span className="text-gray-400 text-sm">
+                                <Link
+                                    href="/profile"
+                                    className="text-gray-400 hover:text-white text-sm transition-colors"
+                                >
                                     {user?.first_name} {user?.last_name}
-                                </span>
+                                </Link>
                                 <button
                                     onClick={logout}
                                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -83,29 +94,62 @@ export default function Navigation() {
                 mobileMenuOpen && (
                     <div className="md:hidden bg-black/95 border-t border-white/10">
                         <div className="px-4 py-4 space-y-3">
-                            <Link href="/" className="block text-gray-300 hover:text-white transition-colors py-2">
+                            <Link
+                                href="/"
+                                className="block text-gray-300 hover:text-white transition-colors py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
                                 Home
                             </Link>
-                            <Link href="/trainers" className="block text-gray-300 hover:text-white transition-colors py-2">
+                            <Link
+                                href="/trainers"
+                                className="block text-gray-300 hover:text-white transition-colors py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
                                 Trainers
                             </Link>
-                            <Link href="/classes" className="block text-gray-300 hover:text-white transition-colors py-2">
+                            <Link
+                                href="/classes"
+                                className="block text-gray-300 hover:text-white transition-colors py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
                                 Classes
                             </Link>
 
-                            <Link href="/contact" className="block text-gray-300 hover:text-white transition-colors py-2">
+                            <Link
+                                href="/contact"
+                                className="block text-gray-300 hover:text-white transition-colors py-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
                                 Contact
                             </Link>
                             {isAuthenticated ? (
                                 <>
                                     {user?.role === 'admin' && (
-                                        <Link href="/admin/classes" className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold">
-                                            Admin Dashboard
-                                        </Link>
+                                        <>
+                                            <Link
+                                                href="/admin/classes"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Manage Classes
+                                            </Link>
+                                            <Link
+                                                href="/admin/trainers"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Manage Trainers
+                                            </Link>
+                                        </>
                                     )}
-                                    <div className="text-gray-400 text-sm py-2">
+                                    <Link
+                                        href="/profile"
+                                        className="block text-gray-400 hover:text-white text-sm py-2"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
                                         {user?.first_name} {user?.last_name}
-                                    </div>
+                                    </Link>
                                     <button
                                         onClick={logout}
                                         className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -115,12 +159,17 @@ export default function Navigation() {
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/login" className="block text-gray-300 hover:text-white transition-colors py-2">
+                                    <Link
+                                        href="/login"
+                                        className="block text-gray-300 hover:text-white transition-colors py-2"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
                                         Login
                                     </Link>
                                     <Link
                                         href="/register"
                                         className="block px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 text-white rounded-lg text-center"
+                                        onClick={() => setMobileMenuOpen(false)}
                                     >
                                         Get Started
                                     </Link>
