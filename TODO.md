@@ -13,15 +13,11 @@
 - **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx`
 - **Trainer Availability Scheduling** - Trainers can set weekly availability slots (`frontend/src/app/trainer/availability/page.tsx`, `backend/src/models/TrainerAvailability.ts`)
 - **Class Publishing Workflow** - Admins can publish/unpublish classes with color legend (`frontend/src/app/admin/classes/page.tsx`, `frontend/src/components/ClassScheduleSection.tsx`)
+- **Workout Templates** - Create, view, and manage workout templates (`frontend/src/app/workouts/templates/`)
 
 ## ⏳ Pending
 
 ### Workout Tracking System
-#### Workout Templates
-- [ ] List Templates page (`/workouts/templates`)
-- [ ] Create / Edit Template page (`/workouts/templates/new`)
-- [ ] View Template Details page
-
 #### Active Workout Session
 - [ ] Start Workout Interface (`/workouts/active`)
 - [ ] Log sets / reps / weight during a session

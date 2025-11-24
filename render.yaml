@@ -31,6 +31,39 @@ services:
         sync: false
       - key: SQUARE_ACCESS_TOKEN
         sync: false
+databases:
+  - name: tidal-power-db
+    databaseName: tidal_power_fitness
+    user: tidal_admin
+    plan: free
+
+services:
+  # Backend API
+  - type: web
+    name: tidal-power-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tidal-power-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ACUITY_USER_ID
+        sync: false
+      - key: ACUITY_API_KEY
+        sync: false
+      - key: SQUARE_ACCESS_TOKEN
+        sync: false
       - key: SQUARE_LOCATION_ID
         sync: false
       - key: SQUARE_ENVIRONMENT
@@ -39,14 +72,14 @@ services:
 
   # Frontend Static Site
   - type: web
-    name: tidal-power-frontend
+    name: tidal-power-fitness-frontend
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: https://tidal-power-backend.onrender.com/api
+        sync: false
     rootDir: frontend
