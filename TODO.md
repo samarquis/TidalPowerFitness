@@ -30,8 +30,6 @@
 
 ### Workout Tracking System
 #### Workout History
-- [ ] View past workout sessions
-- [ ] Session details view
 - [ ] History List page (`/workouts/history`)
 - [ ] Session Details view
 
