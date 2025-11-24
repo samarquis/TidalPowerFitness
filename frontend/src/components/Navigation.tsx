@@ -42,6 +42,14 @@ export default function Navigation() {
                                         </Link>
                                     </>
                                 )}
+                                {user?.role === 'trainer' && (
+                                    <Link
+                                        href="/trainer/availability"
+                                        className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                    >
+                                        My Availability
+                                    </Link>
+                                )}
                                 <Link
                                     href="/profile"
                                     className="text-gray-400 hover:text-white text-sm transition-colors"
@@ -142,6 +150,15 @@ export default function Navigation() {
                                                 Manage Trainers
                                             </Link>
                                         </>
+                                    )}
+                                    {user?.role === 'trainer' && (
+                                        <Link
+                                            href="/trainer/availability"
+                                            className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            My Availability
+                                        </Link>
                                     )}
                                     <Link
                                         href="/profile"

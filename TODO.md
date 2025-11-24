@@ -6,21 +6,15 @@
 - Admin Trainer Management UI & API (`frontend/src/app/admin/trainers/page.tsx`, `backend/src/routes/trainers.ts`, `backend/src/controllers/trainerController.ts`)
 - Admin Class Management UI & API (`frontend/src/app/admin/classes/page.tsx`, `backend/src/routes/classes.ts`)
 - AuthContext token exposure fix (`frontend/src/contexts/AuthContext.tsx`)
+- **Home Page Redesign**
+  - Class schedule/calendar display with color-coding (`frontend/src/components/ClassScheduleSection.tsx`)
+  - Trainer bios section (`frontend/src/components/TrainerBiosSection.tsx`)
+  - Admin quick-access buttons (`frontend/src/app/page.tsx`)
+- **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx` (lines 615-629)
 
 ## ⏳ Pending
 
-### Home Page Redesign (High Priority)
-- [ ] Public home page features
-  - [ ] Display class schedule/calendar
-  - [ ] Show class descriptions
-  - [ ] Display trainer bios
-  - [ ] Login button/link
-- [ ] Admin-specific home page features
-  - [ ] Quick access to "Add Class"
-  - [ ] Quick access to "Users List"
-
 ### Class Scheduling & Calendar (High Priority)
-- [ ] Trainer pick-list for class setup (verify trainer exists before assignment)
 - [ ] Trainer availability scheduling interface
   - [ ] Allow trainers to set days/times when their classes are available
   - [ ] Backend API for trainer availability management

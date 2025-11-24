@@ -13,6 +13,7 @@ const setupRoutes = require('./routes/setup');
 const exerciseRoutes = require('./routes/exercises');
 const workoutTemplateRoutes = require('./routes/workoutTemplates');
 const workoutSessionRoutes = require('./routes/workoutSessions');
+const availabilityRoutes = require('./routes/availability');
 
 dotenv.config();
 
@@ -56,6 +57,9 @@ app.use('/api/classes', classRoutes.default || classRoutes);
 app.use('/api/exercises', exerciseRoutes.default || exerciseRoutes);
 app.use('/api/workout-templates', workoutTemplateRoutes.default || workoutTemplateRoutes);
 app.use('/api/workout-sessions', workoutSessionRoutes.default || workoutSessionRoutes);
+
+// Trainer availability routes
+app.use('/api/availability', availabilityRoutes.default || availabilityRoutes);
 
 // Setup routes (one-time admin creation)
 app.use('/api/setup', setupRoutes.default || setupRoutes);
