@@ -50,6 +50,14 @@ export default function Navigation() {
                                         My Availability
                                     </Link>
                                 )}
+                                {(user?.role === 'trainer' || user?.role === 'admin') && (
+                                    <Link
+                                        href="/workouts/templates"
+                                        className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                    >
+                                        Workouts
+                                    </Link>
+                                )}
                                 <Link
                                     href="/profile"
                                     className="text-gray-400 hover:text-white text-sm transition-colors"
@@ -158,6 +166,15 @@ export default function Navigation() {
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
                                             My Availability
+                                        </Link>
+                                    )}
+                                    {(user?.role === 'trainer' || user?.role === 'admin') && (
+                                        <Link
+                                            href="/workouts/templates"
+                                            className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Workouts
                                         </Link>
                                     )}
                                     <Link
