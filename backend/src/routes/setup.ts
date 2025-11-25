@@ -20,20 +20,13 @@ router.post('/create-admin', async (req: Request, res: Response): Promise<void> 
         const existing = await User.findByEmail('samarquis4@gmail.com');
 
         if (existing) {
-            // Update existing user to admin
-            const updated = await User.update(existing.id, { role: 'admin' });
-            res.status(200).json({
-                message: 'Existing user upgraded to admin',
-                user: {
-                    email: updated?.email,
-                    role: updated?.role
-                }
-            });
-            return;
+            // Delete existing user first
+            await User.delete(existing.id);
+            console.log('Deleted existing user');
         }
 
-        // Create new admin user
-        const password_hash = await hashPassword('TidalPower2024!');
+        // Create new admin user with new password
+        const password_hash = await hashPassword('SaSj1996#4');
 
         const user = await User.create({
             email: 'samarquis4@gmail.com',
@@ -50,7 +43,7 @@ router.post('/create-admin', async (req: Request, res: Response): Promise<void> 
                 email: user.email,
                 role: user.role
             },
-            tempPassword: 'TidalPower2024!'
+            tempPassword: 'SaSj1996#4'
         });
     } catch (error) {
         console.error('Setup error:', error);
