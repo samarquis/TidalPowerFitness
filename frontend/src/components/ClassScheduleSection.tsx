@@ -54,9 +54,16 @@ export default function ClassScheduleSection() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/classes`);
             const data = await response.json();
-            setClasses(data);
+            // Ensure data is an array before using array methods
+            if (Array.isArray(data)) {
+                setClasses(data);
+            } else {
+                console.error('API returned non-array data:', data);
+                setClasses([]);
+            }
         } catch (error) {
             console.error('Error fetching classes:', error);
+            setClasses([]);
         } finally {
             setLoading(false);
         }

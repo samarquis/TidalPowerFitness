@@ -26,9 +26,16 @@ export default function TrainerBiosSection() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/trainers`);
             const data = await response.json();
-            setTrainers(data.slice(0, 3)); // Show only first 3 trainers on home page
+            // Ensure data is an array before using array methods
+            if (Array.isArray(data)) {
+                setTrainers(data.slice(0, 3)); // Show only first 3 trainers on home page
+            } else {
+                console.error('API returned non-array data:', data);
+                setTrainers([]);
+            }
         } catch (error) {
             console.error('Error fetching trainers:', error);
+            setTrainers([]);
         } finally {
             setLoading(false);
         }
