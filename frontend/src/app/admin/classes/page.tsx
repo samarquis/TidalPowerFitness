@@ -76,7 +76,7 @@ export default function AdminClassesPage() {
     const [errors, setErrors] = useState<Partial<Record<keyof ClassFormData, string>>>({});
 
     useEffect(() => {
-        if (isAuthenticated && user?.role !== 'admin') {
+        if (isAuthenticated && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
         }
@@ -304,7 +304,7 @@ export default function AdminClassesPage() {
         });
     };
 
-    if (!isAuthenticated || user?.role !== 'admin') {
+    if (!isAuthenticated || !user?.roles?.includes('admin')) {
         return null;
     }
 
