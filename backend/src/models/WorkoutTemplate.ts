@@ -128,10 +128,10 @@ class WorkoutTemplateModel {
                 [
                     templateData.trainer_id,
                     templateData.name,
-                    templateData.description,
-                    templateData.workout_type_id,
-                    templateData.estimated_duration_minutes,
-                    templateData.difficulty_level,
+                    templateData.description || null,
+                    templateData.workout_type_id || null,
+                    templateData.estimated_duration_minutes || null,
+                    templateData.difficulty_level || null,
                     templateData.is_public || false
                 ]
             );

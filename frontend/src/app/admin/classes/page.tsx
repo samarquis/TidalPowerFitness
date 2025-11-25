@@ -42,7 +42,7 @@ interface ClassFormData {
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const CATEGORIES = ['Strength Training', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'CrossFit', 'Boxing', 'Cycling', 'Other'];
+const CATEGORIES = ['Strength Training', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'CrossFit', 'Boxing', 'Cycling', 'Barre', 'Circuits', 'Pop Up', 'Power Bounce', 'Other'];
 
 export default function AdminClassesPage() {
     const { user, isAuthenticated } = useAuth();
@@ -594,12 +594,13 @@ export default function AdminClassesPage() {
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-300 mb-2">Duration (minutes) *</label>
                                         <input
-                                            type="number"
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
                                             value={formData.duration_minutes}
-                                            onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) })}
+                                            onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 0 })}
                                             className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            min="15"
-                                            step="15"
+                                            placeholder="60"
                                         />
                                         {errors.duration_minutes && <p className="text-red-400 text-sm mt-1">{errors.duration_minutes}</p>}
                                     </div>
@@ -631,11 +632,13 @@ export default function AdminClassesPage() {
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-300 mb-2">Max Capacity *</label>
                                         <input
-                                            type="number"
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
                                             value={formData.max_capacity}
-                                            onChange={(e) => setFormData({ ...formData, max_capacity: parseInt(e.target.value) })}
+                                            onChange={(e) => setFormData({ ...formData, max_capacity: parseInt(e.target.value) || 0 })}
                                             className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            min="1"
+                                            placeholder="20"
                                         />
                                         {errors.max_capacity && <p className="text-red-400 text-sm mt-1">{errors.max_capacity}</p>}
                                     </div>
@@ -643,12 +646,12 @@ export default function AdminClassesPage() {
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-300 mb-2">Price (USD) *</label>
                                         <input
-                                            type="number"
-                                            value={(formData.price_cents / 100).toFixed(2)}
-                                            onChange={(e) => setFormData({ ...formData, price_cents: Math.round(parseFloat(e.target.value) * 100) })}
+                                            type="text"
+                                            inputMode="decimal"
+                                            value={(formData.price_cents / 100).toString()}
+                                            onChange={(e) => setFormData({ ...formData, price_cents: Math.round(parseFloat(e.target.value || '0') * 100) })}
                                             className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            min="0"
-                                            step="0.01"
+                                            placeholder="20.00"
                                         />
                                         {errors.price_cents && <p className="text-red-400 text-sm mt-1">{errors.price_cents}</p>}
                                     </div>

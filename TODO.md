@@ -21,15 +21,32 @@
 
 ## ⏳ Pending
 
-### New Features
-- [ ] **Calendar View for Classes** - Add calendar view showing classes scheduled on specific days, allowing users to click on calendar dates to see available classes
-- [ ] **User Dashboard** - Create comprehensive dashboard with:
-  - Upcoming workouts
-  - Past workouts
-  - Total weights lifted
-  - Workouts attended
-  - Motivational metrics and statistics
+### 🚨 High Priority (Fixes & Broken Items)
+- [x] **Fix "Create Workout" Error** - Investigate and resolve the error preventing workout creation.
 
-### Future Integrations
+### ⚡ Quick Wins (Enhancements & Setup)
+- [ ] **Update Class Creation Form**
+    - Make fields editable (remove inefficient arrows).
+    - Add Class Types: Barre, Circuits, Pop Up, Power Bounce, Yoga.
+    - Update Time format (Hour:Minutes am/pm).
+- [ ] **Exercise Database Setup**
+    - Create database for exercises (Body Part > Name).
+    - Seed initial data.
+
+### 🚀 Major Features (Longer Term)
+- [ ] **Class Management: Multi-day & Calendar**
+    - Allow Multi-day selection (e.g., Mon, Wed, Fri) - *Requires DB change*.
+    - **Calendar View**: Real calendar display, recurring logic, color coding.
+    - Click to add to cart/checkout.
+- [ ] **Workout Programming Wizard**
+    - Title, List of exercises, Type (Time vs Sets/Reps).
+    - Exercise selection by Body Part.
+    - Add exercise from list.
+    - Input fields for Time or Sets/Reps/Weight.
+- [ ] **Workout Assignment**
+    - Trainer picks Class -> Workout -> User(s).
+
+### Future Integrations & Deferred
 - [ ] Acuity Scheduling webhooks integration
 - [ ] Square payment webhooks integration
+- [ ] **Fix Acuity Loading** - Ensure classes populate correctly from Acuity.
