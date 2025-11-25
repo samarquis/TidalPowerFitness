@@ -27,7 +27,7 @@ router.get('/', authenticate, authorize('admin'), async (req: Request, res: Resp
             first_name: user.first_name,
             last_name: user.last_name,
             phone: user.phone,
-            role: user.role,
+            roles: user.roles,
             is_active: user.is_active,
             created_at: user.created_at,
         }));
@@ -39,8 +39,8 @@ router.get('/', authenticate, authorize('admin'), async (req: Request, res: Resp
     }
 });
 
-// Update user role (admin only)
-router.patch('/:id/role', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+// Add role to user (admin only)
+router.post('/:id/roles', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         const { role } = req.body;
@@ -50,27 +50,68 @@ router.patch('/:id/role', authenticate, authorize('admin'), async (req: Request,
             return;
         }
 
-        const updatedUser = await User.update(id, { role });
+        const updatedUser = await User.addRole(id, role);
+
+        if (!updatedUser) {
+            res.status(404).json({ error: 'User not found or role already assigned' });
+            return;
+        }
+
+        res.status(200).json({
+            message: 'Role added successfully',
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                first_name: updatedUser.first_name,
+                last_name: updatedUser.last_name,
+                roles: updatedUser.roles,
+                is_active: updatedUser.is_active,
+            },
+        });
+    } catch (error) {
+        console.error('Add role error:', error);
+        res.status(500).json({ error: 'Failed to add role' });
+    }
+});
+
+// Remove role from user (admin only)
+router.delete('/:id/roles/:role', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id, role } = req.params;
+
+        if (!['client', 'trainer', 'admin'].includes(role)) {
+            res.status(400).json({ error: 'Invalid role. Must be client, trainer, or admin' });
+            return;
+        }
+
+        const updatedUser = await User.removeRole(id, role);
 
         if (!updatedUser) {
             res.status(404).json({ error: 'User not found' });
             return;
         }
 
+        // Prevent removing all roles
+        if (updatedUser.roles.length === 0) {
+            await User.addRole(id, 'client'); // Add client role back as default
+            res.status(400).json({ error: 'Cannot remove all roles. User must have at least one role.' });
+            return;
+        }
+
         res.status(200).json({
-            message: 'User role updated successfully',
+            message: 'Role removed successfully',
             user: {
                 id: updatedUser.id,
                 email: updatedUser.email,
                 first_name: updatedUser.first_name,
                 last_name: updatedUser.last_name,
-                role: updatedUser.role,
+                roles: updatedUser.roles,
                 is_active: updatedUser.is_active,
             },
         });
     } catch (error) {
-        console.error('Update role error:', error);
-        res.status(500).json({ error: 'Failed to update user role' });
+        console.error('Remove role error:', error);
+        res.status(500).json({ error: 'Failed to remove role' });
     }
 });
 

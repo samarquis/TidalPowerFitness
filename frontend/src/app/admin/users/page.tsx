@@ -10,7 +10,7 @@ interface User {
     first_name: string;
     last_name: string;
     phone?: string;
-    role: 'client' | 'trainer' | 'admin';
+    roles: string[];
     is_active: boolean;
     created_at: string;
 }
@@ -26,7 +26,7 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         // Check if user is admin
-        if (isAuthenticated && user?.role !== 'admin') {
+        if (isAuthenticated && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
         }
@@ -41,7 +41,7 @@ export default function UserManagementPage() {
 
         // Filter by role
         if (filter !== 'all') {
-            filtered = filtered.filter(u => u.role === filter);
+            filtered = filtered.filter(u => u.roles.includes(filter));
         }
 
         // Filter by search term
@@ -79,25 +79,45 @@ export default function UserManagementPage() {
         }
     };
 
-    const updateUserRole = async (userId: string, newRole: 'client' | 'trainer' | 'admin') => {
+    const toggleUserRole = async (userId: string, role: string) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const token = localStorage.getItem('auth_token');
+            const user = users.find(u => u.id === userId);
 
-            const response = await fetch(`${apiUrl}/users/${userId}/role`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ role: newRole })
-            });
+            if (!user) return;
 
-            if (response.ok) {
-                fetchUsers(); // Refresh the list
+            const hasRole = user.roles.includes(role);
+
+            if (hasRole) {
+                // Remove role
+                const response = await fetch(`${apiUrl}/users/${userId}/roles/${role}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    fetchUsers(); // Refresh the list
+                }
+            } else {
+                // Add role
+                const response = await fetch(`${apiUrl}/users/${userId}/roles`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ role })
+                });
+
+                if (response.ok) {
+                    fetchUsers(); // Refresh the list
+                }
             }
         } catch (error) {
-            console.error('Error updating role:', error);
+            console.error('Error toggling role:', error);
         }
     };
 
@@ -125,9 +145,9 @@ export default function UserManagementPage() {
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
-            case 'admin': return 'bg-red-500/20 text-red-400';
-            case 'trainer': return 'bg-teal-500/20 text-teal-400';
-            default: return 'bg-blue-500/20 text-blue-400';
+            case 'admin': return 'bg-red-500/20 text-red-400 border-red-500/30';
+            case 'trainer': return 'bg-teal-500/20 text-teal-400 border-teal-500/30';
+            default: return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
         }
     };
 
@@ -208,15 +228,25 @@ export default function UserManagementPage() {
                                             </td>
                                             <td className="px-6 py-4 text-gray-400">{u.email}</td>
                                             <td className="px-6 py-4">
-                                                <select
-                                                    value={u.role}
-                                                    onChange={(e) => updateUserRole(u.id, e.target.value as any)}
-                                                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleBadgeColor(u.role)} bg-opacity-20 border-0 cursor-pointer`}
-                                                >
-                                                    <option value="client">Client</option>
-                                                    <option value="trainer">Trainer</option>
-                                                    <option value="admin">Admin</option>
-                                                </select>
+                                                <div className="flex gap-2">
+                                                    {(['client', 'trainer', 'admin'] as const).map((role) => (
+                                                        <label
+                                                            key={role}
+                                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer transition-all ${u.roles.includes(role)
+                                                                ? getRoleBadgeColor(role)
+                                                                : 'bg-white/5 text-gray-500 border-white/10 hover:bg-white/10'
+                                                                }`}
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={u.roles.includes(role)}
+                                                                onChange={() => toggleUserRole(u.id, role)}
+                                                                className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900"
+                                                            />
+                                                            <span className="text-sm font-semibold capitalize">{role}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${u.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
@@ -259,15 +289,15 @@ export default function UserManagementPage() {
                         <div className="text-gray-400 mt-1">Total Users</div>
                     </div>
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-blue-400">{users.filter(u => u.role === 'client').length}</div>
+                        <div className="text-3xl font-bold text-blue-400">{users.filter(u => u.roles.includes('client')).length}</div>
                         <div className="text-gray-400 mt-1">Clients</div>
                     </div>
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-400">{users.filter(u => u.role === 'trainer').length}</div>
+                        <div className="text-3xl font-bold text-teal-400">{users.filter(u => u.roles.includes('trainer')).length}</div>
                         <div className="text-gray-400 mt-1">Trainers</div>
                     </div>
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-red-400">{users.filter(u => u.role === 'admin').length}</div>
+                        <div className="text-3xl font-bold text-red-400">{users.filter(u => u.roles.includes('admin')).length}</div>
                         <div className="text-gray-400 mt-1">Admins</div>
                     </div>
                 </div>

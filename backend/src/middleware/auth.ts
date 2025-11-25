@@ -47,7 +47,10 @@ export const authorize = (...allowedRoles: Array<'client' | 'trainer' | 'admin'>
             return;
         }
 
-        if (!allowedRoles.includes(req.user.role)) {
+        // Check if user has ANY of the allowed roles
+        const hasRole = allowedRoles.some(role => req.user?.roles?.includes(role));
+
+        if (!hasRole) {
             res.status(403).json({ error: 'Insufficient permissions' });
             return;
         }

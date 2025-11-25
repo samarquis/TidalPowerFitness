@@ -8,7 +8,8 @@ export interface User {
     first_name: string;
     last_name: string;
     phone?: string;
-    role: 'client' | 'trainer' | 'admin';
+    role?: 'client' | 'trainer' | 'admin'; // Keep for backward compatibility during migration
+    roles: string[];
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
@@ -20,7 +21,7 @@ export interface CreateUserInput {
     first_name: string;
     last_name: string;
     phone?: string;
-    role?: 'client' | 'trainer' | 'admin';
+    roles?: string[];
 }
 
 export interface UpdateUserInput {
@@ -28,20 +29,20 @@ export interface UpdateUserInput {
     first_name?: string;
     last_name?: string;
     phone?: string;
-    role?: 'client' | 'trainer' | 'admin';
+    roles?: string[];
     is_active?: boolean;
 }
 
 class UserModel {
     // Create a new user
     async create(userData: CreateUserInput): Promise<User> {
-        const { email, password_hash, first_name, last_name, phone, role = 'client' } = userData;
+        const { email, password_hash, first_name, last_name, phone, roles = ['client'] } = userData;
 
         const result: QueryResult = await query(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role)
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, roles)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-            [email, password_hash, first_name, last_name, phone, role]
+            [email, password_hash, first_name, last_name, phone, roles]
         );
 
         return result.rows[0];
@@ -67,10 +68,10 @@ class UserModel {
         return result.rows[0] || null;
     }
 
-    // Get all users by role
+    // Get all users by role (checks if role is in roles array)
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
-            'SELECT * FROM users WHERE role = $1 AND is_active = true ORDER BY created_at DESC',
+            'SELECT * FROM users WHERE $1 = ANY(roles) AND is_active = true ORDER BY created_at DESC',
             [role]
         );
 
@@ -122,6 +123,32 @@ class UserModel {
         );
 
         return (result.rowCount ?? 0) > 0;
+    }
+
+    // Add a role to user
+    async addRole(id: string, role: string): Promise<User | null> {
+        const result: QueryResult = await query(
+            `UPDATE users 
+             SET roles = array_append(roles, $2)
+             WHERE id = $1 AND NOT ($2 = ANY(roles))
+             RETURNING *`,
+            [id, role]
+        );
+
+        return result.rows[0] || null;
+    }
+
+    // Remove a role from user
+    async removeRole(id: string, role: string): Promise<User | null> {
+        const result: QueryResult = await query(
+            `UPDATE users 
+             SET roles = array_remove(roles, $2)
+             WHERE id = $1
+             RETURNING *`,
+            [id, role]
+        );
+
+        return result.rows[0] || null;
     }
 }
 

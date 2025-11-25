@@ -45,7 +45,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             first_name,
             last_name,
             phone,
-            role: role || 'client',
+            roles: role ? [role] : ['client'],
         });
 
         // Generate JWT token
@@ -53,7 +53,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             id: user.id,
             userId: user.id,
             email: user.email,
-            role: user.role,
+            roles: user.roles,
         });
 
         // Return user data (without password hash) and token
@@ -66,7 +66,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 phone: user.phone,
-                role: user.role,
+                roles: user.roles,
             },
         });
     } catch (error) {
@@ -111,7 +111,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             id: user.id,
             userId: user.id,
             email: user.email,
-            role: user.role,
+            roles: user.roles,
         });
 
         // Return user data and token
@@ -124,7 +124,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 phone: user.phone,
-                role: user.role,
+                roles: user.roles,
             },
         });
     } catch (error) {
@@ -155,7 +155,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
                 first_name: user.first_name,
                 last_name: user.last_name,
                 phone: user.phone,
-                role: user.role,
+                roles: user.roles,
                 is_active: user.is_active,
                 created_at: user.created_at,
             },
@@ -195,7 +195,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
                 first_name: updatedUser.first_name,
                 last_name: updatedUser.last_name,
                 phone: updatedUser.phone,
-                role: updatedUser.role,
+                roles: updatedUser.roles,
             },
         });
     } catch (error) {

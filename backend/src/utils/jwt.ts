@@ -7,7 +7,8 @@ export interface JWTPayload {
     id: string;
     userId: string;
     email: string;
-    role: 'client' | 'trainer' | 'admin';
+    role?: 'client' | 'trainer' | 'admin'; // Keep for backward compatibility
+    roles: string[];
 }
 
 // Generate JWT token
