@@ -4,13 +4,13 @@ const classController = require('../controllers/classController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 // Public routes
-router.get('/', classController.default.getClasses);
-router.get('/:id', classController.default.getClass);
+router.get('/', classController.getClasses);
+router.get('/:id', classController.getClass);
 
 // Admin-only routes
-router.post('/', authenticate, authorize('admin'), classController.default.createClass);
-router.put('/:id', authenticate, authorize('admin'), classController.default.updateClass);
-router.delete('/:id', authenticate, authorize('admin'), classController.default.deleteClass);
+router.post('/', authenticate, authorize('admin'), classController.createClass);
+router.put('/:id', authenticate, authorize('admin'), classController.updateClass);
+router.delete('/:id', authenticate, authorize('admin'), classController.deleteClass);
 
 module.exports = router;
 export default router;

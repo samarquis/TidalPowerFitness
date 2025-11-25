@@ -34,7 +34,7 @@ router.post('/', authenticate, authorize('admin'), trainerController.createTrain
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const trainers = await TrainerProfile.getAllActive();
-        res.status(200).json({ trainers });
+        res.status(200).json(trainers); // Return array directly, not wrapped in object
     } catch (error) {
         console.error('Get trainers error:', error);
         res.status(500).json({ error: 'Failed to get trainers' });
