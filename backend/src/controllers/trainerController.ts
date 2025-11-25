@@ -69,7 +69,7 @@ export const createTrainer = async (req: Request, res: Response) => {
                 first_name,
                 last_name,
                 phone,
-                role: 'trainer'
+                roles: ['trainer']
             });
             targetUserId = newUser.id;
         } else {
@@ -79,9 +79,9 @@ export const createTrainer = async (req: Request, res: Response) => {
                 return res.status(404).json({ error: 'User not found' });
             }
 
-            // Update role to trainer if not already
-            if (user.role !== 'trainer') {
-                await UserModel.update(targetUserId, { role: 'trainer' });
+            // Add trainer role if not already present
+            if (!user.roles.includes('trainer')) {
+                await UserModel.addRole(targetUserId, 'trainer');
             }
         }
 
