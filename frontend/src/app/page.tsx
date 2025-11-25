@@ -12,7 +12,7 @@ import {
 
 export default function HomePage() {
   const { isAuthenticated, user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.roles?.includes('admin');
 
   return (
     <div className="min-h-screen logo-watermark">
