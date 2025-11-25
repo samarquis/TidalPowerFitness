@@ -51,9 +51,11 @@ export default function WorkoutTemplatesPage() {
                 }
             });
             const data = await response.json();
-            setTemplates(data);
+            // Handle both array response and object with templates property
+            setTemplates(Array.isArray(data) ? data : (data.templates || []));
         } catch (error) {
             console.error('Error fetching templates:', error);
+            setTemplates([]); // Set empty array on error
         } finally {
             setLoading(false);
         }
