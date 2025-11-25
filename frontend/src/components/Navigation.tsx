@@ -40,6 +40,12 @@ export default function Navigation() {
                                         >
                                             Trainers
                                         </Link>
+                                        <Link
+                                            href="/admin/users"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Users
+                                        </Link>
                                     </>
                                 )}
                                 {user?.role === 'trainer' && (
@@ -164,6 +170,13 @@ export default function Navigation() {
                                                 onClick={() => setMobileMenuOpen(false)}
                                             >
                                                 Manage Trainers
+                                            </Link>
+                                            <Link
+                                                href="/admin/users"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Manage Users
                                             </Link>
                                         </>
                                     )}
