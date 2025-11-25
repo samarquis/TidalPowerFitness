@@ -42,12 +42,30 @@ export const getClass = async (req: Request, res: Response) => {
 // Create new class (admin only)
 export const createClass = async (req: Request, res: Response) => {
     try {
+        console.log('Creating class with data:', JSON.stringify(req.body, null, 2));
         const classData = req.body;
+
+        // Validate required fields
+        if (!classData.name || !classData.category || !classData.instructor_name) {
+            console.error('Missing required fields:', {
+                name: !!classData.name,
+                category: !!classData.category,
+                instructor_name: !!classData.instructor_name
+            });
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
         const newClass = await ClassModel.createClass(classData);
+        console.log('Class created successfully:', newClass.id);
         res.status(201).json(newClass);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating class:', error);
-        res.status(500).json({ error: 'Failed to create class' });
+        console.error('Error stack:', error.stack);
+        console.error('Error details:', error.message);
+        res.status(500).json({
+            error: 'Failed to create class',
+            details: error.message
+        });
     }
 };
 
