@@ -20,8 +20,8 @@ router.post('/create-admin', async (req: Request, res: Response): Promise<void> 
         const existing = await User.findByEmail('samarquis4@gmail.com');
 
         if (existing) {
-            // Delete existing user first
-            await User.delete(existing.id);
+            // Hard delete existing user first
+            await User.hardDelete(existing.id);
             console.log('Deleted existing user');
         }
 
