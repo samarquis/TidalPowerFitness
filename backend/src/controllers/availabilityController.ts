@@ -38,7 +38,7 @@ export const createAvailability = async (req: Request, res: Response) => {
         }
 
         // Authorization: only the trainer themselves or an admin can create availability
-        if (req.user?.id !== trainer_id && req.user?.role !== 'admin') {
+        if (req.user?.id !== trainer_id && !req.user?.roles?.includes('admin')) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 

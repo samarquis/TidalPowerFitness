@@ -74,7 +74,7 @@ router.put('/:userId', authenticate, authorize('trainer', 'admin'), async (req: 
         } = req.body;
 
         // Check if user is updating their own profile or is admin
-        if (req.user?.role !== 'admin' && req.user?.id !== userId) {
+        if (!req.user?.roles?.includes('admin') && req.user?.id !== userId) {
             res.status(403).json({ error: 'Unauthorized to update this profile' });
             return;
         }
