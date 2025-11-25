@@ -8,16 +8,6 @@
 - AuthContext token exposure fix (`frontend/src/contexts/AuthContext.tsx`)
 - **Home Page Redesign**
   - Class schedule/calendar display with color-coding (`frontend/src/components/ClassScheduleSection.tsx`)
-# Consolidated TODO List
-
-## ✅ Completed
-- User Profile Page (`frontend/src/app/profile/page.tsx`)
-- Navigation mobile‑menu auto‑collapse (`frontend/src/components/Navigation.tsx`)
-- Admin Trainer Management UI & API (`frontend/src/app/admin/trainers/page.tsx`, `backend/src/routes/trainers.ts`, `backend/src/controllers/trainerController.ts`)
-- Admin Class Management UI & API (`frontend/src/app/admin/classes/page.tsx`, `backend/src/routes/classes.ts`)
-- AuthContext token exposure fix (`frontend/src/contexts/AuthContext.tsx`)
-- **Home Page Redesign**
-  - Class schedule/calendar display with color-coding (`frontend/src/components/ClassScheduleSection.tsx`)
   - Trainer bios section (`frontend/src/components/TrainerBiosSection.tsx`)
   - Admin quick-access buttons (`frontend/src/app/page.tsx`)
 - **Trainer pick-list for class setup** - Already implemented in `frontend/src/app/admin/classes/page.tsx`
@@ -26,8 +16,19 @@
 - **Workout Templates** - Create, view, and manage workout templates (`frontend/src/app/workouts/templates/`)
 - **Active Workout Session** - Real-time workout tracking with rest timer (`frontend/src/app/workouts/active/`)
 - **Workout History** - View past sessions and details (`frontend/src/app/workouts/history/`)
+- **Workout History Page Fix** - Fixed loading issues with authentication guard and error handling (`frontend/src/app/workouts/history/page.tsx`)
+- **Workout Template Creation Page Fix** - Fixed loading issues with authentication guard and improved error handling (`frontend/src/app/workouts/templates/new/page.tsx`)
 
 ## ⏳ Pending
+
+### New Features
+- [ ] **Calendar View for Classes** - Add calendar view showing classes scheduled on specific days, allowing users to click on calendar dates to see available classes
+- [ ] **User Dashboard** - Create comprehensive dashboard with:
+  - Upcoming workouts
+  - Past workouts
+  - Total weights lifted
+  - Workouts attended
+  - Motivational metrics and statistics
 
 ### Future Integrations
 - [ ] Acuity Scheduling webhooks integration

@@ -36,12 +36,24 @@ export default function NewTemplatePage() {
         is_public: false
     });
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Redirect to login if not authenticated
+        if (!user || !token) {
+            router.push('/login');
+            return;
+        }
         fetchExercises();
-    }, []);
+    }, [user, token, router]);
 
     const fetchExercises = async () => {
+        // Double-check token exists before making API call
+        if (!token) {
+            setError('Authentication required');
+            return;
+        }
+
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/exercises`, {
@@ -49,10 +61,16 @@ export default function NewTemplatePage() {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch exercises: ${response.status}`);
+            }
+
             const data = await response.json();
-            setExercises(data);
+            setExercises(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching exercises:', error);
+            setError('Failed to load exercises. Please try again later.');
         }
     };
 
@@ -82,7 +100,14 @@ export default function NewTemplatePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!token) {
+            setError('Authentication required. Please log in again.');
+            return;
+        }
+
         setSaving(true);
+        setError(null);
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -100,13 +125,14 @@ export default function NewTemplatePage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create template');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to create template: ${response.status}`);
             }
 
             router.push('/workouts/templates');
         } catch (error) {
             console.error('Error creating template:', error);
-            alert('Failed to create template');
+            setError(error instanceof Error ? error.message : 'Failed to create template. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -123,6 +149,25 @@ export default function NewTemplatePage() {
                 <h1 className="text-4xl font-bold mb-8">
                     Create <span className="text-gradient">Workout Template</span>
                 </h1>
+
+                {/* Error Banner */}
+                {error && (
+                    <div className="glass rounded-xl p-4 mb-6 border border-red-400/20 bg-red-400/10">
+                        <div className="flex items-start gap-3">
+                            <div className="text-red-400 text-2xl">⚠️</div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-red-400 mb-1">Error</h3>
+                                <p className="text-gray-300">{error}</p>
+                            </div>
+                            <button
+                                onClick={() => setError(null)}
+                                className="text-gray-400 hover:text-white"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Template Details */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface WorkoutSession {
@@ -15,14 +16,28 @@ interface WorkoutSession {
 
 export default function HistoryPage() {
     const { user, token } = useAuth();
+    const router = useRouter();
     const [sessions, setSessions] = useState<WorkoutSession[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Redirect to login if not authenticated
+        if (!user || !token) {
+            router.push('/login');
+            return;
+        }
         fetchSessions();
-    }, []);
+    }, [user, token, router]);
 
     const fetchSessions = async () => {
+        // Double-check token exists before making API call
+        if (!token) {
+            setError('Authentication required');
+            setLoading(false);
+            return;
+        }
+
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/workout-sessions`, {
@@ -30,10 +45,16 @@ export default function HistoryPage() {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch sessions: ${response.status}`);
+            }
+
             const data = await response.json();
-            setSessions(data);
+            setSessions(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching sessions:', error);
+            setError('Failed to load workout history. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -45,6 +66,26 @@ export default function HistoryPage() {
                 <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
                     <p className="mt-4 text-gray-400">Loading history...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
+                <div className="text-center max-w-md mx-auto px-4">
+                    <div className="glass rounded-xl p-8">
+                        <div className="text-red-400 text-5xl mb-4">⚠️</div>
+                        <h2 className="text-2xl font-bold mb-4">Error Loading History</h2>
+                        <p className="text-gray-400 mb-6">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
             </div>
         );
