@@ -151,7 +151,7 @@ export default function UserManagementPage() {
         }
     };
 
-    if (!isAuthenticated || user?.role !== 'admin') {
+    if (!isAuthenticated || !user?.roles?.includes('admin')) {
         return null;
     }
 
