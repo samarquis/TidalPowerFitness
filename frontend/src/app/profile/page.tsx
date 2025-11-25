@@ -33,7 +33,7 @@ export default function ProfilePage() {
                                 {user.first_name} {user.last_name}
                             </h1>
                             <p className="text-teal-400 font-semibold mb-6 uppercase tracking-wide">
-                                {user.role} Account
+                                {user.roles.join(', ')} Account
                             </p>
 
                             <div className="space-y-4 text-gray-300">
@@ -56,7 +56,7 @@ export default function ProfilePage() {
                                 >
                                     Sign Out
                                 </button>
-                                {user.role === 'admin' && (
+                                {user.roles.includes('admin') && (
                                     <button
                                         onClick={() => router.push('/admin/classes')}
                                         className="px-6 py-3 bg-teal-6/20 hover:bg-teal-6/30 text-teal-400 border border-teal-6/50 rounded-lg transition-all font-semibold"
