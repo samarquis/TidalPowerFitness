@@ -60,7 +60,7 @@ export default function AdminTrainersPage() {
     const [success, setSuccess] = useState('');
 
     useEffect(() => {
-        if (!isAuthenticated || (user && user.role !== 'admin')) {
+        if (!isAuthenticated || (user && !user.roles?.includes('admin'))) {
             router.push('/');
             return;
         }
