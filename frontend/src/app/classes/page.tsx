@@ -41,10 +41,19 @@ export default function ClassesPage() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/classes`);
             const data = await response.json();
-            setClasses(data);
-            setFilteredClasses(data);
+            // Ensure data is an array before using it
+            if (Array.isArray(data)) {
+                setClasses(data);
+                setFilteredClasses(data);
+            } else {
+                console.error('API returned non-array data:', data);
+                setClasses([]);
+                setFilteredClasses([]);
+            }
         } catch (error) {
             console.error('Error fetching classes:', error);
+            setClasses([]);
+            setFilteredClasses([]);
         } finally {
             setLoading(false);
         }
@@ -71,8 +80,8 @@ export default function ClassesPage() {
                                 key={day}
                                 onClick={() => setSelectedDay(index === 0 ? null : index - 1)}
                                 className={`px-6 py-3 rounded-lg font-semibold transition-all ${(selectedDay === null && index === 0) || selectedDay === index - 1
-                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                        : 'glass text-gray-300 hover:bg-white/10'
+                                    ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                    : 'glass text-gray-300 hover:bg-white/10'
                                     }`}
                             >
                                 {day}
