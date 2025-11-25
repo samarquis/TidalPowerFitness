@@ -26,7 +26,7 @@ export default function Navigation() {
                     <div className="hidden md:flex items-center space-x-8">
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-6">
-                                {user?.role === 'admin' && (
+                                {user?.roles?.includes('admin') && (
                                     <>
                                         <Link
                                             href="/admin/classes"
@@ -48,7 +48,7 @@ export default function Navigation() {
                                         </Link>
                                     </>
                                 )}
-                                {user?.role === 'trainer' && (
+                                {user?.roles?.includes('trainer') && (
                                     <Link
                                         href="/trainer/availability"
                                         className="text-gray-300 hover:text-white transition-colors font-semibold"
@@ -56,7 +56,7 @@ export default function Navigation() {
                                         My Availability
                                     </Link>
                                 )}
-                                {(user?.role === 'trainer' || user?.role === 'admin') && (
+                                {(user?.roles?.includes('trainer') || user?.roles?.includes('admin')) && (
                                     <>
                                         <Link
                                             href="/workouts/templates"
@@ -155,7 +155,7 @@ export default function Navigation() {
                             </Link>
                             {isAuthenticated ? (
                                 <>
-                                    {user?.role === 'admin' && (
+                                    {user?.roles?.includes('admin') && (
                                         <>
                                             <Link
                                                 href="/admin/classes"
@@ -180,7 +180,7 @@ export default function Navigation() {
                                             </Link>
                                         </>
                                     )}
-                                    {user?.role === 'trainer' && (
+                                    {user?.roles?.includes('trainer') && (
                                         <Link
                                             href="/trainer/availability"
                                             className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
@@ -189,7 +189,7 @@ export default function Navigation() {
                                             My Availability
                                         </Link>
                                     )}
-                                    {(user?.role === 'trainer' || user?.role === 'admin') && (
+                                    {(user?.roles?.includes('trainer') || user?.roles?.includes('admin')) && (
                                         <>
                                             <Link
                                                 href="/workouts/templates"

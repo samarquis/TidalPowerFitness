@@ -30,7 +30,7 @@ export default function TrainerAvailabilityPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (isAuthenticated && user?.role !== 'trainer' && user?.role !== 'admin') {
+        if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
         }
@@ -142,7 +142,7 @@ export default function TrainerAvailabilityPage() {
         slots: availability.filter(a => a.day_of_week === dayIndex)
     }));
 
-    if (!isAuthenticated || (user?.role !== 'trainer' && user?.role !== 'admin')) {
+    if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;
     }
 

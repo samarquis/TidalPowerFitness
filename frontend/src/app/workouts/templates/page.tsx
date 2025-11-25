@@ -32,7 +32,7 @@ export default function WorkoutTemplatesPage() {
     const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
 
     useEffect(() => {
-        if (isAuthenticated && user?.role !== 'trainer' && user?.role !== 'admin') {
+        if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
         }
@@ -90,7 +90,7 @@ export default function WorkoutTemplatesPage() {
         return matchesSearch && matchesDifficulty;
     });
 
-    if (!isAuthenticated || (user?.role !== 'trainer' && user?.role !== 'admin')) {
+    if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;
     }
 
