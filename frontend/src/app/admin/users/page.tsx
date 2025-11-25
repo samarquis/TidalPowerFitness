@@ -59,7 +59,7 @@ export default function UserManagementPage() {
     const fetchUsers = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/users`, {
                 headers: {
@@ -82,7 +82,7 @@ export default function UserManagementPage() {
     const updateUserRole = async (userId: string, newRole: 'client' | 'trainer' | 'admin') => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/users/${userId}/role`, {
                 method: 'PATCH',
@@ -104,7 +104,7 @@ export default function UserManagementPage() {
     const toggleUserActivation = async (userId: string, currentStatus: boolean) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/users/${userId}/activate`, {
                 method: 'PATCH',
@@ -167,8 +167,8 @@ export default function UserManagementPage() {
                                     key={role}
                                     onClick={() => setFilter(role)}
                                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === role
-                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                         }`}
                                 >
                                     {role.charAt(0).toUpperCase() + role.slice(1)}
@@ -231,8 +231,8 @@ export default function UserManagementPage() {
                                                 <button
                                                     onClick={() => toggleUserActivation(u.id, u.is_active)}
                                                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${u.is_active
-                                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
                                                         }`}
                                                 >
                                                     {u.is_active ? 'Deactivate' : 'Activate'}

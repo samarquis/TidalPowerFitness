@@ -121,7 +121,7 @@ export default function AdminClassesPage() {
     const fetchClasses = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/classes`, {
                 headers: {
@@ -144,7 +144,7 @@ export default function AdminClassesPage() {
     const fetchTrainers = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/trainers/users`, {
                 headers: {
@@ -243,7 +243,7 @@ export default function AdminClassesPage() {
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const url = editingClass
                 ? `${apiUrl}/classes/${editingClass.id}`
@@ -276,7 +276,7 @@ export default function AdminClassesPage() {
     const toggleClassStatus = async (classId: string, currentStatus: boolean) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/classes/${classId}`, {
                 method: 'PUT',
