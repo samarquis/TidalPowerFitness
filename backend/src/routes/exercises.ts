@@ -1,18 +1,18 @@
-const express = require('express');
+import express from 'express';
+import exerciseController from '../controllers/exerciseController';
+import { authenticate, authorize } from '../middleware/auth';
+
 const router = express.Router();
-const exerciseController = require('../controllers/exerciseController');
-const { authenticate, authorize } = require('../middleware/auth');
 
 // Public routes - anyone can view exercises
-router.get('/', exerciseController.default.getExercises);
-router.get('/workout-types', exerciseController.default.getWorkoutTypes);
-router.get('/body-focus-areas', exerciseController.default.getBodyFocusAreas);
-router.get('/:id', exerciseController.default.getExercise);
+router.get('/', exerciseController.getExercises);
+router.get('/workout-types', exerciseController.getWorkoutTypes);
+router.get('/body-focus-areas', exerciseController.getBodyFocusAreas);
+router.get('/:id', exerciseController.getExercise);
 
 // Trainer/Admin only routes
-router.post('/', authenticate, authorize('trainer', 'admin'), exerciseController.default.createExercise);
-router.put('/:id', authenticate, authorize('trainer', 'admin'), exerciseController.default.updateExercise);
-router.delete('/:id', authenticate, authorize('admin'), exerciseController.default.deleteExercise);
+router.post('/', authenticate, authorize(['trainer', 'admin']), exerciseController.createExercise);
+router.put('/:id', authenticate, authorize(['trainer', 'admin']), exerciseController.updateExercise);
+router.delete('/:id', authenticate, authorize(['admin']), exerciseController.deleteExercise);
 
-module.exports = router;
 export default router;

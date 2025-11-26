@@ -48,6 +48,14 @@ export default function Navigation() {
                                         </Link>
                                     </>
                                 )}
+                                {(user?.roles?.includes('trainer') || user?.roles?.includes('admin')) && (
+                                    <Link
+                                        href="/admin/exercises"
+                                        className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                    >
+                                        Exercises
+                                    </Link>
+                                )}
                                 {user?.roles?.includes('trainer') && (
                                     <Link
                                         href="/trainer/availability"
@@ -179,6 +187,15 @@ export default function Navigation() {
                                                 Manage Users
                                             </Link>
                                         </>
+                                    )}
+                                    {(user?.roles?.includes('trainer') || user?.roles?.includes('admin')) && (
+                                        <Link
+                                            href="/admin/exercises"
+                                            className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Manage Exercises
+                                        </Link>
                                     )}
                                     {user?.roles?.includes('trainer') && (
                                         <Link
