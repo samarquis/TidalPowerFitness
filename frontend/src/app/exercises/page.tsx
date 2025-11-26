@@ -3,20 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-interface Exercise {
-    id: string;
-    name: string;
-    description?: string;
-    workout_type_name?: string;
-    muscle_group_name?: string;
-    equipment_required?: string;
-    difficulty_level?: string;
-    video_url?: string;
-    instructions?: string;
-}
-
-interface WorkoutType {
+interface BodyPart {
     id: string;
     name: string;
 }
@@ -24,223 +13,231 @@ interface WorkoutType {
 interface BodyFocusArea {
     id: string;
     name: string;
+    body_part_id?: string;
+}
+
+interface Exercise {
+    id: string;
+    name: string;
+    difficulty_level?: string;
+    equipment_required?: string;
+    primary_muscle_group?: string;
+    muscle_group_name?: string;
 }
 
 export default function ExerciseLibraryPage() {
-    const { isAuthenticated, user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const router = useRouter();
+    const [bodyParts, setBodyParts] = useState<BodyPart[]>([]);
+    const [muscles, setMuscles] = useState<BodyFocusArea[]>([]);
     const [exercises, setExercises] = useState<Exercise[]>([]);
-    const [workoutTypes, setWorkoutTypes] = useState<WorkoutType[]>([]);
-    const [bodyFocusAreas, setBodyFocusAreas] = useState<BodyFocusArea[]>([]);
     const [loading, setLoading] = useState(true);
-
-    // Filters
+    const [selectedBodyPart, setSelectedBodyPart] = useState<string>('all');
+    const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedWorkoutType, setSelectedWorkoutType] = useState('');
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (isAuthenticated && !user?.roles?.includes('admin') && !user?.roles?.includes('trainer')) {
             router.push('/');
             return;
         }
-        fetchData();
-    }, [isAuthenticated]);
+
+        if (isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated, user, router]);
 
     const fetchData = async () => {
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const token = localStorage.getItem('auth_token');
 
-            // Fetch exercises
-            const exercisesRes = await fetch(`${API_URL}/exercises`);
-            const exercisesData = await exercisesRes.json();
-            setExercises(exercisesData);
+            const [bodyPartsRes, musclesRes, exercisesRes] = await Promise.all([
+                fetch(`${apiUrl}/exercises/body-parts`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${apiUrl}/exercises/body-focus-areas`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${apiUrl}/exercises`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
 
-            // Fetch workout types
-            const typesRes = await fetch(`${API_URL}/exercises/workout-types`);
-            const typesData = await typesRes.json();
-            setWorkoutTypes(typesData);
-
-            // Fetch body focus areas
-            const areasRes = await fetch(`${API_URL}/exercises/body-focus-areas`);
-            const areasData = await areasRes.json();
-            setBodyFocusAreas(areasData);
-
-            setLoading(false);
+            if (bodyPartsRes.ok) setBodyParts(await bodyPartsRes.json());
+            if (musclesRes.ok) setMuscles(await musclesRes.json());
+            if (exercisesRes.ok) setExercises(await exercisesRes.json());
         } catch (error) {
             console.error('Error fetching data:', error);
+        } finally {
             setLoading(false);
         }
     };
 
-    const filteredExercises = exercises.filter(exercise => {
-        const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (exercise.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
-        const matchesType = !selectedWorkoutType || exercise.workout_type_name === selectedWorkoutType;
-        const matchesMuscle = !selectedMuscleGroup || exercise.muscle_group_name === selectedMuscleGroup;
-        const matchesDifficulty = !selectedDifficulty || exercise.difficulty_level === selectedDifficulty;
+    const filteredMuscles = selectedBodyPart === 'all'
+        ? muscles
+        : muscles.filter(m => m.body_part_id === selectedBodyPart);
 
-        return matchesSearch && matchesType && matchesMuscle && matchesDifficulty;
+    const filteredExercises = exercises.filter(ex => {
+        const matchesMuscle = !selectedMuscle || ex.primary_muscle_group === selectedMuscle;
+        const matchesSearch = !searchTerm ||
+            ex.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesMuscle && matchesSearch;
     });
+
+    const getMuscleExerciseCount = (muscleId: string) => {
+        return exercises.filter(ex => ex.primary_muscle_group === muscleId).length;
+    };
+
+    if (!isAuthenticated || (!user?.roles?.includes('admin') && !user?.roles?.includes('trainer'))) {
+        return null;
+    }
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
-                <div className="text-white text-xl">Loading exercises...</div>
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 py-12 px-4">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-white mb-2">Exercise Library</h1>
-                    <p className="text-blue-200">Browse and search {exercises.length} exercises</p>
-                </div>
+                <div className="mb-12 text-center">
+                    <h1 className="text-5xl font-bold mb-4">
+                        Exercise <span className="text-gradient">Library</span>
+                    </h1>
+                    <p className="text-gray-400 text-lg mb-8">
+                        Browse exercises by muscle group
+                    </p>
 
-                {/* Filters */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-8 border border-white/20">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {/* Search */}
-                        <div>
-                            <label className="block text-sm font-medium text-blue-200 mb-2">Search</label>
-                            <input
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Search exercises..."
-                                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-300/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        {/* Workout Type */}
-                        <div>
-                            <label className="block text-sm font-medium text-blue-200 mb-2">Workout Type</label>
-                            <select
-                                value={selectedWorkoutType}
-                                onChange={(e) => setSelectedWorkoutType(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Types</option>
-                                {workoutTypes.map(type => (
-                                    <option key={type.id} value={type.name}>{type.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Muscle Group */}
-                        <div>
-                            <label className="block text-sm font-medium text-blue-200 mb-2">Muscle Group</label>
-                            <select
-                                value={selectedMuscleGroup}
-                                onChange={(e) => setSelectedMuscleGroup(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Muscles</option>
-                                {bodyFocusAreas.map(area => (
-                                    <option key={area.id} value={area.name}>{area.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Difficulty */}
-                        <div>
-                            <label className="block text-sm font-medium text-blue-200 mb-2">Difficulty</label>
-                            <select
-                                value={selectedDifficulty}
-                                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Levels</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                            </select>
-                        </div>
+                    {/* Search Bar */}
+                    <div className="max-w-2xl mx-auto">
+                        <input
+                            type="text"
+                            placeholder="Search exercises..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-6 py-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                        />
                     </div>
+                </div>
 
-                    {/* Clear Filters */}
-                    {(searchTerm || selectedWorkoutType || selectedMuscleGroup || selectedDifficulty) && (
+                {/* Body Part Tabs */}
+                <div className="flex flex-wrap justify-center gap-4 mb-12">
+                    <button
+                        onClick={() => {
+                            setSelectedBodyPart('all');
+                            setSelectedMuscle(null);
+                        }}
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === 'all'
+                                ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                            }`}
+                    >
+                        All Body Parts
+                    </button>
+                    {bodyParts.map((part) => (
                         <button
+                            key={part.id}
                             onClick={() => {
-                                setSearchTerm('');
-                                setSelectedWorkoutType('');
-                                setSelectedMuscleGroup('');
-                                setSelectedDifficulty('');
+                                setSelectedBodyPart(part.id);
+                                setSelectedMuscle(null);
                             }}
-                            className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
+                            className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === part.id
+                                    ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                }`}
                         >
-                            Clear Filters
+                            {part.name}
                         </button>
-                    )}
-                </div>
-
-                {/* Results Count */}
-                <div className="mb-4 text-blue-200">
-                    Showing {filteredExercises.length} of {exercises.length} exercises
-                </div>
-
-                {/* Exercise Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredExercises.map(exercise => (
-                        <div
-                            key={exercise.id}
-                            className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all hover:scale-105 cursor-pointer"
-                        >
-                            <h3 className="text-xl font-bold text-white mb-2">{exercise.name}</h3>
-
-                            <div className="flex flex-wrap gap-2 mb-3">
-                                {exercise.workout_type_name && (
-                                    <span className="px-3 py-1 bg-blue-500/30 rounded-full text-xs text-blue-200">
-                                        {exercise.workout_type_name}
-                                    </span>
-                                )}
-                                {exercise.muscle_group_name && (
-                                    <span className="px-3 py-1 bg-purple-500/30 rounded-full text-xs text-purple-200">
-                                        {exercise.muscle_group_name}
-                                    </span>
-                                )}
-                                {exercise.difficulty_level && (
-                                    <span className={`px-3 py-1 rounded-full text-xs ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/30 text-green-200' :
-                                            exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/30 text-yellow-200' :
-                                                'bg-red-500/30 text-red-200'
-                                        }`}>
-                                        {exercise.difficulty_level}
-                                    </span>
-                                )}
-                            </div>
-
-                            {exercise.description && (
-                                <p className="text-blue-100 text-sm mb-3 line-clamp-2">{exercise.description}</p>
-                            )}
-
-                            {exercise.equipment_required && (
-                                <div className="text-blue-200 text-sm mb-2">
-                                    <span className="font-semibold">Equipment:</span> {exercise.equipment_required}
-                                </div>
-                            )}
-
-                            {exercise.video_url && (
-                                <a
-                                    href={exercise.video_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block mt-2 text-blue-400 hover:text-blue-300 text-sm underline"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    Watch Video
-                                </a>
-                            )}
-                        </div>
                     ))}
                 </div>
 
-                {filteredExercises.length === 0 && (
-                    <div className="text-center py-12">
-                        <p className="text-blue-200 text-lg">No exercises found matching your criteria.</p>
+                {/* Muscle Group Grid */}
+                {!selectedMuscle && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-bold mb-6">Select a Muscle Group</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredMuscles.map((muscle) => {
+                                const count = getMuscleExerciseCount(muscle.id);
+                                return (
+                                    <button
+                                        key={muscle.id}
+                                        onClick={() => setSelectedMuscle(muscle.id)}
+                                        className="glass rounded-xl p-6 hover:border-teal-4 transition-all group"
+                                    >
+                                        <div className="text-center">
+                                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-teal-6 to-teal-700 rounded-full flex items-center justify-center text-3xl">
+                                                💪
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-teal-4 transition-colors">
+                                                {muscle.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-400">
+                                                {count} exercise{count !== 1 ? 's' : ''}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Exercise List */}
+                {selectedMuscle && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">
+                                {muscles.find(m => m.id === selectedMuscle)?.name} Exercises
+                            </h2>
+                            <button
+                                onClick={() => setSelectedMuscle(null)}
+                                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
+                            >
+                                ← Back to Muscle Groups
+                            </button>
+                        </div>
+
+                        {filteredExercises.length === 0 ? (
+                            <div className="glass rounded-xl p-12 text-center">
+                                <p className="text-gray-400">No exercises found for this muscle group.</p>
+                            </div>
+                        ) : (
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredExercises.map((exercise) => (
+                                    <Link
+                                        key={exercise.id}
+                                        href={`/exercises/${exercise.id}`}
+                                        className="glass rounded-xl p-6 hover:border-teal-4 transition-all group"
+                                    >
+                                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-teal-4 transition-colors">
+                                            {exercise.name}
+                                        </h3>
+                                        <div className="space-y-2">
+                                            {exercise.difficulty_level && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
+                                                            exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                                'bg-red-500/20 text-red-400'
+                                                        }`}>
+                                                        {exercise.difficulty_level}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {exercise.equipment_required && (
+                                                <p className="text-sm text-gray-400">
+                                                    Equipment: {exercise.equipment_required}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

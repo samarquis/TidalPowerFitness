@@ -13,6 +13,7 @@ export interface Class {
     duration_minutes: number;
     max_capacity: number;
     price_cents: number;
+    credit_cost: number;
     is_active: boolean;
     acuity_appointment_type_id?: string;
     created_at: Date;
@@ -61,6 +62,7 @@ export const createClass = async (classData: Partial<Class>): Promise<Class> => 
         duration_minutes,
         max_capacity,
         price_cents,
+        credit_cost,
         acuity_appointment_type_id
     } = classData;
 
@@ -70,13 +72,13 @@ export const createClass = async (classData: Partial<Class>): Promise<Class> => 
     const result = await query(
         `INSERT INTO classes (
             name, description, category, instructor_id, instructor_name,
-            day_of_week, days_of_week, start_time, duration_minutes, max_capacity, price_cents,
+            day_of_week, days_of_week, start_time, duration_minutes, max_capacity, price_cents, credit_cost,
             acuity_appointment_type_id
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING *`,
         [
             name, description, category, instructor_id, instructor_name,
-            primaryDay, days_of_week || [primaryDay], start_time, duration_minutes, max_capacity, price_cents,
+            primaryDay, days_of_week || [primaryDay], start_time, duration_minutes, max_capacity, price_cents, credit_cost || 1,
             acuity_appointment_type_id
         ]
     );

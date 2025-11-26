@@ -60,24 +60,12 @@ export default function Navigation() {
 
                                         {managementOpen && (
                                             <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-white/10 rounded-lg shadow-xl py-2 z-50">
-                                                {isAdmin && (
-                                                    <>
-                                                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                                            Admin
-                                                        </div>
-                                                        <Link href="/admin/classes" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Classes</Link>
-                                                        <Link href="/admin/trainers" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Trainers</Link>
-                                                        <Link href="/admin/users" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Users</Link>
-                                                        <Link href="/admin/calendar" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Calendar</Link>
-                                                        <Link href="/admin/reference-data" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Reference Data</Link>
-                                                        <div className="border-t border-white/10 my-1"></div>
-                                                    </>
-                                                )}
 
                                                 <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                     Training
                                                 </div>
-                                                <Link href="/admin/exercises" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Exercises</Link>
+                                                <Link href="/admin/exercises" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Manage Exercises</Link>
+                                                <Link href="/exercises" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Exercise Library</Link>
                                                 <Link href="/workouts/templates" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Workouts</Link>
                                                 <Link href="/workouts/assign" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Assign Workout</Link>
                                                 <Link href="/workouts/history" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>History</Link>
