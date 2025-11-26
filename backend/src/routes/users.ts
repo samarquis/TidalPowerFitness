@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import User from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
 
@@ -165,6 +166,34 @@ router.delete('/:id', authenticate, authorize('admin'), async (req: Request, res
     } catch (error) {
         console.error('Deactivate user error:', error);
         res.status(500).json({ error: 'Failed to deactivate user' });
+    }
+});
+
+// Reset user password (admin only)
+router.post('/:id/reset-password', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { password } = req.body;
+
+        if (!password || password.length < 6) {
+            res.status(400).json({ error: 'Password must be at least 6 characters long' });
+            return;
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(password, salt);
+
+        const updatedUser = await User.update(id, { password_hash } as any); // Type cast as password_hash is not in UpdateUserInput interface but is in DB
+
+        if (!updatedUser) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ error: 'Failed to reset password' });
     }
 });
 

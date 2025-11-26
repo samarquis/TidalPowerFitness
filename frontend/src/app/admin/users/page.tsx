@@ -24,6 +24,13 @@ export default function UserManagementPage() {
     const [filter, setFilter] = useState<'all' | 'client' | 'trainer' | 'admin'>('all');
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Password Reset Modal State
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [selectedUserForReset, setSelectedUserForReset] = useState<User | null>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [resetLoading, setResetLoading] = useState(false);
+    const [resetMessage, setResetMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
     useEffect(() => {
         // Check if user is admin
         if (isAuthenticated && !user?.roles?.includes('admin')) {
@@ -140,6 +147,52 @@ export default function UserManagementPage() {
             }
         } catch (error) {
             console.error('Error toggling activation:', error);
+        }
+    };
+
+    const handleResetPasswordClick = (user: User) => {
+        setSelectedUserForReset(user);
+        setNewPassword('');
+        setResetMessage(null);
+        setShowResetModal(true);
+    };
+
+    const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUserForReset || !newPassword) return;
+
+        setResetLoading(true);
+        setResetMessage(null);
+
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const token = localStorage.getItem('auth_token');
+
+            const response = await fetch(`${apiUrl}/users/${selectedUserForReset.id}/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ password: newPassword })
+            });
+
+            if (response.ok) {
+                setResetMessage({ type: 'success', text: 'Password reset successfully' });
+                setNewPassword('');
+                setTimeout(() => {
+                    setShowResetModal(false);
+                    setResetMessage(null);
+                }, 2000);
+            } else {
+                const data = await response.json();
+                setResetMessage({ type: 'error', text: data.error || 'Failed to reset password' });
+            }
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            setResetMessage({ type: 'error', text: 'An error occurred' });
+        } finally {
+            setResetLoading(false);
         }
     };
 
@@ -267,6 +320,12 @@ export default function UserManagementPage() {
                                                 >
                                                     {u.is_active ? 'Deactivate' : 'Activate'}
                                                 </button>
+                                                <button
+                                                    onClick={() => handleResetPasswordClick(u)}
+                                                    className="ml-2 px-4 py-2 rounded-lg text-sm font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all"
+                                                >
+                                                    Reset Pwd
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -303,5 +362,62 @@ export default function UserManagementPage() {
                 </div>
             </div>
         </div>
+
+            {/* Password Reset Modal */ }
+    {
+        showResetModal && selectedUserForReset && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                <div className="glass rounded-xl max-w-md w-full p-6">
+                    <div className="flex justify-between items-start mb-6">
+                        <h3 className="text-2xl font-bold text-white">Reset Password</h3>
+                        <button onClick={() => setShowResetModal(false)} className="text-gray-400 hover:text-white text-2xl">×</button>
+                    </div>
+
+                    <p className="text-gray-300 mb-6">
+                        Enter a new password for <span className="font-bold text-white">{selectedUserForReset.first_name} {selectedUserForReset.last_name}</span>.
+                    </p>
+
+                    <form onSubmit={handleResetPasswordSubmit}>
+                        <div className="mb-6">
+                            <label className="block text-gray-400 text-sm font-bold mb-2">New Password</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                placeholder="Enter new password"
+                                minLength={6}
+                                required
+                            />
+                        </div>
+
+                        {resetMessage && (
+                            <div className={`p-3 rounded-lg mb-4 text-sm ${resetMessage.type === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                {resetMessage.text}
+                            </div>
+                        )}
+
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowResetModal(false)}
+                                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={resetLoading}
+                                className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                            >
+                                {resetLoading ? 'Saving...' : 'Save Password'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        )
+    }
+        </div >
     );
 }

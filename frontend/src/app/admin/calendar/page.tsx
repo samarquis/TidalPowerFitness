@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import ClassCalendar from '@/components/ClassCalendar';
+import AdminMonthCalendar from '@/components/AdminMonthCalendar';
 import Link from 'next/link';
 
 interface Class {
@@ -37,7 +37,7 @@ export default function AdminCalendarPage() {
     const [classes, setClasses] = useState<Class[]>([]);
     const [sessions, setSessions] = useState<WorkoutSession[]>([]);
     const [loading, setLoading] = useState(true);
-    const [weekStartDate, setWeekStartDate] = useState<Date>(new Date());
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
     // Modal states
     // Modal states
@@ -50,13 +50,8 @@ export default function AdminCalendarPage() {
             return;
         }
 
-        // Set start date to the most recent Sunday
-        const today = new Date();
-        const day = today.getDay();
-        const diff = today.getDate() - day;
-        const sunday = new Date(today.setDate(diff));
-        sunday.setHours(0, 0, 0, 0);
-        setWeekStartDate(sunday);
+        // Set start date to today
+        setCurrentDate(new Date());
 
         if (isAuthenticated) {
             fetchClasses();
@@ -64,10 +59,10 @@ export default function AdminCalendarPage() {
     }, [isAuthenticated, user, router]);
 
     useEffect(() => {
-        if (isAuthenticated && weekStartDate) {
+        if (isAuthenticated && currentDate) {
             fetchSessions();
         }
-    }, [isAuthenticated, weekStartDate]);
+    }, [isAuthenticated, currentDate]);
 
     const fetchClasses = async () => {
         try {
@@ -96,9 +91,10 @@ export default function AdminCalendarPage() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const token = localStorage.getItem('auth_token');
 
-            const startDate = new Date(weekStartDate);
-            const endDate = new Date(weekStartDate);
-            endDate.setDate(endDate.getDate() + 7);
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0); // Last day of month
 
             const response = await fetch(`${apiUrl}/workout-sessions?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`, {
                 headers: {
@@ -115,16 +111,36 @@ export default function AdminCalendarPage() {
         }
     };
 
-    const handlePrevWeek = () => {
-        const newDate = new Date(weekStartDate);
-        newDate.setDate(newDate.getDate() - 7);
-        setWeekStartDate(newDate);
+    const handlePrevMonth = () => {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
     };
 
-    const handleNextWeek = () => {
-        const newDate = new Date(weekStartDate);
-        newDate.setDate(newDate.getDate() + 7);
-        setWeekStartDate(newDate);
+    const handleNextMonth = () => {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+    };
+
+    const handleAddClass = (date: Date) => {
+        // Format date as YYYY-MM-DD
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
+        // Redirect to add class page with pre-filled date (assuming we'll implement this param handling in Add Class page later)
+        // For now just go to classes page, or ideally /admin/classes/new if that existed.
+        // The requirement was "Interface for trainers to add classes to specific days".
+        // Let's assume we can pass a query param to the classes management page or a new class wizard.
+        // Since /admin/classes is the management list, let's assume we want to open a "New Class" modal or page.
+        // For now, let's redirect to /admin/classes with a query param that could trigger a "New Class" mode if implemented,
+        // or just to the list.
+        // BETTER: The prompt implies a direct action. Let's assume we might want to create a new class instance.
+        // But classes are recurring definitions usually.
+        // If "Add Class" means "Schedule a Class Instance", that's what we do by defining days_of_week.
+        // If it means "Create a new Class Definition that happens on this day", we can pass the day.
+
+        // Let's redirect to /admin/classes?action=new&day=${dayOfWeek}
+        const dayOfWeek = date.getDay();
+        router.push(`/admin/classes?action=new&day=${dayOfWeek}`);
     };
 
     const handleClassClick = (classItem: Class, date?: Date) => {
@@ -170,13 +186,13 @@ export default function AdminCalendarPage() {
                     </div>
                     <div className="flex gap-4 items-center">
                         <div className="flex bg-white/10 rounded-lg p-1">
-                            <button onClick={handlePrevWeek} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
+                            <button onClick={handlePrevMonth} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
                                 ←
                             </button>
-                            <div className="px-4 py-2 font-semibold border-l border-r border-white/10">
-                                {weekStartDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(new Date(weekStartDate).setDate(weekStartDate.getDate() + 6)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            <div className="px-4 py-2 font-semibold border-l border-r border-white/10 min-w-[150px] text-center">
+                                {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                             </div>
-                            <button onClick={handleNextWeek} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
+                            <button onClick={handleNextMonth} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
                                 →
                             </button>
                         </div>
@@ -197,11 +213,12 @@ export default function AdminCalendarPage() {
                     </div>
                 ) : (
                     <div className="glass rounded-xl p-6">
-                        <ClassCalendar
+                        <AdminMonthCalendar
                             classes={classes}
                             sessions={sessions}
-                            weekStartDate={weekStartDate}
+                            currentDate={currentDate}
                             onClassClick={handleClassClick}
+                            onAddClassClick={handleAddClass}
                         />
                     </div>
                 )}
