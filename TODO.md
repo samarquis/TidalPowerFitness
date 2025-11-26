@@ -20,6 +20,7 @@
 - **Workout Template Creation Page Fix** - Fixed loading issues with authentication guard and improved error handling (`frontend/src/app/workouts/templates/new/page.tsx`)
 - **Class Creation Form Time Format** - Updated to use 12-hour format (Hour:Minutes am/pm) with dropdowns and AM/PM toggle (`frontend/src/app/admin/classes/page.tsx`)
 - **Exercise Database Admin UI** - Created admin interface for managing exercises with CRUD operations, filtering, and search (`frontend/src/app/admin/exercises/page.tsx`)
+- **Workout Programming Wizard** - Enhanced workout template creation with body part filtering, workout type selection, and drag-and-drop exercise reordering (`frontend/src/app/workouts/templates/new/page.tsx`)
 
 ## ⏳ Pending
 
@@ -34,11 +35,6 @@
     - Allow Multi-day selection (e.g., Mon, Wed, Fri) - *Requires DB change*.
     - **Calendar View**: Real calendar display, recurring logic, color coding.
     - Click to add to cart/checkout.
-- [ ] **Workout Programming Wizard**
-    - Title, List of exercises, Type (Time vs Sets/Reps).
-    - Exercise selection by Body Part.
-    - Add exercise from list.
-    - Input fields for Time or Sets/Reps/Weight.
 - [ ] **Workout Assignment**
     - Trainer picks Class -> Workout -> User(s).
 
