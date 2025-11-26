@@ -1,97 +1,120 @@
-import express, { Request, Response } from 'express';
-import { squareClient } from '../services/square';
+import express from 'express';
+import { SquareClient, SquareEnvironment } from 'square';
 import { authenticate } from '../middleware/auth';
-import { randomUUID } from 'crypto';
+import pool from '../config/db';
+import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
 
-// Create payment (authenticated)
-router.post('/', authenticate, async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { sourceId, amount, currency = 'USD', note, referenceId } = req.body;
+// Initialize Square Client
+const squareClient = new SquareClient({
+    token: process.env.SQUARE_ACCESS_TOKEN || '',
+    environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+});
 
-        if (!sourceId || !amount) {
-            res.status(400).json({ error: 'Source ID and amount are required' });
-            return;
+// POST /api/payments/checkout
+// Create a payment link for a package
+router.post('/checkout', authenticate, async (req: any, res) => {
+    try {
+        const { packageId } = req.body;
+        const userId = req.user.id;
+
+        if (!packageId) {
+            return res.status(400).json({ message: 'Package ID is required' });
         }
 
-        const payment = await squareClient.createPayment({
-            sourceId,
-            amountMoney: {
-                amount: Math.round(amount * 100), // Convert to cents
-                currency,
+        // 1. Fetch package details
+        const packageResult = await pool.query('SELECT * FROM packages WHERE id = $1', [packageId]);
+        if (packageResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Package not found' });
+        }
+        const pkg = packageResult.rows[0];
+
+        // 2. Create Checkout Link
+        const idempotencyKey = uuidv4();
+
+        const response = await squareClient.checkout.paymentLinks.create({
+            idempotencyKey,
+            order: {
+                locationId: process.env.SQUARE_LOCATION_ID!,
+                lineItems: [
+                    {
+                        name: pkg.name,
+                        quantity: '1',
+                        basePriceMoney: {
+                            amount: BigInt(Math.round(pkg.price * 100)), // Amount in cents
+                            currency: 'USD'
+                        },
+                        note: pkg.description
+                    }
+                ],
+                metadata: {
+                    userId: userId.toString(),
+                    packageId: packageId.toString(),
+                    credits: pkg.credit_amount.toString()
+                }
             },
-            idempotencyKey: randomUUID(),
-            customerId: req.user?.userId,
-            note,
-            referenceId,
+            checkoutOptions: {
+                redirectUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/packages?success=true`,
+            }
         });
 
-        res.status(201).json({
-            message: 'Payment processed successfully',
-            payment: payment.payment,
-        });
+        const paymentLink = response.result.paymentLink;
+
+        if (!paymentLink?.url) {
+            throw new Error('Failed to generate payment link URL');
+        }
+
+        res.json({ url: paymentLink.url });
+
     } catch (error: any) {
-        console.error('Payment error:', error);
-        res.status(500).json({ error: error.message || 'Payment failed' });
+        console.error('Checkout error:', error);
+        res.status(500).json({ message: 'Failed to create checkout session', error: error.message });
     }
 });
 
-// Get payment by ID (authenticated)
-router.get('/:id', authenticate, async (req: Request, res: Response): Promise<void> => {
+// POST /api/payments/webhook
+// Handle Square webhooks (e.g., payment.updated)
+router.post('/webhook', async (req, res) => {
     try {
-        const { id } = req.params;
-        const payment = await squareClient.getPayment(id);
+        const signature = req.headers['x-square-hmac-sha256'];
+        const body = JSON.stringify(req.body);
 
-        res.status(200).json({ payment: payment.payment });
+        // Verify signature (skip for now in dev if needed)
+
+        const event = req.body;
+
+        if (event.type === 'payment.updated') {
+            const payment = event.data.object.payment;
+
+            if (payment.status === 'COMPLETED') {
+                const orderId = payment.order_id;
+                if (orderId) {
+                    const orderResponse = await squareClient.orders.get(orderId);
+                    const order = orderResponse.result.order;
+
+                    if (order?.metadata) {
+                        const userId = order.metadata.userId;
+                        const credits = parseInt(order.metadata.credits || '0');
+
+                        if (userId && credits > 0) {
+                            // Add credits to user
+                            await pool.query(
+                                `INSERT INTO user_credits (user_id, credit_amount, remaining_amount, purchase_date, expiry_date)
+                                 VALUES ($1, $2, $2, NOW(), NOW() + INTERVAL '30 days')`,
+                                [userId, credits]
+                            );
+                            console.log(`Added ${credits} credits to user ${userId}`);
+                        }
+                    }
+                }
+            }
+        }
+
+        res.status(200).send('OK');
     } catch (error) {
-        console.error('Get payment error:', error);
-        res.status(500).json({ error: 'Failed to get payment' });
-    }
-});
-
-// Refund payment (authenticated, admin only recommended)
-router.post('/:id/refund', authenticate, async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const { amount, currency = 'USD', reason } = req.body;
-
-        const refund = await squareClient.refundPayment({
-            paymentId: id,
-            amountMoney: {
-                amount: Math.round(amount * 100),
-                currency,
-            },
-            idempotencyKey: randomUUID(),
-            reason,
-        });
-
-        res.status(200).json({
-            message: 'Refund processed successfully',
-            refund: refund.refund,
-        });
-    } catch (error: any) {
-        console.error('Refund error:', error);
-        res.status(500).json({ error: error.message || 'Refund failed' });
-    }
-});
-
-// List payments (authenticated)
-router.get('/', authenticate, async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { beginTime, endTime, limit } = req.query;
-
-        const result = await squareClient.listPayments({
-            beginTime: beginTime as string,
-            endTime: endTime as string,
-            limit: limit ? Number(limit) : undefined,
-            sortOrder: 'DESC',
-        });
-
-        res.status(200).json({ payments: result.payments || [] });
-    } catch (error) {
-        console.error('List payments error:', error);
-        res.status(500).json({ error: 'Failed to list payments' });
+        console.error('Webhook error:', error);
+        res.status(500).send('Webhook processing failed');
     }
 });
 

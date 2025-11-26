@@ -79,6 +79,12 @@ export default function Navigation() {
                                 )}
 
                                 <Link
+                                    href="/packages"
+                                    className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
+                                >
+                                    Packages
+                                </Link>
+                                <Link
                                     href="/profile"
                                     className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
                                 >
@@ -93,6 +99,12 @@ export default function Navigation() {
                             </div>
                         ) : (
                             <div className="flex items-center space-x-4">
+                                <Link
+                                    href="/packages"
+                                    className="text-gray-300 hover:text-white transition-colors"
+                                >
+                                    Packages
+                                </Link>
                                 <Link
                                     href="/login"
                                     className="text-gray-300 hover:text-white transition-colors"
@@ -160,6 +172,13 @@ export default function Navigation() {
                                 >
                                     Contact
                                 </Link>
+                                <Link
+                                    href="/packages"
+                                    className="block text-gray-300 hover:text-white transition-colors py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Packages
+                                </Link>
                             </>
                         )}
 
@@ -190,6 +209,13 @@ export default function Navigation() {
                                 )}
 
                                 <div className="pt-4 border-t border-white/10">
+                                    <Link
+                                        href="/packages"
+                                        className="block text-gray-300 hover:text-white py-2 font-medium"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Packages
+                                    </Link>
                                     <Link
                                         href="/profile"
                                         className="block text-gray-300 hover:text-white py-2 font-medium"

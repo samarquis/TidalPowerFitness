@@ -7,7 +7,7 @@
 - [x] Backend Models: Package, UserCredit
 - [x] Backend API: Package CRUD endpoints
 - [x] Admin Interface: Package Management page (`/admin/packages`)
-- [ ] **NEXT:** User Interface: Browse & Buy Packages page
+- [x] **NEXT:** User Interface: Browse & Buy Packages page
 - [ ] Payment Integration: Square Checkout & Webhooks
 - [ ] Booking Logic: Deduct credits on class booking
 - [ ] Booking Logic: Validate credit expiration

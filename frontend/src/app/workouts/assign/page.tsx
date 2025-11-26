@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -29,10 +29,10 @@ interface WorkoutTemplate {
     exercise_count: number;
 }
 
-export default function AssignWorkoutPage() {
+function AssignWorkoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -74,18 +74,18 @@ export default function AssignWorkoutPage() {
         if (classIdParam) {
             setRecipientMode('class');
             setSelectedClass(classIdParam);
-            // If we have both date and class, we can potentially skip to step 2
-            // But let's keep it at step 1 to let them verify/add time
         }
     }, [searchParams]);
 
     // Fetch templates
     useEffect(() => {
         const fetchTemplates = async () => {
+            if (!token) return;
+
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/workout-templates`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 if (response.ok) {
@@ -100,12 +100,12 @@ export default function AssignWorkoutPage() {
         if (user) {
             fetchTemplates();
         }
-    }, [user]);
+    }, [user, token]);
 
     // Fetch classes when date is selected
     useEffect(() => {
         const fetchClasses = async () => {
-            if (!sessionDate) return;
+            if (!sessionDate || !token) return;
 
             try {
                 const date = new Date(sessionDate);
@@ -115,7 +115,7 @@ export default function AssignWorkoutPage() {
                     `${process.env.NEXT_PUBLIC_API_URL}/assignments/classes?day_of_week=${dayOfWeek}`,
                     {
                         headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            'Authorization': `Bearer ${token}`
                         }
                     }
                 );
@@ -129,15 +129,17 @@ export default function AssignWorkoutPage() {
         };
 
         fetchClasses();
-    }, [sessionDate]);
+    }, [sessionDate, token]);
 
     // Fetch clients
     useEffect(() => {
         const fetchClients = async () => {
+            if (!token) return;
+
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments/clients`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 if (response.ok) {
@@ -152,7 +154,7 @@ export default function AssignWorkoutPage() {
         if (user) {
             fetchClients();
         }
-    }, [user]);
+    }, [user, token]);
 
     const handleNext = () => {
         if (step === 1 && !sessionDate) {
@@ -184,6 +186,8 @@ export default function AssignWorkoutPage() {
     };
 
     const handleSubmit = async () => {
+        if (!token) return;
+
         setLoading(true);
         setError('');
 
@@ -209,7 +213,7 @@ export default function AssignWorkoutPage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(payload)
             });
@@ -524,5 +528,13 @@ export default function AssignWorkoutPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function AssignWorkoutPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <AssignWorkoutContent />
+        </Suspense>
     );
 }
