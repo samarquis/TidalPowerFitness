@@ -808,3 +808,5 @@ export default function AdminExercisesPage() {
             </div>
         );
     }
+}
+
