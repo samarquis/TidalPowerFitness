@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Client {
@@ -29,6 +29,7 @@ interface WorkoutTemplate {
 
 export default function AssignWorkoutPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -58,6 +59,23 @@ export default function AssignWorkoutPage() {
             router.push('/');
         }
     }, [user, router]);
+
+    // Handle URL parameters for pre-filling
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        const classIdParam = searchParams.get('class_id');
+
+        if (dateParam) {
+            setSessionDate(dateParam);
+        }
+
+        if (classIdParam) {
+            setRecipientMode('class');
+            setSelectedClass(classIdParam);
+            // If we have both date and class, we can potentially skip to step 2
+            // But let's keep it at step 1 to let them verify/add time
+        }
+    }, [searchParams]);
 
     // Fetch templates
     useEffect(() => {

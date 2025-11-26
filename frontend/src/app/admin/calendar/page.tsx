@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import ClassCalendar from '@/components/ClassCalendar';
-import WorkoutSelectionModal from '@/components/WorkoutSelectionModal';
 import Link from 'next/link';
 
 interface Class {
@@ -41,8 +40,8 @@ export default function AdminCalendarPage() {
     const [weekStartDate, setWeekStartDate] = useState<Date>(new Date());
 
     // Modal states
+    // Modal states
     const [selectedClassInstance, setSelectedClassInstance] = useState<{ classItem: Class, date: Date } | null>(null);
-    const [showWorkoutModal, setShowWorkoutModal] = useState(false);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
 
     useEffect(() => {
@@ -136,54 +135,17 @@ export default function AdminCalendarPage() {
     };
 
     const handleAssignWorkout = () => {
-        setShowDetailsModal(false);
-        setShowWorkoutModal(true);
-    };
-
-    const handleWorkoutSelected = async (template: any) => {
         if (!selectedClassInstance) return;
 
-        try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
+        const { classItem, date } = selectedClassInstance;
 
-            const { classItem, date } = selectedClassInstance;
+        // Format date as YYYY-MM-DD
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
 
-            // Format date as YYYY-MM-DD for consistency
-            // Note: date is a Date object, we need to be careful with timezones
-            // Using toISOString() might shift the day if not careful.
-            // Let's use local date components.
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const dateStr = `${year}-${month}-${day}`;
-
-            const response = await fetch(`${apiUrl}/workout-sessions`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    class_id: classItem.id,
-                    template_id: template.id,
-                    session_date: dateStr,
-                    start_time: `${dateStr}T${classItem.start_time}:00`,
-                    workout_type_id: template.workout_type_id
-                })
-            });
-
-            if (response.ok) {
-                fetchSessions();
-                setShowWorkoutModal(false);
-                setSelectedClassInstance(null);
-            } else {
-                alert('Failed to assign workout');
-            }
-        } catch (error) {
-            console.error('Error assigning workout:', error);
-            alert('Failed to assign workout');
-        }
+        router.push(`/workouts/assign?date=${dateStr}&class_id=${classItem.id}`);
     };
 
     if (!isAuthenticated || !user?.roles?.includes('admin')) {
@@ -311,12 +273,7 @@ export default function AdminCalendarPage() {
                 </div>
             )}
 
-            {/* Workout Selection Modal */}
-            <WorkoutSelectionModal
-                isOpen={showWorkoutModal}
-                onClose={() => setShowWorkoutModal(false)}
-                onSelect={handleWorkoutSelected}
-            />
+
         </div>
     );
 }
