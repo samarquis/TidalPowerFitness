@@ -46,6 +46,12 @@ export default function Navigation() {
                                         >
                                             Users
                                         </Link>
+                                        <Link
+                                            href="/admin/reference-data"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Reference Data
+                                        </Link>
                                     </>
                                 )}
                                 {(user?.roles?.includes('trainer') || user?.roles?.includes('admin')) && (
@@ -185,6 +191,13 @@ export default function Navigation() {
                                                 onClick={() => setMobileMenuOpen(false)}
                                             >
                                                 Manage Users
+                                            </Link>
+                                            <Link
+                                                href="/admin/reference-data"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Reference Data
                                             </Link>
                                         </>
                                     )}

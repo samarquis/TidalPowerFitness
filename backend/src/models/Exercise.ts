@@ -134,7 +134,7 @@ class ExerciseModel {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *`,
             [name, description, workout_type_id, primary_muscle_group,
-             equipment_required, difficulty_level, video_url, instructions, created_by]
+                equipment_required, difficulty_level, video_url, instructions, created_by]
         );
 
         return result.rows[0];
@@ -190,6 +190,60 @@ class ExerciseModel {
             'SELECT * FROM body_focus_areas ORDER BY name ASC'
         );
         return result.rows;
+    }
+
+    // Create body focus area
+    async createBodyFocusArea(data: { name: string; description?: string }): Promise<any> {
+        const result: QueryResult = await query(
+            'INSERT INTO body_focus_areas (name, description) VALUES ($1, $2) RETURNING *',
+            [data.name, data.description || null]
+        );
+        return result.rows[0];
+    }
+
+    // Update body focus area
+    async updateBodyFocusArea(id: string, data: { name?: string; description?: string }): Promise<any | null> {
+        const result: QueryResult = await query(
+            'UPDATE body_focus_areas SET name = COALESCE($1, name), description = COALESCE($2, description) WHERE id = $3 RETURNING *',
+            [data.name, data.description, id]
+        );
+        return result.rows[0] || null;
+    }
+
+    // Delete body focus area
+    async deleteBodyFocusArea(id: string): Promise<boolean> {
+        const result: QueryResult = await query(
+            'DELETE FROM body_focus_areas WHERE id = $1',
+            [id]
+        );
+        return (result.rowCount ?? 0) > 0;
+    }
+
+    // Create workout type
+    async createWorkoutType(data: { name: string; description?: string }): Promise<any> {
+        const result: QueryResult = await query(
+            'INSERT INTO workout_types (name, description) VALUES ($1, $2) RETURNING *',
+            [data.name, data.description || null]
+        );
+        return result.rows[0];
+    }
+
+    // Update workout type
+    async updateWorkoutType(id: string, data: { name?: string; description?: string }): Promise<any | null> {
+        const result: QueryResult = await query(
+            'UPDATE workout_types SET name = COALESCE($1, name), description = COALESCE($2, description) WHERE id = $3 RETURNING *',
+            [data.name, data.description, id]
+        );
+        return result.rows[0] || null;
+    }
+
+    // Delete workout type
+    async deleteWorkoutType(id: string): Promise<boolean> {
+        const result: QueryResult = await query(
+            'DELETE FROM workout_types WHERE id = $1',
+            [id]
+        );
+        return (result.rowCount ?? 0) > 0;
     }
 }
 

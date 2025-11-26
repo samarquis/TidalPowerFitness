@@ -1,0 +1,309 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+
+interface ReferenceData {
+    id: string;
+    name: string;
+    description?: string;
+    created_at?: Date;
+}
+
+export default function ReferenceDataPage() {
+    const { user, isAuthenticated, token } = useAuth();
+    const router = useRouter();
+    const [bodyFocusAreas, setBodyFocusAreas] = useState<ReferenceData[]>([]);
+    const [workoutTypes, setWorkoutTypes] = useState<ReferenceData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState<'body' | 'workout'>('body');
+    const [editingItem, setEditingItem] = useState<ReferenceData | null>(null);
+    const [formData, setFormData] = useState({ name: '', description: '' });
+    const [errors, setErrors] = useState<{ name?: string }>({});
+
+    useEffect(() => {
+        if (isAuthenticated && !user?.roles?.includes('admin')) {
+            router.push('/');
+            return;
+        }
+
+        if (isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated, user, router]);
+
+    const fetchData = async () => {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+            const [bodyRes, workoutRes] = await Promise.all([
+                fetch(`${apiUrl}/exercises/body-focus-areas`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${apiUrl}/exercises/workout-types`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
+
+            if (bodyRes.ok) setBodyFocusAreas(await bodyRes.json());
+            if (workoutRes.ok) setWorkoutTypes(await workoutRes.json());
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const openCreateModal = (type: 'body' | 'workout') => {
+        setModalType(type);
+        setEditingItem(null);
+        setFormData({ name: '', description: '' });
+        setErrors({});
+        setShowModal(true);
+    };
+
+    const openEditModal = (item: ReferenceData, type: 'body' | 'workout') => {
+        setModalType(type);
+        setEditingItem(item);
+        setFormData({ name: item.name, description: item.description || '' });
+        setErrors({});
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setEditingItem(null);
+        setFormData({ name: '', description: '' });
+        setErrors({});
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!formData.name.trim()) {
+            setErrors({ name: 'Name is required' });
+            return;
+        }
+
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const endpoint = modalType === 'body' ? 'body-focus-areas' : 'workout-types';
+            const url = editingItem
+                ? `${apiUrl}/exercises/${endpoint}/${editingItem.id}`
+                : `${apiUrl}/exercises/${endpoint}`;
+            const method = editingItem ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                fetchData();
+                closeModal();
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Failed to save');
+            }
+        } catch (error) {
+            console.error('Error saving:', error);
+            alert('Failed to save');
+        }
+    };
+
+    const handleDelete = async (id: string, type: 'body' | 'workout') => {
+        if (!confirm('Are you sure you want to delete this item?')) return;
+
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const endpoint = type === 'body' ? 'body-focus-areas' : 'workout-types';
+
+            const response = await fetch(`${apiUrl}/exercises/${endpoint}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                fetchData();
+            }
+        } catch (error) {
+            console.error('Error deleting:', error);
+        }
+    };
+
+    if (!isAuthenticated || !user?.roles?.includes('admin')) {
+        return null;
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 className="text-4xl md:text-5xl font-bold mb-8">
+                    Reference Data <span className="text-gradient">Management</span>
+                </h1>
+                <p className="text-gray-400 mb-8">Manage body focus areas and workout types</p>
+
+                {loading ? (
+                    <div className="text-center py-20">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Body Focus Areas */}
+                        <div className="glass rounded-xl p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold">Body Focus Areas</h2>
+                                <button
+                                    onClick={() => openCreateModal('body')}
+                                    className="px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                >
+                                    + Add New
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                {bodyFocusAreas.map((area) => (
+                                    <div key={area.id} className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-white">{area.name}</h3>
+                                                {area.description && (
+                                                    <p className="text-sm text-gray-400 mt-1">{area.description}</p>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2 ml-4">
+                                                <button
+                                                    onClick={() => openEditModal(area, 'body')}
+                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm font-semibold transition-all"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(area.id, 'body')}
+                                                    className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-sm font-semibold transition-all"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {bodyFocusAreas.length === 0 && (
+                                    <p className="text-gray-400 text-center py-8">No body focus areas yet</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Workout Types */}
+                        <div className="glass rounded-xl p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold">Workout Types</h2>
+                                <button
+                                    onClick={() => openCreateModal('workout')}
+                                    className="px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                >
+                                    + Add New
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                {workoutTypes.map((type) => (
+                                    <div key={type.id} className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-white">{type.name}</h3>
+                                                {type.description && (
+                                                    <p className="text-sm text-gray-400 mt-1">{type.description}</p>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2 ml-4">
+                                                <button
+                                                    onClick={() => openEditModal(type, 'workout')}
+                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm font-semibold transition-all"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(type.id, 'workout')}
+                                                    className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-sm font-semibold transition-all"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {workoutTypes.length === 0 && (
+                                    <p className="text-gray-400 text-center py-8">No workout types yet</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="glass rounded-2xl max-w-md w-full p-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">
+                                {editingItem ? 'Edit' : 'Create'} {modalType === 'body' ? 'Body Focus Area' : 'Workout Type'}
+                            </h2>
+                            <button onClick={closeModal} className="text-gray-400 hover:text-white text-2xl">
+                                ×
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">Name *</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    placeholder={modalType === 'body' ? 'e.g., Chest' : 'e.g., Strength'}
+                                />
+                                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">Description</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    rows={3}
+                                    placeholder="Optional description..."
+                                />
+                            </div>
+
+                            <div className="flex gap-4 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={closeModal}
+                                    className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                >
+                                    {editingItem ? 'Update' : 'Create'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

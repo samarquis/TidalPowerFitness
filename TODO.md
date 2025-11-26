@@ -21,6 +21,7 @@
 - **Class Creation Form Time Format** - Updated to use 12-hour format (Hour:Minutes am/pm) with dropdowns and AM/PM toggle (`frontend/src/app/admin/classes/page.tsx`)
 - **Exercise Database Admin UI** - Created admin interface for managing exercises with CRUD operations, filtering, and search (`frontend/src/app/admin/exercises/page.tsx`)
 - **Workout Programming Wizard** - Enhanced workout template creation with body part filtering, workout type selection, and drag-and-drop exercise reordering (`frontend/src/app/workouts/templates/new/page.tsx`)
+- **Reference Data Management UIs** - Created admin interface for managing body focus areas and workout types with CRUD operations (`frontend/src/app/admin/reference-data/page.tsx`)
 
 ## ⏳ Pending
 

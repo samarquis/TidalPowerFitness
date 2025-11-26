@@ -109,6 +109,100 @@ class ExerciseController {
             res.status(500).json({ error: 'Failed to fetch body focus areas' });
         }
     }
+
+    // Create body focus area
+    async createBodyFocusArea(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            if (!name) {
+                res.status(400).json({ error: 'Name is required' });
+                return;
+            }
+            const area = await Exercise.createBodyFocusArea({ name, description });
+            res.status(201).json(area);
+        } catch (error) {
+            console.error('Error creating body focus area:', error);
+            res.status(500).json({ error: 'Failed to create body focus area' });
+        }
+    }
+
+    // Update body focus area
+    async updateBodyFocusArea(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            const area = await Exercise.updateBodyFocusArea(req.params.id, { name, description });
+            if (!area) {
+                res.status(404).json({ error: 'Body focus area not found' });
+                return;
+            }
+            res.json(area);
+        } catch (error) {
+            console.error('Error updating body focus area:', error);
+            res.status(500).json({ error: 'Failed to update body focus area' });
+        }
+    }
+
+    // Delete body focus area
+    async deleteBodyFocusArea(req: Request, res: Response): Promise<void> {
+        try {
+            const success = await Exercise.deleteBodyFocusArea(req.params.id);
+            if (!success) {
+                res.status(404).json({ error: 'Body focus area not found' });
+                return;
+            }
+            res.json({ message: 'Body focus area deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting body focus area:', error);
+            res.status(500).json({ error: 'Failed to delete body focus area' });
+        }
+    }
+
+    // Create workout type
+    async createWorkoutType(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            if (!name) {
+                res.status(400).json({ error: 'Name is required' });
+                return;
+            }
+            const type = await Exercise.createWorkoutType({ name, description });
+            res.status(201).json(type);
+        } catch (error) {
+            console.error('Error creating workout type:', error);
+            res.status(500).json({ error: 'Failed to create workout type' });
+        }
+    }
+
+    // Update workout type
+    async updateWorkoutType(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            const type = await Exercise.updateWorkoutType(req.params.id, { name, description });
+            if (!type) {
+                res.status(404).json({ error: 'Workout type not found' });
+                return;
+            }
+            res.json(type);
+        } catch (error) {
+            console.error('Error updating workout type:', error);
+            res.status(500).json({ error: 'Failed to update workout type' });
+        }
+    }
+
+    // Delete workout type
+    async deleteWorkoutType(req: Request, res: Response): Promise<void> {
+        try {
+            const success = await Exercise.deleteWorkoutType(req.params.id);
+            if (!success) {
+                res.status(404).json({ error: 'Workout type not found' });
+                return;
+            }
+            res.json({ message: 'Workout type deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting workout type:', error);
+            res.status(500).json({ error: 'Failed to delete workout type' });
+        }
+    }
 }
 
 export default new ExerciseController();
