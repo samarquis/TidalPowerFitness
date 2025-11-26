@@ -1,5 +1,6 @@
 # Consolidated TODO List
 
+
 ## ✅ Completed
 - User Profile Page (`frontend/src/app/profile/page.tsx`)
 - Navigation mobile‑menu auto‑collapse (`frontend/src/components/Navigation.tsx`)
@@ -22,22 +23,21 @@
 - **Exercise Database Admin UI** - Created admin interface for managing exercises with CRUD operations, filtering, and search (`frontend/src/app/admin/exercises/page.tsx`)
 - **Workout Programming Wizard** - Enhanced workout template creation with body part filtering, workout type selection, and drag-and-drop exercise reordering (`frontend/src/app/workouts/templates/new/page.tsx`)
 - **Reference Data Management UIs** - Created admin interface for managing body focus areas and workout types with CRUD operations (`frontend/src/app/admin/reference-data/page.tsx`)
+- **Class Management Enhancements** - Implemented multi-day class scheduling and visual calendar view (`frontend/src/app/admin/calendar/page.tsx`)
 
 ## ⏳ Pending
 
 ### 🚨 High Priority (Fixes & Broken Items)
 - [x] **Fix "Create Workout" Error** - Investigate and resolve the error preventing workout creation.
+- [ ] **Run Database Migration** - Execute `backend/database/migrations/001_add_days_of_week.sql` (failed to auto-run).
 
 ### ⚡ Quick Wins (Enhancements & Setup)
 - All quick wins completed!
 
 ### 🚀 Major Features (Longer Term)
-- [ ] **Class Management: Multi-day & Calendar**
-    - Allow Multi-day selection (e.g., Mon, Wed, Fri) - *Requires DB change*.
-    - **Calendar View**: Real calendar display, recurring logic, color coding.
-    - Click to add to cart/checkout.
 - [ ] **Workout Assignment**
-    - Trainer picks Class -> Workout -> User(s).
+    - Trainer picks Class → Workout → User(s)
+    - Assignment tracking and management
 
 ### Future Integrations & Deferred
 - [ ] Acuity Scheduling webhooks integration
