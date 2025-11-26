@@ -17,6 +17,7 @@ const availabilityRoutes = require('./routes/availability');
 const workoutAssignmentRoutes = require('./routes/workoutAssignments');
 const packageRoutes = require('./routes/packages');
 const importRoutes = require('./routes/import');
+const bookingRoutes = require('./routes/bookings');
 
 // Import database initialization
 const initializeDatabase = require('./scripts/initDb');
@@ -72,6 +73,9 @@ app.use('/api/assignments', workoutAssignmentRoutes.default || workoutAssignment
 
 // Package routes
 app.use('/api/packages', packageRoutes.default || packageRoutes);
+
+// Booking routes
+app.use('/api/bookings', bookingRoutes.default || bookingRoutes);
 
 // Import routes (admin only)
 app.use('/api/import', importRoutes.default || importRoutes);
