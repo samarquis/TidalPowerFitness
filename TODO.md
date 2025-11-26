@@ -18,6 +18,7 @@
 - **Workout History** - View past sessions and details (`frontend/src/app/workouts/history/`)
 - **Workout History Page Fix** - Fixed loading issues with authentication guard and error handling (`frontend/src/app/workouts/history/page.tsx`)
 - **Workout Template Creation Page Fix** - Fixed loading issues with authentication guard and improved error handling (`frontend/src/app/workouts/templates/new/page.tsx`)
+- **Class Creation Form Time Format** - Updated to use 12-hour format (Hour:Minutes am/pm) with dropdowns and AM/PM toggle (`frontend/src/app/admin/classes/page.tsx`)
 
 ## ⏳ Pending
 
@@ -25,13 +26,10 @@
 - [x] **Fix "Create Workout" Error** - Investigate and resolve the error preventing workout creation.
 
 ### ⚡ Quick Wins (Enhancements & Setup)
-- [ ] **Update Class Creation Form**
-    - Make fields editable (remove inefficient arrows).
-    - Add Class Types: Barre, Circuits, Pop Up, Power Bounce, Yoga.
-    - Update Time format (Hour:Minutes am/pm).
-- [ ] **Exercise Database Setup**
-    - Create database for exercises (Body Part > Name).
-    - Seed initial data.
+- [ ] **Exercise Database Admin UI**
+    - Create admin page for managing exercises (similar to class management).
+    - Add ability to create/edit/delete exercises.
+    - Filter by body part and workout type.
 
 ### 🚀 Major Features (Longer Term)
 - [ ] **Class Management: Multi-day & Calendar**

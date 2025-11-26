@@ -44,6 +44,36 @@ interface ClassFormData {
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const CATEGORIES = ['Strength Training', 'Cardio', 'HIIT', 'Yoga', 'Pilates', 'CrossFit', 'Boxing', 'Cycling', 'Barre', 'Circuits', 'Pop Up', 'Power Bounce', 'Other'];
 
+// Helper functions for time conversion
+function convertTo12Hour(time24: string): { hour: string, minute: string, period: 'am' | 'pm' } {
+    const [hourStr, minuteStr] = time24.split(':');
+    let hour = parseInt(hourStr);
+    const period: 'am' | 'pm' = hour >= 12 ? 'pm' : 'am';
+
+    if (hour === 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+
+    return {
+        hour: hour.toString(),
+        minute: minuteStr || '00',
+        period
+    };
+}
+
+function convertTo24Hour(hour: string, minute: string, period: 'am' | 'pm'): string {
+    let hour24 = parseInt(hour);
+
+    if (period === 'am' && hour24 === 12) hour24 = 0;
+    else if (period === 'pm' && hour24 !== 12) hour24 += 12;
+
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+}
+
+function formatTime12Hour(time24: string): string {
+    const { hour, minute, period } = convertTo12Hour(time24);
+    return `${hour}:${minute} ${period}`;
+}
+
 export default function AdminClassesPage() {
     const { user, isAuthenticated } = useAuth();
     const router = useRouter();
@@ -72,6 +102,11 @@ export default function AdminClassesPage() {
         price_cents: 2000,
         acuity_appointment_type_id: ''
     });
+
+    // Time component state for 12-hour format
+    const [timeHour, setTimeHour] = useState('9');
+    const [timeMinute, setTimeMinute] = useState('00');
+    const [timePeriod, setTimePeriod] = useState<'am' | 'pm'>('am');
 
     const [errors, setErrors] = useState<Partial<Record<keyof ClassFormData, string>>>({});
 
@@ -176,6 +211,10 @@ export default function AdminClassesPage() {
             price_cents: 2000,
             acuity_appointment_type_id: ''
         });
+        // Initialize time components
+        setTimeHour('9');
+        setTimeMinute('00');
+        setTimePeriod('am');
         setErrors({});
         setCurrentStep(1);
         setShowModal(true);
@@ -196,6 +235,11 @@ export default function AdminClassesPage() {
             price_cents: classItem.price_cents,
             acuity_appointment_type_id: classItem.acuity_appointment_type_id || ''
         });
+        // Convert 24-hour time to 12-hour components
+        const time12 = convertTo12Hour(classItem.start_time);
+        setTimeHour(time12.hour);
+        setTimeMinute(time12.minute);
+        setTimePeriod(time12.period);
         setErrors({});
         setCurrentStep(1);
         setShowModal(true);
@@ -251,13 +295,20 @@ export default function AdminClassesPage() {
 
             const method = editingClass ? 'PUT' : 'POST';
 
+            // Convert 12-hour time to 24-hour format before submitting
+            const time24 = convertTo24Hour(timeHour, timeMinute, timePeriod);
+            const submitData = {
+                ...formData,
+                start_time: time24
+            };
+
             const response = await fetch(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(submitData)
             });
 
             if (response.ok) {
@@ -434,7 +485,7 @@ export default function AdminClassesPage() {
                                             <td className="px-6 py-4 text-gray-400">{classItem.category}</td>
                                             <td className="px-6 py-4 text-gray-400">{classItem.instructor_name}</td>
                                             <td className="px-6 py-4 text-gray-400">
-                                                {DAYS[classItem.day_of_week]} {classItem.start_time}
+                                                {DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
                                             </td>
                                             <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
                                             <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
@@ -582,12 +633,53 @@ export default function AdminClassesPage() {
 
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-300 mb-2">Start Time *</label>
-                                        <input
-                                            type="time"
-                                            value={formData.start_time}
-                                            onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                        />
+                                        <div className="flex gap-2">
+                                            {/* Hour dropdown */}
+                                            <select
+                                                value={timeHour}
+                                                onChange={(e) => setTimeHour(e.target.value)}
+                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            >
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(h => (
+                                                    <option key={h} value={h.toString()}>{h}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* Minute dropdown */}
+                                            <select
+                                                value={timeMinute}
+                                                onChange={(e) => setTimeMinute(e.target.value)}
+                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            >
+                                                {['00', '15', '30', '45'].map(m => (
+                                                    <option key={m} value={m}>{m}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* AM/PM toggle */}
+                                            <div className="flex gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setTimePeriod('am')}
+                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'am'
+                                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                                            : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                                                        }`}
+                                                >
+                                                    AM
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setTimePeriod('pm')}
+                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'pm'
+                                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                                            : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                                                        }`}
+                                                >
+                                                    PM
+                                                </button>
+                                            </div>
+                                        </div>
                                         {errors.start_time && <p className="text-red-400 text-sm mt-1">{errors.start_time}</p>}
                                     </div>
 
@@ -690,7 +782,7 @@ export default function AdminClassesPage() {
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-400">Schedule:</span>
-                                            <span className="text-white">{DAYS[formData.day_of_week]} at {formData.start_time}</span>
+                                            <span className="text-white">{DAYS[formData.day_of_week]} at {timeHour}:{timeMinute} {timePeriod}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-400">Duration:</span>
