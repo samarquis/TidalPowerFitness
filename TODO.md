@@ -27,7 +27,38 @@
 
 ## ⏳ Pending
 
-### 🚨 High Priority (Fixes & Broken Items)
+### � Todo 11/26 (New Requirements)
+- **Home Page & Navigation**
+    - [ ] **Simplify Navigation** - Fix "crunched up" items, ensure responsive design.
+    - [ ] **Logged-Out View** - Show landing page with:
+        - Tidal Power Fitness branding
+        - Log In option
+        - Class offerings
+    - [ ] **Logged-In View (User Dashboard)**
+        - [ ] **Calendar** - Monthly view (Sun-Sat), navigation for current/next month.
+        - [ ] **Dashboard Layout**
+            - Past workouts (Class type info)
+            - Weight Lifted Stats (Muscle groups + weight lifted, e.g., "Legs: 1000 lbs")
+            - Badges/Achievements
+        - [ ] **Log Out Button** - Ensure visibility/accessibility.
+
+- **Admin Page Enhancements**
+    - [ ] **Admin Calendar**
+        - Monthly view (Sun-Sat)
+        - Show classes on days
+        - Interface for trainers to add classes to specific days
+    - [ ] **User Management**
+        - Promote user to Trainer
+        - Admin password reset for users
+    - [ ] **Workout Planner** - Assist trainers in programming workouts.
+    - [ ] **History** - Show past classes and attendee lists.
+    - [ ] **Exercises Management**
+        - Sub-page for entry
+        - Target Body Part (Chest, Legs, Back)
+        - Target Muscle (Bicep, Glutes, Calf)
+        - Exercise Listing (Leg Curls, Squats, etc.)
+
+### �🚨 High Priority (Fixes & Broken Items)
 - [x] **Fix "Create Workout" Error** - Resolved
 - [x] **Run Database Migration** - Configured automatic migration on deployment
 
