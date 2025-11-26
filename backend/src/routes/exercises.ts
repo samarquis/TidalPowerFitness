@@ -11,8 +11,8 @@ router.get('/body-focus-areas', exerciseController.getBodyFocusAreas);
 router.get('/:id', exerciseController.getExercise);
 
 // Trainer/Admin only routes
-router.post('/', authenticate, authorize(['trainer', 'admin']), exerciseController.createExercise);
-router.put('/:id', authenticate, authorize(['trainer', 'admin']), exerciseController.updateExercise);
-router.delete('/:id', authenticate, authorize(['admin']), exerciseController.deleteExercise);
+router.post('/', authenticate, authorize('trainer', 'admin'), exerciseController.createExercise);
+router.put('/:id', authenticate, authorize('trainer', 'admin'), exerciseController.updateExercise);
+router.delete('/:id', authenticate, authorize('admin'), exerciseController.deleteExercise);
 
 export default router;
