@@ -8,6 +8,7 @@ const router = express.Router();
 router.get('/', exerciseController.getExercises);
 router.get('/workout-types', exerciseController.getWorkoutTypes);
 router.get('/body-focus-areas', exerciseController.getBodyFocusAreas);
+router.get('/body-parts', exerciseController.getBodyParts);
 router.get('/:id', exerciseController.getExercise);
 
 // Trainer/Admin only routes - Exercises
@@ -24,5 +25,10 @@ router.delete('/body-focus-areas/:id', authenticate, authorize('admin'), exercis
 router.post('/workout-types', authenticate, authorize('admin'), exerciseController.createWorkoutType);
 router.put('/workout-types/:id', authenticate, authorize('admin'), exerciseController.updateWorkoutType);
 router.delete('/workout-types/:id', authenticate, authorize('admin'), exerciseController.deleteWorkoutType);
+
+// Admin only routes - Body Parts
+router.post('/body-parts', authenticate, authorize('admin'), exerciseController.createBodyPart);
+router.put('/body-parts/:id', authenticate, authorize('admin'), exerciseController.updateBodyPart);
+router.delete('/body-parts/:id', authenticate, authorize('admin'), exerciseController.deleteBodyPart);
 
 export default router;

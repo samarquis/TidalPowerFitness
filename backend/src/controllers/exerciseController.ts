@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Exercise from '../models/Exercise';
+import BodyPart from '../models/BodyPart';
 
 class ExerciseController {
     // Get all exercises
@@ -110,15 +111,26 @@ class ExerciseController {
         }
     }
 
+    // Get body parts
+    async getBodyParts(req: Request, res: Response): Promise<void> {
+        try {
+            const parts = await BodyPart.getAll();
+            res.json(parts);
+        } catch (error) {
+            console.error('Error fetching body parts:', error);
+            res.status(500).json({ error: 'Failed to fetch body parts' });
+        }
+    }
+
     // Create body focus area
     async createBodyFocusArea(req: Request, res: Response): Promise<void> {
         try {
-            const { name, description } = req.body;
+            const { name, description, body_part_id } = req.body;
             if (!name) {
                 res.status(400).json({ error: 'Name is required' });
                 return;
             }
-            const area = await Exercise.createBodyFocusArea({ name, description });
+            const area = await Exercise.createBodyFocusArea({ name, description, body_part_id });
             res.status(201).json(area);
         } catch (error) {
             console.error('Error creating body focus area:', error);
@@ -129,8 +141,8 @@ class ExerciseController {
     // Update body focus area
     async updateBodyFocusArea(req: Request, res: Response): Promise<void> {
         try {
-            const { name, description } = req.body;
-            const area = await Exercise.updateBodyFocusArea(req.params.id, { name, description });
+            const { name, description, body_part_id } = req.body;
+            const area = await Exercise.updateBodyFocusArea(req.params.id, { name, description, body_part_id });
             if (!area) {
                 res.status(404).json({ error: 'Body focus area not found' });
                 return;
@@ -201,6 +213,52 @@ class ExerciseController {
         } catch (error) {
             console.error('Error deleting workout type:', error);
             res.status(500).json({ error: 'Failed to delete workout type' });
+        }
+    }
+    // Create body part
+    async createBodyPart(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            if (!name) {
+                res.status(400).json({ error: 'Name is required' });
+                return;
+            }
+            const part = await BodyPart.create({ name, description });
+            res.status(201).json(part);
+        } catch (error) {
+            console.error('Error creating body part:', error);
+            res.status(500).json({ error: 'Failed to create body part' });
+        }
+    }
+
+    // Update body part
+    async updateBodyPart(req: Request, res: Response): Promise<void> {
+        try {
+            const { name, description } = req.body;
+            const part = await BodyPart.update(req.params.id, { name, description });
+            if (!part) {
+                res.status(404).json({ error: 'Body part not found' });
+                return;
+            }
+            res.json(part);
+        } catch (error) {
+            console.error('Error updating body part:', error);
+            res.status(500).json({ error: 'Failed to update body part' });
+        }
+    }
+
+    // Delete body part
+    async deleteBodyPart(req: Request, res: Response): Promise<void> {
+        try {
+            const success = await BodyPart.delete(req.params.id);
+            if (!success) {
+                res.status(404).json({ error: 'Body part not found' });
+                return;
+            }
+            res.json({ message: 'Body part deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting body part:', error);
+            res.status(500).json({ error: 'Failed to delete body part' });
         }
     }
 }

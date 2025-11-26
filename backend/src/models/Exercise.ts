@@ -187,25 +187,28 @@ class ExerciseModel {
     // Get body focus areas
     async getBodyFocusAreas(): Promise<any[]> {
         const result: QueryResult = await query(
-            'SELECT * FROM body_focus_areas ORDER BY name ASC'
+            `SELECT bfa.*, bp.name as body_part_name 
+             FROM body_focus_areas bfa
+             LEFT JOIN body_parts bp ON bfa.body_part_id = bp.id
+             ORDER BY bfa.name ASC`
         );
         return result.rows;
     }
 
     // Create body focus area
-    async createBodyFocusArea(data: { name: string; description?: string }): Promise<any> {
+    async createBodyFocusArea(data: { name: string; description?: string; body_part_id?: string }): Promise<any> {
         const result: QueryResult = await query(
-            'INSERT INTO body_focus_areas (name, description) VALUES ($1, $2) RETURNING *',
-            [data.name, data.description || null]
+            'INSERT INTO body_focus_areas (name, description, body_part_id) VALUES ($1, $2, $3) RETURNING *',
+            [data.name, data.description || null, data.body_part_id || null]
         );
         return result.rows[0];
     }
 
     // Update body focus area
-    async updateBodyFocusArea(id: string, data: { name?: string; description?: string }): Promise<any | null> {
+    async updateBodyFocusArea(id: string, data: { name?: string; description?: string; body_part_id?: string }): Promise<any | null> {
         const result: QueryResult = await query(
-            'UPDATE body_focus_areas SET name = COALESCE($1, name), description = COALESCE($2, description) WHERE id = $3 RETURNING *',
-            [data.name, data.description, id]
+            'UPDATE body_focus_areas SET name = COALESCE($1, name), description = COALESCE($2, description), body_part_id = COALESCE($3, body_part_id) WHERE id = $4 RETURNING *',
+            [data.name, data.description, data.body_part_id, id]
         );
         return result.rows[0] || null;
     }
