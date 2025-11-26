@@ -2,11 +2,13 @@ import { Request, Response } from 'express';
 import WorkoutSession from '../models/WorkoutSession';
 
 class WorkoutSessionController {
-    // Get all sessions for trainer
+    // Get all sessions for trainer (or all for admin)
     async getSessions(req: Request, res: Response): Promise<void> {
         try {
             const trainerId = req.user?.id;
-            if (!trainerId) {
+            const isAdmin = req.user?.roles?.includes('admin');
+
+            if (!trainerId && !isAdmin) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
@@ -17,7 +19,13 @@ class WorkoutSessionController {
                 class_id: req.query.class_id as string
             };
 
-            const sessions = await WorkoutSession.getByTrainer(trainerId, filters);
+            let sessions;
+            if (isAdmin) {
+                sessions = await WorkoutSession.getAll(filters);
+            } else {
+                sessions = await WorkoutSession.getByTrainer(trainerId!, filters);
+            }
+
             res.json(sessions);
         } catch (error) {
             console.error('Error fetching sessions:', error);
@@ -47,7 +55,9 @@ class WorkoutSessionController {
         try {
             const sessionData = {
                 ...req.body,
-                trainer_id: req.user?.id
+                trainer_id: (req.user?.roles?.includes('admin') && req.body.trainer_id)
+                    ? req.body.trainer_id
+                    : req.user?.id
             };
 
             const session = await WorkoutSession.create(sessionData);

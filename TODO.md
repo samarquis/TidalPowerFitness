@@ -28,16 +28,17 @@
 ## ⏳ Pending
 
 ### 🚨 High Priority (Fixes & Broken Items)
-- [x] **Fix "Create Workout" Error** - Investigate and resolve the error preventing workout creation.
-- [ ] **Run Database Migration** - Execute `backend/database/migrations/001_add_days_of_week.sql` (failed to auto-run).
+- [x] **Fix "Create Workout" Error** - Resolved
+- [x] **Run Database Migration** - Configured automatic migration on deployment
 
 ### ⚡ Quick Wins (Enhancements & Setup)
 - All quick wins completed!
 
 ### 🚀 Major Features (Longer Term)
-- [ ] **Workout Assignment**
-    - Trainer picks Class → Workout → User(s)
-    - Assignment tracking and management
+- [x] **Workout Assignment**
+    - Trainer can assign workouts to classes or individual clients
+    - Multi-step wizard UI for easy assignment
+    - Backend API endpoints for assignment workflow
 
 ### Future Integrations & Deferred
 - [ ] Acuity Scheduling webhooks integration

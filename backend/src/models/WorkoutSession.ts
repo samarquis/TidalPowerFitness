@@ -1,5 +1,6 @@
 import { query } from '../config/db';
 import { QueryResult } from 'pg';
+import WorkoutTemplateModel from './WorkoutTemplate';
 
 export interface WorkoutSession {
     id: string;
@@ -99,6 +100,51 @@ class WorkoutSessionModel {
         return result.rows;
     }
 
+    // Get all sessions (for admin)
+    async getAll(filters?: {
+        start_date?: Date;
+        end_date?: Date;
+        class_id?: string;
+    }): Promise<WorkoutSession[]> {
+        let sql = `
+            SELECT ws.*,
+                   wt.name as workout_type_name,
+                   c.name as class_name,
+                   COUNT(DISTINCT sp.client_id) as participant_count
+            FROM workout_sessions ws
+            LEFT JOIN workout_types wt ON ws.workout_type_id = wt.id
+            LEFT JOIN classes c ON ws.class_id = c.id
+            LEFT JOIN session_participants sp ON ws.id = sp.session_id
+            WHERE 1=1
+        `;
+
+        const params: any[] = [];
+        let paramCount = 1;
+
+        if (filters?.start_date) {
+            sql += ` AND ws.session_date >= $${paramCount}`;
+            params.push(filters.start_date);
+            paramCount++;
+        }
+
+        if (filters?.end_date) {
+            sql += ` AND ws.session_date <= $${paramCount}`;
+            params.push(filters.end_date);
+            paramCount++;
+        }
+
+        if (filters?.class_id) {
+            sql += ` AND ws.class_id = $${paramCount}`;
+            params.push(filters.class_id);
+            paramCount++;
+        }
+
+        sql += ' GROUP BY ws.id, wt.name, c.name ORDER BY ws.session_date DESC, ws.start_time DESC';
+
+        const result: QueryResult = await query(sql, params);
+        return result.rows;
+    }
+
     // Get session by ID with full details
     async getById(id: string): Promise<any | null> {
         const sessionResult: QueryResult = await query(
@@ -155,6 +201,29 @@ class WorkoutSessionModel {
 
     // Create new session
     async create(sessionData: CreateSessionInput): Promise<WorkoutSession> {
+        // If template_id is provided but no exercises, fetch them from the template
+        let exercisesToInsert = sessionData.exercises || [];
+
+        if (sessionData.template_id && exercisesToInsert.length === 0) {
+            try {
+                const template = await WorkoutTemplateModel.getById(sessionData.template_id);
+                if (template && template.exercises) {
+                    exercisesToInsert = template.exercises.map((te: any) => ({
+                        exercise_id: te.exercise_id,
+                        order_in_session: te.order_in_template,
+                        planned_sets: te.suggested_sets,
+                        planned_reps: te.suggested_reps,
+                        planned_weight_lbs: te.suggested_weight_lbs,
+                        rest_seconds: te.suggested_rest_seconds,
+                        notes: te.notes
+                    }));
+                }
+            } catch (error) {
+                console.error('Error fetching template exercises:', error);
+                // Continue without exercises if template fetch fails
+            }
+        }
+
         await query('BEGIN');
 
         try {
@@ -199,8 +268,8 @@ class WorkoutSessionModel {
             }
 
             // Add exercises
-            if (sessionData.exercises && sessionData.exercises.length > 0) {
-                for (const exercise of sessionData.exercises) {
+            if (exercisesToInsert && exercisesToInsert.length > 0) {
+                for (const exercise of exercisesToInsert) {
                     await query(
                         `INSERT INTO session_exercises (
                             session_id, exercise_id, order_in_session,

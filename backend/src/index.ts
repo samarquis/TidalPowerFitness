@@ -14,6 +14,7 @@ const exerciseRoutes = require('./routes/exercises');
 const workoutTemplateRoutes = require('./routes/workoutTemplates');
 const workoutSessionRoutes = require('./routes/workoutSessions');
 const availabilityRoutes = require('./routes/availability');
+const workoutAssignmentRoutes = require('./routes/workoutAssignments');
 
 // Import database initialization
 const initializeDatabase = require('./scripts/initDb');
@@ -63,6 +64,9 @@ app.use('/api/workout-sessions', workoutSessionRoutes.default || workoutSessionR
 
 // Trainer availability routes
 app.use('/api/availability', availabilityRoutes.default || availabilityRoutes);
+
+// Workout assignment routes
+app.use('/api/assignments', workoutAssignmentRoutes.default || workoutAssignmentRoutes);
 
 // Setup routes (one-time admin creation)
 app.use('/api/setup', setupRoutes.default || setupRoutes);

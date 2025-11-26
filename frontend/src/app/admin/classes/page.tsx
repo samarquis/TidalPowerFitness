@@ -12,6 +12,7 @@ interface Class {
     instructor_id?: string;
     instructor_name: string;
     day_of_week: number;
+    days_of_week?: number[]; // New multi-day support
     start_time: string;
     duration_minutes: number;
     max_capacity: number;
@@ -34,6 +35,7 @@ interface ClassFormData {
     instructor_id: string;
     instructor_name: string;
     day_of_week: number;
+    days_of_week: number[];
     start_time: string;
     duration_minutes: number;
     max_capacity: number;
@@ -96,6 +98,7 @@ export default function AdminClassesPage() {
         instructor_id: '',
         instructor_name: '',
         day_of_week: 1,
+        days_of_week: [1],
         start_time: '09:00',
         duration_minutes: 60,
         max_capacity: 20,
@@ -205,6 +208,7 @@ export default function AdminClassesPage() {
             instructor_id: '',
             instructor_name: '',
             day_of_week: 1,
+            days_of_week: [1],
             start_time: '09:00',
             duration_minutes: 60,
             max_capacity: 20,
@@ -229,6 +233,7 @@ export default function AdminClassesPage() {
             instructor_id: classItem.instructor_id || '',
             instructor_name: classItem.instructor_name,
             day_of_week: classItem.day_of_week,
+            days_of_week: classItem.days_of_week || [classItem.day_of_week],
             start_time: classItem.start_time,
             duration_minutes: classItem.duration_minutes,
             max_capacity: classItem.max_capacity,
@@ -260,6 +265,7 @@ export default function AdminClassesPage() {
             if (!formData.description.trim()) newErrors.description = 'Description is required';
             if (!formData.category) newErrors.category = 'Category is required';
         } else if (step === 2) {
+            if (!formData.days_of_week || formData.days_of_week.length === 0) newErrors.day_of_week = 'Please select at least one day';
             if (!formData.start_time) newErrors.start_time = 'Start time is required';
             if (formData.duration_minutes < 15) newErrors.duration_minutes = 'Duration must be at least 15 minutes';
         } else if (step === 3) {
@@ -485,7 +491,9 @@ export default function AdminClassesPage() {
                                             <td className="px-6 py-4 text-gray-400">{classItem.category}</td>
                                             <td className="px-6 py-4 text-gray-400">{classItem.instructor_name}</td>
                                             <td className="px-6 py-4 text-gray-400">
-                                                {DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
+                                                {classItem.days_of_week && classItem.days_of_week.length > 0
+                                                    ? classItem.days_of_week.map(d => DAYS[d].substring(0, 3)).join(', ')
+                                                    : DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
                                             </td>
                                             <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
                                             <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
@@ -619,16 +627,29 @@ export default function AdminClassesPage() {
                                     <h3 className="text-xl font-bold mb-4">Schedule</h3>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Day of Week *</label>
-                                        <select
-                                            value={formData.day_of_week}
-                                            onChange={(e) => setFormData({ ...formData, day_of_week: parseInt(e.target.value) })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                        >
+                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Days of Week *</label>
+                                        <div className="flex flex-wrap gap-2">
                                             {DAYS.map((day, index) => (
-                                                <option key={index} value={index}>{day}</option>
+                                                <button
+                                                    key={index}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const currentDays = formData.days_of_week || [];
+                                                        const newDays = currentDays.includes(index)
+                                                            ? currentDays.filter(d => d !== index)
+                                                            : [...currentDays, index];
+                                                        setFormData({ ...formData, days_of_week: newDays.sort() });
+                                                    }}
+                                                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${formData.days_of_week?.includes(index)
+                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                                                        }`}
+                                                >
+                                                    {day.substring(0, 3)}
+                                                </button>
                                             ))}
-                                        </select>
+                                        </div>
+                                        {errors.day_of_week && <p className="text-red-400 text-sm mt-1">{errors.day_of_week}</p>}
                                     </div>
 
                                     <div>
@@ -662,8 +683,8 @@ export default function AdminClassesPage() {
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
                                                     className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'am'
-                                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                                            : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
                                                         }`}
                                                 >
                                                     AM
@@ -672,8 +693,8 @@ export default function AdminClassesPage() {
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
                                                     className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'pm'
-                                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                                            : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
                                                         }`}
                                                 >
                                                     PM
@@ -782,7 +803,9 @@ export default function AdminClassesPage() {
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-400">Schedule:</span>
-                                            <span className="text-white">{DAYS[formData.day_of_week]} at {timeHour}:{timeMinute} {timePeriod}</span>
+                                            <span className="text-white">
+                                                {formData.days_of_week?.map(d => DAYS[d].substring(0, 3)).join(', ')} at {timeHour}:{timeMinute} {timePeriod}
+                                            </span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-400">Duration:</span>

@@ -88,7 +88,8 @@ CREATE TABLE classes (
     category VARCHAR(100),
     instructor_id UUID REFERENCES users(id) ON DELETE SET NULL,
     instructor_name VARCHAR(200),
-    day_of_week INTEGER NOT NULL, -- 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+    day_of_week INTEGER, -- 0=Sunday, 1=Monday, ... (Legacy, use days_of_week)
+    days_of_week INTEGER[], -- Array of days (0-6)
     start_time TIME NOT NULL,
     duration_minutes INTEGER NOT NULL DEFAULT 45,
     max_capacity INTEGER DEFAULT 20,

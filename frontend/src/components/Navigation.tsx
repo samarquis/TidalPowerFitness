@@ -47,6 +47,12 @@ export default function Navigation() {
                                             Users
                                         </Link>
                                         <Link
+                                            href="/admin/calendar"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Calendar
+                                        </Link>
+                                        <Link
                                             href="/admin/reference-data"
                                             className="text-gray-300 hover:text-white transition-colors font-semibold"
                                         >
@@ -77,6 +83,12 @@ export default function Navigation() {
                                             className="text-gray-300 hover:text-white transition-colors font-semibold"
                                         >
                                             Workouts
+                                        </Link>
+                                        <Link
+                                            href="/workouts/assign"
+                                            className="text-gray-300 hover:text-white transition-colors font-semibold"
+                                        >
+                                            Assign Workout
                                         </Link>
                                         <Link
                                             href="/workouts/history"
@@ -193,6 +205,13 @@ export default function Navigation() {
                                                 Manage Users
                                             </Link>
                                             <Link
+                                                href="/admin/calendar"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Calendar
+                                            </Link>
+                                            <Link
                                                 href="/admin/reference-data"
                                                 className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
                                                 onClick={() => setMobileMenuOpen(false)}
@@ -227,6 +246,13 @@ export default function Navigation() {
                                                 onClick={() => setMobileMenuOpen(false)}
                                             >
                                                 Workouts
+                                            </Link>
+                                            <Link
+                                                href="/workouts/assign"
+                                                className="block text-teal-400 hover:text-teal-300 transition-colors py-2 font-semibold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                Assign Workout
                                             </Link>
                                             <Link
                                                 href="/workouts/history"

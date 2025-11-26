@@ -7,7 +7,8 @@ export interface Class {
     category: string;
     instructor_id?: string;
     instructor_name: string;
-    day_of_week: number;
+    day_of_week?: number; // Legacy
+    days_of_week: number[]; // New multi-day support
     start_time: string;
     duration_minutes: number;
     max_capacity: number;
@@ -34,7 +35,7 @@ export const getClassById = async (id: string): Promise<Class | null> => {
 
 export const getClassesByDay = async (dayOfWeek: number): Promise<Class[]> => {
     const result = await query(
-        'SELECT * FROM classes WHERE day_of_week = $1 AND is_active = true ORDER BY start_time',
+        'SELECT * FROM classes WHERE ($1 = ANY(days_of_week) OR day_of_week = $1) AND is_active = true ORDER BY start_time',
         [dayOfWeek]
     );
     return result.rows;
@@ -55,7 +56,7 @@ export const createClass = async (classData: Partial<Class>): Promise<Class> => 
         category,
         instructor_id,
         instructor_name,
-        day_of_week,
+        days_of_week,
         start_time,
         duration_minutes,
         max_capacity,
@@ -63,16 +64,19 @@ export const createClass = async (classData: Partial<Class>): Promise<Class> => 
         acuity_appointment_type_id
     } = classData;
 
+    // Use first day as legacy day_of_week if provided, or 0
+    const primaryDay = days_of_week && days_of_week.length > 0 ? days_of_week[0] : 0;
+
     const result = await query(
         `INSERT INTO classes (
             name, description, category, instructor_id, instructor_name,
-            day_of_week, start_time, duration_minutes, max_capacity, price_cents,
+            day_of_week, days_of_week, start_time, duration_minutes, max_capacity, price_cents,
             acuity_appointment_type_id
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *`,
         [
             name, description, category, instructor_id, instructor_name,
-            day_of_week, start_time, duration_minutes, max_capacity, price_cents,
+            primaryDay, days_of_week || [primaryDay], start_time, duration_minutes, max_capacity, price_cents,
             acuity_appointment_type_id
         ]
     );
