@@ -36,14 +36,14 @@ export default function TemplateDetailsPage() {
 
     useEffect(() => {
         if (params?.id) {
-            fetchTemplate();
+            fetchTemplate(params.id as string);
         }
     }, [params]);
 
-    const fetchTemplate = async () => {
+    const fetchTemplate = async (id: string) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates/${params.id}`, {
+            const response = await fetch(`${apiUrl}/workout-templates/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

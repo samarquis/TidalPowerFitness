@@ -32,14 +32,14 @@ export default function SessionDetailsPage() {
 
     useEffect(() => {
         if (params?.id) {
-            fetchSession();
+            fetchSession(params.id as string);
         }
     }, [params]);
 
-    const fetchSession = async () => {
+    const fetchSession = async (id: string) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-sessions/${params.id}`, {
+            const response = await fetch(`${apiUrl}/workout-sessions/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

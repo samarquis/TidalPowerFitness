@@ -25,15 +25,15 @@ export default function ExerciseDetailPage() {
 
     useEffect(() => {
         if (params?.id) {
-            fetchExercise();
+            fetchExercise(params.id as string);
         }
     }, [params]);
 
-    const fetchExercise = async () => {
+    const fetchExercise = async (id: string) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-            const response = await fetch(`${apiUrl}/exercises/${params.id}`);
+            const response = await fetch(`${apiUrl}/exercises/${id}`);
 
             if (response.ok) {
                 const data = await response.json();
