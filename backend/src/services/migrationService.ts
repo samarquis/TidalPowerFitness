@@ -28,16 +28,33 @@ const MIGRATIONS = [
 async function runMigration(filename: string): Promise<MigrationResult> {
     try {
         // Use process.cwd() to find migrations folder at root of project
-        // This works for both dev (src/..) and prod (dist/..) as long as CWD is project root
         const migrationsDir = path.join(process.cwd(), 'migrations');
         const filePath = path.join(migrationsDir, filename);
+
+        console.log(`[Migration Debug] CWD: ${process.cwd()}`);
+        console.log(`[Migration Debug] Migrations Dir: ${migrationsDir}`);
+        console.log(`[Migration Debug] Target File: ${filePath}`);
+
+        // List directory contents if it exists
+        if (fs.existsSync(migrationsDir)) {
+            console.log(`[Migration Debug] Dir contents:`, fs.readdirSync(migrationsDir));
+        } else {
+            console.error(`[Migration Debug] Migrations directory does not exist at ${migrationsDir}`);
+
+            // Try alternative path (relative to __dirname)
+            const altPath = path.join(__dirname, '../../migrations');
+            console.log(`[Migration Debug] Checking alternative path: ${altPath}`);
+            if (fs.existsSync(altPath)) {
+                console.log(`[Migration Debug] Alternative path exists! Contents:`, fs.readdirSync(altPath));
+            }
+        }
 
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return {
                 filename,
                 success: false,
-                error: `Migration file not found: ${filename}`
+                error: `Migration file not found: ${filename} (searched in ${migrationsDir})`
             };
         }
 
