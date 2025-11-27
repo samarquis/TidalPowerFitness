@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface BodyPart {
@@ -26,8 +24,6 @@ interface Exercise {
 }
 
 export default function ExerciseLibraryPage() {
-    const { user, isAuthenticated } = useAuth();
-    const router = useRouter();
     const [bodyParts, setBodyParts] = useState<BodyPart[]>([]);
     const [muscles, setMuscles] = useState<BodyFocusArea[]>([]);
     const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -37,31 +33,17 @@ export default function ExerciseLibraryPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        if (isAuthenticated && !user?.roles?.includes('admin') && !user?.roles?.includes('trainer')) {
-            router.push('/');
-            return;
-        }
-
-        if (isAuthenticated) {
-            fetchData();
-        }
-    }, [isAuthenticated, user, router]);
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const [bodyPartsRes, musclesRes, exercisesRes] = await Promise.all([
-                fetch(`${apiUrl}/exercises/body-parts`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }),
-                fetch(`${apiUrl}/exercises/body-focus-areas`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }),
-                fetch(`${apiUrl}/exercises`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
+                fetch(`${apiUrl}/exercises/body-parts`),
+                fetch(`${apiUrl}/exercises/body-focus-areas`),
+                fetch(`${apiUrl}/exercises`)
             ]);
 
             if (bodyPartsRes.ok) setBodyParts(await bodyPartsRes.json());
@@ -88,10 +70,6 @@ export default function ExerciseLibraryPage() {
     const getMuscleExerciseCount = (muscleId: string) => {
         return exercises.filter(ex => ex.primary_muscle_group === muscleId).length;
     };
-
-    if (!isAuthenticated || (!user?.roles?.includes('admin') && !user?.roles?.includes('trainer'))) {
-        return null;
-    }
 
     if (loading) {
         return (
@@ -133,8 +111,8 @@ export default function ExerciseLibraryPage() {
                             setSelectedMuscle(null);
                         }}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === 'all'
-                                ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                            : 'bg-white/10 text-gray-300 hover:bg-white/20'
                             }`}
                     >
                         All Body Parts
@@ -147,8 +125,8 @@ export default function ExerciseLibraryPage() {
                                 setSelectedMuscle(null);
                             }}
                             className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === part.id
-                                    ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
                                 }`}
                         >
                             {part.name}
@@ -221,8 +199,8 @@ export default function ExerciseLibraryPage() {
                                             {exercise.difficulty_level && (
                                                 <div className="flex items-center gap-2">
                                                     <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                                            exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                                'bg-red-500/20 text-red-400'
+                                                        exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                            'bg-red-500/20 text-red-400'
                                                         }`}>
                                                         {exercise.difficulty_level}
                                                     </span>

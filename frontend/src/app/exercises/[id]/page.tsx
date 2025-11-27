@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -19,33 +18,22 @@ interface Exercise {
 }
 
 export default function ExerciseDetailPage() {
-    const { user, isAuthenticated } = useAuth();
     const router = useRouter();
     const params = useParams();
     const [exercise, setExercise] = useState<Exercise | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (isAuthenticated && !user?.roles?.includes('admin') && !user?.roles?.includes('trainer')) {
-            router.push('/');
-            return;
-        }
-
-        if (isAuthenticated && params.id) {
+        if (params.id) {
             fetchExercise();
         }
-    }, [isAuthenticated, user, router, params.id]);
+    }, [params.id]);
 
     const fetchExercise = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
-            const response = await fetch(`${apiUrl}/exercises/${params.id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await fetch(`${apiUrl}/exercises/${params.id}`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -74,10 +62,6 @@ export default function ExerciseDetailPage() {
 
         return url; // Return as-is if already an embed URL
     };
-
-    if (!isAuthenticated || (!user?.roles?.includes('admin') && !user?.roles?.includes('trainer'))) {
-        return null;
-    }
 
     if (loading) {
         return (
@@ -114,8 +98,8 @@ export default function ExerciseDetailPage() {
                     <div className="flex flex-wrap gap-3 mb-6">
                         {exercise.difficulty_level && (
                             <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                    exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                        'bg-red-500/20 text-red-400'
+                                exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                    'bg-red-500/20 text-red-400'
                                 }`}>
                                 {exercise.difficulty_level}
                             </span>
