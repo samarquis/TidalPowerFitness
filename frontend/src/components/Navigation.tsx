@@ -73,6 +73,20 @@ export default function Navigation() {
                                                 {isTrainer && (
                                                     <Link href="/trainer/availability" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>My Availability</Link>
                                                 )}
+
+                                                {isAdmin && (
+                                                    <>
+                                                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2 border-t border-white/10 pt-2">
+                                                            Admin
+                                                        </div>
+                                                        <Link href="/admin/classes" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Classes</Link>
+                                                        <Link href="/admin/trainers" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Trainers</Link>
+                                                        <Link href="/admin/users" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Users</Link>
+                                                        <Link href="/admin/calendar" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Calendar</Link>
+                                                        <Link href="/admin/reference-data" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Reference Data</Link>
+                                                        <Link href="/admin/migrations" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Migrations</Link>
+                                                    </>
+                                                )}
                                             </div>
                                         )}
                                     </div>
