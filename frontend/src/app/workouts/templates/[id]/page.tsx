@@ -59,6 +59,7 @@ export default function TemplateDetailsPage() {
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this template?')) return;
+        if (!params?.id) return;
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
