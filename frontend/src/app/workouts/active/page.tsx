@@ -26,7 +26,7 @@ function ActiveWorkoutContent() {
     const { user, token } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const templateId = searchParams.get('template');
+    const templateId = searchParams ? searchParams.get('template') : null;
 
     const [sessionId, setSessionId] = useState<string | null>(null);
 

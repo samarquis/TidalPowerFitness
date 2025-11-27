@@ -9,8 +9,8 @@ function WorkoutCompleteContent() {
     const { token } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const sessionId = searchParams.get('session');
-    const duration = searchParams.get('duration');
+    const sessionId = searchParams ? searchParams.get('session') : null;
+    const duration = searchParams ? searchParams.get('duration') : null;
 
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);

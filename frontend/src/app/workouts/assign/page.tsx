@@ -64,6 +64,7 @@ function AssignWorkoutContent() {
 
     // Handle URL parameters for pre-filling
     useEffect(() => {
+        if (!searchParams) return;
         const dateParam = searchParams.get('date');
         const classIdParam = searchParams.get('class_id');
 
