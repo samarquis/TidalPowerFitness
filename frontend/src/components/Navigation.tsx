@@ -192,6 +192,7 @@ export default function Navigation() {
                                         <Link href="/admin/users" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Users</Link>
                                         <Link href="/admin/calendar" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Calendar</Link>
                                         <Link href="/admin/reference-data" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Reference Data</Link>
+                                        <Link href="/admin/migrations" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Migrations</Link>
                                     </div>
                                 )}
 

@@ -18,6 +18,7 @@ const workoutAssignmentRoutes = require('./routes/workoutAssignments');
 const packageRoutes = require('./routes/packages');
 const importRoutes = require('./routes/import');
 const bookingRoutes = require('./routes/bookings');
+const migrationRoutes = require('./routes/migrations');
 
 // Import database initialization
 const initializeDatabase = require('./scripts/initDb');
@@ -79,6 +80,9 @@ app.use('/api/bookings', bookingRoutes.default || bookingRoutes);
 
 // Import routes (admin only)
 app.use('/api/import', importRoutes.default || importRoutes);
+
+// Migration routes (admin only)
+app.use('/api/admin/migrate', migrationRoutes.default || migrationRoutes);
 
 // Setup routes (one-time admin creation)
 app.use('/api/setup', setupRoutes.default || setupRoutes);
