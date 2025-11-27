@@ -27,8 +27,11 @@ const MIGRATIONS = [
  */
 async function runMigration(filename: string): Promise<MigrationResult> {
     try {
-        const filePath = path.join(__dirname, '../../migrations', filename);
-        
+        // Use process.cwd() to find migrations folder at root of project
+        // This works for both dev (src/..) and prod (dist/..) as long as CWD is project root
+        const migrationsDir = path.join(process.cwd(), 'migrations');
+        const filePath = path.join(migrationsDir, filename);
+
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return {
@@ -40,7 +43,7 @@ async function runMigration(filename: string): Promise<MigrationResult> {
 
         // Read SQL file
         const sql = fs.readFileSync(filePath, 'utf8');
-        
+
         // Execute migration
         console.log(`Running migration: ${filename}`);
         await pool.query(sql);
@@ -73,7 +76,7 @@ export async function runAllMigrations(): Promise<MigrationStatus> {
 
     for (const migration of MIGRATIONS) {
         const result = await runMigration(migration);
-        
+
         if (result.success) {
             results.completed.push(result);
         } else {
