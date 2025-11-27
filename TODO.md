@@ -13,17 +13,24 @@
 - [x] Booking Logic: Validate credit expiration
 - [x] Cancellation Logic: Refund credits to user balance
 
-## 📋 High Priority - Not Started
-
-### Exercise Library (User View)
-- [ ] Design: Muscle group grid layout (inspired by [muscleandstrength.com/exercises](https://www.muscleandstrength.com/exercises))
-- [ ] Feature: Filter by Body Part -> Muscle
-- [ ] Feature: Exercise Detail View (Video, Instructions)
-- [ ] Populate database with exercises from:
-  - https://www.muscleandstrength.com/exercises
-  - https://exrx.net/Lists/Directory
-
 ## ✅ Recently Completed
+
+### Membership & Credit System (Replace Acuity) - **COMPLETE**
+- [x] Database Schema: Packages, UserCredits tables
+- [x] Backend Models: Package, UserCredit
+- [x] Backend API: Package CRUD endpoints
+- [x] Admin Interface: Package Management page (`/admin/packages`)
+- [x] User Interface: Browse & Buy Packages page
+- [x] Payment Integration: Square Checkout & Webhooks
+- [x] Booking Logic: Deduct credits on class booking
+- [x] Booking Logic: Validate credit expiration
+- [x] Cancellation Logic: Refund credits to user balance
+
+### Exercise Library (User View) - **COMPLETE**
+- [x] Design: Muscle group grid layout
+- [x] Feature: Filter by Body Part -> Muscle
+- [x] Feature: Exercise Detail View (Video, Instructions)
+- [x] Public access for all users
 
 ### Home Page Redesign
 - [x] Logged-out landing page
