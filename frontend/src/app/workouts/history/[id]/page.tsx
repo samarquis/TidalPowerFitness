@@ -31,10 +31,10 @@ export default function SessionDetailsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (params.id) {
+        if (params?.id) {
             fetchSession();
         }
-    }, [params.id]);
+    }, [params]);
 
     const fetchSession = async () => {
         try {

@@ -35,10 +35,10 @@ export default function TemplateDetailsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (params.id) {
+        if (params?.id) {
             fetchTemplate();
         }
-    }, [params.id]);
+    }, [params]);
 
     const fetchTemplate = async () => {
         try {

@@ -24,10 +24,10 @@ export default function ExerciseDetailPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (params.id) {
+        if (params?.id) {
             fetchExercise();
         }
-    }, [params.id]);
+    }, [params]);
 
     const fetchExercise = async () => {
         try {
