@@ -8,10 +8,10 @@
 - [x] Backend API: Package CRUD endpoints
 - [x] Admin Interface: Package Management page (`/admin/packages`)
 - [x] **NEXT:** User Interface: Browse & Buy Packages page
-- [/] Payment Integration: Square Checkout & Webhooks (needs testing & fixes)
-- [ ] Booking Logic: Deduct credits on class booking
-- [ ] Booking Logic: Validate credit expiration
-- [ ] Cancellation Logic: Refund credits to user balance
+- [x] Payment Integration: Square Checkout & Webhooks (needs testing & fixes)
+- [x] Booking Logic: Deduct credits on class booking
+- [x] Booking Logic: Validate credit expiration
+- [x] Cancellation Logic: Refund credits to user balance
 
 ## 📋 High Priority - Not Started
 
