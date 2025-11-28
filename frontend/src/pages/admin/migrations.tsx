@@ -16,6 +16,7 @@ interface MigrationStatus {
 
 export default function Migrations() {
     const router = useRouter();
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const [status, setStatus] = useState<MigrationStatus | null>(null);
     const [loading, setLoading] = useState(false);
     const [running, setRunning] = useState(false);
@@ -29,7 +30,7 @@ export default function Migrations() {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/migrate/status`, {
+            const response = await fetch(`${API_URL}/admin/migrate/status`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -58,7 +59,7 @@ export default function Migrations() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/migrate`, {
+            const response = await fetch(`${API_URL}/admin/migrate`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -97,8 +98,8 @@ export default function Migrations() {
 
                 {message && (
                     <div className={`p-4 rounded-lg mb-6 ${message.type === 'success'
-                            ? 'bg-green-500/20 border border-green-500/50 text-green-100'
-                            : 'bg-red-500/20 border border-red-500/50 text-red-100'
+                        ? 'bg-green-500/20 border border-green-500/50 text-green-100'
+                        : 'bg-red-500/20 border border-red-500/50 text-red-100'
                         }`}>
                         {message.text}
                     </div>
