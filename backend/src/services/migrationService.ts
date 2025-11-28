@@ -15,56 +15,82 @@ interface MigrationStatus {
     failed: MigrationResult[];
 }
 
-// List of migrations to run in order
-const MIGRATIONS = [
-    '003_add_body_parts.sql',
-    '004_add_packages_and_credits.sql',
-    '005_create_class_participants.sql'
-];
+/**
+ * Get all migration files from the migrations directory, sorted alphabetically
+ */
+function getMigrationFiles(): string[] {
+    const migrationsDir = path.join(process.cwd(), 'migrations');
+
+    if (!fs.existsSync(migrationsDir)) {
+        // Try alternative path (relative to __dirname) for different environments
+        const altPath = path.join(__dirname, '../../migrations');
+        if (fs.existsSync(altPath)) {
+            return fs.readdirSync(altPath).filter(file => file.endsWith('.sql')).sort();
+        }
+        console.error(`[Migration Error] Migrations directory not found at ${migrationsDir} or ${altPath}`);
+        return [];
+    }
+
+    return fs.readdirSync(migrationsDir).filter(file => file.endsWith('.sql')).sort();
+}
 
 /**
  * Run a single migration file
  */
 async function runMigration(filename: string): Promise<MigrationResult> {
     try {
-        // Use process.cwd() to find migrations folder at root of project
-        const migrationsDir = path.join(process.cwd(), 'migrations');
-        const filePath = path.join(migrationsDir, filename);
-
-        console.log(`[Migration Debug] CWD: ${process.cwd()}`);
-        console.log(`[Migration Debug] Migrations Dir: ${migrationsDir}`);
-        console.log(`[Migration Debug] Target File: ${filePath}`);
-
-        // List directory contents if it exists
-        if (fs.existsSync(migrationsDir)) {
-            console.log(`[Migration Debug] Dir contents:`, fs.readdirSync(migrationsDir));
-        } else {
-            console.error(`[Migration Debug] Migrations directory does not exist at ${migrationsDir}`);
-
-            // Try alternative path (relative to __dirname)
-            const altPath = path.join(__dirname, '../../migrations');
-            console.log(`[Migration Debug] Checking alternative path: ${altPath}`);
-            if (fs.existsSync(altPath)) {
-                console.log(`[Migration Debug] Alternative path exists! Contents:`, fs.readdirSync(altPath));
+        // 1. Check if migration has already run (if migrations table exists)
+        try {
+            const checkResult = await pool.query(
+                'SELECT id FROM migrations WHERE name = $1',
+                [filename]
+            );
+            if (checkResult.rows.length > 0) {
+                console.log(`[Migration] Skipping ${filename} (already executed)`);
+                return {
+                    filename,
+                    success: true,
+                    executedAt: new Date() // Approximate
+                };
+            }
+        } catch (error: any) {
+            // Ignore error if table doesn't exist (likely running 001)
+            if (error.code !== '42P01') { // 42P01 is undefined_table
+                console.warn(`[Migration Warning] Could not check migration status: ${error.message}`);
             }
         }
 
-        // Check if file exists
+        // 2. Find file path
+        let migrationsDir = path.join(process.cwd(), 'migrations');
+        if (!fs.existsSync(migrationsDir)) {
+            migrationsDir = path.join(__dirname, '../../migrations');
+        }
+        const filePath = path.join(migrationsDir, filename);
+
         if (!fs.existsSync(filePath)) {
             return {
                 filename,
                 success: false,
-                error: `Migration file not found: ${filename} (searched in ${migrationsDir})`
+                error: `Migration file not found: ${filename}`
             };
         }
 
-        // Read SQL file
+        // 3. Read and Execute SQL
         const sql = fs.readFileSync(filePath, 'utf8');
-
-        // Execute migration
-        console.log(`Running migration: ${filename}`);
+        console.log(`[Migration] Running: ${filename}`);
         await pool.query(sql);
-        console.log(`✓ Migration completed: ${filename}`);
+
+        // 4. Record execution
+        try {
+            await pool.query(
+                'INSERT INTO migrations (name) VALUES ($1) ON CONFLICT (name) DO NOTHING',
+                [filename]
+            );
+        } catch (error: any) {
+            console.warn(`[Migration Warning] Could not record migration execution: ${error.message}`);
+        }
+
+        console.log(`[Migration] ✓ Completed: ${filename}`);
 
         return {
             filename,
@@ -72,7 +98,7 @@ async function runMigration(filename: string): Promise<MigrationResult> {
             executedAt: new Date()
         };
     } catch (error: any) {
-        console.error(`✗ Migration failed: ${filename}`, error);
+        console.error(`[Migration] ✗ Failed: ${filename}`, error);
         return {
             filename,
             success: false,
@@ -91,28 +117,32 @@ export async function runAllMigrations(): Promise<MigrationStatus> {
         failed: []
     };
 
-    for (const migration of MIGRATIONS) {
-        const result = await runMigration(migration);
+    const files = getMigrationFiles();
+    console.log(`[Migration] Found ${files.length} migration files:`, files);
+
+    for (const file of files) {
+        const result = await runMigration(file);
 
         if (result.success) {
             results.completed.push(result);
         } else {
             results.failed.push(result);
-            // Stop on first failure
-            console.error(`Stopping migration process due to failure in ${migration}`);
+            console.error(`[Migration] Stopping process due to failure in ${file}`);
+
+            // Add remaining to pending
+            const currentIndex = files.indexOf(file);
+            if (currentIndex !== -1 && currentIndex < files.length - 1) {
+                results.pending = files.slice(currentIndex + 1);
+            }
             break;
         }
     }
-
-    // Add remaining migrations to pending if we stopped early
-    const lastIndex = results.completed.length + results.failed.length;
-    results.pending = MIGRATIONS.slice(lastIndex);
 
     return results;
 }
 
 /**
- * Get migration status (which have been applied, which are pending)
+ * Get migration status
  */
 export async function getMigrationStatus(): Promise<MigrationStatus> {
     const status: MigrationStatus = {
@@ -121,42 +151,30 @@ export async function getMigrationStatus(): Promise<MigrationStatus> {
         failed: []
     };
 
-    for (const migration of MIGRATIONS) {
-        // Check if tables exist to determine if migration has been applied
+    const files = getMigrationFiles();
+
+    for (const file of files) {
         try {
-            if (migration === '003_add_body_parts.sql') {
-                const result = await pool.query(
-                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'body_parts')"
-                );
-                if (result.rows[0].exists) {
-                    status.completed.push({ filename: migration, success: true });
-                } else {
-                    status.pending.push(migration);
-                }
-            } else if (migration === '004_add_packages_and_credits.sql') {
-                const result = await pool.query(
-                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'packages')"
-                );
-                if (result.rows[0].exists) {
-                    status.completed.push({ filename: migration, success: true });
-                } else {
-                    status.pending.push(migration);
-                }
-            } else if (migration === '005_create_class_participants.sql') {
-                const result = await pool.query(
-                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'class_participants')"
-                );
-                if (result.rows[0].exists) {
-                    status.completed.push({ filename: migration, success: true });
-                } else {
-                    status.pending.push(migration);
-                }
+            const result = await pool.query(
+                'SELECT * FROM migrations WHERE name = $1',
+                [file]
+            );
+
+            if (result.rows.length > 0) {
+                status.completed.push({
+                    filename: file,
+                    success: true,
+                    executedAt: result.rows[0].executed_at
+                });
+            } else {
+                status.pending.push(file);
             }
         } catch (error) {
-            console.error(`Error checking migration status for ${migration}:`, error);
-            status.pending.push(migration);
+            // If table doesn't exist, all are pending (except maybe 001 if it partially ran)
+            status.pending.push(file);
         }
     }
 
     return status;
 }
+
