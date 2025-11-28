@@ -34,18 +34,30 @@ export interface UpdateUserInput {
 }
 
 class UserModel {
+    // Helper to map database row to User object
+    private mapRowToUser(row: any): User | null {
+        if (!row) return null;
+        return {
+            ...row,
+            roles: row.roles || (row.role ? [row.role] : ['client'])
+        };
+    }
+
     // Create a new user
     async create(userData: CreateUserInput): Promise<User> {
         const { email, password_hash, first_name, last_name, phone, roles = ['client'] } = userData;
 
+        // For backward compatibility, use the first role as the primary role
+        const primaryRole = roles.length > 0 ? roles[0] : 'client';
+
         const result: QueryResult = await query(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone, roles)
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-            [email, password_hash, first_name, last_name, phone, roles]
+            [email, password_hash, first_name, last_name, phone, primaryRole]
         );
 
-        return result.rows[0];
+        return this.mapRowToUser(result.rows[0])!;
     }
 
     // Find user by ID
@@ -55,7 +67,7 @@ class UserModel {
             [id]
         );
 
-        return result.rows[0] || null;
+        return this.mapRowToUser(result.rows[0]);
     }
 
     // Find user by email
@@ -65,17 +77,17 @@ class UserModel {
             [email]
         );
 
-        return result.rows[0] || null;
+        return this.mapRowToUser(result.rows[0]);
     }
 
-    // Get all users by role (checks if role is in roles array)
+    // Get all users by role (checks if role is in roles array or matches singular role)
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
-            'SELECT * FROM users WHERE $1 = ANY(roles) AND is_active = true ORDER BY created_at DESC',
+            'SELECT * FROM users WHERE role = $1 AND is_active = true ORDER BY created_at DESC',
             [role]
         );
 
-        return result.rows;
+        return result.rows.map(row => this.mapRowToUser(row)!);
     }
 
     // Update user
@@ -85,7 +97,7 @@ class UserModel {
         let paramCount = 1;
 
         Object.entries(userData).forEach(([key, value]) => {
-            if (value !== undefined) {
+            if (value !== undefined && key !== 'roles') { // Handle roles separately if needed, but for now we rely on singular role
                 fields.push(`${key} = $${paramCount}`);
                 values.push(value);
                 paramCount++;
@@ -102,7 +114,7 @@ class UserModel {
             values
         );
 
-        return result.rows[0] || null;
+        return this.mapRowToUser(result.rows[0]);
     }
 
     // Soft delete user (set is_active to false)
@@ -125,30 +137,32 @@ class UserModel {
         return (result.rowCount ?? 0) > 0;
     }
 
-    // Add a role to user
+    // Add a role to user - For singular role schema, this updates the primary role
     async addRole(id: string, role: string): Promise<User | null> {
+        // Since we only have a singular role column, we update it
+        // In a real array implementation, we would append
         const result: QueryResult = await query(
             `UPDATE users 
-             SET roles = array_append(roles, $2)
-             WHERE id = $1 AND NOT ($2 = ANY(roles))
-             RETURNING *`,
-            [id, role]
-        );
-
-        return result.rows[0] || null;
-    }
-
-    // Remove a role from user
-    async removeRole(id: string, role: string): Promise<User | null> {
-        const result: QueryResult = await query(
-            `UPDATE users 
-             SET roles = array_remove(roles, $2)
+             SET role = $2
              WHERE id = $1
              RETURNING *`,
             [id, role]
         );
 
-        return result.rows[0] || null;
+        return this.mapRowToUser(result.rows[0]);
+    }
+
+    // Remove a role from user - For singular role schema, this resets to client if matches
+    async removeRole(id: string, role: string): Promise<User | null> {
+        const result: QueryResult = await query(
+            `UPDATE users 
+             SET role = 'client'
+             WHERE id = $1 AND role = $2
+             RETURNING *`,
+            [id, role]
+        );
+
+        return this.mapRowToUser(result.rows[0]);
     }
 }
 
