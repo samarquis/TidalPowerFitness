@@ -35,7 +35,14 @@ export default function Migrations() {
                 throw new Error(response.error);
             }
 
-            setStatus(response.data);
+            // API returns { success: true, data: status }
+            // ApiClient returns { data: { success: true, data: status } }
+            // So we need response.data.data
+            if (response.data && response.data.data) {
+                setStatus(response.data.data);
+            } else {
+                throw new Error('Invalid response format');
+            }
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message || 'Failed to load migration status' });
         } finally {
@@ -121,9 +128,9 @@ export default function Migrations() {
                         <>
                             <div className="mb-6">
                                 <h3 className="text-xl font-medium mb-3 text-teal-300">
-                                    ✅ Completed Migrations ({status.completed.length})
+                                    ✅ Completed Migrations ({status?.completed?.length || 0})
                                 </h3>
-                                {status.completed.length > 0 ? (
+                                {status?.completed?.length > 0 ? (
                                     <ul className="space-y-2">
                                         {status.completed.map((migration, index) => (
                                             <li key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
@@ -139,9 +146,9 @@ export default function Migrations() {
 
                             <div className="mb-6">
                                 <h3 className="text-xl font-medium mb-3 text-yellow-300">
-                                    ⏳ Pending Migrations ({status.pending.length})
+                                    ⏳ Pending Migrations ({status?.pending?.length || 0})
                                 </h3>
-                                {status.pending.length > 0 ? (
+                                {status?.pending?.length > 0 ? (
                                     <ul className="space-y-2">
                                         {status.pending.map((migration, index) => (
                                             <li key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
@@ -155,7 +162,7 @@ export default function Migrations() {
                                 )}
                             </div>
 
-                            {status.failed.length > 0 && (
+                            {status?.failed?.length > 0 && (
                                 <div className="mb-6">
                                     <h3 className="text-xl font-medium mb-3 text-red-300">
                                         ❌ Failed Migrations ({status.failed.length})
