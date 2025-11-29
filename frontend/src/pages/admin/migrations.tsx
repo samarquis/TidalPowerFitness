@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { apiClient } from '@/lib/api';
 
 interface MigrationResult {
     filename: string;
@@ -16,7 +17,6 @@ interface MigrationStatus {
 
 export default function Migrations() {
     const router = useRouter();
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const [status, setStatus] = useState<MigrationStatus | null>(null);
     const [loading, setLoading] = useState(false);
     const [running, setRunning] = useState(false);
@@ -29,19 +29,13 @@ export default function Migrations() {
     const checkMigrationStatus = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/admin/migrate/status`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await apiClient.getMigrationStatus();
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch migration status');
+            if (response.error) {
+                throw new Error(response.error);
             }
 
-            const data = await response.json();
-            setStatus(data.data);
+            setStatus(response.data);
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message || 'Failed to load migration status' });
         } finally {
@@ -58,23 +52,14 @@ export default function Migrations() {
         setMessage(null);
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/admin/migrate`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await apiClient.runMigrations();
 
-            const data = await response.json();
-
-            if (data.success) {
-                setMessage({ type: 'success', text: data.message });
+            if (response.data.success) {
+                setMessage({ type: 'success', text: response.data.message });
                 // Refresh status
                 await checkMigrationStatus();
             } else {
-                setMessage({ type: 'error', text: data.message || 'Migration failed' });
+                setMessage({ type: 'error', text: response.data.message || 'Migration failed' });
             }
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message || 'Failed to run migrations' });

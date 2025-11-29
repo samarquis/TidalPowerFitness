@@ -108,6 +108,15 @@ class ApiClient {
             body: JSON.stringify(formData),
         });
     }
+
+    // Migration endpoints
+    async getMigrationStatus() {
+        return this.request<any>('/admin/migrate/status', { method: 'GET' });
+    }
+
+    async runMigrations() {
+        return this.request<any>('/admin/migrate', { method: 'POST' });
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
