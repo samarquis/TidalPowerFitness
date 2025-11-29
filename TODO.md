@@ -51,7 +51,7 @@
 
 ## 🔧 Backlog / Technical Debt
 
-- [ ] **ACTION REQUIRED:** Run Database Migrations on Production (via `/admin/migrations`)
+- [x] **ACTION REQUIRED:** Run Database Migrations on Production (via `/admin/migrations`) - **COMPLETE**
 - [ ] Test multi-day class scheduling functionality
 - [ ] Verify all migrations applied successfully on deployed environment
 
@@ -59,14 +59,47 @@
 
 ## 📌 Next Steps Summary
 
-**Immediate Next Task:** Execute Production Migrations
-1. Log in to production site as admin
-2. Go to `/admin/migrations`
-3. Run pending migrations
-
 **Immediate Next Task:** Complete Membership & Credit System
-1. Build User-facing Packages page (`/packages`)
-2. Integrate Square payment flow
-3. Update class booking to consume credits
+1. [x] Build User-facing Packages Page (`/packages`) - **COMPLETE**
+2. [x] Implement Mock Payment Flow for Development - **COMPLETE**
+3. [ ] Update class booking to consume credits
 
 **After Membership System:** Build Exercise Library (User View)
+
+**After Membership System:** Build Exercise Library (User View)
+
+---
+
+## 📋 Comprehensive Review Action Plan (Generated on 2025-11-28)
+
+The following tasks are based on a comprehensive review of the codebase.
+
+### 🛡️ Security Vulnerabilities (High Priority)
+
+- [x] **CRITICAL:** Remove hardcoded default JWT secret.
+    - The fallback secret in `backend/src/utils/jwt.ts` and `docker-compose.yml` must be removed.
+    - The application should fail to start if the `JWT_SECRET` environment variable is not provided in production.
+- [ ] **HIGH:** Secure JWT storage on the frontend.
+    - The current `localStorage` implementation is vulnerable to XSS.
+    - Plan and migrate to using `HttpOnly` cookies for storing JWTs.
+
+### ⚙️ Backend Improvements
+
+- [ ] **Input Validation:** Add robust validation and sanitization to all controller endpoints (e.g., using `express-validator` or `zod`).
+- [ ] **Dependency Cleanup:**
+    - Remove the redundant `bcryptjs` dependency and standardize on `bcrypt`.
+    - Investigate removing the `node-fetch` dependency and using the native `fetch` available in modern Node.js.
+- [ ] **Code Consistency:** Refactor controllers to use a consistent pattern (either all classes or all function-based exports).
+
+### 🎨 Frontend Improvements
+
+- [ ] **Standardize API Calls:** Refactor all components (e.g., `classes/page.tsx`) to use the central `apiClient`. Remove direct `fetch` calls to eliminate code duplication.
+    - [x] Refactored `/admin/migrations` page.
+- [ ] **Refactor Token Management:** Remove redundant token handling logic from `AuthContext.tsx`. Let `apiClient` be the single source of truth for storing the token in `localStorage`.
+
+### 🗄️ Database & Technical Debt
+
+- [ ] **Remove Legacy Column:** Create a migration to safely remove the unused `day_of_week` column from the `classes` table.
+- [ ] **Refactor Role System:**
+    - Plan the migration from a single `role` column to a proper multi-role system.
+    - This will likely involve creating a `roles` table and a `user_roles` junction table to align the database with the application's data model.
