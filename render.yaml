@@ -36,6 +36,10 @@ services:
         sync: false
       - key: SQUARE_ENVIRONMENT
         value: sandbox
+      - key: PAYMENT_PROVIDER
+        value: mock
+      - key: FRONTEND_URL
+        value: https://tidal-power-frontend-app.onrender.com
     rootDir: backend
 
   # Frontend Next.js App
