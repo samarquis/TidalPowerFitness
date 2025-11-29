@@ -41,7 +41,7 @@ services:
       DB_NAME: titan_power_fitness
       DB_USER: postgres
       DB_PASSWORD: ${DB_PASSWORD:-changeme}
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       ACUITY_USER_ID: ${ACUITY_USER_ID:-}
       ACUITY_API_KEY: ${ACUITY_API_KEY:-}

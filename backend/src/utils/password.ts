@@ -4,6 +4,9 @@ const SALT_ROUNDS = 10;
 
 // Hash password
 export const hashPassword = async (password: string): Promise<string> => {
+    if (!password) {
+        throw new Error('Password cannot be empty');
+    }
     const salt = await bcrypt.genSalt(SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, salt);
     return hashedPassword;
