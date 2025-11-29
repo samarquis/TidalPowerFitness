@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
@@ -26,21 +26,7 @@ export default function Migrations() {
     const [running, setRunning] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            router.push('/login');
-            return;
-        }
-        if (user && !user.roles.includes('admin')) {
-            router.push('/');
-            return;
-        }
-        if (user) {
-            checkMigrationStatus();
-        }
-    }, [user, isAuthenticated, router]);
-
-    const checkMigrationStatus = async () => {
+    const checkMigrationStatus = useCallback(async () => {
         setLoading(true);
         try {
             const response = await apiClient.getMigrationStatus();
@@ -55,7 +41,21 @@ export default function Migrations() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+        if (user && !user.roles.includes('admin')) {
+            router.push('/');
+            return;
+        }
+        if (user) {
+            checkMigrationStatus();
+        }
+    }, [user, isAuthenticated, router, checkMigrationStatus]);
 
     const runMigrations = async () => {
         if (!confirm('Are you sure you want to run database migrations? This will modify the production database.')) {
