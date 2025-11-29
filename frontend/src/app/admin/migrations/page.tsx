@@ -201,31 +201,25 @@ export default function Migrations() {
                 <div className="glass rounded-xl p-6">
                     <h3 className="text-xl font-semibold mb-4 text-teal-300">ℹ️ About Database Migrations</h3>
                     <p className="mb-4 text-gray-300">
-                        Database migrations update your database schema to support new features.
-                        The pending migrations will add:
+                        Database migrations update your database schema to support new features and improvements.
+                        Each migration file contains SQL commands that modify the database structure.
                     </p>
                     <ul className="space-y-2 mb-4 text-gray-300">
                         <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <div>
-                                <strong className="text-white">003_add_body_parts.sql</strong> - Body parts hierarchy for exercises
-                            </div>
+                            <span className="mr-2">✓</span>
+                            <div>Migrations are run in alphabetical order</div>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <div>
-                                <strong className="text-white">004_add_packages_and_credits.sql</strong> - Membership packages and credit system
-                            </div>
+                            <span className="mr-2">✓</span>
+                            <div>Each migration is tracked to prevent duplicate execution</div>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            <div>
-                                <strong className="text-white">005_create_class_participants.sql</strong> - Class booking and participant tracking
-                            </div>
+                            <span className="mr-2">✓</span>
+                            <div>Failed migrations will stop the process to prevent data corruption</div>
                         </li>
                     </ul>
                     <p className="text-sm text-gray-400">
-                        <strong>Note:</strong> All migrations are designed to be safe and idempotent (can be run multiple times).
+                        <strong>Note:</strong> All migrations are designed to be safe and idempotent (can be run multiple times without causing issues).
                     </p>
                 </div>
             </div>
