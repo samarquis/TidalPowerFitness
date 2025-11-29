@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 
 interface MigrationResult {
@@ -17,14 +18,25 @@ interface MigrationStatus {
 
 export default function Migrations() {
     const router = useRouter();
+    const { user, isAuthenticated } = useAuth();
     const [status, setStatus] = useState<MigrationStatus | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [running, setRunning] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     useEffect(() => {
-        checkMigrationStatus();
-    }, []);
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+        if (user && !user.roles.includes('admin')) {
+            router.push('/');
+            return;
+        }
+        if (user) {
+            checkMigrationStatus();
+        }
+    }, [user, isAuthenticated, router]);
 
     const checkMigrationStatus = async () => {
         setLoading(true);
@@ -67,6 +79,14 @@ export default function Migrations() {
             setRunning(false);
         }
     };
+
+    if (!user || !user.roles.includes('admin')) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
+                <p className="text-white">Loading...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-teal-900 to-gray-900 text-white p-8">
