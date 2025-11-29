@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginContent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get('redirect') || '/trainers';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,7 +23,7 @@ export default function LoginPage() {
         const result = await login(email, password);
 
         if (result.success) {
-            router.push('/trainers');
+            router.push(redirectPath);
         } else {
             setError(result.error || 'Login failed');
             setLoading(false);
@@ -97,5 +99,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 }
