@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Package {
-    id: number;
+    id: string;
     name: string;
     description: string;
-    price: number;
-    credit_amount: number;
+    price_cents: number;
+    credit_count: number;
+    type: 'one_time' | 'subscription';
+    duration_days?: number;
 }
 
 interface PackageCardProps {
@@ -53,13 +55,16 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
         }
     };
 
+    const price = (pkg.price_cents / 100).toFixed(2);
+    const isSubscription = pkg.type === 'subscription';
+
     return (
         <div className="bg-gray-900 border border-white/10 rounded-xl p-6 flex flex-col h-full hover:border-teal-500/50 transition-all duration-300 group">
             <div className="mb-4">
                 <h3 className="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">{pkg.name}</h3>
                 <div className="mt-2 flex items-baseline text-white">
-                    <span className="text-3xl font-bold tracking-tight">${pkg.price}</span>
-                    <span className="ml-1 text-sm text-gray-400">/ package</span>
+                    <span className="text-3xl font-bold tracking-tight">${price}</span>
+                    <span className="ml-1 text-sm text-gray-400">{isSubscription ? '/ month' : '/ package'}</span>
                 </div>
             </div>
 
@@ -70,7 +75,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
                     <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span>{pkg.credit_amount} Credits</span>
+                    <span>{pkg.credit_count} Credits</span>
                 </div>
             </div>
 

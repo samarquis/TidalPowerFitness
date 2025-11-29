@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import PackageCard from '@/components/PackageCard';
+import { apiClient } from '@/lib/api';
 
-interface Package {
-    id: number;
+export interface Package {
+    id: string;
     name: string;
     description: string;
-    price: number;
-    credit_amount: number;
+    price_cents: number;
+    credit_count: number;
+    type: 'one_time' | 'subscription';
+    duration_days?: number;
 }
 
 export default function PackagesPage() {
@@ -19,15 +22,16 @@ export default function PackagesPage() {
     useEffect(() => {
         const fetchPackages = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/packages');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch packages');
+                const response = await apiClient.getPackages();
+                if (response.error) {
+                    throw new Error(response.error);
                 }
-                const data = await response.json();
-                setPackages(data);
-            } catch (err) {
+                if (response.data) {
+                    setPackages(response.data);
+                }
+            } catch (err: any) {
                 console.error('Error fetching packages:', err);
-                setError('Failed to load packages. Please try again later.');
+                setError(err.message || 'Failed to load packages. Please try again later.');
             } finally {
                 setLoading(false);
             }

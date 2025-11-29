@@ -109,6 +109,11 @@ class ApiClient {
         });
     }
 
+    // Package endpoints
+    async getPackages() {
+        return this.request<any>('/packages', { method: 'GET' });
+    }
+
     // Migration endpoints
     async getMigrationStatus() {
         return this.request<any>('/admin/migrate/status', { method: 'GET' });
