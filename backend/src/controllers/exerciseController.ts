@@ -6,13 +6,17 @@ class ExerciseController {
     // Get all exercises
     async getExercises(req: Request, res: Response): Promise<void> {
         try {
-            const filters = {
+            const filters: any = {
                 workout_type_id: req.query.workout_type_id as string,
                 muscle_group: req.query.muscle_group as string,
                 difficulty: req.query.difficulty as string,
-                is_active: req.query.is_active === 'true',
                 search: req.query.search as string
             };
+
+            // Only filter by is_active if explicitly provided
+            if (req.query.is_active !== undefined) {
+                filters.is_active = req.query.is_active === 'true';
+            }
 
             const exercises = await Exercise.getAll(filters);
             res.json(exercises);
