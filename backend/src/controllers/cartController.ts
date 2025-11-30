@@ -15,7 +15,7 @@ class CartController {
             const itemCount = await Cart.getCartItemCount(req.user.id);
 
             res.json({
-                cart: cart || { items: [] },
+                items: cart?.items || [],
                 total_cents: total,
                 item_count: itemCount
             });
