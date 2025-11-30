@@ -33,12 +33,17 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
                 )}
 
                 {/* Availability badge */}
-                {trainer.is_accepting_clients && (
+                {trainer.is_accepting_clients ? (
                     <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 shadow-lg">
                         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                         Available
                     </div>
-                )}
+                ) : trainer.bio === 'Profile not yet completed' ? (
+                    <div className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 shadow-lg">
+                        <span className="w-2 h-2 bg-black rounded-full"></span>
+                        Profile Incomplete
+                    </div>
+                ) : null}
 
                 {/* Experience badge */}
                 <div className="absolute bottom-4 left-4 glass backdrop-blur-md px-3 py-1 rounded-full text-sm font-semibold">

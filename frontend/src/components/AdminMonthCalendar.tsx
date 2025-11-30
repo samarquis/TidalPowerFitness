@@ -91,19 +91,20 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
     return (
         <div className="w-full">
             {/* Days Header */}
-            <div className="grid grid-cols-7 gap-4 mb-4 text-center">
+            <div className="grid grid-cols-7 gap-2 md:gap-4 mb-4 text-center">
                 {DAYS.map(day => (
-                    <div key={day} className="font-bold text-gray-400 uppercase text-sm tracking-wider">
-                        {day.slice(0, 3)}
+                    <div key={day} className="font-bold text-gray-400 uppercase text-xs md:text-sm tracking-wider">
+                        <span className="hidden sm:inline">{day.slice(0, 3)}</span>
+                        <span className="sm:hidden">{day.slice(0, 1)}</span>
                     </div>
                 ))}
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-4 auto-rows-fr">
+            <div className="grid grid-cols-7 gap-2 md:gap-4 auto-rows-fr">
                 {/* Empty cells for previous month */}
                 {Array.from({ length: firstDay }).map((_, i) => (
-                    <div key={`empty-${i}`} className="min-h-[150px] bg-white/5 rounded-lg opacity-50"></div>
+                    <div key={`empty-${i}`} className="min-h-[100px] sm:min-h-[120px] md:min-h-[150px] bg-white/5 rounded-lg opacity-50"></div>
                 ))}
 
                 {/* Days of current month */}
@@ -116,13 +117,13 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                     return (
                         <div
                             key={day}
-                            className={`min-h-[150px] bg-white/5 rounded-lg p-3 border transition-all hover:border-teal-500/30 group relative flex flex-col
+                            className={`min-h-[100px] sm:min-h-[120px] md:min-h-[150px] bg-white/5 rounded-lg p-2 md:p-3 border transition-all hover:border-teal-500/30 group relative flex flex-col
                                 ${isToday ? 'border-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.2)]' : 'border-white/5'}
                             `}
                         >
                             {/* Date Number */}
-                            <div className="flex justify-between items-start mb-2">
-                                <span className={`text-lg font-bold ${isToday ? 'text-teal-400' : 'text-gray-300'}`}>
+                            <div className="flex justify-between items-start mb-1 md:mb-2">
+                                <span className={`text-base md:text-lg font-bold ${isToday ? 'text-teal-400' : 'text-gray-300'}`}>
                                     {day}
                                 </span>
 
@@ -133,10 +134,10 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                                             e.stopPropagation();
                                             onAddClassClick(date);
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-teal-500/20 rounded text-teal-400 transition-all"
+                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-teal-500/20 rounded text-teal-400 transition-all hidden sm:block"
                                         title="Add class to this day"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                         </svg>
                                     </button>
@@ -144,7 +145,7 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                             </div>
 
                             {/* Classes List */}
-                            <div className="space-y-1.5 flex-1 overflow-y-auto custom-scrollbar">
+                            <div className="space-y-1 md:space-y-1.5 flex-1 overflow-y-auto custom-scrollbar">
                                 {dayClasses.map((classItem, idx) => {
                                     const session = sessions?.find(s =>
                                         s.class_id === classItem.id &&
@@ -156,21 +157,21 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                                             key={`${classItem.id}-${day}-${idx}`}
                                             onClick={() => onClassClick && onClassClick(classItem, date)}
                                             className={`
-                                                text-xs p-1.5 rounded border cursor-pointer transition-all hover:scale-[1.02]
+                                                text-[10px] sm:text-xs p-1 md:p-1.5 rounded border cursor-pointer transition-all hover:scale-[1.02]
                                                 ${getCategoryColor(classItem.category)}
                                                 ${session ? 'ring-1 ring-green-400' : ''}
                                             `}
                                         >
                                             <div className="font-bold truncate">{classItem.name}</div>
                                             <div className="flex justify-between opacity-80">
-                                                <span>{formatTime(classItem.start_time)}</span>
-                                                {session && <span className="text-green-400">✓</span>}
+                                                <span className="truncate">{formatTime(classItem.start_time)}</span>
+                                                {session && <span className="text-green-400 ml-1">✓</span>}
                                             </div>
                                         </div>
                                     );
                                 })}
                                 {dayClasses.length === 0 && (
-                                    <div className="flex-1 flex items-center justify-center text-gray-600 text-xs italic">
+                                    <div className="flex-1 flex items-center justify-center text-gray-600 text-[10px] sm:text-xs italic pt-2">
                                         No classes
                                     </div>
                                 )}

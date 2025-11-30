@@ -177,28 +177,28 @@ export default function AdminCalendarPage() {
         <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                    <div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-2">
+                <div className="flex flex-col gap-6 mb-8">
+                    <div className="text-center md:text-left">
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
                             Class <span className="text-gradient">Schedule</span>
                         </h1>
-                        <p className="text-gray-400">Manage weekly schedule and assign workouts</p>
+                        <p className="text-gray-400 text-sm md:text-base">Manage weekly schedule and assign workouts</p>
                     </div>
-                    <div className="flex gap-4 items-center">
-                        <div className="flex bg-white/10 rounded-lg p-1">
-                            <button onClick={handlePrevMonth} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
+                    <div className="flex flex-col sm:flex-row gap-3 items-center justify-center md:justify-between">
+                        <div className="flex bg-white/10 rounded-lg p-1 w-full sm:w-auto">
+                            <button onClick={handlePrevMonth} className="px-3 md:px-4 py-2 hover:bg-white/10 rounded-md transition-colors text-lg">
                                 ←
                             </button>
-                            <div className="px-4 py-2 font-semibold border-l border-r border-white/10 min-w-[150px] text-center">
+                            <div className="px-3 md:px-4 py-2 font-semibold border-l border-r border-white/10 min-w-[140px] md:min-w-[150px] text-center text-sm md:text-base">
                                 {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                             </div>
-                            <button onClick={handleNextMonth} className="px-4 py-2 hover:bg-white/10 rounded-md transition-colors">
+                            <button onClick={handleNextMonth} className="px-3 md:px-4 py-2 hover:bg-white/10 rounded-md transition-colors text-lg">
                                 →
                             </button>
                         </div>
                         <Link
                             href="/admin/classes"
-                            className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all"
+                            className="w-full sm:w-auto text-center px-4 md:px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all text-sm md:text-base"
                         >
                             Manage Classes
                         </Link>
@@ -208,11 +208,11 @@ export default function AdminCalendarPage() {
                 {/* Calendar */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
-                        <p className="mt-4 text-gray-400">Loading schedule...</p>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                        <p className="mt-4 text-gray-400 text-sm md:text-base">Loading schedule...</p>
                     </div>
                 ) : (
-                    <div className="glass rounded-xl p-6">
+                    <div className="glass rounded-xl p-3 md:p-6">
                         <AdminMonthCalendar
                             classes={classes}
                             sessions={sessions}
@@ -227,27 +227,27 @@ export default function AdminCalendarPage() {
             {/* Class Details Modal */}
             {showDetailsModal && selectedClassInstance && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="glass rounded-xl max-w-md w-full p-6">
+                    <div className="glass rounded-xl max-w-md w-full p-4 md:p-6 max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 className="text-2xl font-bold text-white">{selectedClassInstance.classItem.name}</h3>
-                                <p className="text-teal-400">{selectedClassInstance.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                            <div className="flex-1 pr-4">
+                                <h3 className="text-xl md:text-2xl font-bold text-white break-words">{selectedClassInstance.classItem.name}</h3>
+                                <p className="text-teal-400 text-sm md:text-base">{selectedClassInstance.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
                             </div>
-                            <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-white text-2xl">×</button>
+                            <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-white text-3xl leading-none flex-shrink-0">×</button>
                         </div>
 
                         <div className="space-y-4 mb-8">
                             <div className="flex justify-between border-b border-white/10 pb-2">
-                                <span className="text-gray-400">Time</span>
-                                <span className="text-white font-medium">{selectedClassInstance.classItem.start_time} ({selectedClassInstance.classItem.duration_minutes}m)</span>
+                                <span className="text-gray-400 text-sm md:text-base">Time</span>
+                                <span className="text-white font-medium text-sm md:text-base text-right">{selectedClassInstance.classItem.start_time} ({selectedClassInstance.classItem.duration_minutes}m)</span>
                             </div>
                             <div className="flex justify-between border-b border-white/10 pb-2">
-                                <span className="text-gray-400">Instructor</span>
-                                <span className="text-white font-medium">{selectedClassInstance.classItem.instructor_name}</span>
+                                <span className="text-gray-400 text-sm md:text-base">Instructor</span>
+                                <span className="text-white font-medium text-sm md:text-base text-right break-words">{selectedClassInstance.classItem.instructor_name}</span>
                             </div>
                             <div className="flex justify-between border-b border-white/10 pb-2">
-                                <span className="text-gray-400">Category</span>
-                                <span className="text-white font-medium">{selectedClassInstance.classItem.category}</span>
+                                <span className="text-gray-400 text-sm md:text-base">Category</span>
+                                <span className="text-white font-medium text-sm md:text-base text-right">{selectedClassInstance.classItem.category}</span>
                             </div>
 
                             <div className="pt-2">
@@ -270,17 +270,17 @@ export default function AdminCalendarPage() {
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <button
                                 onClick={() => router.push(`/admin/classes?edit=${selectedClassInstance.classItem.id}`)}
-                                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-colors"
+                                className="flex-1 px-4 py-2.5 md:py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-colors text-sm md:text-base"
                             >
                                 Edit Class
                             </button>
                             {!currentSession && (
                                 <button
                                     onClick={handleAssignWorkout}
-                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors"
+                                    className="flex-1 px-4 py-2.5 md:py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors text-sm md:text-base"
                                 >
                                     Assign Workout
                                 </button>

@@ -246,63 +246,65 @@ function AssignWorkoutContent() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 px-4">
             <div className="max-w-3xl mx-auto">
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <h1 className="text-3xl font-bold mb-2">Assign Workout</h1>
-                    <p className="text-gray-600 mb-6">Step {step} of 4</p>
+                <div className="glass rounded-2xl p-8 shadow-xl">
+                    <h1 className="text-4xl font-bold mb-2">
+                        Assign <span className="text-gradient">Workout</span>
+                    </h1>
+                    <p className="text-gray-400 mb-8">Step {step} of 4</p>
 
                     {/* Progress Bar */}
                     <div className="mb-8">
-                        <div className="flex justify-between mb-2">
+                        <div className="flex justify-between mb-3">
                             {['Date', 'Workout', 'Recipients', 'Review'].map((label, index) => (
                                 <span
                                     key={label}
-                                    className={`text-sm ${step > index ? 'text-blue-600 font-semibold' : 'text-gray-400'
+                                    className={`text-sm font-semibold ${step > index ? 'text-teal-400' : 'text-gray-500'
                                         }`}
                                 >
                                     {label}
                                 </span>
                             ))}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-white/10 rounded-full h-2">
                             <div
-                                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                className="bg-gradient-to-r from-teal-400 to-teal-600 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${(step / 4) * 100}%` }}
                             />
                         </div>
                     </div>
 
                     {error && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 text-red-200 rounded-lg">
                             {error}
                         </div>
                     )}
 
                     {/* Step 1: Date & Time */}
                     {step === 1 && (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">
                                     Session Date *
                                 </label>
                                 <input
                                     type="date"
                                     value={sessionDate}
                                     onChange={(e) => setSessionDate(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     min={new Date().toISOString().split('T')[0]}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">
                                     Start Time (Optional)
                                 </label>
                                 <input
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 />
                             </div>
                         </div>
@@ -310,36 +312,36 @@ function AssignWorkoutContent() {
 
                     {/* Step 2: Workout Selection */}
                     {step === 2 && (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                <label className="block text-sm font-semibold text-gray-300 mb-3">
                                     Choose Workout Type
                                 </label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50">
+                                <div className="space-y-3">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
                                         <input
                                             type="radio"
                                             name="workoutMode"
                                             value="template"
                                             checked={workoutMode === 'template'}
                                             onChange={() => setWorkoutMode('template')}
-                                            className="mr-3"
+                                            className="mr-4 w-4 h-4 text-teal-500"
                                         />
                                         <div>
-                                            <div className="font-medium">Use Template</div>
-                                            <div className="text-sm text-gray-600">Select from your saved workout templates</div>
+                                            <div className="font-semibold text-white">Use Template</div>
+                                            <div className="text-sm text-gray-400">Select from your saved workout templates</div>
                                         </div>
                                     </label>
-                                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50 opacity-50">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg opacity-50 cursor-not-allowed">
                                         <input
                                             type="radio"
                                             name="workoutMode"
                                             value="custom"
                                             disabled
-                                            className="mr-3"
+                                            className="mr-4 w-4 h-4"
                                         />
                                         <div>
-                                            <div className="font-medium">Create Custom</div>
+                                            <div className="font-semibold text-gray-500">Create Custom</div>
                                             <div className="text-sm text-gray-600">Build a custom workout (Coming soon)</div>
                                         </div>
                                     </label>
@@ -348,17 +350,17 @@ function AssignWorkoutContent() {
 
                             {workoutMode === 'template' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
                                         Select Template *
                                     </label>
                                     <select
                                         value={selectedTemplate}
                                         onChange={(e) => setSelectedTemplate(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     >
-                                        <option value="">-- Select a template --</option>
+                                        <option value="" className="bg-gray-900">-- Select a template --</option>
                                         {templates.map((template) => (
-                                            <option key={template.id} value={template.id}>
+                                            <option key={template.id} value={template.id} className="bg-gray-900">
                                                 {template.name} ({template.exercise_count} exercises)
                                             </option>
                                         ))}
@@ -370,38 +372,38 @@ function AssignWorkoutContent() {
 
                     {/* Step 3: Recipient Selection */}
                     {step === 3 && (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                <label className="block text-sm font-semibold text-gray-300 mb-3">
                                     Assign To
                                 </label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50">
+                                <div className="space-y-3">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
                                         <input
                                             type="radio"
                                             name="recipientMode"
                                             value="class"
                                             checked={recipientMode === 'class'}
                                             onChange={() => setRecipientMode('class')}
-                                            className="mr-3"
+                                            className="mr-4 w-4 h-4 text-teal-500"
                                         />
                                         <div>
-                                            <div className="font-medium">Assign to Class</div>
-                                            <div className="text-sm text-gray-600">All participants in the class</div>
+                                            <div className="font-semibold text-white">Assign to Class</div>
+                                            <div className="text-sm text-gray-400">All participants in the class</div>
                                         </div>
                                     </label>
-                                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
                                         <input
                                             type="radio"
                                             name="recipientMode"
                                             value="clients"
                                             checked={recipientMode === 'clients'}
                                             onChange={() => setRecipientMode('clients')}
-                                            className="mr-3"
+                                            className="mr-4 w-4 h-4 text-teal-500"
                                         />
                                         <div>
-                                            <div className="font-medium">Assign to Individual Clients</div>
-                                            <div className="text-sm text-gray-600">Select specific clients</div>
+                                            <div className="font-semibold text-white">Assign to Individual Clients</div>
+                                            <div className="text-sm text-gray-400">Select specific clients</div>
                                         </div>
                                     </label>
                                 </div>
@@ -409,20 +411,22 @@ function AssignWorkoutContent() {
 
                             {recipientMode === 'class' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
                                         Select Class *
                                     </label>
                                     {classes.length === 0 ? (
-                                        <p className="text-gray-500 text-sm">No classes scheduled for this day</p>
+                                        <p className="text-gray-400 text-sm p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                                            No classes scheduled for this day
+                                        </p>
                                     ) : (
                                         <select
                                             value={selectedClass}
                                             onChange={(e) => setSelectedClass(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                         >
-                                            <option value="">-- Select a class --</option>
+                                            <option value="" className="bg-gray-900">-- Select a class --</option>
                                             {classes.map((cls) => (
-                                                <option key={cls.id} value={cls.id}>
+                                                <option key={cls.id} value={cls.id} className="bg-gray-900">
                                                     {cls.name} - {cls.start_time}
                                                 </option>
                                             ))}
@@ -433,22 +437,22 @@ function AssignWorkoutContent() {
 
                             {recipientMode === 'clients' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
                                         Select Clients * ({selectedClients.length} selected)
                                     </label>
-                                    <div className="border border-gray-300 rounded-md max-h-64 overflow-y-auto">
+                                    <div className="bg-white/5 border border-white/10 rounded-lg max-h-64 overflow-y-auto">
                                         {clients.map((client) => (
                                             <label
                                                 key={client.id}
-                                                className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                                                className="flex items-center p-4 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedClients.includes(client.id)}
                                                     onChange={() => toggleClient(client.id)}
-                                                    className="mr-3"
+                                                    className="mr-4 w-4 h-4 text-teal-500"
                                                 />
-                                                <span>{client.full_name}</span>
+                                                <span className="text-white">{client.full_name}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -459,40 +463,46 @@ function AssignWorkoutContent() {
 
                     {/* Step 4: Review & Notes */}
                     {step === 4 && (
-                        <div className="space-y-4">
-                            <div className="bg-gray-50 p-4 rounded-md space-y-2">
-                                <h3 className="font-semibold text-lg mb-3">Review Assignment</h3>
-                                <div>
-                                    <span className="font-medium">Date:</span> {new Date(sessionDate).toLocaleDateString()}
+                        <div className="space-y-6">
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-4">
+                                <h3 className="font-bold text-xl mb-4 text-teal-400">Review Assignment</h3>
+                                <div className="flex justify-between border-b border-white/10 pb-3">
+                                    <span className="text-gray-400">Date:</span>
+                                    <span className="text-white font-semibold">{new Date(sessionDate).toLocaleDateString()}</span>
                                 </div>
                                 {startTime && (
-                                    <div>
-                                        <span className="font-medium">Time:</span> {startTime}
+                                    <div className="flex justify-between border-b border-white/10 pb-3">
+                                        <span className="text-gray-400">Time:</span>
+                                        <span className="text-white font-semibold">{startTime}</span>
                                     </div>
                                 )}
-                                <div>
-                                    <span className="font-medium">Workout:</span>{' '}
-                                    {workoutMode === 'template'
-                                        ? templates.find(t => t.id === selectedTemplate)?.name
-                                        : 'Custom Workout'}
+                                <div className="flex justify-between border-b border-white/10 pb-3">
+                                    <span className="text-gray-400">Workout:</span>
+                                    <span className="text-white font-semibold">
+                                        {workoutMode === 'template'
+                                            ? templates.find(t => t.id === selectedTemplate)?.name
+                                            : 'Custom Workout'}
+                                    </span>
                                 </div>
-                                <div>
-                                    <span className="font-medium">Assigned to:</span>{' '}
-                                    {recipientMode === 'class'
-                                        ? classes.find(c => c.id === selectedClass)?.name
-                                        : `${selectedClients.length} client(s)`}
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400">Assigned to:</span>
+                                    <span className="text-white font-semibold">
+                                        {recipientMode === 'class'
+                                            ? classes.find(c => c.id === selectedClass)?.name
+                                            : `${selectedClients.length} client(s)`}
+                                    </span>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">
                                     Notes (Optional)
                                 </label>
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={4}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     placeholder="Add any notes or instructions for this workout..."
                                 />
                             </div>
@@ -504,7 +514,7 @@ function AssignWorkoutContent() {
                         <button
                             onClick={handleBack}
                             disabled={step === 1}
-                            className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-8 py-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all"
                         >
                             Back
                         </button>
@@ -512,7 +522,7 @@ function AssignWorkoutContent() {
                         {step < 4 ? (
                             <button
                                 onClick={handleNext}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
                             >
                                 Next
                             </button>
@@ -520,7 +530,7 @@ function AssignWorkoutContent() {
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                                className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg disabled:opacity-50 transition-all transform hover:scale-105"
                             >
                                 {loading ? 'Assigning...' : 'Assign Workout'}
                             </button>

@@ -33,8 +33,48 @@ router.post('/', authenticate, authorize('admin'), trainerController.createTrain
 // Get all active trainers (public)
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const trainers = await TrainerProfile.getAllActive();
-        res.status(200).json(trainers); // Return array directly, not wrapped in object
+        // Get all users with trainer role
+        const trainerUsers = await UserModel.findByRole('trainer');
+
+        // Build trainer list with profile data where available
+        const trainers = await Promise.all(
+            trainerUsers.map(async (user) => {
+                const profile = await TrainerProfile.findByUserId(user.id);
+
+                if (profile) {
+                    // Return full profile with user data
+                    return {
+                        ...profile,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email,
+                        phone: user.phone
+                    };
+                } else {
+                    // Return basic trainer info with default profile values
+                    return {
+                        id: `temp-${user.id}`, // Temporary ID to indicate no profile
+                        user_id: user.id,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email,
+                        phone: user.phone,
+                        bio: 'Profile not yet completed',
+                        specialties: [],
+                        certifications: [],
+                        years_experience: 0,
+                        is_accepting_clients: false,
+                        profile_image_url: null,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                }
+            })
+        );
+
+        // Filter to only show accepting clients or those with completed profiles
+        // Actually, let's show all trainers so Scott appears
+        res.status(200).json(trainers);
     } catch (error) {
         console.error('Get trainers error:', error);
         res.status(500).json({ error: 'Failed to get trainers' });
