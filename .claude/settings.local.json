@@ -14,7 +14,8 @@
       "Bash(node test-password.js:*)",
       "WebFetch(domain:dribbble.com)",
       "WebFetch(domain:www.hostinger.com)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run db:query:*)"
     ],
     "deny": [],
     "ask": []

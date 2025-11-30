@@ -51,10 +51,10 @@ class UserModel {
         const primaryRole = roles.length > 0 ? roles[0] : 'client';
 
         const result: QueryResult = await query(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role)
-       VALUES ($1, $2, $3, $4, $5, $6)
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role, roles)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-            [email, password_hash, first_name, last_name, phone, primaryRole]
+            [email, password_hash, first_name, last_name, phone, primaryRole, roles]
         );
 
         return this.mapRowToUser(result.rows[0])!;
@@ -83,7 +83,10 @@ class UserModel {
     // Get all users by role (checks if role is in roles array or matches singular role)
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
-            'SELECT * FROM users WHERE role = $1 AND is_active = true ORDER BY created_at DESC',
+            `SELECT * FROM users
+             WHERE (roles @> ARRAY[$1]::TEXT[] OR role = $1)
+             AND is_active = true
+             ORDER BY created_at DESC`,
             [role]
         );
 
@@ -137,13 +140,15 @@ class UserModel {
         return (result.rowCount ?? 0) > 0;
     }
 
-    // Add a role to user - For singular role schema, this updates the primary role
+    // Add a role to user - Appends to roles array and updates primary role
     async addRole(id: string, role: string): Promise<User | null> {
-        // Since we only have a singular role column, we update it
-        // In a real array implementation, we would append
         const result: QueryResult = await query(
-            `UPDATE users 
-             SET role = $2
+            `UPDATE users
+             SET role = $2,
+                 roles = CASE
+                     WHEN roles @> ARRAY[$2]::TEXT[] THEN roles
+                     ELSE array_append(roles, $2)
+                 END
              WHERE id = $1
              RETURNING *`,
             [id, role]
@@ -152,12 +157,16 @@ class UserModel {
         return this.mapRowToUser(result.rows[0]);
     }
 
-    // Remove a role from user - For singular role schema, this resets to client if matches
+    // Remove a role from user - Removes from roles array and updates primary role
     async removeRole(id: string, role: string): Promise<User | null> {
         const result: QueryResult = await query(
-            `UPDATE users 
-             SET role = 'client'
-             WHERE id = $1 AND role = $2
+            `UPDATE users
+             SET roles = array_remove(roles, $2),
+                 role = CASE
+                     WHEN role = $2 THEN 'client'
+                     ELSE role
+                 END
+             WHERE id = $1
              RETURNING *`,
             [id, role]
         );

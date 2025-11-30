@@ -219,9 +219,48 @@ function ActiveWorkoutContent() {
 
                 {/* Rest Timer */}
                 {isResting && (
-                    <div className="glass rounded-xl p-8 mb-6 text-center">
-                        <p className="text-gray-400 mb-2">Rest Time</p>
-                        <p className="text-6xl font-bold text-teal-4">{restTimer}s</p>
+                    <div className="glass rounded-xl p-8 mb-6">
+                        <p className="text-gray-400 mb-4 text-center">Rest Time</p>
+                        <p className="text-6xl font-bold text-teal-4 text-center mb-6">{restTimer}s</p>
+
+                        {/* Timer Controls */}
+                        <div className="flex flex-col gap-3">
+                            <div className="flex justify-center gap-3">
+                                <button
+                                    onClick={() => setRestTimer(Math.max(0, restTimer - 15))}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    -15s
+                                </button>
+                                <button
+                                    onClick={() => setRestTimer(Math.max(0, restTimer - 5))}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    -5s
+                                </button>
+                                <button
+                                    onClick={() => setRestTimer(restTimer + 5)}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    +5s
+                                </button>
+                                <button
+                                    onClick={() => setRestTimer(restTimer + 15)}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    +15s
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setRestTimer(0);
+                                    setIsResting(false);
+                                }}
+                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all"
+                            >
+                                Skip Rest
+                            </button>
+                        </div>
                     </div>
                 )}
 
