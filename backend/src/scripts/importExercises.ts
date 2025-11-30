@@ -1,9 +1,9 @@
 /**
  * Import exercises from free-exercise-db (yuhonas/free-exercise-db)
- * 
+ *
  * This script downloads the exercises.json file from GitHub and imports
  * exercises into our database, mapping them to our Body Part > Muscle structure.
- * 
+ *
  * Data source: https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json
  * License: Public Domain (Unlicense)
  */
@@ -24,6 +24,38 @@ interface FreeExerciseDBExercise {
     category?: string;
     images?: string[];
 }
+
+// Body Parts and their associated muscles
+const BODY_PARTS_WITH_MUSCLES = [
+    {
+        bodyPart: 'Arms',
+        muscles: ['Biceps', 'Triceps', 'Forearms']
+    },
+    {
+        bodyPart: 'Chest',
+        muscles: ['Chest']
+    },
+    {
+        bodyPart: 'Shoulders',
+        muscles: ['Shoulders', 'Traps']
+    },
+    {
+        bodyPart: 'Back',
+        muscles: ['Lats', 'Upper Back', 'Lower Back', 'Traps']
+    },
+    {
+        bodyPart: 'Core',
+        muscles: ['Abs', 'Obliques']
+    },
+    {
+        bodyPart: 'Legs',
+        muscles: ['Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Abductors', 'Adductors']
+    },
+    {
+        bodyPart: 'Other',
+        muscles: ['Neck', 'Full Body']
+    }
+];
 
 // Mapping from free-exercise-db muscle names to our body_focus_areas
 const MUSCLE_MAPPING: Record<string, string> = {
@@ -84,11 +116,68 @@ async function getWorkoutTypeId(category: string): Promise<string | null> {
     return result.rows[0]?.id || null;
 }
 
+async function ensureWorkoutTypes(): Promise<void> {
+    console.log('📋 Ensuring workout types exist...');
+
+    const workoutTypes = [
+        { name: 'Strength', description: 'Resistance training to build muscle and strength' },
+        { name: 'Cardio', description: 'Aerobic exercise to improve cardiovascular health' },
+        { name: 'Flexibility', description: 'Stretching and mobility exercises' },
+        { name: 'HIIT', description: 'High Intensity Interval Training' }
+    ];
+
+    for (const type of workoutTypes) {
+        await query(
+            `INSERT INTO workout_types (name, description)
+             VALUES ($1, $2)
+             ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description`,
+            [type.name, type.description]
+        );
+    }
+
+    console.log('✅ Workout types ready\n');
+}
+
+async function ensureBodyPartsAndMuscles(): Promise<void> {
+    console.log('💪 Ensuring body parts and muscles exist...');
+
+    for (const { bodyPart, muscles } of BODY_PARTS_WITH_MUSCLES) {
+        // Create body part
+        const bodyPartResult = await query(
+            `INSERT INTO body_parts (name, description)
+             VALUES ($1, $2)
+             ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+             RETURNING id`,
+            [bodyPart, `${bodyPart} exercises`]
+        );
+
+        const bodyPartId = bodyPartResult.rows[0].id;
+
+        // Create muscles (body_focus_areas) for this body part
+        for (const muscle of muscles) {
+            await query(
+                `INSERT INTO body_focus_areas (name, description, body_part_id)
+                 VALUES ($1, $2, $3)
+                 ON CONFLICT (name) DO UPDATE SET body_part_id = EXCLUDED.body_part_id`,
+                [muscle, `${muscle} exercises`, bodyPartId]
+            );
+        }
+    }
+
+    console.log('✅ Body parts and muscles ready\n');
+}
+
 async function importExercises() {
     console.log('🏋️ Starting exercise import from free-exercise-db...\n');
 
     try {
-        // Download exercises from GitHub
+        // Step 1: Ensure workout types exist
+        await ensureWorkoutTypes();
+
+        // Step 2: Ensure body parts and muscles exist
+        await ensureBodyPartsAndMuscles();
+
+        // Step 3: Download exercises from GitHub
         console.log('📥 Downloading exercises.json...');
         const response = await fetch(
             'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json'

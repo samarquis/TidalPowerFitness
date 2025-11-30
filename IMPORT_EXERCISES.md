@@ -1,54 +1,112 @@
-# How to Import Exercises After Deployment
+# How to Import Exercises (One-Command Setup!)
 
-## Step 1: Wait for Deployment
-After pushing to GitHub, wait for Render to automatically deploy the new code (usually 2-5 minutes).
+The exercise import is now a **complete one-command solution** that:
+1. ✅ Creates all body parts (Arms, Chest, Shoulders, Back, Core, Legs, Other)
+2. ✅ Creates all muscle groups under each body part (Biceps, Triceps, Quads, etc.)
+3. ✅ Creates all workout types (Strength, Cardio, Flexibility, HIIT)
+4. ✅ Imports **800+ exercises** from free-exercise-db (Public Domain/Unlicense)
 
-## Step 2: Get Your Admin Token
-1. Log in to your deployed site as an admin
-2. Open browser DevTools (F12)
-3. Go to Console tab
-4. Type: `localStorage.getItem('auth_token')`
-5. Copy the token (without quotes)
+**Data Source:** https://github.com/yuhonas/free-exercise-db
+**License:** Public Domain (Unlicense) - Free to use!
 
-## Step 3: Trigger the Import
+---
 
-### Option A: Using Browser Console (Easiest)
-1. While logged in as admin on your site, open DevTools Console
-2. Paste and run this code:
+## Running the Import
+
+### Option 1: From Production (Recommended)
+
+1. **Log in as admin** on your deployed site
+2. Open browser DevTools (F12) → Console tab
+3. Run this command:
 
 ```javascript
-fetch('https://your-app.onrender.com/api/import/exercises', {
+fetch(`${window.location.origin}/api/import/exercises`, {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
   }
 })
 .then(r => r.json())
-.then(data => console.log('Import result:', data))
-.catch(err => console.error('Import error:', err));
+.then(data => console.log('✅ Import complete:', data))
+.catch(err => console.error('❌ Import error:', err));
 ```
 
-### Option B: Using curl (Command Line)
+### Option 2: From Command Line (Production)
+
 ```bash
-curl -X POST https://your-app.onrender.com/api/import/exercises \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+# Replace YOUR_TOKEN with your admin token
+curl -X POST https://tidal-power-backend.onrender.com/api/import/exercises \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-## Step 4: Verify Import
-1. Go to `/exercises` on your site
-2. Click on a body part tab
-3. You should see muscle groups with exercise counts
-4. Click on a muscle group to see the exercises
+### Option 3: From Local Development
 
-## Expected Results
-- **800+ exercises** imported
-- Exercises organized by muscle groups
-- Each exercise has: name, difficulty, equipment, instructions
+```bash
+# Make sure backend is running (npm run dev from backend directory)
+cd backend
+npx ts-node src/scripts/importExercises.ts
+```
+
+---
+
+## What Gets Created
+
+### Body Parts (7 categories)
+- **Arms** → Biceps, Triceps, Forearms
+- **Chest** → Chest
+- **Shoulders** → Shoulders, Traps
+- **Back** → Lats, Upper Back, Lower Back, Traps
+- **Core** → Abs, Obliques
+- **Legs** → Quadriceps, Hamstrings, Glutes, Calves, Abductors, Adductors
+- **Other** → Neck, Full Body
+
+### Workout Types
+- Strength
+- Cardio
+- Flexibility
+- HIIT
+
+### Exercises (800+)
+Each exercise includes:
+- Name and description
+- Primary muscle group
+- Difficulty level (Beginner/Intermediate/Advanced)
+- Equipment required
+- Step-by-step instructions
+
+---
+
+## Verify Import Success
+
+1. Go to `/exercises` on your site
+2. Click on any body part tab (e.g., "Arms")
+3. You should see muscle groups with exercise counts
+4. Click on a muscle (e.g., "Biceps") to see all exercises
+5. Click on an exercise to view details
+
+**Expected Results:**
+- ✅ 7 body parts created
+- ✅ 15+ muscle groups created
+- ✅ 800+ exercises imported
+- ✅ All organized by Body Part → Muscle → Exercise
+
+---
 
 ## Troubleshooting
-- **401 Unauthorized**: Token expired, log in again and get a new token
-- **500 Error**: Check Render logs for database connection issues
-- **Timeout**: Import may take 30-60 seconds, be patient
 
-## Note
-The import only needs to be run **once**. After that, all exercises will be in your database permanently.
+| Issue | Solution |
+|-------|----------|
+| **401 Unauthorized** | Token expired - log in again and get a new token |
+| **500 Error** | Check Render logs for database connection issues |
+| **Timeout** | Import may take 30-60 seconds - be patient! |
+| **Duplicate errors** | Safe to ignore - import uses ON CONFLICT to skip duplicates |
+
+---
+
+## Important Notes
+
+- ✅ **Idempotent**: Safe to run multiple times (won't create duplicates)
+- ✅ **One-time setup**: Only needs to be run once per database
+- ✅ **Open source data**: All exercise data is Public Domain (Unlicense)
+- ⏱️ **Duration**: Expect 30-60 seconds for full import
+- 🔒 **Admin only**: Must be logged in as admin to run import

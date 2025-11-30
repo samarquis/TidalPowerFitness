@@ -1,0 +1,208 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Tidal Power Fitness is a comprehensive fitness management platform built with a Next.js frontend and Express backend. The application supports user authentication, class scheduling, workout tracking, package/credit management, and exercise library features.
+
+**Live Deployments:**
+- Frontend: https://tidal-power-frontend.onrender.com
+- Backend API: https://tidal-power-backend.onrender.com
+
+## Development Commands
+
+### Frontend (Next.js)
+```bash
+cd frontend
+npm run dev      # Start development server (localhost:3000)
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+npm test         # Run Jest tests
+```
+
+### Backend (Express/TypeScript)
+```bash
+cd backend
+npm run dev      # Start dev server with nodemon (localhost:5000)
+npm run build    # Compile TypeScript to JavaScript
+npm start        # Run compiled production code
+npm test         # Run Jest tests
+```
+
+### Database Management
+```bash
+cd backend
+npm run db:migrate     # Run all migrations
+npm run db:seed        # Seed database with initial data
+npm run db:reset       # Reset database (drop all tables and re-run migrations)
+npm run migrate:001    # Run specific migration
+npm run migrate:all    # Run all pending migrations
+```
+
+### E2E Testing
+```bash
+npm run test:e2e       # Run Cypress E2E tests (from root)
+```
+
+### Docker Deployment
+```bash
+docker-compose up -d          # Start all services in detached mode
+docker-compose down           # Stop all services
+docker-compose logs backend   # View backend logs
+```
+
+## Architecture
+
+### Monorepo Structure
+This is a monorepo with three main components:
+- `/frontend` - Next.js 14 application with TypeScript and Tailwind CSS
+- `/backend` - Express API server with TypeScript and PostgreSQL
+- `/cypress` - E2E tests (minimal setup currently)
+
+### Authentication & Authorization
+- **JWT-based authentication** using Bearer tokens
+- Tokens stored in `localStorage` on frontend (note: migration to HttpOnly cookies planned for security)
+- Backend middleware: `authenticate()` verifies JWT, `authorize(...roles)` checks role-based permissions
+- Multi-role support: Users can have multiple roles (`client`, `trainer`, `admin`)
+- Role data model in transition: `role` column (legacy) being migrated to `roles` array
+
+**Key files:**
+- `backend/src/middleware/auth.ts` - Authentication/authorization middleware
+- `backend/src/utils/jwt.ts` - JWT signing and verification
+- `frontend/src/contexts/AuthContext.tsx` - Frontend auth state management
+- `frontend/src/lib/api.ts` - Centralized API client with automatic token injection
+
+### Database Architecture
+- **PostgreSQL 14+** with connection pooling via `pg` library
+- **Connection:** `backend/src/config/db.ts` exports `query()` function for database operations
+- **Models:** Located in `backend/src/models/` - each model is a class with static methods
+- **Migrations:** Manual SQL files in `backend/database/migrations/`
+  - Web-based migration runner at `/admin/migrations` for Render free tier compatibility
+  - Run via backend API: `POST /api/admin/migrate` or `npm run migrate:all`
+
+**Core entities:**
+- `User` - Multi-role user system (client/trainer/admin)
+- `TrainerProfile`, `TrainerAvailability` - Trainer-specific data and scheduling
+- `Class` - Scheduled fitness classes with multi-day support
+- `Package`, `UserCredit` - Membership packages and credit system (replaces Acuity)
+- `Exercise`, `BodyPart` - Exercise library with hierarchical categorization
+- `WorkoutTemplate`, `WorkoutSession` - Workout tracking system
+- `Cart` - Shopping cart for package purchases
+
+### API Design Patterns
+All backend routes follow REST conventions:
+```
+/api/auth          - Authentication (login, register, profile)
+/api/users         - User management
+/api/trainers      - Trainer profiles
+/api/classes       - Class scheduling
+/api/packages      - Membership packages
+/api/cart          - Shopping cart
+/api/exercises     - Exercise library
+/api/workout-templates  - Workout templates
+/api/workout-sessions   - Active/completed workouts
+/api/availability  - Trainer availability
+/api/admin/migrate - Database migrations (admin only)
+```
+
+**Route structure:**
+- Routes defined in `backend/src/routes/*.ts`
+- Controllers in `backend/src/controllers/*Controller.ts`
+- Models in `backend/src/models/*.ts`
+
+### Frontend Architecture
+- **App Router** (Next.js 14) - all pages in `frontend/src/app/`
+- **Context providers:** `AuthContext` for authentication, `CartContext` for shopping cart
+- **Centralized API client:** `frontend/src/lib/api.ts` - use `apiClient` for all backend calls
+- **Component structure:**
+  - Pages: `src/app/*/page.tsx`
+  - Reusable components: `src/components/`
+  - UI components: `src/components/ui/`
+
+**Important patterns:**
+- Use `apiClient` from `@/lib/api` instead of direct `fetch()` calls
+- Protect admin routes with role checks using `useAuth()` hook
+- Path alias: `@/` maps to `src/` directory
+
+### External Integrations
+- **Square:** Payment processing (tokens in environment variables)
+- **Acuity Scheduling:** Legacy integration being replaced by internal credit system
+- Environment variables configured in `.env` files (see `.env.example`)
+
+## Development Workflow
+
+### Making Database Changes
+1. Create a SQL migration file in `backend/database/migrations/`
+2. Name it with a numeric prefix (e.g., `004_description.sql`)
+3. Run locally: `npm run migrate:all` from backend directory
+4. Deploy to production: Use `/admin/migrations` page to run migrations via web UI
+
+### Adding New API Endpoints
+1. Create/update route file in `backend/src/routes/`
+2. Create controller in `backend/src/controllers/`
+3. Add model methods in `backend/src/models/` if database interaction needed
+4. Register route in `backend/src/app.ts`
+5. Add corresponding method to `frontend/src/lib/api.ts`
+
+### Testing Strategy
+- Backend: Jest with ts-jest (`npm test` in backend directory)
+- Frontend: Jest with React Testing Library (`npm test` in frontend directory)
+- E2E: Cypress (minimal setup currently)
+
+### Common Gotchas
+- **TypeScript config:** Backend uses CommonJS (`type: "commonjs"` in package.json), frontend uses ES modules
+- **CORS:** Backend allows all origins in development; configure for production
+- **Password hashing:** Uses `bcrypt` (not `bcryptjs` - the latter is a redundant dependency to be removed)
+- **Migration system:** Designed for Render free tier (no direct DB access), runs via web endpoint
+- **Multi-role system:** Database has both `role` (VARCHAR, legacy) and `roles` (TEXT[], new) columns during transition period
+
+### Admin Setup
+After deploying to production:
+1. Register a user account via the frontend
+2. Connect to PostgreSQL database
+3. Run: `UPDATE users SET roles = ARRAY['admin'] WHERE email = 'your-email@example.com';`
+4. Logout and login to see admin features
+
+## Project Conventions
+
+### Code Style
+- TypeScript for all new code (both frontend and backend)
+- Async/await for asynchronous operations
+- Controller methods should return via `res.json()` or `res.status().json()`
+- Frontend components use functional components with hooks
+
+### Error Handling
+- Backend: Return appropriate HTTP status codes (400, 401, 403, 404, 500)
+- Frontend: API client returns `{ data, error }` structure
+- Use try-catch blocks in controllers and async functions
+
+### Security Notes
+- **CRITICAL:** Never commit `.env` files with real credentials
+- JWT_SECRET must be set in production (no fallback allowed)
+- Input validation needed on all controller endpoints (technical debt item)
+- XSS protection: Migrate from localStorage to HttpOnly cookies for JWTs (planned)
+
+## Key Dependencies
+
+**Backend:**
+- express - Web framework
+- pg - PostgreSQL client
+- jsonwebtoken - JWT authentication
+- bcrypt - Password hashing
+- square - Payment processing
+- ts-node, nodemon - Development tooling
+
+**Frontend:**
+- next - React framework (v14)
+- react - UI library (v19)
+- tailwindcss - Styling (v4)
+- TypeScript - Type safety
+
+## Documentation Files
+- `TODO.md` - Current development roadmap and pending tasks
+- `PROGRESS.md` - Daily progress log
+- `.agent/workflows/eod.md` - End of day workflow template
+- `.agent/workflows/next.md` - Resume work workflow template
+- `docs/archive/` - Archived deployment guides
