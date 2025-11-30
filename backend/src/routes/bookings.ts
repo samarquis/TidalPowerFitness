@@ -2,11 +2,12 @@ import express from 'express';
 import { authenticate } from '../middleware/auth';
 import pool from '../config/db';
 import UserCreditModel from '../models/UserCredit';
+import { validateCreateBooking, validateCancelBooking, handleValidationErrors } from '../middleware/validation';
 
 const router = express.Router();
 
 // POST /api/bookings - Book a class
-router.post('/', authenticate, async (req: any, res) => {
+router.post('/', authenticate, validateCreateBooking, handleValidationErrors, async (req: any, res) => {
     try {
         const { class_id } = req.body;
         const userId = req.user.id;
@@ -105,7 +106,7 @@ router.get('/user/:userId', authenticate, async (req: any, res) => {
 });
 
 // DELETE /api/bookings/:id - Cancel a booking
-router.delete('/:id', authenticate, async (req: any, res) => {
+router.delete('/:id', authenticate, validateCancelBooking, handleValidationErrors, async (req: any, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
