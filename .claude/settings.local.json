@@ -8,7 +8,13 @@
       "Bash(npm install:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nAdd comprehensive input validation to critical endpoints\n\n- Install express-validator for robust input validation\n- Create validation middleware with sanitization and error handling\n- Add validation to auth routes (register, login, update profile)\n- Add validation to booking routes (create, cancel)\n- Add validation to cart routes (add, update, remove items)\n- Protect against injection attacks and malformed data\n- Validate email formats, password strength, UUIDs, and numeric ranges\n- Provide detailed validation error messages to clients\n\nSecurity improvements:\n- Email normalization and validation\n- Password complexity requirements (8+ chars, upper, lower, number)\n- Name sanitization (letters, spaces, hyphens only)\n- UUID format validation for all IDs\n- Numeric range validation for quantities and prices\n- URL validation for exercise videos\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(cmd //c \"mklink /J agents C:\\claude\\.claude\\agents\")",
+      "Bash(cmd //c \"mklink /J commands C:\\claude\\.claude\\commands\")",
+      "Bash(node test-password.js:*)",
+      "WebFetch(domain:dribbble.com)",
+      "WebFetch(domain:www.hostinger.com)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

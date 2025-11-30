@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ClassScheduleSection from '@/components/ClassScheduleSection';
 import TrainerBiosSection from '@/components/TrainerBiosSection';
@@ -8,8 +9,42 @@ import {
     TrustBadge,
     ProcessStep
 } from '@/components/ui';
+import { apiClient } from '@/lib/api';
+
+interface Package {
+    id: string;
+    name: string;
+    description: string;
+    price_cents: number;
+    credits: number;
+    validity_days: number;
+    is_active: boolean;
+}
 
 export default function LandingPage() {
+    const [packages, setPackages] = useState<Package[]>([]);
+    const [loadingPackages, setLoadingPackages] = useState(true);
+
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const response = await apiClient.getPackages();
+                if (response.data) {
+                    // Get active packages and sort by price
+                    const activePackages = response.data
+                        .filter((pkg: Package) => pkg.is_active)
+                        .sort((a: Package, b: Package) => a.price_cents - b.price_cents);
+                    setPackages(activePackages.slice(0, 3)); // Show top 3 packages
+                }
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+            } finally {
+                setLoadingPackages(false);
+            }
+        };
+
+        fetchPackages();
+    }, []);
     return (
         <div className="min-h-screen logo-watermark">
             {/* Hero Section */}
@@ -69,62 +104,6 @@ export default function LandingPage() {
             {/* Class Schedule Section */}
             <ClassScheduleSection />
 
-            {/* How It Works Section */}
-            <section className="py-20 bg-gradient-to-b from-black to-gray-900">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-4xl font-bold text-center mb-4">
-                        Your Journey to <span className="text-gradient">Success</span>
-                    </h2>
-                    <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
-                        We make it simple to start and easy to succeed. Here's how we'll transform your fitness journey.
-                    </p>
-
-                    <div className="grid md:grid-cols-4 gap-8 md:gap-4">
-                        <ProcessStep
-                            number={1}
-                            title="Free Consultation"
-                            description="Tell us your goals and we'll match you with the perfect trainer"
-                            icon={
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                            }
-                        />
-                        <ProcessStep
-                            number={2}
-                            title="Custom Plan"
-                            description="Get a personalized workout and nutrition program designed for you"
-                            icon={
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                </svg>
-                            }
-                        />
-                        <ProcessStep
-                            number={3}
-                            title="Train & Track"
-                            description="Work with your trainer and watch your progress soar"
-                            icon={
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            }
-                        />
-                        <ProcessStep
-                            number={4}
-                            title="Achieve Goals"
-                            description="Celebrate your transformation and set new targets"
-                            icon={
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                            }
-                            isLast
-                        />
-                    </div>
-                </div>
-            </section>
-
             {/* Features Section */}
             <section className="py-20 bg-black">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,113 +156,6 @@ export default function LandingPage() {
             {/* Trainer Bios Section */}
             <TrainerBiosSection />
 
-            {/* Statistics Section */}
-            <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">500+</div>
-                            <div className="text-gray-400">Active Members</div>
-                        </div>
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">50+</div>
-                            <div className="text-gray-400">Classes per Week</div>
-                        </div>
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">15+</div>
-                            <div className="text-gray-400">Expert Trainers</div>
-                        </div>
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">98%</div>
-                            <div className="text-gray-400">Satisfaction Rate</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Testimonials Section */}
-            <section className="py-20 bg-black">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-4xl font-bold text-center mb-4">
-                        Real People, <span className="text-gradient">Real Results</span>
-                    </h2>
-                    <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
-                        Don't just take our word for it. Hear from members who've transformed their lives.
-                    </p>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {/* Testimonial 1 */}
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="flex gap-1 mb-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                ))}
-                            </div>
-                            <p className="text-gray-300 mb-6 italic">
-                                "Lost 30 pounds in 3 months! The personalized approach made all the difference. My trainer pushed me beyond what I thought possible."
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    SM
-                                </div>
-                                <div>
-                                    <div className="font-semibold text-white">Sarah Martinez</div>
-                                    <div className="text-sm text-gray-400">Member since 2023</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Testimonial 2 */}
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="flex gap-1 mb-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                ))}
-                            </div>
-                            <p className="text-gray-300 mb-6 italic">
-                                "Best investment I've ever made. Not just in my fitness, but in my overall health and confidence. The trainers really care about your success."
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    JC
-                                </div>
-                                <div>
-                                    <div className="font-semibold text-white">James Chen</div>
-                                    <div className="text-sm text-gray-400">Member since 2022</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Testimonial 3 */}
-                        <div className="glass p-8 rounded-2xl">
-                            <div className="flex gap-1 mb-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                ))}
-                            </div>
-                            <p className="text-gray-300 mb-6 italic">
-                                "Finally found a gym that feels like family. The community here is incredible and the results speak for themselves. I'm stronger than ever!"
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    EP
-                                </div>
-                                <div>
-                                    <div className="font-semibold text-white">Emily Parker</div>
-                                    <div className="text-sm text-gray-400">Member since 2021</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {/* Pricing Teaser Section */}
             <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-black">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -294,116 +166,90 @@ export default function LandingPage() {
                         Choose the plan that works for you. No long-term contracts, cancel anytime.
                     </p>
 
-                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {/* Starter Package */}
-                        <div className="glass p-8 rounded-2xl border border-white/10 hover:border-teal-500/50 transition-all">
-                            <div className="text-sm text-teal-400 font-semibold mb-2">STARTER</div>
-                            <div className="text-4xl font-bold mb-2">$99<span className="text-lg text-gray-400">/mo</span></div>
-                            <div className="text-gray-400 mb-6">Perfect for beginners</div>
-                            <ul className="space-y-3 mb-8">
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    8 classes per month
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Access to group classes
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Online workout library
-                                </li>
-                            </ul>
-                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all">
-                                View Details
-                            </Link>
+                    {loadingPackages ? (
+                        <div className="flex justify-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
                         </div>
+                    ) : packages.length > 0 ? (
+                        <>
+                            <div className={`grid ${packages.length === 1 ? 'md:grid-cols-1 max-w-md' : packages.length === 2 ? 'md:grid-cols-2 max-w-4xl' : 'md:grid-cols-3 max-w-5xl'} gap-8 mx-auto`}>
+                                {packages.map((pkg, index) => {
+                                    const isFeatured = index === 1 && packages.length === 3; // Middle package in 3-pack
+                                    const isMiddle = index === 1;
 
-                        {/* Pro Package - Featured */}
-                        <div className="glass p-8 rounded-2xl border-2 border-teal-500 relative hover:border-teal-400 transition-all transform scale-105">
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                                MOST POPULAR
+                                    return (
+                                        <div
+                                            key={pkg.id}
+                                            className={`glass p-8 rounded-2xl relative hover:border-teal-400 transition-all ${
+                                                isFeatured
+                                                    ? 'border-2 border-teal-500 transform scale-105'
+                                                    : 'border border-white/10 hover:border-teal-500/50'
+                                            }`}
+                                        >
+                                            {isFeatured && (
+                                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                                    MOST POPULAR
+                                                </div>
+                                            )}
+                                            <div className="text-sm text-teal-400 font-semibold mb-2 uppercase">{pkg.name}</div>
+                                            <div className="text-4xl font-bold mb-2">
+                                                ${(pkg.price_cents / 100).toFixed(0)}
+                                                <span className="text-lg text-gray-400">/{pkg.validity_days} days</span>
+                                            </div>
+                                            <div className="text-gray-400 mb-6">{pkg.description || 'Flexible membership'}</div>
+                                            <ul className="space-y-3 mb-8">
+                                                <li className="flex items-start gap-2 text-gray-300">
+                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                    {pkg.credits} class credits
+                                                </li>
+                                                <li className="flex items-start gap-2 text-gray-300">
+                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Valid for {pkg.validity_days} days
+                                                </li>
+                                                <li className="flex items-start gap-2 text-gray-300">
+                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Access to all group classes
+                                                </li>
+                                                <li className="flex items-start gap-2 text-gray-300">
+                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Online workout library
+                                                </li>
+                                            </ul>
+                                            <Link
+                                                href="/packages"
+                                                className={`block w-full text-center px-6 py-3 font-semibold rounded-lg transition-all transform hover:scale-105 ${
+                                                    isFeatured
+                                                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white'
+                                                        : 'bg-white/10 hover:bg-white/20 text-white'
+                                                }`}
+                                            >
+                                                {isFeatured ? 'Get Started' : 'View Details'}
+                                            </Link>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                            <div className="text-sm text-teal-400 font-semibold mb-2">PRO</div>
-                            <div className="text-4xl font-bold mb-2">$199<span className="text-lg text-gray-400">/mo</span></div>
-                            <div className="text-gray-400 mb-6">For serious athletes</div>
-                            <ul className="space-y-3 mb-8">
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Unlimited classes
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    2 personal training sessions
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Nutrition consultation
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Priority booking
-                                </li>
-                            </ul>
-                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
-                                Get Started
+
+                            <p className="text-center text-gray-400 mt-8">
+                                All plans include access to our online workout library and community support
+                            </p>
+                        </>
+                    ) : (
+                        <div className="text-center py-12">
+                            <p className="text-gray-400 mb-6">No packages available at the moment.</p>
+                            <Link href="/packages" className="inline-block px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-all">
+                                View All Packages
                             </Link>
                         </div>
-
-                        {/* Elite Package */}
-                        <div className="glass p-8 rounded-2xl border border-white/10 hover:border-teal-500/50 transition-all">
-                            <div className="text-sm text-teal-400 font-semibold mb-2">ELITE</div>
-                            <div className="text-4xl font-bold mb-2">$299<span className="text-lg text-gray-400">/mo</span></div>
-                            <div className="text-gray-400 mb-6">Maximum results</div>
-                            <ul className="space-y-3 mb-8">
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Everything in Pro
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    8 personal training sessions
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    Custom meal plans
-                                </li>
-                                <li className="flex items-start gap-2 text-gray-300">
-                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    24/7 trainer support
-                                </li>
-                            </ul>
-                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all">
-                                View Details
-                            </Link>
-                        </div>
-                    </div>
-
-                    <p className="text-center text-gray-400 mt-8">
-                        All plans include access to our online workout library and community support
-                    </p>
+                    )}
                 </div>
             </section>
 
