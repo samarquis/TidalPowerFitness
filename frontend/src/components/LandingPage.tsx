@@ -177,6 +177,322 @@ export default function LandingPage() {
             {/* Trainer Bios Section */}
             <TrainerBiosSection />
 
+            {/* Statistics Section */}
+            <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">500+</div>
+                            <div className="text-gray-400">Active Members</div>
+                        </div>
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">50+</div>
+                            <div className="text-gray-400">Classes per Week</div>
+                        </div>
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">15+</div>
+                            <div className="text-gray-400">Expert Trainers</div>
+                        </div>
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="text-5xl md:text-6xl font-bold text-gradient mb-2">98%</div>
+                            <div className="text-gray-400">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section className="py-20 bg-black">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-4xl font-bold text-center mb-4">
+                        Real People, <span className="text-gradient">Real Results</span>
+                    </h2>
+                    <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
+                        Don't just take our word for it. Hear from members who've transformed their lives.
+                    </p>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Testimonial 1 */}
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(5)].map((_, i) => (
+                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                ))}
+                            </div>
+                            <p className="text-gray-300 mb-6 italic">
+                                "Lost 30 pounds in 3 months! The personalized approach made all the difference. My trainer pushed me beyond what I thought possible."
+                            </p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                    SM
+                                </div>
+                                <div>
+                                    <div className="font-semibold text-white">Sarah Martinez</div>
+                                    <div className="text-sm text-gray-400">Member since 2023</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Testimonial 2 */}
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(5)].map((_, i) => (
+                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                ))}
+                            </div>
+                            <p className="text-gray-300 mb-6 italic">
+                                "Best investment I've ever made. Not just in my fitness, but in my overall health and confidence. The trainers really care about your success."
+                            </p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                    JC
+                                </div>
+                                <div>
+                                    <div className="font-semibold text-white">James Chen</div>
+                                    <div className="text-sm text-gray-400">Member since 2022</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Testimonial 3 */}
+                        <div className="glass p-8 rounded-2xl">
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(5)].map((_, i) => (
+                                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                ))}
+                            </div>
+                            <p className="text-gray-300 mb-6 italic">
+                                "Finally found a gym that feels like family. The community here is incredible and the results speak for themselves. I'm stronger than ever!"
+                            </p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                    EP
+                                </div>
+                                <div>
+                                    <div className="font-semibold text-white">Emily Parker</div>
+                                    <div className="text-sm text-gray-400">Member since 2021</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Pricing Teaser Section */}
+            <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-black">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-4xl font-bold text-center mb-4">
+                        Flexible <span className="text-gradient">Membership Options</span>
+                    </h2>
+                    <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
+                        Choose the plan that works for you. No long-term contracts, cancel anytime.
+                    </p>
+
+                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        {/* Starter Package */}
+                        <div className="glass p-8 rounded-2xl border border-white/10 hover:border-teal-500/50 transition-all">
+                            <div className="text-sm text-teal-400 font-semibold mb-2">STARTER</div>
+                            <div className="text-4xl font-bold mb-2">$99<span className="text-lg text-gray-400">/mo</span></div>
+                            <div className="text-gray-400 mb-6">Perfect for beginners</div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    8 classes per month
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Access to group classes
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Online workout library
+                                </li>
+                            </ul>
+                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all">
+                                View Details
+                            </Link>
+                        </div>
+
+                        {/* Pro Package - Featured */}
+                        <div className="glass p-8 rounded-2xl border-2 border-teal-500 relative hover:border-teal-400 transition-all transform scale-105">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                MOST POPULAR
+                            </div>
+                            <div className="text-sm text-teal-400 font-semibold mb-2">PRO</div>
+                            <div className="text-4xl font-bold mb-2">$199<span className="text-lg text-gray-400">/mo</span></div>
+                            <div className="text-gray-400 mb-6">For serious athletes</div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Unlimited classes
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    2 personal training sessions
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Nutrition consultation
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Priority booking
+                                </li>
+                            </ul>
+                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                                Get Started
+                            </Link>
+                        </div>
+
+                        {/* Elite Package */}
+                        <div className="glass p-8 rounded-2xl border border-white/10 hover:border-teal-500/50 transition-all">
+                            <div className="text-sm text-teal-400 font-semibold mb-2">ELITE</div>
+                            <div className="text-4xl font-bold mb-2">$299<span className="text-lg text-gray-400">/mo</span></div>
+                            <div className="text-gray-400 mb-6">Maximum results</div>
+                            <ul className="space-y-3 mb-8">
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Everything in Pro
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    8 personal training sessions
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Custom meal plans
+                                </li>
+                                <li className="flex items-start gap-2 text-gray-300">
+                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    24/7 trainer support
+                                </li>
+                            </ul>
+                            <Link href="/packages" className="block w-full text-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all">
+                                View Details
+                            </Link>
+                        </div>
+                    </div>
+
+                    <p className="text-center text-gray-400 mt-8">
+                        All plans include access to our online workout library and community support
+                    </p>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-20 bg-black">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-4xl font-bold text-center mb-4">
+                        Frequently Asked <span className="text-gradient">Questions</span>
+                    </h2>
+                    <p className="text-center text-gray-400 mb-16">
+                        Everything you need to know about getting started
+                    </p>
+
+                    <div className="space-y-4">
+                        {/* FAQ 1 */}
+                        <details className="glass rounded-lg group">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer">
+                                <span className="text-lg font-semibold text-white">Do I need any experience to join?</span>
+                                <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <p className="px-6 pb-6 text-gray-400">
+                                Not at all! We work with people of all fitness levels, from complete beginners to experienced athletes. Our trainers will customize your program to match your current abilities and goals.
+                            </p>
+                        </details>
+
+                        {/* FAQ 2 */}
+                        <details className="glass rounded-lg group">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer">
+                                <span className="text-lg font-semibold text-white">What if I need to cancel my membership?</span>
+                                <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <p className="px-6 pb-6 text-gray-400">
+                                We don't lock you into long-term contracts. You can cancel your membership at any time with 30 days notice. We also offer a money-back guarantee if you're not satisfied within the first month.
+                            </p>
+                        </details>
+
+                        {/* FAQ 3 */}
+                        <details className="glass rounded-lg group">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer">
+                                <span className="text-lg font-semibold text-white">How do I book classes?</span>
+                                <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <p className="px-6 pb-6 text-gray-400">
+                                Once you're a member, you can book classes through our online platform 24/7. Browse the schedule, pick your preferred time, and reserve your spot with just a few clicks.
+                            </p>
+                        </details>
+
+                        {/* FAQ 4 */}
+                        <details className="glass rounded-lg group">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer">
+                                <span className="text-lg font-semibold text-white">What equipment do I need?</span>
+                                <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <p className="px-6 pb-6 text-gray-400">
+                                We provide all the equipment you need. Just bring yourself, a water bottle, and comfortable workout clothes. For personal training sessions, your trainer will have everything ready for you.
+                            </p>
+                        </details>
+
+                        {/* FAQ 5 */}
+                        <details className="glass rounded-lg group">
+                            <summary className="flex items-center justify-between p-6 cursor-pointer">
+                                <span className="text-lg font-semibold text-white">Can I try before I commit?</span>
+                                <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <p className="px-6 pb-6 text-gray-400">
+                                Absolutely! Schedule a free consultation with one of our trainers. You'll get a facility tour, discuss your goals, and even try a complimentary session to see if we're the right fit for you.
+                            </p>
+                        </details>
+                    </div>
+
+                    <div className="text-center mt-12">
+                        <p className="text-gray-400 mb-4">Still have questions?</p>
+                        <Link href="/contact" className="inline-block px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                            Contact Us
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Trust Badges Section */}
             <section className="py-16 bg-gradient-to-b from-black to-gray-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
