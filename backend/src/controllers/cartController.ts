@@ -1,17 +1,9 @@
 import { Request, Response } from 'express';
 import Cart from '../models/Cart';
 
-interface AuthRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-        roles: string[];
-    };
-}
-
 class CartController {
     // Get cart with items
-    async getCart(req: AuthRequest, res: Response): Promise<void> {
+    async getCart(req: Request, res: Response): Promise<void> {
         try {
             if (!req.user) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -34,7 +26,7 @@ class CartController {
     }
 
     // Add item to cart
-    async addItem(req: AuthRequest, res: Response): Promise<void> {
+    async addItem(req: Request, res: Response): Promise<void> {
         try {
             if (!req.user) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -68,7 +60,7 @@ class CartController {
     }
 
     // Update item quantity
-    async updateItem(req: AuthRequest, res: Response): Promise<void> {
+    async updateItem(req: Request, res: Response): Promise<void> {
         try {
             if (!req.user) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -98,7 +90,7 @@ class CartController {
     }
 
     // Remove item from cart
-    async removeItem(req: AuthRequest, res: Response): Promise<void> {
+    async removeItem(req: Request, res: Response): Promise<void> {
         try {
             if (!req.user) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -126,7 +118,7 @@ class CartController {
     }
 
     // Clear cart
-    async clearCart(req: AuthRequest, res: Response): Promise<void> {
+    async clearCart(req: Request, res: Response): Promise<void> {
         try {
             if (!req.user) {
                 res.status(401).json({ error: 'Unauthorized' });
