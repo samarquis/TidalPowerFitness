@@ -65,11 +65,15 @@
 - [x] **Integration Tests** - Complete booking flow tested
 - [x] **Bug Fix** - Exercise display bug resolved
 - [x] **Documentation** - CLAUDE.md created for future AI instances
+- [x] **Mobile UI Fixes** - Calendar, trainers list, and assign workout page responsive
+- [x] **Trainers List Bug** - All trainers with role now appear, even without complete profiles
+- [x] **Design Consistency** - Assign workout page matches dark theme
 
 **Immediate Next Tasks:**
-1. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-2. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
-3. [ ] Verify multi-day class scheduling functionality
+1. [ ] Web design improvements (inspired by Dribbble examples)
+2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
+3. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
+4. [ ] Verify multi-day class scheduling functionality
 
 ---
 

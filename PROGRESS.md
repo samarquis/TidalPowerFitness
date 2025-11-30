@@ -4,6 +4,37 @@ This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` t
 
 ---
 
+## 2025-11-30 (Saturday) - Part 2
+
+### ✅ Completed
+- **Fixed Mobile UI Issues**:
+  - **Calendar UI**: Added responsive design with mobile-optimized grid, text sizes, and spacing
+    - Responsive grid gaps (2px mobile, 4px desktop)
+    - Adaptive text sizes for all breakpoints
+    - Mobile-optimized modal with scrollable content
+    - Day headers show single letter on mobile, 3 letters on larger screens
+  - **Trainers List**: Fixed Scott not appearing in trainers list
+    - Modified `/trainers` endpoint to show all users with trainer role
+    - Added yellow "Profile Incomplete" badge for trainers without full profiles
+    - Backend now returns default data for trainers without TrainerProfile records
+  - **Assign Workout Page**: Complete redesign to match site's dark theme
+    - Dark gradient background with glass morphism containers
+    - Teal accent colors throughout
+    - All form inputs updated with dark theme styling
+    - Mobile-responsive layout
+
+### 🚀 Deployments
+- Pushed commit `91bc9b9` - "Fix mobile UI issues - calendar, trainers list, and assign workout page"
+- 5 files changed: 173 insertions, 117 deletions
+
+### 📝 Notes
+- All mobile app issues resolved and pushed to production
+- Calendar now fully responsive across all device sizes
+- Assign workout page now matches the site's design language
+- Backend compiled successfully after TypeScript changes
+
+---
+
 ## 2025-11-30 (Saturday)
 
 ### ✅ Completed
