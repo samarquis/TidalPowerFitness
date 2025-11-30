@@ -22,5 +22,9 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+  "exclude": [
+    "**/__tests__",
+    "**/*.test.ts"
+  ]
 }

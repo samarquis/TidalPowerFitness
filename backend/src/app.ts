@@ -1,6 +1,8 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -19,6 +21,7 @@ const packageRoutes = require('./routes/packages');
 const importRoutes = require('./routes/import');
 const bookingRoutes = require('./routes/bookings');
 const migrationRoutes = require('./routes/migrations');
+const cartRoutes = require('./routes/cart');
 
 dotenv.config();
 
@@ -73,6 +76,9 @@ app.use('/api/packages', packageRoutes.default || packageRoutes);
 
 // Booking routes
 app.use('/api/bookings', bookingRoutes.default || bookingRoutes);
+
+// Cart routes
+app.use('/api/cart', cartRoutes.default || cartRoutes);
 
 // Import routes (admin only)
 app.use('/api/import', importRoutes.default || importRoutes);

@@ -122,6 +122,33 @@ class ApiClient {
     async runMigrations() {
         return this.request<any>('/admin/migrate', { method: 'POST' });
     }
+
+    // Cart endpoints
+    async getCart() {
+        return this.request<any>('/cart', { method: 'GET' });
+    }
+
+    async addToCart(packageId: string, quantity: number = 1) {
+        return this.request<any>('/cart/items', {
+            method: 'POST',
+            body: JSON.stringify({ package_id: packageId, quantity }),
+        });
+    }
+
+    async updateCartItem(itemId: string, quantity: number) {
+        return this.request<any>(`/cart/items/${itemId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ quantity }),
+        });
+    }
+
+    async removeFromCart(itemId: string) {
+        return this.request<any>(`/cart/items/${itemId}`, { method: 'DELETE' });
+    }
+
+    async clearCart() {
+        return this.request<any>('/cart', { method: 'DELETE' });
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

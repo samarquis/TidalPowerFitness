@@ -1,10 +1,7 @@
-const app = require('./app');
 const dotenv = require('dotenv');
-
-// Import database initialization
-const initializeDatabase = require('./scripts/initDb');
-
 dotenv.config();
+
+const app = require('./app');
 
 const PORT = process.env.PORT || 5000;
 

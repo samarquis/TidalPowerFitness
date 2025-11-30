@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useRef, useEffect } from 'react';
+import CartIcon from './CartIcon';
 
 export default function Navigation() {
     const { user, logout, isAuthenticated } = useAuth();
@@ -98,6 +99,7 @@ export default function Navigation() {
                                 >
                                     Packages
                                 </Link>
+                                <CartIcon />
                                 <Link
                                     href="/profile"
                                     className="text-gray-300 hover:text-white text-sm transition-colors font-medium"

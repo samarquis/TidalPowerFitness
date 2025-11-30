@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
+import { useRouter } from 'next/navigation';
 
 interface Package {
     id: string;
@@ -16,40 +18,31 @@ interface PackageCardProps {
 }
 
 const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated } = useAuth();
+    const { addToCart } = useCart();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
-    const handleBuy = async () => {
+    const handleAddToCart = async () => {
         if (!isAuthenticated) {
-            window.location.href = '/login?redirect=/packages';
+            router.push('/login?redirect=/packages');
             return;
         }
 
         setLoading(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/payments/checkout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ packageId: pkg.id })
-            });
+            const result = await addToCart(pkg.id);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to initiate checkout');
-            }
-
-            const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
+            if (result.success) {
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 2000);
             } else {
-                throw new Error('No checkout URL returned');
+                alert(result.error || 'Failed to add to cart');
             }
         } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Failed to start checkout. Please try again.');
+            console.error('Add to cart error:', error);
+            alert('Failed to add to cart. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -80,17 +73,24 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
             </div>
 
             <button
-                className="w-full py-2 px-4 bg-white/5 hover:bg-teal-600 text-teal-400 hover:text-white border border-teal-500/30 hover:border-teal-500 rounded-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
-                onClick={handleBuy}
-                disabled={loading}
+                className={`w-full py-2 px-4 ${showSuccess ? 'bg-green-600' : 'bg-white/5 hover:bg-teal-600'} text-${showSuccess ? 'white' : 'teal-400 hover:text-white'} border border-${showSuccess ? 'green-600' : 'teal-500/30 hover:border-teal-500'} rounded-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center`}
+                onClick={handleAddToCart}
+                disabled={loading || showSuccess}
             >
                 {loading ? (
                     <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
+                ) : showSuccess ? (
+                    <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Added to Cart!
+                    </>
                 ) : (
-                    'Buy Now'
+                    'Add to Cart'
                 )}
             </button>
         </div>
