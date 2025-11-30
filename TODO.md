@@ -68,12 +68,13 @@
 - [x] **Mobile UI Fixes** - Calendar, trainers list, and assign workout page responsive
 - [x] **Trainers List Bug** - All trainers with role now appear, even without complete profiles
 - [x] **Design Consistency** - Assign workout page matches dark theme
+- [x] **Landing Page Enhancements** - Added statistics, testimonials, pricing teaser, and FAQ sections
 
 **Immediate Next Tasks:**
-1. [ ] Web design improvements (inspired by Dribbble examples)
-2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-3. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
-4. [ ] Verify multi-day class scheduling functionality
+1. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
+2. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
+3. [ ] Verify multi-day class scheduling functionality
+4. [ ] Consider adding blog/content section for SEO and engagement
 
 ---
 
