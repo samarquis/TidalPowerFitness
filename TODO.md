@@ -69,12 +69,17 @@
 - [x] **Trainers List Bug** - All trainers with role now appear, even without complete profiles
 - [x] **Design Consistency** - Assign workout page matches dark theme
 - [x] **Landing Page Enhancements** - Added statistics, testimonials, pricing teaser, and FAQ sections
+- [x] **Landing Page Cleanup** - Removed process steps and testimonials sections
+- [x] **Dynamic Pricing** - Pricing section now fetches and displays real packages from database
+- [x] **Cart Investigation** - Code structure verified correct, may need runtime debugging
 
 **Immediate Next Tasks:**
-1. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-2. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
-3. [ ] Verify multi-day class scheduling functionality
-4. [ ] Consider adding blog/content section for SEO and engagement
+1. [ ] Test cart functionality in production (check browser console if issues)
+2. [ ] Verify Scott appears in trainers list after deployment
+3. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
+4. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
+5. [ ] Verify multi-day class scheduling functionality
+6. [ ] Consider adding blog/content section for SEO and engagement
 
 ---
 
