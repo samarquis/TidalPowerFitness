@@ -4,6 +4,59 @@ This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` t
 
 ---
 
+## 2025-11-30 (Saturday) - Part 4
+
+### ✅ Completed
+- **Demo Users Feature** (Complete web interface for creating test users):
+  - **Backend Implementation**:
+    - Created `DemoUserController` with create/list/delete endpoints
+    - POST `/api/demo-users` - Create 1-26 demo users with realistic data
+    - GET `/api/demo-users` - List all demo users
+    - DELETE `/api/demo-users` - Bulk delete all demo users
+    - Auto-generates trainer profiles with random specialties and certifications
+    - All demo users marked with `is_demo_mode_enabled = true` flag
+    - Common password `demo123` for easy testing
+  - **Frontend Implementation**:
+    - Created admin page at `/admin/demo-users`
+    - Clean UI with create/list/delete functionality
+    - Real-time feedback on success/errors
+    - Shows demo user count and detailed table
+    - Mobile-responsive design
+  - **Database**:
+    - Created migration `006_add_is_demo_mode_enabled_to_users.sql`
+    - Adds boolean flag to track demo accounts
+  - **Navigation**:
+    - Added "Demo Users" link to Management dropdown (desktop & mobile)
+    - Admin-only access with role checks
+  - **Context Integration**:
+    - Created `DemoModeContext` for global demo mode state
+    - Integrated with existing demo mode toggle functionality
+
+### 🐛 Fixed Issues
+- **SSR Compatibility**: Updated `DemoModeContext` to return safe defaults during server-side rendering
+- **API URL Paths**: Fixed double `/api/` path issue in demo-users page
+- **Authentication**: Corrected token key from `token` to `auth_token`
+- **TypeScript Errors**: Fixed `toggleDemoMode` function usage in Navigation component
+
+### 🚀 Deployments
+- Pushed 7 commits to production:
+  1. Initial demo users feature implementation
+  2. Added missing DemoModeContext file
+  3. Fixed Navigation to use toggleDemoMode
+  4. Fixed DemoModeContext for SSR
+  5. Fixed API URL paths
+  6. Fixed authentication token key
+  7. Updated TODO with new bug and completion
+
+### 📝 Notes
+- Demo users use character names from Friends, Band of Brothers, and pop culture
+- Password for all demo users: `demo123`
+- Feature enables easy creation of realistic test data for development
+- Clean one-click deletion keeps database tidy
+- Identified trainers API 404 bug (added to TODO for future work)
+
+---
+
 ## 2025-11-30 (Saturday) - Part 3
 
 ### ✅ Completed
