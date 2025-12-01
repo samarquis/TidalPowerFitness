@@ -93,7 +93,7 @@ export default function Navigation() {
                                                         {isScottMarquis && (
                                                             <button
                                                                 onClick={() => {
-                                                                    setIsDemoModeEnabled(!isDemoModeEnabled);
+                                                                    toggleDemoMode();
                                                                     setManagementOpen(false);
                                                                 }}
                                                                 className={`block w-full text-left px-4 py-2 text-sm font-semibold transition-colors ${isDemoModeEnabled ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'}`}
@@ -228,7 +228,7 @@ export default function Navigation() {
                                         {isScottMarquis && (
                                             <button
                                                 onClick={() => {
-                                                    setIsDemoModeEnabled(!isDemoModeEnabled);
+                                                    toggleDemoMode();
                                                     setMobileMenuOpen(false);
                                                 }}
                                                 className={`block w-full text-left px-4 py-2 text-sm font-semibold transition-colors ${isDemoModeEnabled ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'}`}
