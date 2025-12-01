@@ -72,14 +72,18 @@
 - [x] **Landing Page Cleanup** - Removed process steps and testimonials sections
 - [x] **Dynamic Pricing** - Pricing section now fetches and displays real packages from database
 - [x] **Cart Investigation** - Code structure verified correct, may need runtime debugging
+- [x] **Demo Users Feature** - Web interface to create/manage demo users at `/admin/demo-users`
 
 **Immediate Next Tasks:**
-1. [ ] Test cart functionality in production (check browser console if issues)
-2. [ ] Verify Scott appears in trainers list after deployment
-3. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-4. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
-5. [ ] Verify multi-day class scheduling functionality
-6. [ ] Consider adding blog/content section for SEO and engagement
+1. [ ] **BUG:** Fix trainers API endpoint - Getting 404 from frontend URL instead of backend (`GET https://tidal-power-frontend.onrender.com/api/trainers 404`)
+   - Issue: Some page is trying to fetch trainers from frontend domain instead of backend API
+   - Likely missing or incorrect `NEXT_PUBLIC_API_URL` configuration on some component
+2. [ ] Test cart functionality in production (check browser console if issues)
+3. [ ] Verify Scott appears in trainers list after deployment
+4. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
+5. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
+6. [ ] Verify multi-day class scheduling functionality
+7. [ ] Consider adding blog/content section for SEO and engagement
 
 ---
 
