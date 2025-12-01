@@ -37,7 +37,7 @@ export default function DemoUsersPage() {
 
   const fetchDemoUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -60,7 +60,7 @@ export default function DemoUsersPage() {
     setMessage(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         method: 'POST',
         headers: {
@@ -97,7 +97,7 @@ export default function DemoUsersPage() {
     setMessage(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         method: 'DELETE',
         headers: {
