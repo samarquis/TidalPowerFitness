@@ -3,20 +3,20 @@
 
 -- Insert admin users
 -- Scott Marquis - Primary Admin (password: admin123 - hashed with bcrypt)
-INSERT INTO users (email, password_hash, first_name, last_name, role, phone) VALUES
-('samarquis4@gmail.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Scott', 'Marquis', 'admin', '555-0001'),
-('admin@titanpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Admin', 'User', 'admin', '555-0100');
+INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
+('samarquis4@gmail.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Scott', 'Marquis', 'admin', ARRAY['admin'], '555-0001'),
+('admin@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100');
 
 -- Insert sample trainers
-INSERT INTO users (email, password_hash, first_name, last_name, role, phone) VALUES
-('john.smith@titanpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'John', 'Smith', 'trainer', '555-0101'),
-('sarah.johnson@titanpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Sarah', 'Johnson', 'trainer', '555-0102'),
-('mike.williams@titanpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Mike', 'Williams', 'trainer', '555-0103');
+INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
+('john.smith@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'John', 'Smith', 'trainer', ARRAY['trainer'], '555-0101'),
+('sarah.johnson@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Sarah', 'Johnson', 'trainer', ARRAY['trainer'], '555-0102'),
+('mike.williams@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Mike', 'Williams', 'trainer', ARRAY['trainer'], '555-0103');
 
 -- Insert sample clients
-INSERT INTO users (email, password_hash, first_name, last_name, role, phone) VALUES
-('client1@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Jane', 'Doe', 'client', '555-0201'),
-('client2@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Bob', 'Anderson', 'client', '555-0202');
+INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
+('client1@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Jane', 'Doe', 'client', ARRAY['client'], '555-0201'),
+('client2@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Bob', 'Anderson', 'client', ARRAY['client'], '555-0202');
 
 -- Create trainer profiles
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)
@@ -27,7 +27,7 @@ SELECT
     ARRAY['NASM-CPT', 'CSCS'],
     8,
     true
-FROM users WHERE email = 'john.smith@titanpower.com';
+FROM users WHERE email = 'john.smith@tidalpower.com';
 
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)
 SELECT 
@@ -37,7 +37,7 @@ SELECT
     ARRAY['ACE-CPT', 'FMS Level 2'],
     6,
     true
-FROM users WHERE email = 'sarah.johnson@titanpower.com';
+FROM users WHERE email = 'sarah.johnson@tidalpower.com');
 
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)
 SELECT 
@@ -47,13 +47,13 @@ SELECT
     ARRAY['ISSA-CPT', 'Precision Nutrition Level 1'],
     5,
     true
-FROM users WHERE email = 'mike.williams@titanpower.com';
+FROM users WHERE email = 'mike.williams@tidalpower.com');
 
 -- Insert sample appointments
 INSERT INTO appointments (client_id, trainer_id, appointment_type, scheduled_at, duration_minutes, status)
 SELECT 
     (SELECT id FROM users WHERE email = 'client1@example.com'),
-    (SELECT id FROM users WHERE email = 'john.smith@titanpower.com'),
+    (SELECT id FROM users WHERE email = 'john.smith@tidalpower.com'),
     'Personal Training Session',
     CURRENT_TIMESTAMP + INTERVAL '2 days',
     60,

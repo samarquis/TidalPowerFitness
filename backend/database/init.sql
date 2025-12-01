@@ -18,6 +18,8 @@ CREATE TABLE users (
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     role user_role NOT NULL DEFAULT 'client',
+    roles TEXT[] DEFAULT ARRAY['client']::TEXT[],
+    is_demo_mode_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -275,6 +277,8 @@ CREATE TABLE personal_records (
 -- Create indexes for better query performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_roles ON users USING GIN(roles);
+CREATE INDEX idx_users_demo_mode ON users(is_demo_mode_enabled) WHERE is_demo_mode_enabled = true;
 CREATE INDEX idx_trainer_profiles_user_id ON trainer_profiles(user_id);
 CREATE INDEX idx_appointments_client_id ON appointments(client_id);
 CREATE INDEX idx_appointments_trainer_id ON appointments(trainer_id);
