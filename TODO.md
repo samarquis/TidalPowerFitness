@@ -75,13 +75,18 @@
 - [x] **Demo Users Feature** - Web interface to create/manage demo users at `/admin/demo-users`
 
 **Immediate Next Tasks:**
-1. [ ] **BUG:** Fix trainers API endpoint - Getting 404 from frontend URL instead of backend (`GET https://tidal-power-frontend.onrender.com/api/trainers 404`)
-   - Issue: Some page is trying to fetch trainers from frontend domain instead of backend API
-   - Likely missing or incorrect `NEXT_PUBLIC_API_URL` configuration on some component
-2. [ ] Test cart functionality in production (check browser console if issues)
-3. [ ] Verify Scott appears in trainers list after deployment
-4. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-5. [ ] Clean up redundant dependencies (bcryptjs, node-fetch)
+1. [x] **BUG:** Fix trainers API endpoint - **FIXED Dec 1, 2025**
+   - Refactored `/admin/trainers` page to use centralized `apiClient`
+   - Added `createTrainer()` method to apiClient for consistency
+   - All API calls now properly route to backend domain
+2. [x] **Clean up redundant dependencies** - **COMPLETED Dec 1, 2025**
+   - Removed `node-fetch` dependency (using native fetch in Node.js 24+)
+   - Updated `importExercises.ts` to use native fetch API
+   - Fixed TypeScript configuration to exclude scripts folder
+   - Note: `bcryptjs` was already removed previously
+3. [ ] Test cart functionality in production (check browser console if issues)
+4. [ ] Verify Scott appears in trainers list after deployment
+5. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
 6. [ ] Verify multi-day class scheduling functionality
 7. [ ] Consider adding blog/content section for SEO and engagement
 
@@ -111,9 +116,10 @@ The following tasks are based on a comprehensive review of the codebase.
     - ✅ Implemented using express-validator
     - ✅ Auth, booking, cart, package, and profile routes validated
     - ✅ Comprehensive error messages returned to clients
-- [ ] **Dependency Cleanup:**
-    - Remove the redundant `bcryptjs` dependency and standardize on `bcrypt`.
-    - Investigate removing the `node-fetch` dependency and using the native `fetch` available in modern Node.js.
+- [x] **Dependency Cleanup:** - **COMPLETE (Dec 1, 2025)**
+    - ✅ `bcryptjs` was already removed (using `bcrypt`)
+    - ✅ Removed `node-fetch` dependency (using native fetch in Node.js 24+)
+    - ✅ Fixed TypeScript configuration issues
 - [ ] **Code Consistency:** Refactor controllers to use a consistent pattern (either all classes or all function-based exports).
 
 ### 🎨 Frontend Improvements

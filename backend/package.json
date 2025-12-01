@@ -32,7 +32,6 @@
     "express": "^5.1.0",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^2.7.0",
     "nodemon": "^3.1.11",
     "pg": "^8.16.3",
     "square": "^43.2.1",
@@ -45,6 +44,7 @@
     "@types/supertest": "^6.0.3",
     "jest": "^30.2.0",
     "supertest": "^7.1.4",
-    "ts-jest": "^29.4.5"
+    "ts-jest": "^29.4.5",
+    "@faker-js/faker": "^8.0.0"
   }
 }

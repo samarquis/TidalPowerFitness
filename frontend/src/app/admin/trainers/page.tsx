@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api';
 
 interface Trainer {
     user_id: string;
@@ -69,13 +70,10 @@ export default function AdminTrainersPage() {
 
     const fetchTrainers = async () => {
         try {
-            const response = await fetch('/api/trainers', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
+            const { data, error } = await apiClient.getTrainers();
+            if (error) {
+                console.error('Error fetching trainers:', error);
+            } else if (data?.trainers) {
                 setTrainers(data.trainers);
             }
         } catch (error) {
@@ -97,18 +95,10 @@ export default function AdminTrainersPage() {
                 certifications: formData.certifications.split(',').map(s => s.trim()).filter(s => s),
             };
 
-            const response = await fetch('/api/trainers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
+            const { data, error } = await apiClient.createTrainer(payload);
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || 'Failed to create trainer');
+            if (error) {
+                throw new Error(error);
             }
 
             setSuccess('Trainer created successfully!');

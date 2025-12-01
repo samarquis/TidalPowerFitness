@@ -8,7 +8,6 @@
  * License: Public Domain (Unlicense)
  */
 
-import fetch from 'node-fetch';
 import { query } from '../config/db';
 
 interface FreeExerciseDBExercise {

@@ -101,6 +101,26 @@ class ApiClient {
         return this.request<any>(`/trainers/${userId}`, { method: 'GET' });
     }
 
+    async createTrainer(trainerData: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        password?: string;
+        phone?: string;
+        bio?: string;
+        specialties?: string[];
+        certifications?: string[];
+        years_experience?: number;
+        profile_image_url?: string;
+        acuity_calendar_id?: string;
+        is_accepting_clients?: boolean;
+    }) {
+        return this.request<any>('/trainers', {
+            method: 'POST',
+            body: JSON.stringify(trainerData),
+        });
+    }
+
     // Form submission
     async submitForm(formData: { form_type: string; form_data: any }) {
         return this.request<any>('/forms', {
