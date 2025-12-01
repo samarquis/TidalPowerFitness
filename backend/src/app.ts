@@ -22,6 +22,7 @@ const importRoutes = require('./routes/import');
 const bookingRoutes = require('./routes/bookings');
 const migrationRoutes = require('./routes/migrations');
 const cartRoutes = require('./routes/cart');
+const demoUserRoutes = require('./routes/demoUsers');
 
 dotenv.config();
 
@@ -85,6 +86,9 @@ app.use('/api/import', importRoutes.default || importRoutes);
 
 // Migration routes (admin only)
 app.use('/api/admin/migrate', migrationRoutes.default || migrationRoutes);
+
+// Demo user routes (admin only)
+app.use('/api/demo-users', demoUserRoutes.default || demoUserRoutes);
 
 // Setup routes (one-time admin creation)
 app.use('/api/setup', setupRoutes.default || setupRoutes);
