@@ -48,7 +48,11 @@ export const DemoModeProvider = ({ children }: { children: ReactNode }) => {
 export const useDemoMode = () => {
     const context = useContext(DemoModeContext);
     if (context === undefined) {
-        throw new Error('useDemoMode must be used within a DemoModeProvider');
+        // Return safe defaults for SSR/SSG
+        return {
+            isDemoModeEnabled: false,
+            toggleDemoMode: () => {}
+        };
     }
     return context;
 };
