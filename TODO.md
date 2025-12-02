@@ -59,7 +59,31 @@
 
 ## 📌 Next Steps Summary
 
-**Recent Completion (Nov 30):**
+**Recent Completion (Dec 1, 2025):**
+- [x] **Database Schema Fix** - Migration 002 adds multi-role support and demo mode
+  - Added `roles TEXT[]` column for multi-role system
+  - Added `is_demo_mode_enabled BOOLEAN` for demo user management
+  - Backfilled existing users' roles from role column
+  - Created GIN index for efficient array queries
+  - Updated init.sql and seed.sql for fresh deployments
+- [x] **Trainers Page Bug Fixes** - Fixed blank trainers page (3 separate fixes)
+  - Fix 1: Wrapped API response in `{ trainers: [...] }` object
+  - Fix 2: Added NULL check for roles column in SQL query
+  - Fix 3: Added ENUM to TEXT cast (`role::TEXT = $1`) to fix type mismatch
+- [x] **Demo Users Feature Complete** - Create/delete demo users working perfectly
+  - Demo users properly created with both `role` and `roles` columns
+  - Delete functionality removes all users with @demo.com emails
+  - Verified trainers page shows demo trainers correctly
+- [x] **Trainers API Frontend Fix** - Refactored `/admin/trainers` to use `apiClient`
+  - Removed direct `fetch()` calls
+  - Added `createTrainer()` method to apiClient
+  - Consistent API routing to backend domain
+- [x] **Dependency Cleanup**
+  - Removed `node-fetch` (using native Node.js fetch)
+  - Fixed TypeScript config to exclude scripts folder
+  - Archived orphaned migration file
+
+**Previous Completion (Nov 30):**
 - [x] **Exercise Library Populated** - 873 exercises imported from open-source database
 - [x] **Input Validation** - All critical endpoints protected
 - [x] **Integration Tests** - Complete booking flow tested
@@ -75,20 +99,10 @@
 - [x] **Demo Users Feature** - Web interface to create/manage demo users at `/admin/demo-users`
 
 **Immediate Next Tasks:**
-1. [x] **BUG:** Fix trainers API endpoint - **FIXED Dec 1, 2025**
-   - Refactored `/admin/trainers` page to use centralized `apiClient`
-   - Added `createTrainer()` method to apiClient for consistency
-   - All API calls now properly route to backend domain
-2. [x] **Clean up redundant dependencies** - **COMPLETED Dec 1, 2025**
-   - Removed `node-fetch` dependency (using native fetch in Node.js 24+)
-   - Updated `importExercises.ts` to use native fetch API
-   - Fixed TypeScript configuration to exclude scripts folder
-   - Note: `bcryptjs` was already removed previously
-3. [ ] Test cart functionality in production (check browser console if issues)
-4. [ ] Verify Scott appears in trainers list after deployment
-5. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-6. [ ] Verify multi-day class scheduling functionality
-7. [ ] Consider adding blog/content section for SEO and engagement
+1. [ ] Test cart functionality in production (check browser console if issues)
+2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
+3. [ ] Verify multi-day class scheduling functionality
+4. [ ] Consider adding blog/content section for SEO and engagement
 
 ---
 
