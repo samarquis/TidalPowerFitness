@@ -84,7 +84,7 @@ class UserModel {
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
             `SELECT * FROM users
-             WHERE (roles @> ARRAY[$1]::TEXT[] OR role = $1)
+             WHERE ((roles IS NOT NULL AND roles @> ARRAY[$1]::TEXT[]) OR role = $1)
              AND is_active = true
              ORDER BY created_at DESC`,
             [role]
