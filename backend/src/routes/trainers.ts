@@ -74,7 +74,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
 
         // Filter to only show accepting clients or those with completed profiles
         // Actually, let's show all trainers so Scott appears
-        res.status(200).json(trainers);
+        res.status(200).json({ trainers });
     } catch (error) {
         console.error('Get trainers error:', error);
         res.status(500).json({ error: 'Failed to get trainers' });
