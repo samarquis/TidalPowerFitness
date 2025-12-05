@@ -76,6 +76,9 @@ export const validateUpdateCartItem: ValidationChain[] = [
         .notEmpty()
         .withMessage('Cart item ID is required'),
     body('quantity')
+        .notEmpty()
+        .withMessage('Quantity is required')
+        .toInt()
         .isInt({ min: 1, max: 100 })
         .withMessage('Quantity must be between 1 and 100')
 ];
