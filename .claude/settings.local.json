@@ -15,7 +15,14 @@
       "WebFetch(domain:dribbble.com)",
       "WebFetch(domain:www.hostinger.com)",
       "Bash(cat:*)",
-      "Bash(npm run db:query:*)"
+      "Bash(npm run db:query:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(node --version:*)",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force C:\\Programming\\TidalPowerFitness\\backend\\dist\")",
+      "Bash(find:*)",
+      "Bash(test:*)",
+      "Bash(powershell -Command \"New-Item -Path ''C:\\Users\\samar\\.claude\\plans'' -ItemType Directory -Force | Out-Null; Write-Host ''Directory created''\")"
     ],
     "deny": [],
     "ask": []

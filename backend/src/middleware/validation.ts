@@ -72,7 +72,7 @@ export const validateAddToCart: ValidationChain[] = [
 ];
 
 export const validateUpdateCartItem: ValidationChain[] = [
-    param('itemId')
+    param('id')
         .isUUID()
         .withMessage('Invalid cart item ID format'),
     body('quantity')
@@ -81,7 +81,7 @@ export const validateUpdateCartItem: ValidationChain[] = [
 ];
 
 export const validateRemoveFromCart: ValidationChain[] = [
-    param('itemId')
+    param('id')
         .isUUID()
         .withMessage('Invalid cart item ID format')
 ];

@@ -1,17 +1,19 @@
-import fs from 'fs';
+import dotenv from 'dotenv';
 import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+
+import fs from 'fs';
 import pool from '../config/db';
 
-const runMigration = async (sqlFile: string) => {
+// Helper to run individual SQL files
+const executeSqlFile = async (filePath: string) => {
     try {
-        const filePath = path.join(__dirname, '../../database', sqlFile);
         const sql = fs.readFileSync(filePath, 'utf8');
-
-        console.log(`Running migration: ${sqlFile}`);
+        console.log(`Executing SQL file: ${path.basename(filePath)}`);
         await pool.query(sql);
-        console.log(`✓ Migration completed: ${sqlFile}`);
+        console.log(`✓ Executed: ${path.basename(filePath)}`);
     } catch (error) {
-        console.error(`✗ Migration failed: ${sqlFile}`, error);
+        console.error(`✗ Failed to execute: ${path.basename(filePath)}`, error);
         throw error;
     }
 };
@@ -20,8 +22,17 @@ const migrate = async () => {
     try {
         console.log('Starting database migration...\n');
 
-        // Run init.sql to create tables
-        await runMigration('init.sql');
+        // Ensure init.sql is run first (table creation)
+        await executeSqlFile(path.join(__dirname, '../../database/init.sql'));
+
+        const migrationsDir = path.join(__dirname, '../../migrations');
+        const migrationFiles = fs.readdirSync(migrationsDir)
+            .filter(file => file.endsWith('.sql'))
+            .sort(); // Sorts numerically (e.g., 001, 002, 003)
+
+        for (const file of migrationFiles) {
+            await executeSqlFile(path.join(migrationsDir, file));
+        }
 
         console.log('\n✓ All migrations completed successfully!');
         process.exit(0);
@@ -36,7 +47,8 @@ const seed = async () => {
         console.log('Starting database seeding...\n');
 
         // Run seed.sql to insert sample data
-        await runMigration('seed.sql');
+        await executeSqlFile(path.join(__dirname, '../../database/seed.sql'));
+        await executeSqlFile(path.join(__dirname, '../../database/generated_test_data.sql')); // Run generated test data
 
         console.log('\n✓ Database seeded successfully!');
         process.exit(0);
@@ -57,6 +69,14 @@ const reset = async () => {
       DROP TABLE IF EXISTS payments CASCADE;
       DROP TABLE IF EXISTS appointments CASCADE;
       DROP TABLE IF EXISTS trainer_profiles CASCADE;
+      DROP TABLE IF EXISTS classes CASCADE; -- Added classes
+      DROP TABLE IF EXISTS workout_assignments CASCADE; -- Added workout_assignments
+      DROP TABLE IF EXISTS workout_sessions CASCADE; -- Added workout_sessions
+      DROP TABLE IF EXISTS workout_templates CASCADE; -- Added workout_templates
+      DROP TABLE IF EXISTS workout_sets CASCADE; -- Added workout_sets
+      DROP TABLE IF EXISTS exercises CASCADE; -- Added exercises
+      DROP TABLE IF EXISTS body_focus_areas CASCADE; -- Added body_focus_areas
+      DROP TABLE IF EXISTS workout_types CASCADE; -- Added workout_types
       DROP TABLE IF EXISTS users CASCADE;
       DROP TYPE IF EXISTS user_role CASCADE;
       DROP TYPE IF EXISTS appointment_status CASCADE;
@@ -65,7 +85,17 @@ const reset = async () => {
         console.log('✓ Tables dropped');
 
         // Run migrations
-        await runMigration('init.sql');
+        await executeSqlFile(path.join(__dirname, '../../database/init.sql'));
+
+        const migrationsDir = path.join(__dirname, '../../migrations');
+        const migrationFiles = fs.readdirSync(migrationsDir)
+            .filter(file => file.endsWith('.sql'))
+            .sort(); // Sorts numerically (e.g., 001, 002, 003)
+
+        for (const file of migrationFiles) {
+            await executeSqlFile(path.join(migrationsDir, file));
+        }
+
 
         console.log('\n✓ Database reset completed!');
         process.exit(0);

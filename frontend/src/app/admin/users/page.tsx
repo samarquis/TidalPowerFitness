@@ -23,6 +23,7 @@ export default function UserManagementPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'client' | 'trainer' | 'admin'>('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const isScottMarquis = user?.email === 'samarquis4@gmail.com';
 
     // Password Reset Modal State
     const [showResetModal, setShowResetModal] = useState(false);
@@ -196,6 +197,11 @@ export default function UserManagementPage() {
         }
     };
 
+    const handleViewAsUser = (userToImpersonate: User) => {
+        console.log(`Viewing as user: ${userToImpersonate.first_name} ${userToImpersonate.last_name} (${userToImpersonate.email})`);
+        // TODO: Implement backend API call and context update for impersonation
+    };
+
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
             case 'admin': return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -326,6 +332,14 @@ export default function UserManagementPage() {
                                                 >
                                                     Reset Pwd
                                                 </button>
+                                                {isScottMarquis && (
+                                                    <button
+                                                        onClick={() => handleViewAsUser(u)}
+                                                        className="ml-2 px-4 py-2 rounded-lg text-sm font-semibold bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all"
+                                                    >
+                                                        View as User
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

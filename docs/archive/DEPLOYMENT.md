@@ -98,10 +98,10 @@ For production, add an nginx reverse proxy:
 
 ```bash
 # Backup
-docker exec titanpower-db pg_dump -U postgres titan_power_fitness > backup.sql
+docker exec tidalpower-db pg_dump -U postgres tidal_power_fitness > backup.sql
 
 # Restore
-docker exec -i titanpower-db psql -U postgres titan_power_fitness < backup.sql
+docker exec -i tidalpower-db psql -U postgres tidal_power_fitness < backup.sql
 ```
 
 ## Cloud Deployment Options
@@ -134,7 +134,7 @@ docker exec -i titanpower-db psql -U postgres titan_power_fitness < backup.sql
 ### Health Checks
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:5000/health`
-- Database: `docker exec titanpower-db pg_isready`
+- Database: `docker exec tidalpower-db pg_isready`
 
 ### Logs
 ```bash
@@ -165,7 +165,7 @@ Add nginx or use cloud provider's load balancer to distribute traffic across bac
 ### Database Connection Issues
 ```bash
 # Check if database is ready
-docker exec titanpower-db pg_isready -U postgres
+docker exec tidalpower-db pg_isready -U postgres
 
 # View database logs
 docker-compose logs postgres

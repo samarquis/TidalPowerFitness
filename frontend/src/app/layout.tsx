@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { DemoModeProvider } from "@/contexts/DemoModeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "@/components/Navigation";
 
@@ -24,10 +25,12 @@ export default function RootLayout({
         <ErrorBoundary>
           <AuthProvider>
             <CartProvider>
-              <Navigation />
-              <main className="pt-16">
-                {children}
-              </main>
+              <DemoModeProvider>
+                <Navigation />
+                <main className="pt-16">
+                  {children}
+                </main>
+              </DemoModeProvider>
             </CartProvider>
           </AuthProvider>
         </ErrorBoundary>
