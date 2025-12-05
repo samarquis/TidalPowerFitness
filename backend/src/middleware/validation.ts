@@ -73,8 +73,8 @@ export const validateAddToCart: ValidationChain[] = [
 
 export const validateUpdateCartItem: ValidationChain[] = [
     param('id')
-        .isUUID()
-        .withMessage('Invalid cart item ID format'),
+        .notEmpty()
+        .withMessage('Cart item ID is required'),
     body('quantity')
         .isInt({ min: 1, max: 100 })
         .withMessage('Quantity must be between 1 and 100')
@@ -82,8 +82,8 @@ export const validateUpdateCartItem: ValidationChain[] = [
 
 export const validateRemoveFromCart: ValidationChain[] = [
     param('id')
-        .isUUID()
-        .withMessage('Invalid cart item ID format')
+        .notEmpty()
+        .withMessage('Cart item ID is required')
 ];
 
 // Booking validation
