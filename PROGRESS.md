@@ -4,6 +4,38 @@ This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` t
 
 ---
 
+## 2025-12-04 (Wednesday)
+
+### ✅ Completed
+- **Cart Controls Debugging**:
+  - Investigated cart +/- and trash buttons not functioning
+  - Added console logging to `cart/page.tsx` for debugging (`[Cart] Removing item:`, `[Cart] Updating quantity:`)
+  - Added error state and UI error banner (red dismissible banner displays any API errors)
+  - Updated `init.sql` to include `packages`, `cart`, `cart_items`, and `user_credits` tables
+  - Verified migration 004 exists for cart tables - may need to run on production
+
+- **Git Cleanup**:
+  - Removed problematic `backend/nul` file (Windows special device name)
+  - Added `backend/nul` to `.gitignore` to prevent future issues
+  - Pushed all pending changes to GitHub
+
+### 🚀 Deployments
+- Pushed 2 commits to production:
+  1. `d73a9bd` - Fix cart controls: add error handling, logging, and include cart tables in init.sql
+  2. `cc7a4c1` - Update configs, add generated test data, cleanup migrations
+
+### 🚧 In Progress
+- Cart functionality needs production testing after Render deployment completes
+- Need to verify migration 004 (cart tables) has been run on production database
+
+### 📝 Notes
+- Cart code (model, controller, routes, apiClient) all correctly implemented
+- Issue may be that cart tables don't exist in production database
+- Error display will now show any issues when user tests the controls
+- User can check browser console (F12) for debug output
+
+---
+
 ## 2025-11-30 (Saturday) - Part 4
 
 ### ✅ Completed

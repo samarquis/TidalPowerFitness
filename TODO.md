@@ -59,7 +59,15 @@
 
 ## 📌 Next Steps Summary
 
-**Recent Completion (Dec 1, 2025):**
+**Recent Work (Dec 4, 2025):**
+- [/] **Cart Controls Debugging** - Investigating +/- and trash buttons not working
+  - Added console logging to cart page for debugging (`[Cart] Removing item:`, `[Cart] Updating quantity:`)
+  - Added error display banner to cart page UI (red banner shows any API errors)
+  - Updated `init.sql` to include `packages`, `cart`, `cart_items`, and `user_credits` tables
+  - Cart tables exist in migration 004 - may need to be run on production
+  - Cleaned up git issues (removed `backend/nul` special file, added to `.gitignore`)
+
+**Previous Completion (Dec 1, 2025):**
 - [x] **Database Schema Fix** - Migration 002 adds multi-role support and demo mode
   - Added `roles TEXT[]` column for multi-role system
   - Added `is_demo_mode_enabled BOOLEAN` for demo user management
@@ -83,23 +91,8 @@
   - Fixed TypeScript config to exclude scripts folder
   - Archived orphaned migration file
 
-**Previous Completion (Nov 30):**
-- [x] **Exercise Library Populated** - 873 exercises imported from open-source database
-- [x] **Input Validation** - All critical endpoints protected
-- [x] **Integration Tests** - Complete booking flow tested
-- [x] **Bug Fix** - Exercise display bug resolved
-- [x] **Documentation** - CLAUDE.md created for future AI instances
-- [x] **Mobile UI Fixes** - Calendar, trainers list, and assign workout page responsive
-- [x] **Trainers List Bug** - All trainers with role now appear, even without complete profiles
-- [x] **Design Consistency** - Assign workout page matches dark theme
-- [x] **Landing Page Enhancements** - Added statistics, testimonials, pricing teaser, and FAQ sections
-- [x] **Landing Page Cleanup** - Removed process steps and testimonials sections
-- [x] **Dynamic Pricing** - Pricing section now fetches and displays real packages from database
-- [x] **Cart Investigation** - Code structure verified correct, may need runtime debugging
-- [x] **Demo Users Feature** - Web interface to create/manage demo users at `/admin/demo-users`
-
 **Immediate Next Tasks:**
-1. [ ] Test cart functionality in production (check browser console if issues)
+1. [/] **Fix cart controls** - Test in production, check console for errors, verify migration 004 ran
 2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
 3. [ ] Verify multi-day class scheduling functionality
 4. [ ] Consider adding blog/content section for SEO and engagement
