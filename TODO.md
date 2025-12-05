@@ -58,6 +58,14 @@
     - Error: "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received"
     - Note: May be caused by browser extensions (Ginger, Grammarly) - test in incognito mode
 - [ ] **FEATURE:** Trainer cards need to be editable (admin can edit trainer profiles)
+- [ ] **WORKFLOW:** Client class signup flow
+    - How does a client sign up for a class?
+    - Proposed: Click on class in calendar → Sign up with credits
+    - Need to design and implement this user flow
+- [ ] **FEATURE:** Instructor class attendance view
+    - When class is published and clients sign up, instructor should see:
+      - Number of signups
+      - Who signed up (client names)
 
 ---
 
