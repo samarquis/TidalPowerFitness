@@ -54,6 +54,9 @@
 - [x] **ACTION REQUIRED:** Run Database Migrations on Production (via `/admin/migrations`) - **COMPLETE**
 - [ ] Test multi-day class scheduling functionality
 - [ ] Verify all migrations applied successfully on deployed environment
+- [ ] **INVESTIGATE:** `/workouts/assign` page showing `runtime.lastError` messages
+    - Error: "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received"
+    - Note: May be caused by browser extensions (Ginger, Grammarly) - test in incognito mode
 
 ---
 
