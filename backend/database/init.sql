@@ -82,6 +82,57 @@ CREATE TABLE forms (
     reviewed_at TIMESTAMP
 );
 
+-- ============================================
+-- PACKAGES AND CART SYSTEM TABLES
+-- ============================================
+
+-- Packages table (membership options)
+CREATE TABLE packages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    price_cents INTEGER NOT NULL,
+    credit_count INTEGER NOT NULL DEFAULT 1,
+    duration_days INTEGER DEFAULT 30,
+    type VARCHAR(50) DEFAULT 'one_time',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Shopping cart table
+CREATE TABLE cart (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id)
+);
+
+-- Cart items table
+CREATE TABLE cart_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    cart_id UUID NOT NULL REFERENCES cart(id) ON DELETE CASCADE,
+    package_id UUID NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(cart_id, package_id)
+);
+
+-- User credits table (purchased credits)
+CREATE TABLE user_credits (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    package_id UUID REFERENCES packages(id) ON DELETE SET NULL,
+    credits_remaining INTEGER NOT NULL DEFAULT 0,
+    credits_total INTEGER NOT NULL,
+    expires_at TIMESTAMP,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Classes table
 CREATE TABLE classes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

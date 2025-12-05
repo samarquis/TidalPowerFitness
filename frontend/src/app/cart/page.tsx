@@ -9,18 +9,43 @@ export default function CartPage() {
     const { cart, loading, removeFromCart, updateQuantity } = useCart();
     const router = useRouter();
     const [processingItem, setProcessingItem] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleRemove = async (itemId: string) => {
+        console.log('[Cart] Removing item:', itemId);
+        setError(null);
         setProcessingItem(itemId);
-        await removeFromCart(itemId);
-        setProcessingItem(null);
+        try {
+            const result = await removeFromCart(itemId);
+            console.log('[Cart] Remove result:', result);
+            if (!result.success) {
+                setError(result.error || 'Failed to remove item');
+            }
+        } catch (err: any) {
+            console.error('[Cart] Remove error:', err);
+            setError(err.message || 'An error occurred');
+        } finally {
+            setProcessingItem(null);
+        }
     };
 
     const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+        console.log('[Cart] Updating quantity:', itemId, 'to', newQuantity);
         if (newQuantity < 1) return;
+        setError(null);
         setProcessingItem(itemId);
-        await updateQuantity(itemId, newQuantity);
-        setProcessingItem(null);
+        try {
+            const result = await updateQuantity(itemId, newQuantity);
+            console.log('[Cart] Update result:', result);
+            if (!result.success) {
+                setError(result.error || 'Failed to update quantity');
+            }
+        } catch (err: any) {
+            console.error('[Cart] Update error:', err);
+            setError(err.message || 'An error occurred');
+        } finally {
+            setProcessingItem(null);
+        }
     };
 
     const handleCheckout = () => {
@@ -43,6 +68,20 @@ export default function CartPage() {
         <div className="min-h-screen bg-black pt-24 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl font-bold text-white mb-8">Shopping Cart</h1>
+
+                {error && (
+                    <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg mb-6 flex items-center justify-between">
+                        <span>{error}</span>
+                        <button
+                            onClick={() => setError(null)}
+                            className="text-red-400 hover:text-red-200"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
 
                 {items.length === 0 ? (
                     <div className="bg-gray-900 border border-white/10 rounded-xl p-12 text-center">
