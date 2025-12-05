@@ -57,6 +57,7 @@
 - [ ] **INVESTIGATE:** `/workouts/assign` page showing `runtime.lastError` messages
     - Error: "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received"
     - Note: May be caused by browser extensions (Ginger, Grammarly) - test in incognito mode
+- [ ] **FEATURE:** Trainer cards need to be editable (admin can edit trainer profiles)
 
 ---
 
