@@ -11,6 +11,7 @@ interface Class {
     category: string;
     instructor_name: string;
     day_of_week: number;
+    days_of_week?: number[];
     start_time: string;
     duration_minutes: number;
     max_capacity: number;
@@ -113,7 +114,13 @@ export default function ClassesPage() {
     // Group classes by day
     const classesByDay = DAYS.map((day, dayIndex) => ({
         day,
-        classes: classes.filter(c => c.day_of_week === dayIndex)
+        classes: classes.filter(c => {
+            // Check if class is scheduled for this day (supporting both legacy and new array format)
+            if (c.days_of_week && c.days_of_week.length > 0) {
+                return c.days_of_week.includes(dayIndex);
+            }
+            return c.day_of_week === dayIndex;
+        })
     }));
 
     if (loading) {

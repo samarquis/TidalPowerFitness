@@ -120,6 +120,13 @@ class ApiClient {
         });
     }
 
+    async updateTrainer(userId: string, trainerData: any) {
+        return this.request<any>(`/trainers/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(trainerData),
+        });
+    }
+
     // Form submission
     async submitForm(formData: { form_type: string; form_data: any }) {
         return this.request<any>('/forms', {

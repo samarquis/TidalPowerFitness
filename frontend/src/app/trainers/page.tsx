@@ -27,7 +27,14 @@ export default function TrainersPage() {
         const fetchTrainers = async () => {
             const response = await apiClient.getTrainers();
             if (response.data) {
-                setTrainers(response.data.trainers || []);
+                // Handle both { trainers: [...] } object and direct [...] array formats
+                const trainersData = response.data.trainers || response.data;
+                if (Array.isArray(trainersData)) {
+                    setTrainers(trainersData);
+                } else {
+                    console.error('API returned non-array data:', response.data);
+                    setTrainers([]);
+                }
             }
             setLoading(false);
         };

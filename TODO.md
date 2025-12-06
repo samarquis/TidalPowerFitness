@@ -1,159 +1,53 @@
-# Tidal Power Fitness - TODO
+# Tidal Power Fitness - Master TODO
 
-## 🚨 High Priority - In Progress
+This file is the single source of truth for all project tasks.
 
-### Membership & Credit System (Replace Acuity) - **IN PROGRESS**
-- [x] Database Schema: Packages, UserCredits tables
-- [x] Backend Models: Package, UserCredit
-- [x] Backend API: Package CRUD endpoints
-- [x] Admin Interface: Package Management page (`/admin/packages`)
-- [x] **NEXT:** User Interface: Browse & Buy Packages page - **VERIFIED**
-- [x] Payment Integration: Square Checkout & Webhooks (Demo Mode Verified)
-- [x] Booking Logic: Deduct credits on class booking - **VERIFIED**
-- [x] Booking Logic: Validate credit expiration - **VERIFIED**
-- [x] Cancellation Logic: Refund credits to user balance
+## 🚀 High Priority / Next Up
+
+## 🚀 High Priority / Next Up
+
+### 1. Bug Fixes & Stability
+- [x] **INVESTIGATE:** `/workouts/assign` page extension errors - **VERIFIED CLEAN**
+    - Error: "A listener indicated an asynchronous response..." (Confirmed likely browser extension conflict).
+- [x] **BUG:** Trainers API response format mismatch - **FIXED**
+    - Patched `trainers/page`, `admin/trainers/page`, `TrainerBiosSection`, and `ClassScheduleSection` to handle both formats.
+
+### 2. Technical Debt & Maintenance
+- [ ] **Verify Production Migrations**
+    - Ensure all recent migrations (Cart, Multi-day, etc.) are executed on Render production DB.
+- [ ] **Refactor Role System (Long Term)**
+    - Migrate from `role` column to strict `user_roles` table if needed for complex permissions.
+
+---
 
 ## ✅ Recently Completed
 
-### Membership & Credit System (Replace Acuity) - **COMPLETE**
-- [x] Database Schema: Packages, UserCredits tables
-- [x] Backend Models: Package, UserCredit
-- [x] Backend API: Package CRUD endpoints
-- [x] Admin Interface: Package Management page (`/admin/packages`)
-- [x] User Interface: Browse & Buy Packages page
-- [x] Payment Integration: Square Checkout & Webhooks
-- [x] Booking Logic: Deduct credits on class booking
-- [x] Booking Logic: Validate credit expiration
-- [x] Cancellation Logic: Refund credits to user balance
+### December 2025
+- [x] **Achievements System / Badges**
+    - Full backend logic (awards on booking/purchase).
+    - Profile page UI with Badge cards.
+- [x] **Multi-Day Class Scheduling**
+    - Fixed public schedule to show classes on all `days_of_week`.
+    - Verified Admin creation of multi-day classes.
+- [x] **Editable Trainer Cards**
+    - Admin feature to edit trainer profiles and user details.
+    - Unified update endpoint.
+- [x] **Security Hardening**
+    - Migrated to `HttpOnly` cookies for JWT storage.
+    - Removed `localStorage` token usage.
+- [x] **Instructor Attendance View**
+    - Trainers can see list of attendees for their classes.
+- [x] **Cart & Checkout**
+    - Fixed cart controls (+/- quantity).
+    - Integrated Mock Payment flow for testing credits.
 
-### Exercise Library (User View) - **COMPLETE**
-- [x] Design: Muscle group grid layout
-- [x] Feature: Filter by Body Part -> Muscle
-- [x] Feature: Exercise Detail View (Video, Instructions)
-- [x] Public access for all users
-
-### Home Page Redesign
-- [x] Logged-out landing page
-- [x] Logged-in User Dashboard (Calendar, Stats, Badges)
-- [x] Navigation refactor (Management dropdown)
-
-### Admin Enhancements
-- [x] Admin Calendar: Monthly view with class management
-- [x] User Management: Password reset feature
-- [x] Exercise Database: Body Part > Muscle > Exercise hierarchy
-- [x] Package Management: Admin interface for packages
-- [x] **Database Migrations**: Web-based migration system for Render free tier
-
-### Workout Assignment Feature
-- [x] Backend: Assignment endpoints
-- [x] Frontend: Assignment wizard UI
-- [x] Calendar integration
-
-## 🔧 Backlog / Technical Debt
-
-- [x] **ACTION REQUIRED:** Run Database Migrations on Production (via `/admin/migrations`) - **COMPLETE**
-- [ ] Test multi-day class scheduling functionality
-- [ ] Verify all migrations applied successfully on deployed environment
-- [ ] **INVESTIGATE:** `/workouts/assign` page showing `runtime.lastError` messages
-    - Error: "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received"
-    - Note: May be caused by browser extensions (Ginger, Grammarly) - test in incognito mode
-- [ ] **FEATURE:** Trainer cards need to be editable (admin can edit trainer profiles)
-- [ ] **BUG:** Trainers API response format mismatch
-    - Error: `API returned non-array data: {trainers: Array(5)}`
-    - Frontend expects array, backend returns `{trainers: [...]}`
-- [x] **WORKFLOW:** Client class signup flow - **COMPLETE**
-    - [x] How does a client sign up for a class?
-    - [x] Proposed: Click on class in calendar → Sign up with credits
-    - [x] Need to design and implement this user flow
-- [ ] **FEATURE:** Instructor class attendance view
-    - When class is published and clients sign up, instructor should see:
-      - Number of signups
-      - Who signed up (client names)
+### November 2025
+- [x] **Exercise Library** (Imported 800+ exercises).
+- [x] **Authentication** (JWT Secret fixed, Input Validation added).
+- [x] **Admin Class Management** (Create/Delete classes).
 
 ---
 
-## 📌 Next Steps Summary
-
-**Recent Work (Dec 4, 2025):**
-- [/] **Cart Controls Debugging** - Investigating +/- and trash buttons not working
-  - Added console logging to cart page for debugging (`[Cart] Removing item:`, `[Cart] Updating quantity:`)
-  - Added error display banner to cart page UI (red banner shows any API errors)
-  - Updated `init.sql` to include `packages`, `cart`, `cart_items`, and `user_credits` tables
-  - Cart tables exist in migration 004 - may need to be run on production
-  - Cleaned up git issues (removed `backend/nul` special file, added to `.gitignore`)
-
-**Previous Completion (Dec 1, 2025):**
-- [x] **Database Schema Fix** - Migration 002 adds multi-role support and demo mode
-  - Added `roles TEXT[]` column for multi-role system
-  - Added `is_demo_mode_enabled BOOLEAN` for demo user management
-  - Backfilled existing users' roles from role column
-  - Created GIN index for efficient array queries
-  - Updated init.sql and seed.sql for fresh deployments
-- [x] **Trainers Page Bug Fixes** - Fixed blank trainers page (3 separate fixes)
-  - Fix 1: Wrapped API response in `{ trainers: [...] }` object
-  - Fix 2: Added NULL check for roles column in SQL query
-  - Fix 3: Added ENUM to TEXT cast (`role::TEXT = $1`) to fix type mismatch
-- [x] **Demo Users Feature Complete** - Create/delete demo users working perfectly
-  - Demo users properly created with both `role` and `roles` columns
-  - Delete functionality removes all users with @demo.com emails
-  - Verified trainers page shows demo trainers correctly
-- [x] **Trainers API Frontend Fix** - Refactored `/admin/trainers` to use `apiClient`
-  - Removed direct `fetch()` calls
-  - Added `createTrainer()` method to apiClient
-  - Consistent API routing to backend domain
-- [x] **Dependency Cleanup**
-  - Removed `node-fetch` (using native Node.js fetch)
-  - Fixed TypeScript config to exclude scripts folder
-  - Archived orphaned migration file
-
-**Immediate Next Tasks:**
-1. [x] **Fix cart controls** - Verified via Demo Mode cart management
-2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
-3. [ ] Verify multi-day class scheduling functionality
-4. [ ] Consider adding blog/content section for SEO and engagement
-
----
-
-## 📋 Comprehensive Review Action Plan (Generated on 2025-11-28)
-
-The following tasks are based on a comprehensive review of the codebase.
-
-### 🛡️ Security Vulnerabilities (High Priority)
-
-- [x] **CRITICAL:** Remove hardcoded default JWT secret. - **VERIFIED COMPLETE**
-    - ✅ Application now fails to start if JWT_SECRET is not provided
-    - ✅ No fallback secrets in codebase
-- [x] **HIGH:** Add input validation to all critical endpoints - **COMPLETE**
-    - ✅ Installed express-validator
-    - ✅ Added validation to auth, booking, cart, package, and profile endpoints
-    - ✅ Email, password, UUID, and numeric range validation implemented
-    - ✅ Protection against injection attacks
-- [ ] **MEDIUM:** Secure JWT storage on the frontend.
-    - The current `localStorage` implementation is vulnerable to XSS.
-    - Plan and migrate to using `HttpOnly` cookies for storing JWTs.
-
-### ⚙️ Backend Improvements
-
-- [x] **Input Validation:** Add robust validation and sanitization to all controller endpoints - **COMPLETE**
-    - ✅ Implemented using express-validator
-    - ✅ Auth, booking, cart, package, and profile routes validated
-    - ✅ Comprehensive error messages returned to clients
-- [x] **Dependency Cleanup:** - **COMPLETE (Dec 1, 2025)**
-    - ✅ `bcryptjs` was already removed (using `bcrypt`)
-    - ✅ Removed `node-fetch` dependency (using native fetch in Node.js 24+)
-    - ✅ Fixed TypeScript configuration issues
-- [ ] **Code Consistency:** Refactor controllers to use a consistent pattern (either all classes or all function-based exports).
-
-### 🎨 Frontend Improvements
-
-- [x] **Standardize API Calls:** Refactor all components (e.g., `classes/page.tsx`) to use the central `apiClient`. Remove direct `fetch` calls to eliminate code duplication. - **COMPLETE**
-    - [x] Refactored `/admin/migrations` page.
-    - [x] Refactored `/classes` page.
-- [ ] **Refactor Token Management:** Remove redundant token handling logic from `AuthContext.tsx`. Let `apiClient` be the single source of truth for storing the token in `localStorage`.
-
-### 🗄️ Database & Technical Debt
-
-- [ ] **Remove Legacy Column:** Create a migration to safely remove the unused `day_of_week` column from the `classes` table.
-- [ ] **Refactor Role System:**
-    - Plan the migration from a single `role` column to a proper multi-role system.
-    - This will likely involve creating a `roles` table and a `user_roles` junction table to align the database with the application's data model.
+## 📂 Reference
+- **Daily Progress**: See `PROGRESS.md` for detailed daily logs.
+- **Workflow**: Use `/eod` to track end-of-day progress.

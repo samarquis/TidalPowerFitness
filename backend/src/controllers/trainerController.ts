@@ -118,7 +118,77 @@ export const createTrainer = async (req: Request, res: Response) => {
     }
 };
 
+// Update trainer profile (and user details)
+export const updateTrainer = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const {
+            // User fields
+            first_name,
+            last_name,
+            phone,
+
+            // Trainer profile fields
+            bio,
+            specialties,
+            certifications,
+            years_experience,
+            profile_image_url,
+            acuity_calendar_id,
+            is_accepting_clients
+        } = req.body;
+
+        // Check permissions (Admin or Self)
+        if (!req.user?.roles?.includes('admin') && req.user?.id !== userId) {
+            return res.status(403).json({ error: 'Unauthorized to update this profile' });
+        }
+
+        // 1. Update User details (if provided)
+        if (first_name || last_name || phone) {
+            await UserModel.update(userId, {
+                first_name,
+                last_name,
+                phone
+            });
+        }
+
+        // 2. Update Trainer Profile
+        const trainer = await TrainerProfile.update(userId, {
+            bio,
+            specialties,
+            certifications,
+            years_experience,
+            profile_image_url,
+            acuity_calendar_id,
+            is_accepting_clients
+        });
+
+        if (!trainer) {
+            return res.status(404).json({ error: 'Trainer profile not found' });
+        }
+
+        // Return combined data
+        const updatedUser = await UserModel.findById(userId);
+
+        res.status(200).json({
+            message: 'Trainer updated successfully',
+            trainer: {
+                ...trainer,
+                first_name: updatedUser?.first_name,
+                last_name: updatedUser?.last_name,
+                email: updatedUser?.email,
+                phone: updatedUser?.phone
+            }
+        });
+
+    } catch (error) {
+        console.error('Error updating trainer:', error);
+        res.status(500).json({ error: 'Failed to update trainer' });
+    }
+};
+
 export default {
     getTrainers,
-    createTrainer
+    createTrainer,
+    updateTrainer
 };

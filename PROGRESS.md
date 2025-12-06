@@ -25,6 +25,11 @@ This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` t
     - Refactored `backend/src/routes/classes.ts` to use consistent ES Module syntax.
     - Verified Frontend `TrainerDashboard` correctly links to attendee list.
 
+- **Bug Fixes & Stability**:
+    - **Trainers API Mismatch**: Fixed "non-array data" error by making checking robust in `admin/trainers/page.tsx`, `trainers/page.tsx`, `TrainerBiosSection`, and `ClassScheduleSection`.
+    - **Assign Workout Error**: Verified `/workouts/assign` "channel closed" error is due to browser extensions and doesn't affect functionality.
+    - **Documentation**: Consolidated `TODO.md` and removed obsolete `CONSOLIDATED_TASKS.md`.
+
 - **HttpOnly Cookie Security**:
     - **Backend**:
         - Installed `cookie-parser`.
