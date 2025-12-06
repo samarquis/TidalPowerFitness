@@ -188,10 +188,10 @@ function MockCheckoutContent() {
     }
 }
 
-            export default function MockCheckoutPage() {
+export default function MockCheckoutPage() {
     return (
-            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
-                <MockCheckoutContent />
-            </Suspense>
-            );
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+            <MockCheckoutContent />
+        </Suspense>
+    );
 }
