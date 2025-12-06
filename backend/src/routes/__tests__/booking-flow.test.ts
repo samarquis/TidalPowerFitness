@@ -34,6 +34,10 @@ describe('Complete Booking Flow Integration Tests', () => {
                 last_name: 'User'
             });
 
+        if (!userResponse.body || !userResponse.body.user || !userResponse.body.token) {
+            console.error('Registration failed or response malformed:', userResponse.body);
+            throw new Error('User registration failed: ' + JSON.stringify(userResponse.body));
+        }
         authToken = userResponse.body.token;
         userId = userResponse.body.user.id;
 

@@ -1,5 +1,11 @@
-import { runAllMigrations } from '../services/migrationService';
-require('dotenv').config();
+const dotenv = require('dotenv');
+dotenv.config();
+
+console.log('DEBUG: DB_USER from env:', process.env.DB_USER);
+console.log('DEBUG: DB_HOST from env:', process.env.DB_HOST);
+
+// Now require the service, which will eventually trigger db connection
+const { runAllMigrations } = require('../services/migrationService');
 
 const run = async () => {
     try {

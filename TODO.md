@@ -13,6 +13,10 @@ This file is the single source of truth for all project tasks.
     - Patched `trainers/page`, `admin/trainers/page`, `TrainerBiosSection`, and `ClassScheduleSection` to handle both formats.
 
 ### 2. Technical Debt & Maintenance
+- [ ] **Real-time workout logging** (Medium Priority)
+- [ ] **Client progress dashboard** (Medium Priority)
+- [ ] **Attendance reports** (Low Priority)
+- [ ] **Multi-attendee bookings** (Low Priority)
 - [ ] **Verify Production Migrations**
     - Ensure all recent migrations (Cart, Multi-day, etc.) are executed on Render production DB.
 - [ ] **Refactor Role System (Long Term)**
@@ -23,23 +27,22 @@ This file is the single source of truth for all project tasks.
 ## ✅ Recently Completed
 
 ### December 2025
-- [x] **Achievements System / Badges**
+- [x] **Achievements/Badges system**
     - Full backend logic (awards on booking/purchase).
     - Profile page UI with Badge cards.
 - [x] **Multi-Day Class Scheduling**
     - Fixed public schedule to show classes on all `days_of_week`.
     - Verified Admin creation of multi-day classes.
+- [x] **Trainer class attendee view**
+    - Trainers can see list of attendees for their classes.
+- [x] **Client class sign-up flow**
+    - "Sign Up" button on class cards.
+    - Credit deduction logic and confirmation modal.
 - [x] **Editable Trainer Cards**
     - Admin feature to edit trainer profiles and user details.
     - Unified update endpoint.
-- [x] **Security Hardening**
-    - Migrated to `HttpOnly` cookies for JWT storage.
-    - Removed `localStorage` token usage.
-- [x] **Instructor Attendance View**
-    - Trainers can see list of attendees for their classes.
-- [x] **Cart & Checkout**
-    - Fixed cart controls (+/- quantity).
-    - Integrated Mock Payment flow for testing credits.
+- [x] **Security Hardening** (`HttpOnly` cookies, cleaned `localStorage`).
+- [x] **Cart & Checkout** (Mock Payment flow).
 
 ### November 2025
 - [x] **Exercise Library** (Imported 800+ exercises).

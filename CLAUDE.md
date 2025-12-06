@@ -206,3 +206,61 @@ After deploying to production:
 - `.agent/workflows/eod.md` - End of day workflow template
 - `.agent/workflows/next.md` - Resume work workflow template
 - `docs/archive/` - Archived deployment guides
+
+---
+
+## Trainer Workflow (2025-12-06)
+
+### Overview
+Outlines the trainer workflow for the website: account setup, profile creation, class management, workout programming, client tracking, and in-class logging.
+
+### Trainer Actions
+1. **Account Setup**: Create account, log in.
+2. **Trainer Profile**: Fill out bio, contact info, profile photo.
+3. **Class Management**: Create class (name, description, days), publish sessions (dates, time, cost, capacity).
+4. **Workout Programming**: Create/assign workouts (timed, sets/reps, mixed), add exercises, rest timer, weight tracking.
+5. **Class Dashboard**: View signups, past workout records, preload previous data for recurring exercises.
+6. **In-Class Logging**: Log workouts in real-time, start rest timers, sync data to client dashboard.
+7. **Post-Class Features**: View attendees, access client workout history, track progress. Clients review logged workouts.
+
+### Key Features Summary
+- Account & profile setup
+- Class creation/scheduling
+- Workout programming
+- Real-time workout logging
+- Client progress tracking/history
+- Dashboards for classes, clients, programs
+
+---
+
+## Client Workflow (2025-12-06)
+
+### Overview
+Outlines the client workflow: account creation, purchasing packages, signing up for classes, viewing dashboards.
+
+### Client Actions
+1. **Account Setup**: Create account, log in.
+2. **Dashboard Features**: View credits/tokens, packages, calendar, class details.
+3. **Personal Dashboard**: Badges, attendance, credits/purchases, progress tracking, attendance reports.
+4. **Trainer Directory**: View trainers, bios, contact trainers.
+
+### Workflow Steps
+- Login
+- Research/purchase packages
+- Credits added
+- Sign up for classes (calendar, select, sign up, use tokens)
+- Post-purchase: updated calendar, remaining tokens, continue or exit
+
+### Example Flow
+- Buy package (5 credits), sign up for class, calendar updates, tokens reduced
+
+### Special Cases
+- Multiple attendees: sign up multiple people, tokens deducted per attendee
+
+### Key Features Summary
+- Account creation/login
+- Dashboard: credits, packages, calendar, progress
+- Class sign-up with tokens
+- Attendance reports
+- Trainer directory
+- Multi-attendee support
