@@ -32,7 +32,11 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: [
+        process.env.FRONTEND_URL || 'http://localhost:3000',
+        'https://tidal-power-frontend.onrender.com', // The correct production frontend URL
+        'http://localhost:3000'
+    ],
     credentials: true
 };
 
