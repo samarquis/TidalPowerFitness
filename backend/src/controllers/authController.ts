@@ -60,7 +60,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
@@ -126,7 +126,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
