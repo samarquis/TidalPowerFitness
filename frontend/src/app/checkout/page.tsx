@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 
 export default function CheckoutPage() {
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { cart, clearCart } = useCart();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -28,24 +29,16 @@ export default function CheckoutPage() {
         setError('');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/payments/checkout-cart`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await apiClient.checkoutCart();
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to initiate checkout');
+            if (response.error) {
+                throw new Error(response.error || 'Failed to initiate checkout');
             }
 
-            const data = await response.json();
-            if (data.url) {
+            if (response.data && response.data.url) {
                 // Clear cart before redirecting to payment
                 await clearCart();
-                window.location.href = data.url;
+                window.location.href = response.data.url;
             } else {
                 throw new Error('No checkout URL returned');
             }

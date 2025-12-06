@@ -176,6 +176,12 @@ class ApiClient {
         return this.request<any>('/cart', { method: 'DELETE' });
     }
 
+    async checkoutCart() {
+        return this.request<any>('/payments/checkout-cart', {
+            method: 'POST',
+        });
+    }
+
     // Credits endpoints
     async getUserCredits(userId: string) {
         return this.request<any>(`/users/${userId}/credits`, { method: 'GET' });
