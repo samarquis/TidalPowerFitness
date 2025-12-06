@@ -1,4 +1,5 @@
 import { runAllMigrations } from '../services/migrationService';
+require('dotenv').config();
 
 const run = async () => {
     try {

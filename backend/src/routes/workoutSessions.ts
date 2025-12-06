@@ -3,8 +3,13 @@ const router = express.Router();
 const workoutSessionController = require('../controllers/workoutSessionController');
 const { authenticate, authorize } = require('../middleware/auth');
 
-// All routes require trainer/admin authentication
 router.use(authenticate);
+
+// specific client routes (authenticated, self-access check in controller)
+router.get('/client/:clientId/history', workoutSessionController.default.getClientHistory);
+router.get('/client/:clientId/stats', workoutSessionController.default.getClientStats);
+
+// Trainer/Admin only routes
 router.use(authorize('trainer', 'admin'));
 
 router.get('/', workoutSessionController.default.getSessions);

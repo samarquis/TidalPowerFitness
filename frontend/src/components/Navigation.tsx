@@ -75,7 +75,10 @@ export default function Navigation() {
                                                 <Link href="/workouts/history" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>History</Link>
 
                                                 {isTrainer && (
-                                                    <Link href="/trainer/availability" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>My Availability</Link>
+                                                    <>
+                                                        <Link href="/trainer" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Trainer Dashboard</Link>
+                                                        <Link href="/trainer/availability" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>My Availability</Link>
+                                                    </>
                                                 )}
 
                                                 {isAdmin && (
@@ -247,7 +250,10 @@ export default function Navigation() {
                                         <Link href="/workouts/assign" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Assign Workout</Link>
                                         <Link href="/workouts/history" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>History</Link>
                                         {isTrainer && (
-                                            <Link href="/trainer/availability" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>My Availability</Link>
+                                            <>
+                                                <Link href="/trainer" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Trainer Dashboard</Link>
+                                                <Link href="/trainer/availability" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>My Availability</Link>
+                                            </>
                                         )}
                                     </div>
                                 )}

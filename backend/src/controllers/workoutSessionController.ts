@@ -110,7 +110,7 @@ class WorkoutSessionController {
         }
     }
 
-    // Publish session
+    // Publish session to clients
     async publishSession(req: Request, res: Response): Promise<void> {
         try {
             const success = await WorkoutSession.publish(req.params.id);
@@ -124,6 +124,48 @@ class WorkoutSessionController {
         } catch (error) {
             console.error('Error publishing session:', error);
             res.status(500).json({ error: 'Failed to publish session' });
+        }
+    }
+
+    // Get exercise history for a client
+    async getClientHistory(req: Request, res: Response): Promise<void> {
+        try {
+            const clientId = req.params.clientId;
+
+            // Authorization check: User can only see their own history unless they are trainer/admin
+            if (req.user?.id !== clientId &&
+                !req.user?.roles?.includes('trainer') &&
+                !req.user?.roles?.includes('admin')) {
+                res.status(403).json({ error: 'Unauthorized to view this history' });
+                return;
+            }
+
+            const history = await WorkoutSession.getClientHistory(clientId);
+            res.json(history);
+        } catch (error) {
+            console.error('Error fetching client history:', error);
+            res.status(500).json({ error: 'Failed to fetch client history' });
+        }
+    }
+
+    // Get workout stats for a client
+    async getClientStats(req: Request, res: Response): Promise<void> {
+        try {
+            const clientId = req.params.clientId;
+
+            // Authorization check
+            if (req.user?.id !== clientId &&
+                !req.user?.roles?.includes('trainer') &&
+                !req.user?.roles?.includes('admin')) {
+                res.status(403).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const stats = await WorkoutSession.getClientStats(clientId);
+            res.json(stats);
+        } catch (error) {
+            console.error('Error fetching client stats:', error);
+            res.status(500).json({ error: 'Failed to fetch client stats' });
         }
     }
 }

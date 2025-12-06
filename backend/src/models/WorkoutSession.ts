@@ -335,6 +335,41 @@ class WorkoutSessionModel {
         );
         return (result.rowCount ?? 0) > 0;
     }
+
+    // Get exercise history for a client
+    async getClientHistory(clientId: string): Promise<any[]> {
+        const sql = `
+            SELECT 
+                ws.session_date,
+                ws.id as session_id,
+                e.name as exercise_name,
+                el.*
+            FROM exercise_logs el
+            JOIN session_exercises se ON el.session_exercise_id = se.id
+            JOIN workout_sessions ws ON se.session_id = ws.id
+            JOIN exercises e ON se.exercise_id = e.id
+            WHERE el.client_id = $1
+            ORDER BY ws.session_date DESC, el.set_number ASC
+        `;
+        const result: QueryResult = await query(sql, [clientId]);
+        return result.rows;
+    }
+
+    // Get workout stats for a client
+    async getClientStats(clientId: string): Promise<any> {
+        const sql = `
+            SELECT 
+                COUNT(DISTINCT ws.id) as total_workouts,
+                COUNT(DISTINCT el.id) as total_sets,
+                SUM(el.weight_used_lbs * el.reps_completed) as total_volume_lbs
+            FROM exercise_logs el
+            JOIN session_exercises se ON el.session_exercise_id = se.id
+            JOIN workout_sessions ws ON se.session_id = ws.id
+            WHERE el.client_id = $1
+        `;
+        const result: QueryResult = await query(sql, [clientId]);
+        return result.rows[0];
+    }
 }
 
 export default new WorkoutSessionModel();

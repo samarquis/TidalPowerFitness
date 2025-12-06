@@ -23,6 +23,7 @@ const bookingRoutes = require('./routes/bookings');
 const migrationRoutes = require('./routes/migrations');
 const cartRoutes = require('./routes/cart');
 const demoUserRoutes = require('./routes/demoUsers');
+const achievementRoutes = require('./routes/achievements');
 
 dotenv.config();
 
@@ -92,5 +93,8 @@ app.use('/api/demo-users', demoUserRoutes.default || demoUserRoutes);
 
 // Setup routes (one-time admin creation)
 app.use('/api/setup', setupRoutes.default || setupRoutes);
+
+// Achievement routes
+app.use('/api/achievements', achievementRoutes.default || achievementRoutes);
 
 module.exports = app;
