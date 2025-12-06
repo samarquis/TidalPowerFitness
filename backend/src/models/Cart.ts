@@ -23,14 +23,18 @@ export interface Cart {
 class CartModel {
     // Get or create cart for user
     async getOrCreateCart(userId: string): Promise<Cart> {
-        const result = await query(
-            `INSERT INTO cart (user_id) 
-             VALUES ($1) 
-             ON CONFLICT (user_id) DO UPDATE SET user_id = $1
-             RETURNING *`,
+        // First, try to select the cart
+        const selectResult = await query('SELECT * FROM cart WHERE user_id = $1', [userId]);
+        if (selectResult.rows.length > 0) {
+            return selectResult.rows[0];
+        }
+
+        // If it doesn't exist, create it
+        const insertResult = await query(
+            'INSERT INTO cart (user_id) VALUES ($1) RETURNING *',
             [userId]
         );
-        return result.rows[0];
+        return insertResult.rows[0];
     }
 
     // Get cart with items for user
