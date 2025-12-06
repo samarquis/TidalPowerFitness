@@ -3,6 +3,7 @@ dotenv.config();
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -30,7 +31,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

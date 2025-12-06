@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const classController = require('../controllers/classController');
-const { authenticate, authorize } = require('../middleware/auth');
+import express from 'express';
+import classController from '../controllers/classController';
+import { authenticate, authorize } from '../middleware/auth';
 import pool from '../config/db';
+
+const router = express.Router();
 
 // Public routes
 router.get('/', classController.getClasses);
@@ -67,6 +68,5 @@ router.post('/', authenticate, authorize('admin'), classController.createClass);
 router.put('/:id', authenticate, authorize('admin'), classController.updateClass);
 router.delete('/:id', authenticate, authorize('admin'), classController.deleteClass);
 
-module.exports = router;
 export default router;
 

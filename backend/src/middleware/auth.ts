@@ -13,15 +13,21 @@ declare global {
 // Authenticate middleware - verifies JWT token
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        // Get token from Authorization header
-        const authHeader = req.headers.authorization;
+        let token;
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        // Check for token in cookies first
+        if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
+        }
+        // Fallback to Authorization header
+        else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+            token = req.headers.authorization.substring(7);
+        }
+
+        if (!token) {
             res.status(401).json({ error: 'No token provided' });
             return;
         }
-
-        const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
         // Verify token
         const decoded = verifyToken(token);
@@ -62,12 +68,16 @@ export const authorize = (...allowedRoles: Array<'client' | 'trainer' | 'admin'>
 // Optional authentication - doesn't fail if no token
 export const optionalAuth = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        const authHeader = req.headers.authorization;
+        let token;
 
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            const token = authHeader.substring(7);
+        if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
+        } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+            token = req.headers.authorization.substring(7);
+        }
+
+        if (token) {
             const decoded = verifyToken(token);
-
             if (decoded) {
                 req.user = decoded;
             }

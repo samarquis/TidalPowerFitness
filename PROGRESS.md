@@ -2,7 +2,39 @@
 
 This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` to add entries automatically.
 
+
 ---
+
+## 2025-12-06 (Friday)
+
+### ✅ Completed
+- **Achievements System**:
+    - Implemented full achievement logic for bookings and purchases.
+    - Updated `PaymentService` and `BookingController` to trigger awards.
+    - Added "Badges" section to User Profile.
+    - Seeded database with initial achievements.
+
+- **Admin Class Management (Full CRUD)**:
+    - Added "Delete" functionality to Admin Classes page.
+    - Implemented "Edit" functionality using existing modal.
+    - Standardized API calls using `ApiClient` in `admin/classes/page.tsx`.
+    - Added `getTrainerUsers` to fetching logic for correct dropdown population.
+
+- **Instructor Attendance View**:
+    - Validated backend endpoint `GET /api/classes/:id/attendees`.
+    - Refactored `backend/src/routes/classes.ts` to use consistent ES Module syntax.
+    - Verified Frontend `TrainerDashboard` correctly links to attendee list.
+
+- **HttpOnly Cookie Security**:
+    - **Backend**:
+        - Installed `cookie-parser`.
+        - Updated CORS to allow `credentials: true`.
+        - Updated `authController` to set `HttpOnly` cookie on login/register.
+        - Updated `auth` middleware to read token from cookies.
+    - **Frontend**:
+        - Updated `ApiClient` to send credentials with every request.
+        - Removed all `localStorage` token management from `AuthContext` and `api.ts`.
+
 
 ## 2025-12-04 (Wednesday)
 

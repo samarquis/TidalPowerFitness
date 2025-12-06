@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api';
 
 interface Class {
     id: string;
@@ -28,7 +29,7 @@ interface UserCredits {
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default function ClassesPage() {
-    const { user, token, isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const [classes, setClasses] = useState<Class[]>([]);
     const [credits, setCredits] = useState<UserCredits | null>(null);
     const [loading, setLoading] = useState(true);
@@ -45,37 +46,36 @@ export default function ClassesPage() {
 
     const fetchClasses = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/classes`);
-            const data = await response.json();
+            const { data, error } = await apiClient.getClasses();
+            if (error) throw new Error(error);
             if (Array.isArray(data)) {
                 setClasses(data);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching classes:', error);
+            setError('Failed to load classes');
         } finally {
             setLoading(false);
         }
     };
 
     const fetchUserCredits = async () => {
-        if (!token || !user) return;
+        if (!user) return;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/users/${user.id}/credits`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const { data, error } = await apiClient.getUserCredits(user.id);
 
-            if (response.ok) {
-                const data = await response.json();
+            if (error) {
+                console.error('Error fetching credits:', error);
+                return;
+            }
+
+            if (data) {
                 const total = data.reduce((sum: number, c: any) => sum + c.remaining_credits, 0);
                 setCredits({ total, details: data });
             }
         } catch (error) {
-            console.error('Error fetching credits:', error);
+            console.error('Error calculating credits:', error);
         }
     };
 
@@ -95,26 +95,16 @@ export default function ClassesPage() {
         setSuccess('');
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/bookings`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ class_id: classId })
-            });
+            const { error } = await apiClient.bookClass(classId);
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || data.error || 'Failed to book class');
+            if (error) {
+                throw new Error(error);
             }
 
             setSuccess('Class booked successfully! 1 credit has been deducted.');
             fetchUserCredits(); // Refresh credits
         } catch (error: any) {
-            setError(error.message);
+            setError(error.message || 'Failed to book class');
         } finally {
             setBookingClass(null);
         }

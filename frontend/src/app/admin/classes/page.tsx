@@ -1,8 +1,7 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 
 interface Class {
     id: string;
@@ -158,19 +157,12 @@ export default function AdminClassesPage() {
 
     const fetchClasses = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch(`${apiUrl}/classes`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
+            const { data, error } = await apiClient.getClasses();
+            if (data) {
                 setClasses(data);
                 setFilteredClasses(data);
+            } else {
+                console.error('Error fetching classes:', error);
             }
         } catch (error) {
             console.error('Error fetching classes:', error);
@@ -181,18 +173,11 @@ export default function AdminClassesPage() {
 
     const fetchTrainers = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch(`${apiUrl}/trainers/users`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
+            const { data, error } = await apiClient.getTrainerUsers();
+            if (data) {
                 setTrainers(data);
+            } else {
+                console.error('Error fetching trainers:', error);
             }
         } catch (error) {
             console.error('Error fetching trainers:', error);
@@ -292,15 +277,6 @@ export default function AdminClassesPage() {
         if (!validateStep(3)) return;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
-
-            const url = editingClass
-                ? `${apiUrl}/classes/${editingClass.id}`
-                : `${apiUrl}/classes`;
-
-            const method = editingClass ? 'PUT' : 'POST';
-
             // Convert 12-hour time to 24-hour format before submitting
             const time24 = convertTo24Hour(timeHour, timeMinute, timePeriod);
             const submitData = {
@@ -308,21 +284,18 @@ export default function AdminClassesPage() {
                 start_time: time24
             };
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(submitData)
-            });
+            let result;
+            if (editingClass) {
+                result = await apiClient.updateClass(editingClass.id, submitData);
+            } else {
+                result = await apiClient.createClass(submitData);
+            }
 
-            if (response.ok) {
+            if (result.data) {
                 fetchClasses();
                 closeModal();
             } else {
-                const data = await response.json();
-                alert(data.error || 'Failed to save class');
+                alert(result.error || 'Failed to save class');
             }
         } catch (error) {
             console.error('Error saving class:', error);
@@ -332,23 +305,32 @@ export default function AdminClassesPage() {
 
     const toggleClassStatus = async (classId: string, currentStatus: boolean) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
-
-            const response = await fetch(`${apiUrl}/classes/${classId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ is_active: !currentStatus })
-            });
-
-            if (response.ok) {
+            const { data, error } = await apiClient.updateClass(classId, { is_active: !currentStatus });
+            if (data) {
                 fetchClasses();
+            } else {
+                console.error('Error toggling class status:', error);
             }
         } catch (error) {
             console.error('Error toggling class status:', error);
+        }
+    };
+
+    const handleDeleteClass = async (classId: string) => {
+        if (!window.confirm('Are you sure you want to delete this class? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const { error } = await apiClient.deleteClass(classId);
+            if (!error) {
+                fetchClasses();
+            } else {
+                alert(error || 'Failed to delete class');
+            }
+        } catch (error) {
+            console.error('Error deleting class:', error);
+            alert('Failed to delete class');
         }
     };
 
@@ -521,6 +503,12 @@ export default function AdminClassesPage() {
                                                             }`}
                                                     >
                                                         {classItem.is_active ? 'Unpublish' : 'Publish'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteClass(classItem.id)}
+                                                        className="px-3 py-1 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-sm font-semibold transition-all"
+                                                    >
+                                                        Delete
                                                     </button>
                                                 </div>
                                             </td>

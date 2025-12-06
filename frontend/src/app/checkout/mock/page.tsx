@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient } from '@/lib/api';
 
 function MockCheckoutContent() {
     const searchParams = useSearchParams();
@@ -14,6 +13,21 @@ function MockCheckoutContent() {
     const [success, setSuccess] = useState(false);
 
     const packageId = searchParams.get('packageId');
+    const cartParam = searchParams.get('cart');
+
+    // Parse cart data if present
+    let cartItems: { packageId: string; quantity: number }[] = [];
+    if (cartParam) {
+        try {
+            const jsonStr = atob(cartParam);
+            cartItems = JSON.parse(jsonStr);
+        } catch (e) {
+            console.error('Failed to parse cart param', e);
+        }
+    }
+
+    const isCartCheckout = cartItems.length > 0;
+    const isValid = packageId || isCartCheckout;
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -22,22 +36,24 @@ function MockCheckoutContent() {
     }, [isAuthenticated, router]);
 
     const handlePayment = async () => {
-        if (!packageId) return;
+        if (!isValid) return;
 
         setLoading(true);
         setError(null);
 
         try {
-            // Call the mock confirmation endpoint
-            // We need to use fetch directly or add this to apiClient
-            // For now, using fetch with the token
+            // Prepare payload based on checkout type
+            const payload = isCartCheckout
+                ? { items: cartItems }
+                : { packageId };
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/payments/confirm-mock`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ packageId })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
@@ -46,6 +62,19 @@ function MockCheckoutContent() {
             }
 
             setSuccess(true);
+
+            // Clear cart if successful cart checkout
+            if (isCartCheckout) {
+                try {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/cart`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (e) {
+                    console.error('Failed to clear cart after payment', e);
+                }
+            }
+
             setTimeout(() => {
                 router.push('/profile'); // Redirect to profile to see credits
             }, 2000);
@@ -58,10 +87,10 @@ function MockCheckoutContent() {
         }
     };
 
-    if (!packageId) {
+    if (!isValid) {
         return (
             <div className="min-h-screen bg-black pt-24 px-4 flex justify-center">
-                <div className="text-red-500">Invalid checkout session: Missing package ID</div>
+                <div className="text-red-500">Invalid checkout session: Missing package ID or Cart info</div>
             </div>
         );
     }
@@ -99,12 +128,30 @@ function MockCheckoutContent() {
                 </div>
 
                 <div className="bg-white/5 p-4 rounded-lg mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-400">Package ID:</span>
-                        <span className="text-white font-mono text-xs">{packageId.slice(0, 8)}...</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Amount:</span>
+                    {isCartCheckout ? (
+                        <>
+                            <div className="flex justify-between items-center mb-2 border-b border-white/10 pb-2">
+                                <span className="text-gray-400">Order Type:</span>
+                                <span className="text-white">Cart Checkout</span>
+                            </div>
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-400">Items:</span>
+                                <span className="text-white">{cartItems.length} packages</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-400">Total Items:</span>
+                                <span className="text-white font-mono">{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-400">Package ID:</span>
+                            <span className="text-white font-mono text-xs">{packageId?.slice(0, 8)}...</span>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-4 pt-2 border-t border-white/10">
+                        <span className="text-gray-400">Total Amount:</span>
                         <span className="text-teal-400 font-bold">TEST MODE</span>
                     </div>
                 </div>
@@ -137,14 +184,14 @@ function MockCheckoutContent() {
                     Cancel
                 </button>
             </div>
-        </div>
-    );
+            );
+    }
 }
 
-export default function MockCheckoutPage() {
+            export default function MockCheckoutPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
-            <MockCheckoutContent />
-        </Suspense>
-    );
+            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+                <MockCheckoutContent />
+            </Suspense>
+            );
 }

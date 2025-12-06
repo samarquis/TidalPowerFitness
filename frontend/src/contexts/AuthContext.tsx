@@ -32,24 +32,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Check if user is logged in on mount
         const checkAuth = async () => {
             try {
-                const storedToken = localStorage.getItem('auth_token');
-                if (storedToken) {
-                    setToken(storedToken);
-                    apiClient.setToken(storedToken);
-                    const response = await apiClient.getProfile();
-                    if (response.data) {
-                        setUser(response.data.user);
-                    } else {
-                        localStorage.removeItem('auth_token');
-                        apiClient.setToken(null);
-                        setToken(null);
-                    }
+                // Try to get profile. If cookie exists and is valid, this will succeed.
+                const response = await apiClient.getProfile();
+                if (response.data && response.data.user) {
+                    setUser(response.data.user);
+                    // Token is no longer managed in JS
+                } else {
+                    setUser(null);
                 }
             } catch (error) {
                 console.error('Auth check failed:', error);
-                localStorage.removeItem('auth_token');
-                apiClient.setToken(null);
-                setToken(null);
+                setUser(null);
             } finally {
                 setLoading(false);
             }
@@ -61,11 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = async (email: string, password: string) => {
         const response = await apiClient.login(email, password);
         if (response.data) {
-            const { token: newToken, user } = response.data;
-            // Save token to localStorage and apiClient
-            localStorage.setItem('auth_token', newToken);
-            apiClient.setToken(newToken);
-            setToken(newToken);
+            const { user } = response.data;
+            // Token is set in HttpOnly cookie by backend
             setUser(user);
             return { success: true };
         }
@@ -75,22 +65,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const register = async (userData: any) => {
         const response = await apiClient.register(userData);
         if (response.data) {
-            const { token: newToken, user } = response.data;
-            // Save token to localStorage and apiClient
-            localStorage.setItem('auth_token', newToken);
-            apiClient.setToken(newToken);
-            setToken(newToken);
+            const { user } = response.data;
+            // Token is set in HttpOnly cookie by backend
             setUser(user);
             return { success: true };
         }
         return { success: false, error: response.error };
     };
 
-    const logout = () => {
-        localStorage.removeItem('auth_token');
-        apiClient.setToken(null);
-        setToken(null);
-        setUser(null);
+    const logout = async () => {
+        try {
+            await apiClient.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            // Always clear local state
+            setUser(null);
+            setToken(null);
+        }
     };
 
     return (

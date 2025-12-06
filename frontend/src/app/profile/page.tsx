@@ -4,6 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
+import BadgeCard from '@/components/BadgeCard';
 
 interface WorkoutStats {
     total_workouts: number;
@@ -21,11 +23,21 @@ interface WorkoutSession {
     rpe?: number;
 }
 
+interface Achievement {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    earned?: boolean;
+    earned_at?: string;
+}
+
 export default function ProfilePage() {
-    const { user, isAuthenticated, logout, token } = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const router = useRouter();
     const [stats, setStats] = useState<WorkoutStats | null>(null);
     const [history, setHistory] = useState<WorkoutSession[]>([]);
+    const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -38,19 +50,37 @@ export default function ProfilePage() {
 
     const fetchData = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            if (!user) return;
 
-            const [statsRes, historyRes] = await Promise.all([
-                fetch(`${apiUrl}/workout-sessions/client/${user?.id}/stats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+            // Fetch Stats and History
+            const [statsRes, historyRes, allAchievementsRes, userAchievementsRes] = await Promise.all([
+                fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/stats`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 }),
-                fetch(`${apiUrl}/workout-sessions/client/${user?.id}/history`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
+                fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/history`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+                }),
+                apiClient.getAllAchievements(),
+                apiClient.getUserAchievements(user.id)
             ]);
 
             if (statsRes.ok) setStats(await statsRes.json());
             if (historyRes.ok) setHistory(await historyRes.json());
+
+            const allAchievements = allAchievementsRes.data || [];
+            const userAchievements = userAchievementsRes.data || [];
+
+            // Merge achievements to determine earned status
+            const mergedAchievements = allAchievements.map((achievement: any) => {
+                const userAchievement = userAchievements.find((ua: any) => ua.achievement_id === achievement.id);
+                return {
+                    ...achievement,
+                    earned: !!userAchievement,
+                    earned_at: userAchievement ? userAchievement.earned_at : undefined
+                };
+            });
+
+            setAchievements(mergedAchievements);
 
         } catch (error) {
             console.error('Error fetching profile data:', error);
@@ -144,6 +174,37 @@ export default function ProfilePage() {
                                 {(Number(stats.total_volume_lbs) || 0).toLocaleString()} <span className="text-sm font-normal text-gray-400">lbs</span>
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Badges & Achievements */}
+                <h2 className="text-2xl font-bold mb-6 flex items-center">
+                    <span className="mr-2">🏆</span> Badges & Achievements
+                </h2>
+
+                {loading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="h-48 bg-white/5 rounded-xl animate-pulse"></div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                        {achievements.map((achievement) => (
+                            <BadgeCard
+                                key={achievement.id}
+                                name={achievement.name}
+                                description={achievement.description}
+                                icon={achievement.icon}
+                                earned={!!achievement.earned}
+                                earnedDate={achievement.earned_at}
+                            />
+                        ))}
+                        {achievements.length === 0 && (
+                            <div className="col-span-full glass p-8 text-center text-gray-400">
+                                No achievements available yet.
+                            </div>
+                        )}
                     </div>
                 )}
 

@@ -54,9 +54,15 @@ router.post('/checkout-cart', authenticate, async (req: any, res) => {
 // POST /api/payments/confirm-mock (Dev only)
 router.post('/confirm-mock', authenticate, async (req: any, res) => {
     try {
-        const { packageId } = req.body;
+        const { packageId, items } = req.body;
+
+        if (items && Array.isArray(items)) {
+            const result = await paymentService.processMockCartPayment(req.user.id, items);
+            return res.json(result);
+        }
+
         if (!packageId) {
-            return res.status(400).json({ error: 'Package ID is required' });
+            return res.status(400).json({ error: 'Package ID or items array is required' });
         }
 
         const result = await paymentService.processMockPayment(req.user.id, packageId);

@@ -56,10 +56,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             roles: user.roles,
         });
 
-        // Return user data (without password hash) and token
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        // Return user data (without password hash)
         res.status(201).json({
             message: 'User registered successfully',
-            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -114,10 +121,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             roles: user.roles,
         });
 
-        // Return user data and token
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        // Return user data
         res.status(200).json({
             message: 'Login successful',
-            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -131,6 +145,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
     }
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+    res.clearCookie('token');
+    res.json({ message: 'Logged out successfully' });
 };
 
 // Get current user profile

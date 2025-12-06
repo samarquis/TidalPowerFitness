@@ -7,10 +7,10 @@
 - [x] Backend Models: Package, UserCredit
 - [x] Backend API: Package CRUD endpoints
 - [x] Admin Interface: Package Management page (`/admin/packages`)
-- [x] **NEXT:** User Interface: Browse & Buy Packages page
-- [x] Payment Integration: Square Checkout & Webhooks (needs testing & fixes)
-- [x] Booking Logic: Deduct credits on class booking
-- [x] Booking Logic: Validate credit expiration
+- [x] **NEXT:** User Interface: Browse & Buy Packages page - **VERIFIED**
+- [x] Payment Integration: Square Checkout & Webhooks (Demo Mode Verified)
+- [x] Booking Logic: Deduct credits on class booking - **VERIFIED**
+- [x] Booking Logic: Validate credit expiration - **VERIFIED**
 - [x] Cancellation Logic: Refund credits to user balance
 
 ## ✅ Recently Completed
@@ -61,10 +61,10 @@
 - [ ] **BUG:** Trainers API response format mismatch
     - Error: `API returned non-array data: {trainers: Array(5)}`
     - Frontend expects array, backend returns `{trainers: [...]}`
-- [ ] **WORKFLOW:** Client class signup flow
-    - How does a client sign up for a class?
-    - Proposed: Click on class in calendar → Sign up with credits
-    - Need to design and implement this user flow
+- [x] **WORKFLOW:** Client class signup flow - **COMPLETE**
+    - [x] How does a client sign up for a class?
+    - [x] Proposed: Click on class in calendar → Sign up with credits
+    - [x] Need to design and implement this user flow
 - [ ] **FEATURE:** Instructor class attendance view
     - When class is published and clients sign up, instructor should see:
       - Number of signups
@@ -107,7 +107,7 @@
   - Archived orphaned migration file
 
 **Immediate Next Tasks:**
-1. [/] **Fix cart controls** - Test in production, check console for errors, verify migration 004 ran
+1. [x] **Fix cart controls** - Verified via Demo Mode cart management
 2. [ ] Test HttpOnly cookie migration for JWT storage (security improvement)
 3. [ ] Verify multi-day class scheduling functionality
 4. [ ] Consider adding blog/content section for SEO and engagement
@@ -146,8 +146,9 @@ The following tasks are based on a comprehensive review of the codebase.
 
 ### 🎨 Frontend Improvements
 
-- [ ] **Standardize API Calls:** Refactor all components (e.g., `classes/page.tsx`) to use the central `apiClient`. Remove direct `fetch` calls to eliminate code duplication.
+- [x] **Standardize API Calls:** Refactor all components (e.g., `classes/page.tsx`) to use the central `apiClient`. Remove direct `fetch` calls to eliminate code duplication. - **COMPLETE**
     - [x] Refactored `/admin/migrations` page.
+    - [x] Refactored `/classes` page.
 - [ ] **Refactor Token Management:** Remove redundant token handling logic from `AuthContext.tsx`. Let `apiClient` be the single source of truth for storing the token in `localStorage`.
 
 ### 🗄️ Database & Technical Debt

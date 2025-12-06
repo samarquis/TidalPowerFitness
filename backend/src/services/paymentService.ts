@@ -1,5 +1,7 @@
 import CreditService from './creditService';
 import PackageModel from '../models/Package';
+import AchievementModel from '../models/Achievement';
+import pool from '../config/db';
 
 class PaymentService {
     private provider: string;
@@ -34,13 +36,68 @@ class PaymentService {
             throw new Error('Mock payments are not enabled');
         }
 
+        // Get package details to know credit amount for achievement
+        const pkgResult = await pool.query('SELECT * FROM packages WHERE id = $1', [packageId]);
+        const pkg = pkgResult.rows[0];
+
         // Assign credits
         const credits = await CreditService.assignCreditsForPackage(userId, packageId);
+
+        // Check for achievement
+        if (pkg) {
+            try {
+                await AchievementModel.checkAndAward(userId, 'purchased_credits', pkg.credits);
+            } catch (e) {
+                console.error('Failed to check achievements', e);
+            }
+        }
 
         return {
             success: true,
             message: 'Mock payment successful',
             credits
+        };
+    }
+
+    // Process a mock cart payment confirmation
+    async processMockCartPayment(userId: string, items: { packageId: string, quantity: number }[]): Promise<any> {
+        if (this.provider !== 'mock') {
+            throw new Error('Mock payments are not enabled');
+        }
+
+        let totalCredits = 0;
+        const results = [];
+        let totalCreditsPurchased = 0;
+
+        for (const item of items) {
+            // Get package details for achievement calculation
+            const pkgResult = await pool.query('SELECT * FROM packages WHERE id = $1', [item.packageId]);
+            if (pkgResult.rows.length > 0) {
+                const pkg = pkgResult.rows[0];
+                totalCreditsPurchased += pkg.credits * item.quantity;
+            }
+
+            for (let i = 0; i < item.quantity; i++) {
+                const credits = await CreditService.assignCreditsForPackage(userId, item.packageId);
+                totalCredits += credits.credits_added || 0;
+                results.push({ packageId: item.packageId, credits });
+            }
+        }
+
+        // Check for achievement
+        try {
+            if (totalCreditsPurchased > 0) {
+                await AchievementModel.checkAndAward(userId, 'purchased_credits', totalCreditsPurchased);
+            }
+        } catch (e) {
+            console.error('Failed to check achievements', e);
+        }
+
+        return {
+            success: true,
+            message: 'Mock cart payment successful',
+            total_credits_added: totalCredits,
+            items: results
         };
     }
 }

@@ -7,25 +7,15 @@ interface ApiResponse<T> {
 
 class ApiClient {
     private baseURL: string;
-    private token: string | null = null;
+    private token: string | null = null; // Keeping property for compatibility, but unused for auth headers
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
-        // Load token from localStorage if available
-        if (typeof window !== 'undefined') {
-            this.token = localStorage.getItem('auth_token');
-        }
     }
 
     setToken(token: string | null) {
         this.token = token;
-        if (typeof window !== 'undefined') {
-            if (token) {
-                localStorage.setItem('auth_token', token);
-            } else {
-                localStorage.removeItem('auth_token');
-            }
-        }
+        // No longer storing token in localStorage or managing it manually
     }
 
     private async request<T>(
@@ -37,15 +27,16 @@ class ApiClient {
             ...options.headers,
         };
 
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
-        }
-
         try {
             const response = await fetch(`${this.baseURL}${endpoint}`, {
                 ...options,
                 headers,
+                credentials: 'include', // Send cookies with request
             });
+
+            if (response.status === 204) {
+                return { data: {} as T };
+            }
 
             const data = await response.json();
 
@@ -81,6 +72,10 @@ class ApiClient {
         });
     }
 
+    async logout() {
+        return this.request<any>('/auth/logout', { method: 'POST' });
+    }
+
     async getProfile() {
         return this.request<any>('/auth/profile', { method: 'GET' });
     }
@@ -95,6 +90,10 @@ class ApiClient {
     // Trainer endpoints
     async getTrainers() {
         return this.request<any>('/trainers', { method: 'GET' });
+    }
+
+    async getTrainerUsers() {
+        return this.request<any>('/trainers/users', { method: 'GET' });
     }
 
     async getTrainer(userId: string) {
@@ -168,6 +167,59 @@ class ApiClient {
 
     async clearCart() {
         return this.request<any>('/cart', { method: 'DELETE' });
+    }
+
+    // Credits endpoints
+    async getUserCredits(userId: string) {
+        return this.request<any>(`/users/${userId}/credits`, { method: 'GET' });
+    }
+
+    // Class endpoints
+    async getClasses() {
+        return this.request<any>('/classes', { method: 'GET' });
+    }
+
+    async createClass(classData: any) {
+        return this.request<any>('/classes', {
+            method: 'POST',
+            body: JSON.stringify(classData)
+        });
+    }
+
+    async updateClass(classId: string, data: any) {
+        return this.request<any>(`/classes/${classId}`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async deleteClass(classId: string) {
+        return this.request<any>(`/classes/${classId}`, { method: 'DELETE' });
+    }
+
+    // Booking endpoints
+    async bookClass(classId: string) {
+        return this.request<any>('/bookings', {
+            method: 'POST',
+            body: JSON.stringify({ class_id: classId }),
+        });
+    }
+
+    async getUserBookings(userId: string) {
+        return this.request<any>(`/bookings/user/${userId}`, { method: 'GET' });
+    }
+
+    async cancelBooking(bookingId: string) {
+        return this.request<any>(`/bookings/${bookingId}`, { method: 'DELETE' });
+    }
+
+    // Achievement endpoints
+    async getUserAchievements(userId: string) {
+        return this.request<any>(`/users/${userId}/achievements`, { method: 'GET' });
+    }
+
+    async getAllAchievements() {
+        return this.request<any>('/achievements', { method: 'GET' });
     }
 }
 

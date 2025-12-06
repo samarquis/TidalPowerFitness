@@ -90,7 +90,8 @@ describe('Auth Endpoints', () => {
                     password: 'testpassword123',
                 });
             expect(res.statusCode).toEqual(400);
-            expect(res.body).toHaveProperty('error', 'Email and password are required');
+            expect(res.body).toHaveProperty('error', 'Validation failed');
+            expect(res.body).toHaveProperty('details');
         });
     });
 });
