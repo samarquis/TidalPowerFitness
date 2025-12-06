@@ -184,7 +184,7 @@ function MockCheckoutContent() {
                     Cancel
                 </button>
             </div>
-            );
+        );
     }
 
 export default function MockCheckoutPage() {
