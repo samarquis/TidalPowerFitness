@@ -186,7 +186,6 @@ function MockCheckoutContent() {
             </div>
             );
     }
-}
 
 export default function MockCheckoutPage() {
     return (
