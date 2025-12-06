@@ -32,12 +32,12 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(false);
 
     const refreshCart = async () => {
-        if (!isAuthenticated || !token) {
+        if (!isAuthenticated) {
             setCart(null);
             return;
         }
@@ -57,7 +57,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         refreshCart();
-    }, [isAuthenticated, token]);
+    }, [isAuthenticated]);
 
     const addToCart = async (packageId: string, quantity: number = 1) => {
         if (!isAuthenticated) {
