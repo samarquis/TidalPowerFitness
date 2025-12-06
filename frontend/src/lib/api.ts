@@ -228,7 +228,7 @@ class ApiClient {
 
     // Achievement endpoints
     async getUserAchievements(userId: string) {
-        return this.request<any>(`/users/${userId}/achievements`, { method: 'GET' });
+        return this.request<any>(`/achievements/${userId}`, { method: 'GET' });
     }
 
     async getAllAchievements() {

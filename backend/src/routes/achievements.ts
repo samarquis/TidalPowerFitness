@@ -11,7 +11,7 @@ router.use(authenticate);
 router.get('/', AchievementController.getAll);
 
 // Get user's earned achievements
-router.get('/users/:userId', AchievementController.getUserAchievements);
+router.get('/:userId', AchievementController.getUserAchievements);
 
 // Check/Trigger achievements (Admin only for manual trigger, or system usage)
 router.post('/users/:userId/check', AchievementController.checkAchievements);
