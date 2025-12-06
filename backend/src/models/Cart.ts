@@ -1,4 +1,4 @@
-import pool from '../config/db';
+import { query } from '../config/db';
 
 export interface CartItem {
     id: string;
@@ -23,7 +23,7 @@ export interface Cart {
 class CartModel {
     // Get or create cart for user
     async getOrCreateCart(userId: string): Promise<Cart> {
-        const result = await pool.query(
+        const result = await query(
             `INSERT INTO cart (user_id) 
              VALUES ($1) 
              ON CONFLICT (user_id) DO UPDATE SET user_id = $1
@@ -35,7 +35,7 @@ class CartModel {
 
     // Get cart with items for user
     async getCartWithItems(userId: string): Promise<Cart | null> {
-        const cartResult = await pool.query(
+        const cartResult = await query(
             'SELECT * FROM cart WHERE user_id = $1',
             [userId]
         );
@@ -46,7 +46,7 @@ class CartModel {
 
         const cart = cartResult.rows[0];
 
-        const itemsResult = await pool.query(
+        const itemsResult = await query(
             `SELECT ci.*, p.name as package_name, p.price_cents as package_price_cents, 
                     p.description as package_description
              FROM cart_items ci
@@ -64,7 +64,7 @@ class CartModel {
     async addItem(userId: string, packageId: string, quantity: number = 1): Promise<CartItem> {
         const cart = await this.getOrCreateCart(userId);
 
-        const result = await pool.query(
+        const result = await query(
             `INSERT INTO cart_items (cart_id, package_id, quantity)
              VALUES ($1, $2, $3)
              ON CONFLICT (cart_id, package_id) 
@@ -80,7 +80,7 @@ class CartModel {
     async updateItemQuantity(userId: string, itemId: string, quantity: number): Promise<CartItem | null> {
         const cart = await this.getOrCreateCart(userId);
 
-        const result = await pool.query(
+        const result = await query(
             `UPDATE cart_items 
              SET quantity = $1, updated_at = CURRENT_TIMESTAMP
              WHERE id = $2 AND cart_id = $3
@@ -95,7 +95,7 @@ class CartModel {
     async removeItem(userId: string, itemId: string): Promise<boolean> {
         const cart = await this.getOrCreateCart(userId);
 
-        const result = await pool.query(
+        const result = await query(
             'DELETE FROM cart_items WHERE id = $1 AND cart_id = $2',
             [itemId, cart.id]
         );
@@ -107,7 +107,7 @@ class CartModel {
     async clearCart(userId: string): Promise<boolean> {
         const cart = await this.getOrCreateCart(userId);
 
-        const result = await pool.query(
+        const result = await query(
             'DELETE FROM cart_items WHERE cart_id = $1',
             [cart.id]
         );
