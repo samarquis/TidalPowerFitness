@@ -19,6 +19,7 @@ interface AuthContextType {
     register: (userData: any) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     isAuthenticated: boolean;
+    refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,28 +29,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const checkAuth = async () => {
+        try {
+            // Try to get profile. If cookie exists and is valid, this will succeed.
+            const response = await apiClient.getProfile();
+            if (response.data && response.data.user) {
+                setUser(response.data.user);
+                // Token is no longer managed in JS
+            } else {
+                setUser(null);
+            }
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         // Check if user is logged in on mount
-        const checkAuth = async () => {
-            try {
-                // Try to get profile. If cookie exists and is valid, this will succeed.
-                const response = await apiClient.getProfile();
-                if (response.data && response.data.user) {
-                    setUser(response.data.user);
-                    // Token is no longer managed in JS
-                } else {
-                    setUser(null);
-                }
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         checkAuth();
     }, []);
+
+    const refreshUser = async () => {
+        setLoading(true);
+        await checkAuth();
+    }
 
     const login = async (email: string, password: string) => {
         const response = await apiClient.login(email, password);
@@ -95,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 register,
                 logout,
                 isAuthenticated: !!user,
+                refreshUser,
             }}
         >
             {children}

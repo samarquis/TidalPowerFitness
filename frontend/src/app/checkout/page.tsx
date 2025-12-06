@@ -1,23 +1,34 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 
-export default function CheckoutPage() {
-    const { isAuthenticated } = useAuth();
-    const { cart, clearCart } = useCart();
+function CheckoutContent() {
+    const { isAuthenticated, refreshUser } = useAuth();
+    const { cart, clearCart, refreshCart } = useCart();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/login?redirect=/checkout');
         }
     }, [isAuthenticated, router]);
+
+    useEffect(() => {
+        const paymentSuccess = searchParams.get('success');
+        if (paymentSuccess === 'true') {
+            setSuccess('Payment successful! Your credits have been updated.');
+            refreshUser();
+            refreshCart();
+            // Optional: clear the query params from URL
+            router.replace('/checkout');
+        }
+    }, [searchParams, refreshUser, refreshCart, router]);
 
     const handleCheckout = async () => {
         if (!cart || cart.items.length === 0) {
@@ -36,8 +47,7 @@ export default function CheckoutPage() {
             }
 
             if (response.data && response.data.url) {
-                // Clear cart before redirecting to payment
-                await clearCart();
+                // The cart is cleared on the backend after successful payment now
                 window.location.href = response.data.url;
             } else {
                 throw new Error('No checkout URL returned');
@@ -68,27 +78,39 @@ export default function CheckoutPage() {
                     </div>
                 )}
 
+                {success && (
+                    <div className="bg-green-900/20 border border-green-500/50 text-green-200 p-4 rounded-lg mb-6">
+                        {success}
+                    </div>
+                )}
+
                 <div className="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
                     <h2 className="text-2xl font-bold text-white mb-4">Order Summary</h2>
 
-                    <div className="space-y-3 mb-6">
-                        {items.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center py-2 border-b border-white/5">
-                                <div>
-                                    <p className="text-white font-semibold">{item.package_name}</p>
-                                    <p className="text-gray-400 text-sm">Quantity: {item.quantity}</p>
-                                </div>
-                                <p className="text-teal-400 font-semibold">
-                                    ${((item.package_price_cents * item.quantity) / 100).toFixed(2)}
-                                </p>
+                    {items.length > 0 ? (
+                        <>
+                            <div className="space-y-3 mb-6">
+                                {items.map((item) => (
+                                    <div key={item.id} className="flex justify-between items-center py-2 border-b border-white/5">
+                                        <div>
+                                            <p className="text-white font-semibold">{item.package_name}</p>
+                                            <p className="text-gray-400 text-sm">Quantity: {item.quantity}</p>
+                                        </div>
+                                        <p className="text-teal-400 font-semibold">
+                                            ${((item.package_price_cents * item.quantity) / 100).toFixed(2)}
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
 
-                    <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                        <span className="text-xl font-bold text-white">Total:</span>
-                        <span className="text-3xl font-bold text-teal-400">${totalDollars}</span>
-                    </div>
+                            <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                                <span className="text-xl font-bold text-white">Total:</span>
+                                <span className="text-3xl font-bold text-teal-400">${totalDollars}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="text-gray-400">Your cart is empty.</p>
+                    )}
                 </div>
 
                 <div className="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
@@ -124,5 +146,13 @@ export default function CheckoutPage() {
                 </button>
             </div>
         </div>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CheckoutContent />
+        </Suspense>
     );
 }
