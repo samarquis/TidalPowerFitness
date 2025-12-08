@@ -72,6 +72,11 @@ class BookingController {
                 // Don't fail the booking if achievement fails
             }
 
+            // If in demo mode, add a credit back to simulate unlimited credits
+            if (req.user.is_demo_mode_enabled) {
+                await UserCreditModel.addCredits(userId, 'demo_package', 1, 365); // Add 1 credit, valid for a year
+            }
+
             res.status(201).json({
                 message: 'Class booked successfully',
                 booking: result.rows[0]

@@ -13,6 +13,7 @@ export interface JWTPayload {
     email: string;
     role?: 'client' | 'trainer' | 'admin'; // Keep for backward compatibility
     roles: string[];
+    is_demo_mode_enabled: boolean;
 }
 
 // Generate JWT token

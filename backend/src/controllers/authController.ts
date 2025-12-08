@@ -49,11 +49,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         });
 
         // Generate JWT token
+        const is_demo_mode_enabled = user.email === 'demo@example.com';
         const token = generateToken({
             id: user.id,
             userId: user.id,
             email: user.email,
             roles: user.roles,
+            is_demo_mode_enabled,
         });
 
         // Set cookie
@@ -115,11 +117,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         }
 
         // Generate JWT token
+        const is_demo_mode_enabled = user.email === 'demo@example.com';
         const token = generateToken({
             id: user.id,
             userId: user.id,
             email: user.email,
             roles: user.roles,
+            is_demo_mode_enabled,
         });
 
         // Set cookie
