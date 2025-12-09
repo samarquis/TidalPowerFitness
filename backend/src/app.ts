@@ -33,13 +33,14 @@ const app = express();
 // Middleware
 const corsOptions = {
     origin: [
-        process.env.FRONTEND_URL || 'http://localhost:3000',
-        'https://tidal-power-frontend.onrender.com', // The correct production frontend URL
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'https://tidal-power-frontend.onrender.com',
+        /https?:\/\/[a-zA-Z0-9-]+\.vercel\.app/
     ],
     credentials: true
 };
 
+app.set('trust proxy', 1); // Trust first proxy
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
