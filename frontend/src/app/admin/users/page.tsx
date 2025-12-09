@@ -66,19 +66,13 @@ export default function UserManagementPage() {
 
     const fetchUsers = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
+            const response = await apiClient.getAllUsers();
 
-            const response = await fetch(`${apiUrl}/users`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUsers(data.users);
-                setFilteredUsers(data.users);
+            if (response.data) {
+                setUsers(response.data.users);
+                setFilteredUsers(response.data.users);
+            } else {
+                console.error('Error fetching users:', response.error);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -89,40 +83,23 @@ export default function UserManagementPage() {
 
     const toggleUserRole = async (userId: string, role: string) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
             const user = users.find(u => u.id === userId);
 
             if (!user) return;
 
             const hasRole = user.roles.includes(role);
+            let response;
 
             if (hasRole) {
-                // Remove role
-                const response = await fetch(`${apiUrl}/users/${userId}/roles/${role}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    fetchUsers(); // Refresh the list
-                }
+                response = await apiClient.removeUserRole(userId, role);
             } else {
-                // Add role
-                const response = await fetch(`${apiUrl}/users/${userId}/roles`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ role })
-                });
+                response = await apiClient.addUserRole(userId, role);
+            }
 
-                if (response.ok) {
-                    fetchUsers(); // Refresh the list
-                }
+            if (response.data) {
+                fetchUsers(); // Refresh the list
+            } else {
+                console.error('Error toggling role:', response.error);
             }
         } catch (error) {
             console.error('Error toggling role:', error);
@@ -131,20 +108,12 @@ export default function UserManagementPage() {
 
     const toggleUserActivation = async (userId: string, currentStatus: boolean) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
+            const response = await apiClient.toggleUserActivation(userId, !currentStatus);
 
-            const response = await fetch(`${apiUrl}/users/${userId}/activate`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ is_active: !currentStatus })
-            });
-
-            if (response.ok) {
+            if (response.data) {
                 fetchUsers(); // Refresh the list
+            } else {
+                console.error('Error toggling activation:', response.error);
             }
         } catch (error) {
             console.error('Error toggling activation:', error);
@@ -166,19 +135,9 @@ export default function UserManagementPage() {
         setResetMessage(null);
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
+            const response = await apiClient.resetUserPassword(selectedUserForReset.id, newPassword);
 
-            const response = await fetch(`${apiUrl}/users/${selectedUserForReset.id}/reset-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ password: newPassword })
-            });
-
-            if (response.ok) {
+            if (response.data) {
                 setResetMessage({ type: 'success', text: 'Password reset successfully' });
                 setNewPassword('');
                 setTimeout(() => {
@@ -186,8 +145,7 @@ export default function UserManagementPage() {
                     setResetMessage(null);
                 }, 2000);
             } else {
-                const data = await response.json();
-                setResetMessage({ type: 'error', text: data.error || 'Failed to reset password' });
+                setResetMessage({ type: 'error', text: response.error || 'Failed to reset password' });
             }
         } catch (error) {
             console.error('Error resetting password:', error);

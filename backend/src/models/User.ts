@@ -11,6 +11,7 @@ export interface User {
     role?: 'client' | 'trainer' | 'admin'; // Keep for backward compatibility during migration
     roles: string[];
     is_active: boolean;
+    is_demo_mode_enabled: boolean;
     created_at: Date;
     updated_at: Date;
 }
@@ -22,6 +23,7 @@ export interface CreateUserInput {
     last_name: string;
     phone?: string;
     roles?: string[];
+    is_demo_mode_enabled?: boolean;
 }
 
 export interface UpdateUserInput {
@@ -31,6 +33,7 @@ export interface UpdateUserInput {
     phone?: string;
     roles?: string[];
     is_active?: boolean;
+    is_demo_mode_enabled?: boolean;
 }
 
 class UserModel {
@@ -45,16 +48,16 @@ class UserModel {
 
     // Create a new user
     async create(userData: CreateUserInput): Promise<User> {
-        const { email, password_hash, first_name, last_name, phone, roles = ['client'] } = userData;
+        const { email, password_hash, first_name, last_name, phone, roles = ['client'], is_demo_mode_enabled = false } = userData;
 
         // For backward compatibility, use the first role as the primary role
         const primaryRole = roles.length > 0 ? roles[0] : 'client';
 
         const result: QueryResult = await query(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role, roles)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role, roles, is_demo_mode_enabled)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-            [email, password_hash, first_name, last_name, phone, primaryRole, roles]
+            [email, password_hash, first_name, last_name, phone, primaryRole, roles, is_demo_mode_enabled]
         );
 
         return this.mapRowToUser(result.rows[0])!;

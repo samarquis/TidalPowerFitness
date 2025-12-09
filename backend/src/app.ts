@@ -31,13 +31,31 @@ dotenv.config();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://tidal-power-frontend.onrender.com'
+];
+
 const corsOptions = {
-    origin: [
-        'http://localhost:3000',
-        'https://tidal-power-frontend.onrender.com',
-        /https?:\/\/[a-zA-Z0-9-]+\.vercel\.app/
-    ],
-    credentials: true
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Check if the origin is in the allowed list
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            return callback(null, true);
+        }
+
+        // Check if the origin matches the Vercel regex
+        const vercelRegex = /https?:\/\/[a-zA-Z0-9-]+\.vercel\.app/;
+        if (vercelRegex.test(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+    },
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.set('trust proxy', 1); // Trust first proxy

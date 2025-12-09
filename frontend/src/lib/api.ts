@@ -87,6 +87,35 @@ class ApiClient {
         });
     }
 
+    async getAllUsers() {
+        return this.request<any>('/users', { method: 'GET' });
+    }
+
+    async addUserRole(userId: string, role: string) {
+        return this.request<any>(`/users/${userId}/roles`, {
+            method: 'POST',
+            body: JSON.stringify({ role }),
+        });
+    }
+
+    async removeUserRole(userId: string, role: string) {
+        return this.request<any>(`/users/${userId}/roles/${role}`, { method: 'DELETE' });
+    }
+
+    async toggleUserActivation(userId: string, is_active: boolean) {
+        return this.request<any>(`/users/${userId}/activate`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_active }),
+        });
+    }
+
+    async resetUserPassword(userId: string, password: string) {
+        return this.request<any>(`/users/${userId}/reset-password`, {
+            method: 'POST',
+            body: JSON.stringify({ password }),
+        });
+    }
+
     // Trainer endpoints
     async getTrainers() {
         return this.request<any>('/trainers', { method: 'GET' });

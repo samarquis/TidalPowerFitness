@@ -13,28 +13,17 @@ declare global {
 // Authenticate middleware - verifies JWT token
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        let token;
-
-        // Check for token in cookies first
-        if (req.cookies && req.cookies.token) {
-            token = req.cookies.token;
-        }
-        // Fallback to Authorization header
-        else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-            token = req.headers.authorization.substring(7);
-        }
+        const token = req.cookies?.token;
 
         if (!token) {
-            res.status(401).json({ error: 'No token provided' });
-            return;
+            return res.status(401).json({ error: 'No token provided' });
         }
 
         // Verify token
         const decoded = verifyToken(token);
 
         if (!decoded) {
-            res.status(401).json({ error: 'Invalid or expired token' });
-            return;
+            return res.status(401).json({ error: 'Invalid or expired token' });
         }
 
         // Attach user to request

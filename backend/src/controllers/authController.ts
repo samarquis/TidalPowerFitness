@@ -61,8 +61,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         // Set cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
@@ -129,8 +129,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         // Set cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
@@ -154,8 +154,22 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-    res.clearCookie('token');
-    res.json({ message: 'Logged out successfully' });
+    try {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const cookieOptions = {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax' as 'none' | 'lax' | 'strict' | undefined,
+            path: '/',
+            domain: isProduction ? '.onrender.com' : undefined,
+        };
+
+        res.clearCookie('token', cookieOptions);
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ error: 'Logout failed' });
+    }
 };
 
 // Get current user profile
