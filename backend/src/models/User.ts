@@ -145,19 +145,24 @@ class UserModel {
 
     // Add a role to user - Appends to roles array and updates primary role
     async addRole(id: string, role: string): Promise<User | null> {
-        const result: QueryResult = await query(
-            `UPDATE users
-             SET role = $2::user_role,
-                 roles = CASE
-                     WHEN roles @> ARRAY[$2]::TEXT[] THEN roles
-                     ELSE array_append(COALESCE(roles, ARRAY[]::TEXT[]), $2)
-                 END
-             WHERE id = $1
-             RETURNING *`,
-            [id, role]
-        );
+        try {
+            const result: QueryResult = await query(
+                `UPDATE users
+                 SET role = $2::user_role,
+                     roles = CASE
+                         WHEN roles @> ARRAY[$2]::TEXT[] THEN roles
+                         ELSE array_append(COALESCE(roles, ARRAY[]::TEXT[]), $2)
+                     END
+                 WHERE id = $1
+                 RETURNING *`,
+                [id, role]
+            );
 
-        return this.mapRowToUser(result.rows[0]);
+            return this.mapRowToUser(result.rows[0]);
+        } catch (error) {
+            console.error('Error in addRole:', error);
+            throw error;
+        }
     }
 
     // Remove a role from user - Removes from roles array and updates primary role
