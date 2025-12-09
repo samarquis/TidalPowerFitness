@@ -59,11 +59,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         });
 
         // Set cookie
+        const isProduction = process.env.NODE_ENV === 'production';
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/',
+            domain: isProduction ? '.onrender.com' : undefined,
         });
 
         // Return user data (with token for test compatibility)
@@ -127,11 +130,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         });
 
         // Set cookie
+        const isProduction = process.env.NODE_ENV === 'production';
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/',
+            domain: isProduction ? '.onrender.com' : undefined,
         });
 
         // Return user data (with token for test compatibility)
