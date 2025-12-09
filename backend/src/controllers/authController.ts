@@ -66,7 +66,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             sameSite: isProduction ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
             path: '/',
-            domain: isProduction ? '.onrender.com' : undefined,
         });
 
         // Return user data (with token for test compatibility)
@@ -137,7 +136,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             sameSite: isProduction ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
             path: '/',
-            domain: isProduction ? '.onrender.com' : undefined,
         });
 
         // Return user data (with token for test compatibility)
@@ -167,7 +165,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
             secure: isProduction,
             sameSite: isProduction ? 'none' : 'lax' as 'none' | 'lax' | 'strict' | undefined,
             path: '/',
-            domain: isProduction ? '.onrender.com' : undefined,
         };
 
         res.clearCookie('token', cookieOptions);

@@ -147,7 +147,7 @@ class UserModel {
     async addRole(id: string, role: string): Promise<User | null> {
         const result: QueryResult = await query(
             `UPDATE users
-             SET role = $2,
+             SET role = $2::user_role,
                  roles = CASE
                      WHEN roles @> ARRAY[$2]::TEXT[] THEN roles
                      ELSE array_append(roles, $2)
@@ -166,7 +166,7 @@ class UserModel {
             `UPDATE users
              SET roles = array_remove(roles, $2),
                  role = CASE
-                     WHEN role = $2 THEN 'client'
+                     WHEN role::text = $2 THEN 'client'::user_role
                      ELSE role
                  END
              WHERE id = $1
