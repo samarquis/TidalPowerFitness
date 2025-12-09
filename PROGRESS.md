@@ -2,6 +2,25 @@
 
 This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` to add entries automatically.
 
+---
+
+## 2025-12-08 (Monday)
+
+### ✅ Completed
+- **Demo Mode Credit Management**:
+    - Implemented a feature to support credit management in demo mode.
+    - When a user in demo mode books a class, the credit is deducted and then immediately refunded, simulating unlimited credits for testing purposes.
+    - Updated `authController.ts` to include an `is_demo_mode_enabled` flag in the JWT payload.
+    - Modified `bookingController.ts` to handle the credit refund logic for demo users.
+
+- **Bug Fixes & Stability**:
+    - **401 Unauthorized Errors**:
+        - Diagnosed and fixed a critical bug causing widespread 401 Unauthorized errors.
+        - The root cause was an `is_demo_mode_enabled` variable being undefined during JWT generation in `authController.ts`.
+        - Corrected the logic to ensure the flag is properly set before token creation in both `register` and `login` functions.
+    - **Pushed all changes to GitHub.**
+
+---
 
 ---
 
