@@ -150,7 +150,7 @@ class UserModel {
              SET role = $2::user_role,
                  roles = CASE
                      WHEN roles @> ARRAY[$2]::TEXT[] THEN roles
-                     ELSE array_append(roles, $2)
+                     ELSE array_append(COALESCE(roles, ARRAY[]::TEXT[]), $2)
                  END
              WHERE id = $1
              RETURNING *`,
