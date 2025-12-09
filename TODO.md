@@ -4,9 +4,8 @@ This file is the single source of truth for all project tasks.
 
 ## 🚀 High Priority / Next Up
 
-## 🚀 High Priority / Next Up
-
 ### 1. Bug Fixes & Stability
+- [x] **BUG:** Resolved widespread 401 Unauthorized errors - **FIXED**
 - [x] **INVESTIGATE:** `/workouts/assign` page extension errors - **VERIFIED CLEAN**
     - Error: "A listener indicated an asynchronous response..." (Confirmed likely browser extension conflict).
 - [x] **BUG:** Trainers API response format mismatch - **FIXED**
@@ -27,6 +26,10 @@ This file is the single source of truth for all project tasks.
 ## ✅ Recently Completed
 
 ### December 2025
+- [x] **Authentication & Authorization Fixes**
+    - Corrected CORS policy for dynamic origins.
+    - Made cookie settings environment-dependent (local dev vs. production).
+    - Refactored User Management page to use centralized `apiClient`.
 - [x] **Achievements/Badges system**
     - Full backend logic (awards on booking/purchase).
     - Profile page UI with Badge cards.

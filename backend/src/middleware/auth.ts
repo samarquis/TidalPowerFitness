@@ -11,19 +11,21 @@ declare global {
 }
 
 // Authenticate middleware - verifies JWT token
-export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token;
 
         if (!token) {
-            return res.status(401).json({ error: 'No token provided' });
+            res.status(401).json({ error: 'No token provided' });
+            return;
         }
 
         // Verify token
         const decoded = verifyToken(token);
 
         if (!decoded) {
-            return res.status(401).json({ error: 'Invalid or expired token' });
+            res.status(401).json({ error: 'Invalid or expired token' });
+            return;
         }
 
         // Attach user to request
@@ -36,7 +38,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
 // Role-based authorization middleware
 export const authorize = (...allowedRoles: Array<'client' | 'trainer' | 'admin'>) => {
-    return (req: Request, res: Response, next: NextFunction): void => {
+    return (req: Request, res: Response, next: NextFunction) => {
         if (!req.user) {
             res.status(401).json({ error: 'Not authenticated' });
             return;
@@ -55,7 +57,7 @@ export const authorize = (...allowedRoles: Array<'client' | 'trainer' | 'admin'>
 };
 
 // Optional authentication - doesn't fail if no token
-export const optionalAuth = (req: Request, res: Response, next: NextFunction): void => {
+export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
     try {
         let token;
 

@@ -62,17 +62,18 @@ This is a monorepo with three main components:
 - `/cypress` - E2E tests (minimal setup currently)
 
 ### Authentication & Authorization
-- **JWT-based authentication** using Bearer tokens
-- Tokens stored in `localStorage` on frontend (note: migration to HttpOnly cookies planned for security)
-- Backend middleware: `authenticate()` verifies JWT, `authorize(...roles)` checks role-based permissions
-- Multi-role support: Users can have multiple roles (`client`, `trainer`, `admin`)
-- Role data model in transition: `role` column (legacy) being migrated to `roles` array
+- **JWT-based authentication** using HttpOnly cookies.
+- **CORS Policy**: The backend has a dynamic CORS policy to handle requests from various origins, including localhost, the deployed frontend, and Vercel preview deployments.
+- **Cookie Settings**: Cookies are configured to be secure in production (HTTPS) and lenient in local development (HTTP), allowing for seamless authentication in both environments.
+- Backend middleware: `authenticate()` verifies the JWT from the cookie, and `authorize(...roles)` checks for role-based permissions.
+- Multi-role support: Users can have multiple roles (`client`, `trainer`, `admin`).
 
 **Key files:**
-- `backend/src/middleware/auth.ts` - Authentication/authorization middleware
-- `backend/src/utils/jwt.ts` - JWT signing and verification
-- `frontend/src/contexts/AuthContext.tsx` - Frontend auth state management
-- `frontend/src/lib/api.ts` - Centralized API client with automatic token injection
+- `backend/src/middleware/auth.ts` - Authentication/authorization middleware.
+- `backend/src/controllers/authController.ts` - Handles login, logout, and setting the HttpOnly cookie.
+- `backend/src/utils/jwt.ts` - JWT signing and verification.
+- `frontend/src/contexts/AuthContext.tsx` - Frontend auth state management.
+- `frontend/src/lib/api.ts` - Centralized API client that automatically includes credentials (cookies).
 
 ### Database Architecture
 - **PostgreSQL 14+** with connection pooling via `pg` library
@@ -153,10 +154,11 @@ All backend routes follow REST conventions:
 
 ### Common Gotchas
 - **TypeScript config:** Backend uses CommonJS (`type: "commonjs"` in package.json), frontend uses ES modules
-- **CORS:** Backend allows all origins in development; configure for production
-- **Password hashing:** Uses `bcrypt` (not `bcryptjs` - the latter is a redundant dependency to be removed)
-- **Migration system:** Designed for Render free tier (no direct DB access), runs via web endpoint
-- **Multi-role system:** Database has both `role` (VARCHAR, legacy) and `roles` (TEXT[], new) columns during transition period
+- **CORS:** The backend has a dynamic CORS policy in `backend/src/app.ts` to handle multiple origins.
+- **Cookies:** The backend sets HttpOnly cookies with settings that vary between production and development environments.
+- **Password hashing:** Uses `bcrypt`.
+- **Migration system:** Designed for Render free tier (no direct DB access), runs via web endpoint.
+- **Multi-role system:** Database has both `role` (VARCHAR, legacy) and `roles` (TEXT[], new) columns during transition period.
 
 ### Admin Setup
 After deploying to production:
@@ -182,7 +184,7 @@ After deploying to production:
 - **CRITICAL:** Never commit `.env` files with real credentials
 - JWT_SECRET must be set in production (no fallback allowed)
 - Input validation needed on all controller endpoints (technical debt item)
-- XSS protection: Migrate from localStorage to HttpOnly cookies for JWTs (planned)
+- **XSS protection**: JWTs are stored in HttpOnly cookies, which helps to mitigate XSS attacks.
 
 ## Key Dependencies
 

@@ -4,6 +4,20 @@ This file tracks daily progress on the Tidal Power Fitness project. Use `/eod` t
 
 ---
 
+## 2025-12-09 (Tuesday)
+
+### ✅ Completed
+- **Authentication & Authorization Fixes**:
+    - Diagnosed and resolved widespread 401 Unauthorized errors across the application.
+    - **CORS Policy**: Corrected the CORS policy in `backend/src/app.ts` to dynamically handle various origins, including sandboxed environments.
+    - **Cookie Configuration**: Made cookie settings environment-dependent in `backend/src/controllers/authController.ts`, allowing for secure authentication in both local development (HTTP) and production (HTTPS) environments.
+    - **Logout Functionality**: Improved the logout function to ensure cookies are cleared correctly.
+    - **API Refactoring**: Refactored the User Management page to use the centralized `apiClient`, improving code consistency and maintainability.
+    - **Model Standardization**: Aligned the `User` model with the database schema by using `is_demo_mode_enabled`.
+- **Pushed all changes to GitHub.**
+
+---
+
 ## 2025-12-08 (Monday)
 
 ### ✅ Completed
