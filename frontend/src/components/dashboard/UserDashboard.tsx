@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api';
 import Link from 'next/link';
 import ClassSignupModal from '@/components/ClassSignupModal';
 
@@ -64,34 +65,30 @@ export default function UserDashboard() {
     }, [user, token]);
 
     const fetchData = async () => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
         try {
             // Fetch classes
-            const classesRes = await fetch(`${apiUrl}/classes`);
-            if (classesRes.ok) {
-                const classesData = await classesRes.json();
-                if (Array.isArray(classesData)) {
-                    setClasses(classesData);
-                }
+            const { data: classesData, error: classesError } = await apiClient.getClasses();
+            if (classesData && Array.isArray(classesData)) {
+                setClasses(classesData);
+            } else if (classesError) {
+                console.error('Error fetching classes:', classesError);
             }
 
             // Fetch user's bookings
-            const bookingsRes = await fetch(`${apiUrl}/bookings/user/${user?.id}`, {
-                credentials: 'include'
-            });
-            if (bookingsRes.ok) {
-                const bookingsData = await bookingsRes.json();
+            const { data: bookingsData, error: bookingsError } = await apiClient.getUserBookings(user!.id);
+            if (bookingsData) {
                 setBookings(bookingsData.filter((b: Booking) => b.status === 'confirmed'));
+            } else if (bookingsError) {
+                console.error('Error fetching bookings:', bookingsError);
             }
 
             // Fetch user credits
-            const creditsRes = await fetch(`${apiUrl}/users/${user?.id}/credits`, {
-                credentials: 'include'
-            });
-            if (creditsRes.ok) {
-                const creditsData = await creditsRes.json();
+            const { data: creditsData, error: creditsError } = await apiClient.getUserCredits(user!.id);
+            if (creditsData) {
+                // standardized response { credits: number, details: UserCredit[] }
                 setCredits({ total: creditsData.credits || 0 });
+            } else if (creditsError) {
+                console.error('Error fetching credits:', creditsError);
             }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -101,21 +98,10 @@ export default function UserDashboard() {
     };
 
     const handleBookClass = async (classId: string) => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const { error } = await apiClient.bookClass(classId);
 
-        const response = await fetch(`${apiUrl}/bookings`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ class_id: classId })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || data.error || 'Failed to book class');
+        if (error) {
+            throw new Error(error);
         }
 
         // Refresh data after booking
