@@ -33,7 +33,9 @@ const app = express();
 // Middleware
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://tidal-power-frontend.onrender.com'
+    'https://tidal-power-frontend.onrender.com',
+    'https://tidal-power-frontend-app.onrender.com',
+    process.env.FRONTEND_URL
 ];
 
 const corsOptions = {
