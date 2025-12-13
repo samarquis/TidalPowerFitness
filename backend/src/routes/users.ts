@@ -212,7 +212,10 @@ router.get('/:id/credits', authenticate, async (req: Request, res: Response): Pr
         const credits = await UserCreditModel.getUserCredits(id);
         const totalCredits = credits.reduce((sum, credit) => sum + credit.remaining_credits, 0);
 
-        res.status(200).json({ credits: totalCredits });
+        res.status(200).json({
+            credits: totalCredits,
+            details: credits
+        });
     } catch (error) {
         console.error('Get user credits error:', error);
         res.status(500).json({ error: 'Failed to get user credits' });

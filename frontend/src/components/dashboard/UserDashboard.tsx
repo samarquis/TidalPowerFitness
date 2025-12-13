@@ -91,8 +91,7 @@ export default function UserDashboard() {
             });
             if (creditsRes.ok) {
                 const creditsData = await creditsRes.json();
-                const total = creditsData.reduce((sum: number, c: any) => sum + c.remaining_credits, 0);
-                setCredits({ total });
+                setCredits({ total: creditsData.credits || 0 });
             }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -290,8 +289,8 @@ export default function UserDashboard() {
                                             <div
                                                 key={classItem.id}
                                                 className={`p-4 rounded-lg border transition-all ${booked
-                                                        ? 'bg-green-500/10 border-green-500/30'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer'
+                                                    ? 'bg-green-500/10 border-green-500/30'
+                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer'
                                                     }`}
                                                 onClick={() => !booked && handleClassClick(classItem)}
                                             >

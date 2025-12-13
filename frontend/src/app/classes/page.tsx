@@ -72,8 +72,19 @@ export default function ClassesPage() {
             }
 
             if (data) {
-                const total = data.reduce((sum: number, c: any) => sum + c.remaining_credits, 0);
-                setCredits({ total, details: data });
+                // Handle new standardized response { credits: number, details: UserCredit[] }
+                if (data.details && Array.isArray(data.details)) {
+                    setCredits({ total: data.credits || 0, details: data.details });
+                }
+                // Fallback for legacy array response (just in case)
+                else if (Array.isArray(data)) {
+                    const total = data.reduce((sum: number, c: any) => sum + c.remaining_credits, 0);
+                    setCredits({ total, details: data });
+                }
+                // Handle new response with just total if details missing
+                else if (data.credits !== undefined) {
+                    setCredits({ total: data.credits, details: [] });
+                }
             }
         } catch (error) {
             console.error('Error calculating credits:', error);
