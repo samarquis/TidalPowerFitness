@@ -46,9 +46,7 @@ export default function WorkoutTemplatesPage() {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/workout-templates`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
             const data = await response.json();
             // Handle both array response and object with templates property
@@ -68,9 +66,7 @@ export default function WorkoutTemplatesPage() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/workout-templates/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -101,6 +97,9 @@ export default function WorkoutTemplatesPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
+                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                        &larr; Back to Dashboard
+                    </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Workout <span className="text-gradient">Templates</span>
                     </h1>

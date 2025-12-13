@@ -78,7 +78,7 @@ export default function UserDashboard() {
 
             // Fetch user's bookings
             const bookingsRes = await fetch(`${apiUrl}/bookings/user/${user?.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             if (bookingsRes.ok) {
                 const bookingsData = await bookingsRes.json();
@@ -87,7 +87,7 @@ export default function UserDashboard() {
 
             // Fetch user credits
             const creditsRes = await fetch(`${apiUrl}/users/${user?.id}/credits`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             if (creditsRes.ok) {
                 const creditsData = await creditsRes.json();
@@ -108,8 +108,8 @@ export default function UserDashboard() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             body: JSON.stringify({ class_id: classId })
         });
 

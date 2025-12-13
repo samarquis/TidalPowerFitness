@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,13 +82,9 @@ function AssignWorkoutContent() {
     // Fetch templates
     useEffect(() => {
         const fetchTemplates = async () => {
-            if (!token) return;
-
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/workout-templates`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -101,12 +98,12 @@ function AssignWorkoutContent() {
         if (user) {
             fetchTemplates();
         }
-    }, [user, token]);
+    }, [user]);
 
     // Fetch classes when date is selected
     useEffect(() => {
         const fetchClasses = async () => {
-            if (!sessionDate || !token) return;
+            if (!sessionDate) return;
 
             try {
                 const date = new Date(sessionDate);
@@ -115,9 +112,7 @@ function AssignWorkoutContent() {
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/assignments/classes?day_of_week=${dayOfWeek}`,
                     {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        credentials: 'include'
                     }
                 );
                 if (response.ok) {
@@ -130,18 +125,14 @@ function AssignWorkoutContent() {
         };
 
         fetchClasses();
-    }, [sessionDate, token]);
+    }, [sessionDate]);
 
     // Fetch clients
     useEffect(() => {
         const fetchClients = async () => {
-            if (!token) return;
-
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments/clients`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -155,7 +146,7 @@ function AssignWorkoutContent() {
         if (user) {
             fetchClients();
         }
-    }, [user, token]);
+    }, [user]);
 
     const handleNext = () => {
         if (step === 1 && !sessionDate) {
@@ -248,6 +239,11 @@ function AssignWorkoutContent() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 px-4">
             <div className="max-w-3xl mx-auto">
+                <div className="mb-4">
+                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 inline-block">
+                        ← Back to Dashboard
+                    </Link>
+                </div>
                 <div className="glass rounded-2xl p-8 shadow-xl">
                     <h1 className="text-4xl font-bold mb-2">
                         Assign <span className="text-gradient">Workout</span>

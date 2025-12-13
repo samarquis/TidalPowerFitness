@@ -37,11 +37,8 @@ export default function DemoUsersPage() {
 
   const fetchDemoUsers = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -60,13 +57,12 @@ export default function DemoUsersPage() {
     setMessage(null);
 
     try {
-      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify({ count })
       });
 
@@ -97,12 +93,9 @@ export default function DemoUsersPage() {
     setMessage(null);
 
     try {
-      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       const data = await response.json();

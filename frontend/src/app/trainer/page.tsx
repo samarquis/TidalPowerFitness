@@ -78,15 +78,13 @@ export default function TrainerDashboardPage() {
     const fetchClasses = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/classes`);
+            const response = await fetch(`${apiUrl}/trainers/my-classes`, {
+                credentials: 'include'
+            });
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                // Filter to only show classes where user is the instructor (or all if admin)
-                const filteredClasses = user?.roles?.includes('admin')
-                    ? data
-                    : data.filter((c: Class) => c.instructor_id === user?.id);
-                setClasses(filteredClasses);
+                setClasses(data);
             }
         } catch (error) {
             console.error('Error fetching classes:', error);
@@ -99,9 +97,7 @@ export default function TrainerDashboardPage() {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/workout-sessions`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -120,9 +116,7 @@ export default function TrainerDashboardPage() {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/classes/${classId}/attendees`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -182,6 +176,12 @@ export default function TrainerDashboardPage() {
 
                 {/* Quick Actions */}
                 <div className="mb-8 flex flex-wrap gap-4">
+                    <Link
+                        href="/trainer/clients"
+                        className="px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-lg font-semibold transition-colors"
+                    >
+                        👥 My Clients
+                    </Link>
                     <Link
                         href="/trainer/availability"
                         className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"

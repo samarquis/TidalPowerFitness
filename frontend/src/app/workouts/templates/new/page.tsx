@@ -59,27 +59,20 @@ export default function NewTemplatePage() {
 
     useEffect(() => {
         // Redirect to login if not authenticated
-        if (!user || !token) {
-            router.push('/login');
-            return;
-        }
+        if (!user) {
+      router.push('/login?redirect=/workouts/templates/new');
+      return;
+    }
         fetchExercises();
         fetchWorkoutTypes();
         fetchBodyFocusAreas();
-    }, [user, token, router]);
+    }, [user, router]);
 
     const fetchExercises = async () => {
-        if (!token) {
-            setError('Authentication required');
-            return;
-        }
-
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/exercises`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -95,11 +88,10 @@ export default function NewTemplatePage() {
     };
 
     const fetchWorkoutTypes = async () => {
-        if (!token) return;
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/exercises/workout-types`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             if (response.ok) {
                 const data = await response.json();
@@ -111,11 +103,10 @@ export default function NewTemplatePage() {
     };
 
     const fetchBodyFocusAreas = async () => {
-        if (!token) return;
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/exercises/body-focus-areas`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             if (response.ok) {
                 const data = await response.json();
@@ -182,11 +173,6 @@ export default function NewTemplatePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!token) {
-            setError('Authentication required. Please log in again.');
-            return;
-        }
-
         setSaving(true);
         setError(null);
 
@@ -196,8 +182,8 @@ export default function NewTemplatePage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     ...formData,
                     trainer_id: user?.id,

@@ -23,27 +23,18 @@ export default function HistoryPage() {
 
     useEffect(() => {
         // Redirect to login if not authenticated
-        if (!user || !token) {
-            router.push('/login');
+        if (!user) {
+            router.push('/login?redirect=/workouts/history');
             return;
         }
         fetchSessions();
-    }, [user, token, router]);
+    }, [user, router]);
 
     const fetchSessions = async () => {
-        // Double-check token exists before making API call
-        if (!token) {
-            setError('Authentication required');
-            setLoading(false);
-            return;
-        }
-
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/workout-sessions`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) {

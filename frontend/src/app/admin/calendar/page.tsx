@@ -67,12 +67,9 @@ export default function AdminCalendarPage() {
     const fetchClasses = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/classes`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -89,7 +86,6 @@ export default function AdminCalendarPage() {
     const fetchSessions = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -97,9 +93,7 @@ export default function AdminCalendarPage() {
             const endDate = new Date(year, month + 1, 0); // Last day of month
 
             const response = await fetch(`${apiUrl}/workout-sessions?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {

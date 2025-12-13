@@ -50,6 +50,15 @@ export const getClassesByCategory = async (category: string): Promise<Class[]> =
     return result.rows;
 };
 
+export const getClassesByInstructorId = async (instructorId: string, activeOnly: boolean = true): Promise<Class[]> => {
+    const sql = activeOnly
+        ? 'SELECT * FROM classes WHERE instructor_id = $1 AND is_active = true ORDER BY day_of_week, start_time'
+        : 'SELECT * FROM classes WHERE instructor_id = $1 ORDER BY day_of_week, start_time';
+
+    const result = await query(sql, [instructorId]);
+    return result.rows;
+};
+
 export const createClass = async (classData: Partial<Class>): Promise<Class> => {
     const {
         name,

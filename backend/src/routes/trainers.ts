@@ -3,6 +3,7 @@ import TrainerProfile from '../models/TrainerProfile';
 import UserModel from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
 import trainerController from '../controllers/trainerController';
+import { pool } from '../config/db';
 
 const router = express.Router();
 
@@ -78,6 +79,87 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     } catch (error) {
         console.error('Get trainers error:', error);
         res.status(500).json({ error: 'Failed to get trainers' });
+    }
+});
+
+// Get all classes for the logged-in trainer (trainer, admin)
+router.get('/my-classes', authenticate, authorize('trainer', 'admin'), trainerController.getMyClasses);
+
+// Get all clients who have attended trainer's classes
+router.get('/my-clients', authenticate, authorize('trainer', 'admin'), async (req: any, res: Response): Promise<void> => {
+    try {
+        const trainerId = req.user.id;
+
+        const result = await pool.query(`
+            SELECT DISTINCT
+                u.id,
+                u.first_name,
+                u.last_name,
+                u.email,
+                u.phone,
+                COUNT(DISTINCT cp.id) as total_bookings,
+                MAX(cp.booking_date) as last_booking_date
+            FROM users u
+            JOIN class_participants cp ON u.id = cp.user_id
+            JOIN classes c ON cp.class_id = c.id
+            WHERE c.instructor_id = $1
+                AND cp.status = 'confirmed'
+            GROUP BY u.id, u.first_name, u.last_name, u.email, u.phone
+            ORDER BY MAX(cp.booking_date) DESC
+        `, [trainerId]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching trainer clients:', error);
+        res.status(500).json({ error: 'Failed to fetch clients' });
+    }
+});
+
+// Get workout history for a specific client (trainer must have taught them)
+router.get('/clients/:clientId/workouts', authenticate, authorize('trainer', 'admin'), async (req: any, res: Response): Promise<void> => {
+    try {
+        const trainerId = req.user.id;
+        const { clientId } = req.params;
+
+        // Verify trainer has taught this client (skip check for admins)
+        if (!req.user.roles.includes('admin')) {
+            const accessCheck = await pool.query(`
+                SELECT 1 FROM class_participants cp
+                JOIN classes c ON cp.class_id = c.id
+                WHERE c.instructor_id = $1 AND cp.user_id = $2
+                LIMIT 1
+            `, [trainerId, clientId]);
+
+            if (accessCheck.rows.length === 0) {
+                res.status(403).json({ error: 'You do not have access to this client' });
+                return;
+            }
+        }
+
+        // Get workout sessions where client participated
+        const result = await pool.query(`
+            SELECT 
+                ws.id,
+                ws.session_date,
+                ws.start_time,
+                ws.notes,
+                wt.name as workout_type_name,
+                c.name as class_name,
+                COUNT(DISTINCT se.id) as exercise_count
+            FROM workout_sessions ws
+            JOIN session_participants sp ON ws.id = sp.session_id
+            LEFT JOIN workout_types wt ON ws.workout_type_id = wt.id
+            LEFT JOIN classes c ON ws.class_id = c.id
+            LEFT JOIN session_exercises se ON ws.id = se.session_id
+            WHERE sp.client_id = $1
+            GROUP BY ws.id, ws.session_date, ws.start_time, ws.notes, wt.name, c.name
+            ORDER BY ws.session_date DESC, ws.start_time DESC
+        `, [clientId]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching client workouts:', error);
+        res.status(500).json({ error: 'Failed to fetch client workouts' });
     }
 });
 

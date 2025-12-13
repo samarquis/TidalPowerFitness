@@ -70,7 +70,7 @@ function ActiveWorkoutContent() {
 
             // Get template details
             const templateResponse = await fetch(`${apiUrl}/workout-templates/${templateId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             const template = await templateResponse.json();
 
@@ -79,8 +79,8 @@ function ActiveWorkoutContent() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     trainer_id: user?.id,
                     template_id: templateId,
@@ -102,7 +102,7 @@ function ActiveWorkoutContent() {
 
             // Get session details with exercises
             const detailsResponse = await fetch(`${apiUrl}/workout-sessions/${session.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
             const details = await detailsResponse.json();
             setExercises(details.exercises || []);

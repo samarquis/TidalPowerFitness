@@ -226,7 +226,7 @@ export default function UserManagementPage() {
                 ) : (
                     <div className="glass rounded-xl overflow-hidden">
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table className="w-full min-w-[800px]">
                                 <thead className="bg-white/5">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">User</th>
@@ -277,29 +277,31 @@ export default function UserManagementPage() {
                                                 {new Date(u.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <button
-                                                    onClick={() => toggleUserActivation(u.id, u.is_active)}
-                                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${u.is_active
-                                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                                                        }`}
-                                                >
-                                                    {u.is_active ? 'Deactivate' : 'Activate'}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleResetPasswordClick(u)}
-                                                    className="ml-2 px-4 py-2 rounded-lg text-sm font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all"
-                                                >
-                                                    Reset Pwd
-                                                </button>
-                                                {isScottMarquis && (
+                                                <div className="flex flex-wrap gap-2">
                                                     <button
-                                                        onClick={() => handleViewAsUser(u)}
-                                                        className="ml-2 px-4 py-2 rounded-lg text-sm font-semibold bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all"
+                                                        onClick={() => toggleUserActivation(u.id, u.is_active)}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${u.is_active
+                                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                                            }`}
                                                     >
-                                                        View as User
+                                                        {u.is_active ? 'Deactivate' : 'Activate'}
                                                     </button>
-                                                )}
+                                                    <button
+                                                        onClick={() => handleResetPasswordClick(u)}
+                                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all"
+                                                    >
+                                                        Reset Pwd
+                                                    </button>
+                                                    {isScottMarquis && (
+                                                        <button
+                                                            onClick={() => handleViewAsUser(u)}
+                                                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all"
+                                                        >
+                                                            View as User
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

@@ -118,6 +118,8 @@ export const createTrainer = async (req: Request, res: Response) => {
     }
 };
 
+import { getClassesByInstructorId } from '../models/Class';
+
 // Update trainer profile (and user details)
 export const updateTrainer = async (req: Request, res: Response) => {
     try {
@@ -187,8 +189,25 @@ export const updateTrainer = async (req: Request, res: Response) => {
     }
 };
 
+// Get all classes for the logged-in trainer
+export const getMyClasses = async (req: Request, res: Response) => {
+    try {
+        const trainerId = req.user?.id;
+        if (!trainerId) {
+            return res.status(400).json({ error: 'Trainer ID not found in token' });
+        }
+
+        const classes = await getClassesByInstructorId(trainerId, false); // Get all classes, active or not
+        res.json(classes);
+    } catch (error) {
+        console.error('Error fetching trainer classes:', error);
+        res.status(500).json({ error: 'Failed to fetch classes' });
+    }
+};
+
 export default {
     getTrainers,
     createTrainer,
-    updateTrainer
+    updateTrainer,
+    getMyClasses
 };

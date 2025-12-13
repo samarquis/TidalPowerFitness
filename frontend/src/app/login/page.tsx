@@ -13,7 +13,7 @@ function LoginContent() {
     const { login } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectPath = searchParams.get('redirect') || '/trainers';
+    const redirectPath = searchParams.get('redirect') || '/';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

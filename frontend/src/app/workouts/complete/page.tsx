@@ -25,8 +25,8 @@ function WorkoutCompleteContent() {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     end_time: new Date(),
                     duration_minutes: parseInt(duration || '0'),

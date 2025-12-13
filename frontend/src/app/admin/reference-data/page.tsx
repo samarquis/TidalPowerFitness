@@ -40,10 +40,10 @@ export default function ReferenceDataPage() {
 
             const [bodyRes, workoutRes] = await Promise.all([
                 fetch(`${apiUrl}/exercises/body-focus-areas`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    credentials: 'include'
                 }),
                 fetch(`${apiUrl}/exercises/workout-types`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    credentials: 'include'
                 })
             ]);
 
@@ -99,8 +99,8 @@ export default function ReferenceDataPage() {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData)
             });
 
@@ -126,7 +126,7 @@ export default function ReferenceDataPage() {
 
             const response = await fetch(`${apiUrl}/exercises/${endpoint}/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include'
             });
 
             if (response.ok) {

@@ -54,12 +54,9 @@ export default function AdminPackagesPage() {
     const fetchPackages = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/packages`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -109,7 +106,6 @@ export default function AdminPackagesPage() {
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const url = editingPackage
                 ? `${apiUrl}/packages/${editingPackage.id}`
@@ -121,8 +117,8 @@ export default function AdminPackagesPage() {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData)
             });
 
@@ -143,13 +139,10 @@ export default function AdminPackagesPage() {
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/packages/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {

@@ -55,10 +55,10 @@ export default function ProfilePage() {
             // Fetch Stats and History
             const [statsRes, historyRes, allAchievementsRes, userAchievementsRes] = await Promise.all([
                 fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/stats`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+                    credentials: 'include'
                 }),
                 fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/history`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+                    credentials: 'include'
                 }),
                 apiClient.getAllAchievements(),
                 apiClient.getUserAchievements(user.id)

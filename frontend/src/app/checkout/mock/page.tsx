@@ -51,8 +51,8 @@ function MockCheckoutContent() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify(payload)
             });
 
@@ -68,7 +68,7 @@ function MockCheckoutContent() {
                 try {
                     await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/cart`, {
                         method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        credentials: 'include'
                     });
                 } catch (e) {
                     console.error('Failed to clear cart after payment', e);

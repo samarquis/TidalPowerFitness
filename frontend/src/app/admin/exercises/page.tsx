@@ -141,12 +141,9 @@ export default function AdminExercisesPage() {
     const fetchExercises = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/exercises`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -164,12 +161,9 @@ export default function AdminExercisesPage() {
     const fetchWorkoutTypes = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/exercises/workout-types`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -184,12 +178,9 @@ export default function AdminExercisesPage() {
     const fetchBodyParts = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/exercises/body-parts`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -204,12 +195,9 @@ export default function AdminExercisesPage() {
     const fetchBodyFocusAreas = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/exercises/body-focus-areas`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -295,7 +283,6 @@ export default function AdminExercisesPage() {
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const url = editingExercise
                 ? `${apiUrl}/exercises/${editingExercise.id}`
@@ -307,8 +294,8 @@ export default function AdminExercisesPage() {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData)
             });
 
@@ -328,14 +315,13 @@ export default function AdminExercisesPage() {
     const toggleExerciseStatus = async (exerciseId: string, currentStatus: boolean) => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('auth_token');
 
             const response = await fetch(`${apiUrl}/exercises/${exerciseId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify({ is_active: !currentStatus })
             });
 

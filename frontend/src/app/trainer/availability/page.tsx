@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface AvailabilitySlot {
     id: string;
@@ -43,7 +44,9 @@ export default function TrainerAvailabilityPage() {
     const fetchAvailability = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/availability/trainer/${user?.id}`);
+            const response = await fetch(`${apiUrl}/availability/trainer/${user?.id}`, {
+                credentials: 'include'
+            });
             const data = await response.json();
             setAvailability(data);
         } catch (error) {
@@ -96,8 +99,8 @@ export default function TrainerAvailabilityPage() {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include',
                 body: JSON.stringify(body)
             });
 
@@ -120,9 +123,7 @@ export default function TrainerAvailabilityPage() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             const response = await fetch(`${apiUrl}/availability/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -151,6 +152,9 @@ export default function TrainerAvailabilityPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
+                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                        ← Back to Dashboard
+                    </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         My <span className="text-gradient">Availability</span>
                     </h1>
