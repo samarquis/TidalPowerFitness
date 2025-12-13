@@ -77,7 +77,7 @@ function formatTime12Hour(time24: string): string {
     return `${ hour }:${ minute } ${ period } `;
 }
 
-function AdminClassesPage() {
+function AdminClassesContent() {
     const { user, isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
