@@ -1,5 +1,6 @@
+```javascript
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api';
@@ -68,15 +69,15 @@ function convertTo24Hour(hour: string, minute: string, period: 'am' | 'pm'): str
     if (period === 'am' && hour24 === 12) hour24 = 0;
     else if (period === 'pm' && hour24 !== 12) hour24 += 12;
 
-    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+    return `${ hour24.toString().padStart(2, '0') }:${ minute } `;
 }
 
 function formatTime12Hour(time24: string): string {
     const { hour, minute, period } = convertTo12Hour(time24);
-    return `${hour}:${minute} ${period}`;
+    return `${ hour }:${ minute } ${ period } `;
 }
 
-export default function AdminClassesPage() {
+function AdminClassesPage() {
     const { user, isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -503,10 +504,11 @@ export default function AdminClassesPage() {
                                             <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
                                             <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${classItem.is_active
-                                                    ? 'bg-green-500/20 text-green-400'
-                                                    : 'bg-gray-500/20 text-gray-400'
-                                                    }`}>
+                                                <span className={`px - 3 py - 1 rounded - full text - sm font - semibold ${
+    classItem.is_active
+        ? 'bg-green-500/20 text-green-400'
+        : 'bg-gray-500/20 text-gray-400'
+} `}>
                                                     {classItem.is_active ? 'Published' : 'Draft'}
                                                 </span>
                                             </td>
@@ -520,10 +522,11 @@ export default function AdminClassesPage() {
                                                     </button>
                                                     <button
                                                         onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                        className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${classItem.is_active
-                                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                                                            }`}
+                                                        className={`px - 3 py - 1 rounded - lg text - sm font - semibold transition - all ${
+    classItem.is_active
+        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+} `}
                                                     >
                                                         {classItem.is_active ? 'Unpublish' : 'Publish'}
                                                     </button>
@@ -572,15 +575,17 @@ export default function AdminClassesPage() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= step
-                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                            : 'bg-white/10 text-gray-400'
-                                            }`}>
+                                        <div className={`w - 10 h - 10 rounded - full flex items - center justify - center font - bold ${
+    currentStep >= step
+        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+        : 'bg-white/10 text-gray-400'
+} `}>
                                             {step}
                                         </div>
                                         {step < 4 && (
-                                            <div className={`w-16 h-1 mx-2 ${currentStep > step ? 'bg-teal-6' : 'bg-white/10'
-                                                }`}></div>
+                                            <div className={`w - 16 h - 1 mx - 2 ${
+    currentStep > step ? 'bg-teal-6' : 'bg-white/10'
+} `}></div>
                                         )}
                                     </div>
                                 ))}
@@ -651,10 +656,11 @@ export default function AdminClassesPage() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${formData.days_of_week?.includes(index)
-                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-                                                        }`}
+                                                    className={`px - 3 py - 2 rounded - lg text - sm font - semibold transition - all ${
+    formData.days_of_week?.includes(index)
+        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+} `}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
@@ -693,20 +699,22 @@ export default function AdminClassesPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'am'
-                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-                                                        }`}
+                                                    className={`px - 4 py - 3 rounded - lg font - semibold transition - all ${
+    timePeriod === 'am'
+        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+} `}
                                                 >
                                                     AM
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${timePeriod === 'pm'
-                                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-                                                        }`}
+                                                    className={`px - 4 py - 3 rounded - lg font - semibold transition - all ${
+    timePeriod === 'pm'
+        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+} `}
                                                 >
                                                     PM
                                                 </button>
@@ -874,5 +882,17 @@ export default function AdminClassesPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function AdminClassesPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            </div>
+        }>
+            <AdminClassesContent />
+        </Suspense>
     );
 }
