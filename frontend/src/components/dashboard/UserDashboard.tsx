@@ -83,10 +83,16 @@ export default function UserDashboard() {
             }
 
             // Fetch user credits
+            console.log('Fetching credits for user:', user!.id);
             const { data: creditsData, error: creditsError } = await apiClient.getUserCredits(user!.id);
+            console.log('Credits response:', creditsData);
+
             if (creditsData) {
                 // standardized response { credits: number, details: UserCredit[] }
-                setCredits({ total: creditsData.credits || 0 });
+                // Explicitly check for validation
+                const total = creditsData.credits !== undefined ? creditsData.credits : 0;
+                console.log('Setting credits total to:', total);
+                setCredits({ total });
             } else if (creditsError) {
                 console.error('Error fetching credits:', creditsError);
             }
