@@ -33,20 +33,22 @@ interface Achievement {
 }
 
 export default function ProfilePage() {
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, isAuthenticated, logout, loading: authLoading } = useAuth(); // renamed to avoid conflict
     const router = useRouter();
     const [stats, setStats] = useState<WorkoutStats | null>(null);
     const [history, setHistory] = useState<WorkoutSession[]>([]);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return; // Wait for auth check
+
         if (!isAuthenticated) {
             router.push('/login');
         } else if (user) {
             fetchData();
         }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, user, router, authLoading]);
 
     const fetchData = async () => {
         try {
@@ -85,9 +87,17 @@ export default function ProfilePage() {
         } catch (error) {
             console.error('Error fetching profile data:', error);
         } finally {
-            setLoading(false);
+            setDataLoading(false);
         }
     };
+
+    if (authLoading || (!user && !isAuthenticated)) { // Show loading while checking auth
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            </div>
+        );
+    }
 
     if (!user) {
         return null;
@@ -182,7 +192,7 @@ export default function ProfilePage() {
                     <span className="mr-2">🏆</span> Badges & Achievements
                 </h2>
 
-                {loading ? (
+                {dataLoading ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                         {[1, 2, 3, 4].map(i => (
                             <div key={i} className="h-48 bg-white/5 rounded-xl animate-pulse"></div>
@@ -211,7 +221,7 @@ export default function ProfilePage() {
                 {/* Workout History */}
                 <h2 className="text-2xl font-bold mb-6">Recent Workouts</h2>
 
-                {loading ? (
+                {dataLoading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400 mx-auto"></div>
                     </div>

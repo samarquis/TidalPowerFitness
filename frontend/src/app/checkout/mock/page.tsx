@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 function MockCheckoutContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated, token, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -30,10 +30,11 @@ function MockCheckoutContent() {
     const isValid = packageId || isCartCheckout;
 
     useEffect(() => {
+        if (authLoading) return;
         if (!isAuthenticated) {
             router.push('/login');
         }
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, router, authLoading]);
 
     const handlePayment = async () => {
         if (!isValid) return;
