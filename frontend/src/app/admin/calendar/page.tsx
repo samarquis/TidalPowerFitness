@@ -158,6 +158,30 @@ export default function AdminCalendarPage() {
         router.push(`/workouts/assign?date=${dateStr}&class_id=${classItem.id}`);
     };
 
+    const handlePublishSession = async () => {
+        if (!currentSession) return;
+
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/workout-sessions/${currentSession.id}/publish`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                // Refresh sessions and update modal
+                fetchSessions();
+                // Don't close modal, just refresh state? 
+                // We need to re-find currentSession, which depends on 'sessions' state.
+                // fetchSessions will update 'sessions', causing 'currentSession' to re-calc on next render.
+            } else {
+                console.error('Failed to publish session');
+            }
+        } catch (error) {
+            console.error('Error publishing session:', error);
+        }
+    };
+
     if (!isAuthenticated || !user?.roles?.includes('admin')) {
         return null;
     }
@@ -278,6 +302,19 @@ export default function AdminCalendarPage() {
                                 >
                                     Assign Workout
                                 </button>
+                            )}
+                            {currentSession && !currentSession.is_published && (
+                                <button
+                                    onClick={handlePublishSession}
+                                    className="flex-1 px-4 py-2.5 md:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-colors text-sm md:text-base"
+                                >
+                                    Publish Class
+                                </button>
+                            )}
+                            {currentSession && currentSession.is_published && (
+                                <div className="flex-1 px-4 py-2.5 md:py-3 bg-green-600/20 border border-green-600 text-green-400 font-semibold rounded-lg text-center text-sm md:text-base cursor-default">
+                                    Published
+                                </div>
                             )}
                         </div>
                     </div>

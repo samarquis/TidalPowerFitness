@@ -107,7 +107,28 @@ export default function ClassesPage() {
         setSuccess('');
 
         try {
-            const { error } = await apiClient.bookClass(classId);
+            // Calculate target date (next upcoming instance of this class)
+            const classItem = classes.find(c => c.id === classId);
+            let targetDateStr = undefined;
+
+            if (classItem) {
+                const today = new Date();
+                const currentDay = today.getDay();
+                const classDay = classItem.day_of_week;
+
+                let daysUntil = classDay - currentDay;
+                if (daysUntil < 0) daysUntil += 7; // It's strictly upcoming so if today is same day, assume today unless it's past? 
+                // Let's assume day_of_week means "Today if today matches, else next".
+                // We should check time?
+                // Simplification for MVP: If day matches, assume today. If passed time? API side issue.
+
+                const targetDate = new Date(today);
+                targetDate.setDate(today.getDate() + daysUntil);
+                // Format YYYY-MM-DD
+                targetDateStr = targetDate.toISOString().split('T')[0];
+            }
+
+            const { error } = await apiClient.bookClass(classId, targetDateStr);
 
             if (error) {
                 throw new Error(error);

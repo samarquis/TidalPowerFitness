@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 
 interface Class {
@@ -79,6 +79,7 @@ function formatTime12Hour(time24: string): string {
 export default function AdminClassesPage() {
     const { user, isAuthenticated } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [classes, setClasses] = useState<Class[]>([]);
     const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
     const [trainers, setTrainers] = useState<Trainer[]>([]);
@@ -112,6 +113,27 @@ export default function AdminClassesPage() {
     const [timePeriod, setTimePeriod] = useState<'am' | 'pm'>('am');
 
     const [errors, setErrors] = useState<Partial<Record<keyof ClassFormData, string>>>({});
+
+    useEffect(() => {
+        if (searchParams?.get('action') === 'new') {
+            const dayParam = searchParams.get('day');
+
+            // Open modal first
+            openCreateModal();
+
+            // Then pre-select day if provided
+            if (dayParam) {
+                const dayIndex = parseInt(dayParam);
+                if (!isNaN(dayIndex) && dayIndex >= 0 && dayIndex <= 6) {
+                    setFormData(prev => ({
+                        ...prev,
+                        day_of_week: dayIndex,
+                        days_of_week: [dayIndex]
+                    }));
+                }
+            }
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         if (isAuthenticated && !user?.roles?.includes('admin')) {

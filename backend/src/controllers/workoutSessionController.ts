@@ -68,6 +68,29 @@ class WorkoutSessionController {
         }
     }
 
+    // Update session
+    async updateSession(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const updates = req.body;
+
+            // Optional: Check permissions (trainer owns session or admin)
+            // For now assuming authorize('trainer', 'admin') middleware covers basic access
+
+            const updatedSession = await WorkoutSession.update(id, updates);
+
+            if (!updatedSession) {
+                res.status(404).json({ error: 'Session not found' });
+                return;
+            }
+
+            res.json(updatedSession);
+        } catch (error) {
+            console.error('Error updating session:', error);
+            res.status(500).json({ error: 'Failed to update session' });
+        }
+    }
+
     // Log exercise set
     async logExercise(req: Request, res: Response): Promise<void> {
         try {

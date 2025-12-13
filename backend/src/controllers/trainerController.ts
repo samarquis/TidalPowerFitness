@@ -166,7 +166,31 @@ export const updateTrainer = async (req: Request, res: Response) => {
         });
 
         if (!trainer) {
-            return res.status(404).json({ error: 'Trainer profile not found' });
+            // Profile doesn't exist yet, create it
+            const newTrainer = await TrainerProfile.create({
+                user_id: userId,
+                bio,
+                specialties,
+                certifications,
+                years_experience,
+                profile_image_url,
+                acuity_calendar_id,
+                is_accepting_clients: is_accepting_clients ?? true
+            });
+
+            // Return combined data with the newly created profile
+            const updatedUser = await UserModel.findById(userId);
+
+            return res.status(200).json({
+                message: 'Trainer profile created successfully',
+                trainer: {
+                    ...newTrainer,
+                    first_name: updatedUser?.first_name,
+                    last_name: updatedUser?.last_name,
+                    email: updatedUser?.email,
+                    phone: updatedUser?.phone
+                }
+            });
         }
 
         // Return combined data

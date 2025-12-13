@@ -15,6 +15,7 @@ router.use(authorize('trainer', 'admin'));
 router.get('/', workoutSessionController.default.getSessions);
 router.get('/:id', workoutSessionController.default.getSession);
 router.post('/', workoutSessionController.default.createSession);
+router.put('/:id', workoutSessionController.default.updateSession);
 router.post('/:id/publish', workoutSessionController.default.publishSession);
 
 // Exercise logging

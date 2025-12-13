@@ -240,10 +240,13 @@ class ApiClient {
     }
 
     // Booking endpoints
-    async bookClass(classId: string) {
+    async bookClass(classId: string, targetDate?: string) {
         return this.request<any>('/bookings', {
             method: 'POST',
-            body: JSON.stringify({ class_id: classId }),
+            body: JSON.stringify({
+                class_id: classId,
+                target_date: targetDate
+            }),
         });
     }
 

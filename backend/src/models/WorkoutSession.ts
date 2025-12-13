@@ -298,6 +298,31 @@ class WorkoutSessionModel {
         }
     }
 
+    // Update session
+    async update(id: string, updates: Partial<WorkoutSession>): Promise<WorkoutSession | null> {
+        const fields: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value !== undefined && key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                fields.push(`${key} = $${paramCount}`);
+                values.push(value);
+                paramCount++;
+            }
+        });
+
+        if (fields.length === 0) return null;
+
+        values.push(id);
+        const result = await query(
+            `UPDATE workout_sessions SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
+            values
+        );
+
+        return result.rows[0] || null;
+    }
+
     // Log exercise set
     async logExercise(logData: ExerciseLog): Promise<any> {
         const result: QueryResult = await query(

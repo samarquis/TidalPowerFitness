@@ -25,12 +25,16 @@ class BookingController {
                 });
             }
 
-            // 2. Check if user already has an active booking for this class
-            const existingBooking = await pool.query(
-                `SELECT * FROM class_participants 
-                 WHERE class_id = $1 AND user_id = $2 AND status = 'confirmed'`,
-                [class_id, userId]
-            );
+            // 2. Check if user already has an active booking for this class on this date (if date provided)
+            let duplicateCheckSql = `SELECT * FROM class_participants WHERE class_id = $1 AND user_id = $2 AND status = 'confirmed'`;
+            const duplicateCheckParams = [class_id, userId];
+
+            if (req.body.target_date) {
+                duplicateCheckSql += ` AND target_date = $3`;
+                duplicateCheckParams.push(req.body.target_date);
+            }
+
+            const existingBooking = await pool.query(duplicateCheckSql, duplicateCheckParams);
 
             if (existingBooking.rows.length > 0) {
                 return res.status(400).json({
@@ -51,10 +55,10 @@ class BookingController {
 
             // 4. Create booking
             const result = await pool.query(
-                `INSERT INTO class_participants (class_id, user_id, credits_used)
-                 VALUES ($1, $2, 1)
+                `INSERT INTO class_participants (class_id, user_id, credits_used, target_date)
+                 VALUES ($1, $2, 1, $3)
                  RETURNING *`,
-                [class_id, userId]
+                [class_id, userId, req.body.target_date || new Date()]
             );
 
             // 5. Check for Achievements (Bookings Count)
