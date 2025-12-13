@@ -23,12 +23,13 @@ interface Class {
     acuity_appointment_type_id?: string;
 }
 
-id: string;
-class_id ?: string;
-session_date: string;
-workout_type_name ?: string;
-trainer_id: string;
-is_published ?: boolean;
+interface WorkoutSession {
+    id: string;
+    class_id?: string;
+    session_date: string;
+    workout_type_name?: string;
+    trainer_id: string;
+    is_published?: boolean;
 }
 
 export default function AdminCalendarPage() {
