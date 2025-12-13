@@ -3,7 +3,7 @@ import TrainerProfile from '../models/TrainerProfile';
 import UserModel from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
 import trainerController from '../controllers/trainerController';
-import { pool } from '../config/db';
+import pool from '../config/db';
 
 const router = express.Router();
 
