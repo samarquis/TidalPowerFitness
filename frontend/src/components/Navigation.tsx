@@ -50,6 +50,13 @@ export default function Navigation() {
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-4">
                                 {/* Management Dropdown */}
+                                <Link
+                                    href="/classes"
+                                    className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
+                                >
+                                    Classes
+                                </Link>
+
                                 {isTrainerOrAdmin && (
                                     <div className="relative" ref={dropdownRef}>
                                         <button
@@ -259,6 +266,13 @@ export default function Navigation() {
                                 )}
 
                                 <div className="pt-4 border-t border-white/10">
+                                    <Link
+                                        href="/classes"
+                                        className="block text-gray-300 hover:text-white py-2 font-medium"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Classes
+                                    </Link>
                                     <Link
                                         href="/packages"
                                         className="block text-gray-300 hover:text-white py-2 font-medium"

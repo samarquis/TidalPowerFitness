@@ -3,11 +3,13 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 
 function MockCheckoutContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { isAuthenticated, token, loading: authLoading } = useAuth();
+    const { clearCart } = useCart();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -67,10 +69,7 @@ function MockCheckoutContent() {
             // Clear cart if successful cart checkout
             if (isCartCheckout) {
                 try {
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/cart`, {
-                        method: 'DELETE',
-                        credentials: 'include'
-                    });
+                    await clearCart();
                 } catch (e) {
                     console.error('Failed to clear cart after payment', e);
                 }

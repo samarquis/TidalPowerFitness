@@ -38,6 +38,7 @@ export default function ProfilePage() {
     const [stats, setStats] = useState<WorkoutStats | null>(null);
     const [history, setHistory] = useState<WorkoutSession[]>([]);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
+    const [credits, setCredits] = useState<number | null>(null);
     const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
@@ -54,20 +55,22 @@ export default function ProfilePage() {
         try {
             if (!user) return;
 
-            // Fetch Stats and History
-            const [statsRes, historyRes, allAchievementsRes, userAchievementsRes] = await Promise.all([
+            // Fetch Stats, History, and Credits
+            const [statsRes, historyRes, creditsRes, allAchievementsRes, userAchievementsRes] = await Promise.all([
                 fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/stats`, {
                     credentials: 'include'
                 }),
                 fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/history`, {
                     credentials: 'include'
                 }),
+                apiClient.getUserCredits(user.id),
                 apiClient.getAllAchievements(),
                 apiClient.getUserAchievements(user.id)
             ]);
 
             if (statsRes.ok) setStats(await statsRes.json());
             if (historyRes.ok) setHistory(await historyRes.json());
+            if (creditsRes.data) setCredits(creditsRes.data.credits);
 
             const allAchievements = allAchievementsRes.data || [];
             const userAchievements = userAchievementsRes.data || [];
@@ -169,7 +172,20 @@ export default function ProfilePage() {
 
                 {/* Stats Grid */}
                 {stats && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div className="glass p-6 rounded-xl relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative z-10">
+                                <div className="text-gray-400 text-sm uppercase tracking-wider mb-1">Available Credits</div>
+                                <div className="flex items-baseline gap-2">
+                                    <div className="text-3xl font-bold text-teal-400">{credits !== null ? credits : '-'}</div>
+                                    <span className="text-sm text-gray-500">classes</span>
+                                </div>
+                                <Link href="/packages" className="text-xs text-teal-500 hover:text-teal-400 mt-2 inline-block">
+                                    Buy more &rarr;
+                                </Link>
+                            </div>
+                        </div>
                         <div className="glass p-6 rounded-xl text-center">
                             <div className="text-gray-400 text-sm uppercase tracking-wider mb-1">Workouts</div>
                             <div className="text-3xl font-bold text-white">{stats.total_workouts || 0}</div>
