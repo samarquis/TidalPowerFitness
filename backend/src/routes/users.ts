@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
+import UserCreditModel from '../models/UserCredit';
 
 const router = express.Router();
 
@@ -194,6 +195,27 @@ router.post('/:id/reset-password', authenticate, authorize('admin'), async (req:
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ error: 'Failed to reset password' });
+    }
+});
+
+// Get user credits
+router.get('/:id/credits', authenticate, async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        // Allow users to view their own credits, or admins/trainers to view any
+        if (req.user!.id !== id && !req.user!.roles.includes('admin') && !req.user!.roles.includes('trainer')) {
+            res.status(403).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        const credits = await UserCreditModel.getUserCredits(id);
+        const totalCredits = credits.reduce((sum, credit) => sum + credit.remaining_credits, 0);
+
+        res.status(200).json({ credits: totalCredits });
+    } catch (error) {
+        console.error('Get user credits error:', error);
+        res.status(500).json({ error: 'Failed to get user credits' });
     }
 });
 
