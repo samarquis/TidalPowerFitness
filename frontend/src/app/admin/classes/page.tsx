@@ -504,11 +504,7 @@ function AdminClassesContent() {
                                             <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
                                             <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-    classItem.is_active
-        ? 'bg-green-500/20 text-green-400'
-        : 'bg-gray-500/20 text-gray-400'
-} `}>
+                                                <span className={"px-3 py-1 rounded-full text-sm font-semibold " + (classItem.is_active ? "bg-green-500/20 text-green-400" : "bg-gray-500/20 text-gray-400")}>
                                                     {classItem.is_active ? 'Published' : 'Draft'}
                                                 </span>
                                             </td>
@@ -522,11 +518,7 @@ function AdminClassesContent() {
                                                     </button>
                                                     <button
                                                         onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                        className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${
-    classItem.is_active
-        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-} `}
+                                                        className={"px-3 py-1 rounded-lg text-sm font-semibold transition-all " + (classItem.is_active ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" : "bg-green-500/20 text-green-400 hover:bg-green-500/30")}
                                                     >
                                                         {classItem.is_active ? 'Unpublish' : 'Publish'}
                                                     </button>
@@ -575,17 +567,11 @@ function AdminClassesContent() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-    currentStep >= step
-        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-        : 'bg-white/10 text-gray-400'
-} `}>
+                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400")}>
                                             {step}
                                         </div>
                                         {step < 4 && (
-                                            <div className={`w-16 h-1 mx-2 ${
-    currentStep > step ? 'bg-teal-6' : 'bg-white/10'
-} `}></div>
+                                            <div className={"w-16 h-1 mx-2 " + (currentStep > step ? "bg-teal-6" : "bg-white/10")}></div>
                                         )}
                                     </div>
                                 ))}
@@ -656,11 +642,7 @@ function AdminClassesContent() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-    formData.days_of_week?.includes(index)
-        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-} `}
+                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
@@ -699,22 +681,14 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${
-    timePeriod === 'am'
-        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-} `}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     AM
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${
-    timePeriod === 'pm'
-        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-        : 'bg-white/10 text-gray-400 hover:bg-white/20'
-} `}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     PM
                                                 </button>
