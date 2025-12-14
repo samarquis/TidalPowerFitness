@@ -69,12 +69,12 @@ function convertTo24Hour(hour: string, minute: string, period: 'am' | 'pm'): str
     if (period === 'am' && hour24 === 12) hour24 = 0;
     else if (period === 'pm' && hour24 !== 12) hour24 += 12;
 
-    return `${ hour24.toString().padStart(2, '0') }:${ minute } `;
+    return hour24.toString().padStart(2, '0') + ':' + minute;
 }
 
 function formatTime12Hour(time24: string): string {
     const { hour, minute, period } = convertTo12Hour(time24);
-    return `${ hour }:${ minute } ${ period } `;
+    return hour + ':' + minute + ' ' + period;
 }
 
 function AdminClassesContent() {
