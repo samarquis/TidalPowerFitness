@@ -294,7 +294,7 @@ function AdminClassesContent() {
     };
 
     const prevStep = () => {
-        setCurrentStep(currentStep - 1);
+        setCurrentStep(currentStep-1);
     };
 
     const handleSubmit = async () => {
@@ -504,7 +504,7 @@ function AdminClassesContent() {
                                             <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
                                             <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px - 3 py - 1 rounded - full text - sm font - semibold ${
+                                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
     classItem.is_active
         ? 'bg-green-500/20 text-green-400'
         : 'bg-gray-500/20 text-gray-400'
@@ -522,7 +522,7 @@ function AdminClassesContent() {
                                                     </button>
                                                     <button
                                                         onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                        className={`px - 3 py - 1 rounded - lg text - sm font - semibold transition - all ${
+                                                        className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${
     classItem.is_active
         ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
         : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
@@ -575,7 +575,7 @@ function AdminClassesContent() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={`w - 10 h - 10 rounded - full flex items - center justify - center font - bold ${
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
     currentStep >= step
         ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
         : 'bg-white/10 text-gray-400'
@@ -583,7 +583,7 @@ function AdminClassesContent() {
                                             {step}
                                         </div>
                                         {step < 4 && (
-                                            <div className={`w - 16 h - 1 mx - 2 ${
+                                            <div className={`w-16 h-1 mx-2 ${
     currentStep > step ? 'bg-teal-6' : 'bg-white/10'
 } `}></div>
                                         )}
@@ -656,7 +656,7 @@ function AdminClassesContent() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={`px - 3 py - 2 rounded - lg text - sm font - semibold transition - all ${
+                                                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
     formData.days_of_week?.includes(index)
         ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
         : 'bg-white/10 text-gray-400 hover:bg-white/20'
@@ -699,7 +699,7 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={`px - 4 py - 3 rounded - lg font - semibold transition - all ${
+                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${
     timePeriod === 'am'
         ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
         : 'bg-white/10 text-gray-400 hover:bg-white/20'
@@ -710,7 +710,7 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={`px - 4 py - 3 rounded - lg font - semibold transition - all ${
+                                                    className={`px-4 py-3 rounded-lg font-semibold transition-all ${
     timePeriod === 'pm'
         ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
         : 'bg-white/10 text-gray-400 hover:bg-white/20'
