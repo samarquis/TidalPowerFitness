@@ -6,7 +6,9 @@
 - Attendance reports
 - Multi-attendee bookings
 - Verify production migrations (Cart, Multi-day, etc.)
-- Refactor role system (migrate from `role` column to strict `user_roles` table if needed)
+- [x] Refactor role system (migrated from `role` column to strict `user_roles` table)
+- [x] Implement Industry-Style Admin Changelog
+- [x] Fix registration redirect to client profile
 - Continue security hardening (HttpOnly cookies, input validation, XSS protection)
 - Complete migration to HttpOnly cookies for JWTs
 - Remove redundant dependencies (e.g., bcryptjs)

@@ -65,11 +65,11 @@ This file is the **single source of truth** for the current state of the Tidal P
 - **Accomplishments**: 
   - Consolidated documentation into `PROJECT_STATUS.md`.
   - Fixed `Link` import error in `admin/trainers/page.tsx` preventing production build.
-  - Standardized Role System: Migrated to normalized `user_roles` table and synchronized `roles` array across entire stack.
-  - Fixed registration redirect to point to client profile.
   - Implemented **Professional Admin Changelog** with timeline view and version tracking.
   - Pushed all pending fixes to GitHub `main` branch.
 - **Notes**: Repository is now in sync with remote. Ready to resume Trainer Workflow Audit.
+> [!IMPORTANT]
+> Since the project is on the Free tier of Render, after the site redeploys, you **must go to the [Migration Page](file:///admin/migrations)** to apply the 010 and 011 SQL migrations.
 
 ### 2025-12-09
 - **Accomplishments**: Fixed 401 Unauthorized errors by correcting CORS and Cookie settings.
