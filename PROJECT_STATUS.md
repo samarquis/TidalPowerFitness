@@ -15,9 +15,12 @@ This file is the **single source of truth** for the current state of the Tidal P
 ### High Priority & Cleanup
 - [x] Fix critical Turbopack build errors in `workouts/assign/page.tsx`
 - [x] Fix backend runtime `PathError` (Express 5 compatibility)
+- [x] Fix missing `Link` import build error in `admin/trainers/page.tsx`
+- [x] Resolve `role` vs `roles` inconsistency across entire stack
+- [x] Implement standardized `user_roles` table (Roadmap Item)
+- [x] Fix registration redirect (Point to Client Dashboard instead of `/trainers`)
+- [x] Implement **Industry-Style Admin Changelog**
 - [ ] Fix backend environment crash (Missing `JWT_SECRET`)
-- [ ] Resolve `role` vs `roles` inconsistency across entire stack
-- [ ] Fix registration redirect (Point to Client Dashboard instead of `/trainers`)
 
 ### Stability & Security
 - [x] Implement local dev cookie workaround (HTTP vs HTTPS)
@@ -40,7 +43,7 @@ This file is the **single source of truth** for the current state of the Tidal P
 - [x] **Real-time workout logging**
 - [x] **Client progress dashboard** (Body metrics + PR detection)
 - [ ] **Trainer Client Data Access**: Enhance trainers' ability to see client progress from their dashboard.
-- [ ] **Refactor Role System**: Migrate from `role` column to strict `user_roles` table.
+- [x] **Refactor Role System**: Migrated from `role` column to strict `user_roles` table.
 
 ### 🟢 Low Priority
 - [ ] Input validation hardening across all endpoints.
@@ -59,8 +62,14 @@ This file is the **single source of truth** for the current state of the Tidal P
 
 ### 2025-12-20
 - **Session ID**: 535
-- **Accomplishments**: Initiated the consolidation of project planning tools.
-- **Notes**: Moving away from fragmented `.gemini/brain` artifacts to a unified `PROJECT_STATUS.md`.
+- **Accomplishments**: 
+  - Consolidated documentation into `PROJECT_STATUS.md`.
+  - Fixed `Link` import error in `admin/trainers/page.tsx` preventing production build.
+  - Standardized Role System: Migrated to normalized `user_roles` table and synchronized `roles` array across entire stack.
+  - Fixed registration redirect to point to client profile.
+  - Implemented **Professional Admin Changelog** with timeline view and version tracking.
+  - Pushed all pending fixes to GitHub `main` branch.
+- **Notes**: Repository is now in sync with remote. Ready to resume Trainer Workflow Audit.
 
 ### 2025-12-09
 - **Accomplishments**: Fixed 401 Unauthorized errors by correcting CORS and Cookie settings.

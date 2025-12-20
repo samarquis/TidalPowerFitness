@@ -100,6 +100,7 @@ export default function Navigation() {
                                                         <Link href="/admin/reference-data" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Reference Data</Link>
                                                         <Link href="/admin/migrations" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Migrations</Link>
                                                         <Link href="/admin/demo-users" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Demo Users</Link>
+                                                        <Link href="/admin/changelog" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Changelog</Link>
                                                         {isScottMarquis && (
                                                             <button
                                                                 onClick={() => {
@@ -235,6 +236,7 @@ export default function Navigation() {
                                         <Link href="/admin/reference-data" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Reference Data</Link>
                                         <Link href="/admin/migrations" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Migrations</Link>
                                         <Link href="/admin/demo-users" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Demo Users</Link>
+                                        <Link href="/admin/changelog" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Changelog</Link>
                                         {isScottMarquis && (
                                             <button
                                                 onClick={() => {

@@ -50,23 +50,40 @@ class UserModel {
     async create(userData: CreateUserInput): Promise<User> {
         const { email, password_hash, first_name, last_name, phone, roles = ['client'], is_demo_mode_enabled = false } = userData;
 
-        // For backward compatibility, use the first role as the primary role
         const primaryRole = roles.length > 0 ? roles[0] : 'client';
 
-        const result: QueryResult = await query(
+        // Start a transaction if multiple queries are needed, but here we can just do one by one or use a CTE
+        const userResult: QueryResult = await query(
             `INSERT INTO users (email, password_hash, first_name, last_name, phone, role, roles, is_demo_mode_enabled)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
             [email, password_hash, first_name, last_name, phone, primaryRole, roles, is_demo_mode_enabled]
         );
 
-        return this.mapRowToUser(result.rows[0])!;
+        const newUser = userResult.rows[0];
+
+        // Insert into user_roles table
+        if (roles.length > 0) {
+            for (const r of roles) {
+                await query(
+                    'INSERT INTO user_roles (user_id, role) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+                    [newUser.id, r]
+                );
+            }
+        }
+
+        return this.mapRowToUser(newUser)!;
     }
 
     // Find user by ID
     async findById(id: string): Promise<User | null> {
         const result: QueryResult = await query(
-            'SELECT * FROM users WHERE id = $1',
+            `SELECT u.*, 
+             COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
+             FROM users u
+             LEFT JOIN user_roles ur ON u.id = ur.user_id
+             WHERE u.id = $1
+             GROUP BY u.id`,
             [id]
         );
 
@@ -76,20 +93,30 @@ class UserModel {
     // Find user by email
     async findByEmail(email: string): Promise<User | null> {
         const result: QueryResult = await query(
-            'SELECT * FROM users WHERE email = $1',
+            `SELECT u.*, 
+             COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
+             FROM users u
+             LEFT JOIN user_roles ur ON u.id = ur.user_id
+             WHERE u.email = $1
+             GROUP BY u.id`,
             [email]
         );
 
         return this.mapRowToUser(result.rows[0]);
     }
 
-    // Get all users by role (checks if role is in roles array or matches singular role)
+    // Get all users by role
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
-            `SELECT * FROM users
-             WHERE ((roles IS NOT NULL AND roles @> ARRAY[$1]::TEXT[]) OR role::TEXT = $1)
-             AND is_active = true
-             ORDER BY created_at DESC`,
+            `SELECT u.*, 
+             COALESCE(array_agg(ur2.role) FILTER (WHERE ur2.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
+             FROM users u
+             LEFT JOIN user_roles ur ON u.id = ur.user_id
+             LEFT JOIN user_roles ur2 ON u.id = ur2.user_id
+             WHERE ur.role::text = $1 OR u.role::text = $1 OR u.roles @> ARRAY[$1]::TEXT[]
+             AND u.is_active = true
+             GROUP BY u.id
+             ORDER BY u.created_at DESC`,
             [role]
         );
 
@@ -103,9 +130,14 @@ class UserModel {
         let paramCount = 1;
 
         Object.entries(userData).forEach(([key, value]) => {
-            if (value !== undefined && key !== 'roles') { // Handle roles separately if needed, but for now we rely on singular role
-                fields.push(`${key} = $${paramCount}`);
-                values.push(value);
+            if (value !== undefined) {
+                if (key === 'roles') {
+                    fields.push(`${key} = $${paramCount}::TEXT[]`);
+                    values.push(value);
+                } else {
+                    fields.push(`${key} = $${paramCount}`);
+                    values.push(value);
+                }
                 paramCount++;
             }
         });
@@ -143,9 +175,16 @@ class UserModel {
         return (result.rowCount ?? 0) > 0;
     }
 
-    // Add a role to user - Appends to roles array and updates primary role
+    // Add a role to user
     async addRole(id: string, role: string): Promise<User | null> {
         try {
+            // Update the user_roles table
+            await query(
+                'INSERT INTO user_roles (user_id, role) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+                [id, role]
+            );
+
+            // Update legacy columns for compatibility
             const result: QueryResult = await query(
                 `UPDATE users
                  SET role = $2::user_role,
@@ -158,28 +197,39 @@ class UserModel {
                 [id, role]
             );
 
-            return this.mapRowToUser(result.rows[0]);
+            return this.findById(id);
         } catch (error) {
             console.error('Error in addRole:', error);
             throw error;
         }
     }
 
-    // Remove a role from user - Removes from roles array and updates primary role
+    // Remove a role from user
     async removeRole(id: string, role: string): Promise<User | null> {
-        const result: QueryResult = await query(
-            `UPDATE users
-             SET roles = array_remove(roles, $2),
-                 role = CASE
-                     WHEN role::text = $2 THEN 'client'::user_role
-                     ELSE role
-                 END
-             WHERE id = $1
-             RETURNING *`,
-            [id, role]
-        );
+        try {
+            // Update the user_roles table
+            await query(
+                'DELETE FROM user_roles WHERE user_id = $1 AND role = $2',
+                [id, role]
+            );
 
-        return this.mapRowToUser(result.rows[0]);
+            // Update legacy columns for compatibility
+            await query(
+                `UPDATE users
+                 SET roles = array_remove(roles, $2),
+                     role = CASE
+                         WHEN role::text = $2 THEN 'client'::user_role
+                         ELSE role
+                     END
+                 WHERE id = $1`,
+                [id, role]
+            );
+
+            return this.findById(id);
+        } catch (error) {
+            console.error('Error in removeRole:', error);
+            throw error;
+        }
     }
 }
 

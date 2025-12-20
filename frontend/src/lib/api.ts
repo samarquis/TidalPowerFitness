@@ -405,6 +405,29 @@ class ApiClient {
     async getAllAchievements() {
         return this.request<any>('/achievements', { method: 'GET' });
     }
+
+    // Changelog endpoints
+    async getChangelogs() {
+        return this.request<any>('/changelog', { method: 'GET' });
+    }
+
+    async createChangelog(data: any) {
+        return this.request<any>('/changelog', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateChangelog(id: string, data: any) {
+        return this.request<any>(`/changelog/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteChangelog(id: string) {
+        return this.request<any>(`/changelog/${id}`, { method: 'DELETE' });
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

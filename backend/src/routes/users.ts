@@ -142,7 +142,7 @@ router.patch('/:id/activate', authenticate, authorize('admin'), async (req: Requ
                 email: updatedUser.email,
                 first_name: updatedUser.first_name,
                 last_name: updatedUser.last_name,
-                role: updatedUser.role,
+                roles: updatedUser.roles,
                 is_active: updatedUser.is_active,
             },
         });

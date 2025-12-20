@@ -178,9 +178,8 @@ export default function DemoUsersPage() {
 
           {message && (
             <div
-              className={`mt-4 p-4 rounded ${
-                message.type === 'success' ? 'bg-green-900/50 border border-green-700' : 'bg-red-900/50 border border-red-700'
-              }`}
+              className={`mt-4 p-4 rounded ${message.type === 'success' ? 'bg-green-900/50 border border-green-700' : 'bg-red-900/50 border border-red-700'
+                }`}
             >
               {message.text}
             </div>
@@ -214,10 +213,9 @@ export default function DemoUsersPage() {
                       </td>
                       <td className="py-3 px-4 font-mono text-sm">{user.email}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          user.role === 'trainer' ? 'bg-purple-900/50 text-purple-200' : 'bg-blue-900/50 text-blue-200'
-                        }`}>
-                          {user.role}
+                        <span className={`px-2 py-1 rounded text-xs ${user.roles?.includes('trainer') ? 'bg-purple-900/50 text-purple-200' : 'bg-blue-900/50 text-blue-200'
+                          }`}>
+                          {user.roles?.join(', ')}
                         </span>
                       </td>
                       <td className="py-3 px-4">{user.phone}</td>

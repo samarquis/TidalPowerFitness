@@ -26,6 +26,7 @@ const cartRoutes = require('./routes/cart');
 const demoUserRoutes = require('./routes/demoUsers');
 const achievementRoutes = require('./routes/achievements');
 const progressRoutes = require('./routes/progress');
+const changelogRoutes = require('./routes/changelog');
 
 dotenv.config();
 
@@ -132,5 +133,8 @@ app.use('/api/achievements', achievementRoutes.default || achievementRoutes);
 
 // Progress routes
 app.use('/api/progress', progressRoutes.default || progressRoutes);
+
+// Changelog routes
+app.use('/api/changelog', changelogRoutes.default || changelogRoutes);
 
 module.exports = app;

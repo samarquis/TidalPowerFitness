@@ -54,7 +54,7 @@ export default function RegisterPage() {
         });
 
         if (result.success) {
-            router.push('/trainers');
+            router.push('/profile');
         } else {
             setError(result.error || 'Registration failed');
             setLoading(false);
