@@ -12,13 +12,21 @@ This file is the **single source of truth** for the current state of the Tidal P
 ## 🕒 Active Session (2025-12-20)
 **Current Goal**: Implement the "Single Record of Truth" planning protocol.
 
-- [x] Consolidate `TODO.md`, `PROGRESS.md`, and `task.md` into this file
-- [x] Update `CLAUDE.md` instructions
-- [x] Update `/eod` and `/next` workflows
-- [x] Archive/Delete redundant files
-- [x] Investigate and fix "Update Trainer" button bug (Backend logging added, logic verified, awaiting log check)
-- [x] Improve Trainer Dashboard navigation (Added back button to Admin Trainer Management)
-- [x] Address workout assignment UI restriction (Unlocked "Custom" mode with exercise selector)
+### High Priority & Cleanup
+- [ ] Fix backend environment crash (Missing `JWT_SECRET`)
+- [ ] Resolve `role` vs `roles` inconsistency across entire stack
+- [ ] Fix registration redirect (Point to Client Dashboard instead of `/trainers`)
+- [ ] Cleanup `backend/src/app.ts` (Standardize ESM/imports)
+- [ ] Prune dead state in `AuthContext` and `apiClient`
+- [ ] Decompose monolithic components (`Navigation`, `AdminClasses`)
+
+### Stability & Security
+- [ ] Enforce `trainer_id` ownership in workout assignments
+- [ ] Implement global API error interceptor for 401/403 handling
+- [ ] Add Zod validation schemas for core API endpoints
+- [ ] Implement Square Webhook signature verification
+- [ ] Build core unit/integration test suite
+
 
 
 

@@ -395,179 +395,177 @@ function AssignWorkoutContent() {
                             </p>
                         </div>
                     )}
-                </div>
-                    )}
 
 
-                {/* Step 3: Recipient Selection */}
-                {step === 3 && (
-                    <div className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-3">
-                                Assign To
-                            </label>
-                            <div className="space-y-3">
-                                <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
-                                    <input
-                                        type="radio"
-                                        name="recipientMode"
-                                        value="class"
-                                        checked={recipientMode === 'class'}
-                                        onChange={() => setRecipientMode('class')}
-                                        className="mr-4 w-4 h-4 text-teal-500"
-                                    />
-                                    <div>
-                                        <div className="font-semibold text-white">Assign to Class</div>
-                                        <div className="text-sm text-gray-400">All participants in the class</div>
-                                    </div>
-                                </label>
-                                <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
-                                    <input
-                                        type="radio"
-                                        name="recipientMode"
-                                        value="clients"
-                                        checked={recipientMode === 'clients'}
-                                        onChange={() => setRecipientMode('clients')}
-                                        className="mr-4 w-4 h-4 text-teal-500"
-                                    />
-                                    <div>
-                                        <div className="font-semibold text-white">Assign to Individual Clients</div>
-                                        <div className="text-sm text-gray-400">Select specific clients</div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        {recipientMode === 'class' && (
+                    {/* Step 3: Recipient Selection */}
+                    {step === 3 && (
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
-                                    Select Class *
+                                <label className="block text-sm font-semibold text-gray-300 mb-3">
+                                    Assign To
                                 </label>
-                                {classes.length === 0 ? (
-                                    <p className="text-gray-400 text-sm p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                                        No classes scheduled for this day
-                                    </p>
-                                ) : (
-                                    <select
-                                        value={selectedClass}
-                                        onChange={(e) => setSelectedClass(e.target.value)}
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                                    >
-                                        <option value="" className="bg-gray-900">-- Select a class --</option>
-                                        {classes.map((cls) => (
-                                            <option key={cls.id} value={cls.id} className="bg-gray-900">
-                                                {cls.name} - {cls.start_time}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
-                            </div>
-                        )}
-
-                        {recipientMode === 'clients' && (
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
-                                    Select Clients * ({selectedClients.length} selected)
-                                </label>
-                                <div className="bg-white/5 border border-white/10 rounded-lg max-h-64 overflow-y-auto">
-                                    {clients.map((client) => (
-                                        <label
-                                            key={client.id}
-                                            className="flex items-center p-4 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedClients.includes(client.id)}
-                                                onChange={() => toggleClient(client.id)}
-                                                className="mr-4 w-4 h-4 text-teal-500"
-                                            />
-                                            <span className="text-white">{client.full_name}</span>
-                                        </label>
-                                    ))}
+                                <div className="space-y-3">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                        <input
+                                            type="radio"
+                                            name="recipientMode"
+                                            value="class"
+                                            checked={recipientMode === 'class'}
+                                            onChange={() => setRecipientMode('class')}
+                                            className="mr-4 w-4 h-4 text-teal-500"
+                                        />
+                                        <div>
+                                            <div className="font-semibold text-white">Assign to Class</div>
+                                            <div className="text-sm text-gray-400">All participants in the class</div>
+                                        </div>
+                                    </label>
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                        <input
+                                            type="radio"
+                                            name="recipientMode"
+                                            value="clients"
+                                            checked={recipientMode === 'clients'}
+                                            onChange={() => setRecipientMode('clients')}
+                                            className="mr-4 w-4 h-4 text-teal-500"
+                                        />
+                                        <div>
+                                            <div className="font-semibold text-white">Assign to Individual Clients</div>
+                                            <div className="text-sm text-gray-400">Select specific clients</div>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                )}
 
-                {/* Step 4: Review & Notes */}
-                {step === 4 && (
-                    <div className="space-y-6">
-                        <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-4">
-                            <h3 className="font-bold text-xl mb-4 text-teal-400">Review Assignment</h3>
-                            <div className="flex justify-between border-b border-white/10 pb-3">
-                                <span className="text-gray-400">Date:</span>
-                                <span className="text-white font-semibold">{new Date(sessionDate).toLocaleDateString()}</span>
-                            </div>
-                            {startTime && (
-                                <div className="flex justify-between border-b border-white/10 pb-3">
-                                    <span className="text-gray-400">Time:</span>
-                                    <span className="text-white font-semibold">{startTime}</span>
+                            {recipientMode === 'class' && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                        Select Class *
+                                    </label>
+                                    {classes.length === 0 ? (
+                                        <p className="text-gray-400 text-sm p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                                            No classes scheduled for this day
+                                        </p>
+                                    ) : (
+                                        <select
+                                            value={selectedClass}
+                                            onChange={(e) => setSelectedClass(e.target.value)}
+                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                        >
+                                            <option value="" className="bg-gray-900">-- Select a class --</option>
+                                            {classes.map((cls) => (
+                                                <option key={cls.id} value={cls.id} className="bg-gray-900">
+                                                    {cls.name} - {cls.start_time}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
                                 </div>
                             )}
-                            <div className="flex justify-between border-b border-white/10 pb-3">
-                                <span className="text-gray-400">Workout:</span>
-                                <span className="text-white font-semibold">
-                                    {workoutMode === 'template'
-                                        ? templates.find(t => t.id === selectedTemplate)?.name
-                                        : `Custom Workout (${selectedCustomExercises.length} exercises)`}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-400">Assigned to:</span>
-                                <span className="text-white font-semibold">
-                                    {recipientMode === 'class'
-                                        ? classes.find(c => c.id === selectedClass)?.name
-                                        : `${selectedClients.length} client(s)`}
-                                </span>
-                            </div>
+
+                            {recipientMode === 'clients' && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                        Select Clients * ({selectedClients.length} selected)
+                                    </label>
+                                    <div className="bg-white/5 border border-white/10 rounded-lg max-h-64 overflow-y-auto">
+                                        {clients.map((client) => (
+                                            <label
+                                                key={client.id}
+                                                className="flex items-center p-4 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedClients.includes(client.id)}
+                                                    onChange={() => toggleClient(client.id)}
+                                                    className="mr-4 w-4 h-4 text-teal-500"
+                                                />
+                                                <span className="text-white">{client.full_name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2">
-                                Notes (Optional)
-                            </label>
-                            <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                rows={4}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                                placeholder="Add any notes or instructions for this workout..."
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Navigation Buttons */}
-                <div className="flex justify-between mt-8">
-                    <button
-                        onClick={handleBack}
-                        disabled={step === 1}
-                        className="px-8 py-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all"
-                    >
-                        Back
-                    </button>
-
-                    {step < 4 ? (
-                        <button
-                            onClick={handleNext}
-                            className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
-                        >
-                            Next
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg disabled:opacity-50 transition-all transform hover:scale-105"
-                        >
-                            {loading ? 'Assigning...' : 'Assign Workout'}
-                        </button>
                     )}
+
+                    {/* Step 4: Review & Notes */}
+                    {step === 4 && (
+                        <div className="space-y-6">
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-4">
+                                <h3 className="font-bold text-xl mb-4 text-teal-400">Review Assignment</h3>
+                                <div className="flex justify-between border-b border-white/10 pb-3">
+                                    <span className="text-gray-400">Date:</span>
+                                    <span className="text-white font-semibold">{new Date(sessionDate).toLocaleDateString()}</span>
+                                </div>
+                                {startTime && (
+                                    <div className="flex justify-between border-b border-white/10 pb-3">
+                                        <span className="text-gray-400">Time:</span>
+                                        <span className="text-white font-semibold">{startTime}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between border-b border-white/10 pb-3">
+                                    <span className="text-gray-400">Workout:</span>
+                                    <span className="text-white font-semibold">
+                                        {workoutMode === 'template'
+                                            ? templates.find(t => t.id === selectedTemplate)?.name
+                                            : `Custom Workout (${selectedCustomExercises.length} exercises)`}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400">Assigned to:</span>
+                                    <span className="text-white font-semibold">
+                                        {recipientMode === 'class'
+                                            ? classes.find(c => c.id === selectedClass)?.name
+                                            : `${selectedClients.length} client(s)`}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                    Notes (Optional)
+                                </label>
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    rows={4}
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                    placeholder="Add any notes or instructions for this workout..."
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navigation Buttons */}
+                    <div className="flex justify-between mt-8">
+                        <button
+                            onClick={handleBack}
+                            disabled={step === 1}
+                            className="px-8 py-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all"
+                        >
+                            Back
+                        </button>
+
+                        {step < 4 ? (
+                            <button
+                                onClick={handleNext}
+                                className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+                            >
+                                Next
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg disabled:opacity-50 transition-all transform hover:scale-105"
+                            >
+                                {loading ? 'Assigning...' : 'Assign Workout'}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
-        </div >
     );
 }
 

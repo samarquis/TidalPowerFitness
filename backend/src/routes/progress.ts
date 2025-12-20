@@ -1,16 +1,19 @@
-const express = require('express');
+import express from 'express';
+import progressController from '../controllers/progressController';
+import { authenticate } from '../middleware/auth';
+
 const router = express.Router();
-const progressController = require('../controllers/progressController');
-const { authenticate } = require('../middleware/auth');
 
 router.use(authenticate);
 
 // Metric logging
-router.post('/metrics', progressController.default.logMetric);
-router.get('/metrics/:clientId?', progressController.default.getMetrics);
+router.post('/metrics', progressController.logMetric);
+router.get('/metrics', progressController.getMetrics);
+router.get('/metrics/:clientId', progressController.getMetrics);
 
 // Personal Records
-router.get('/personal-records/:clientId?', progressController.default.getPersonalRecords);
+router.get('/personal-records', progressController.getPersonalRecords);
+router.get('/personal-records/:clientId', progressController.getPersonalRecords);
 
-module.exports = router;
 export default router;
+
