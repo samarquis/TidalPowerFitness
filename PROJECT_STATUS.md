@@ -10,33 +10,27 @@ This file is the **single source of truth** for the current state of the Tidal P
 ---
 
 ## 🕒 Active Session (2025-12-20)
-**Current Goal**: Implement the "Single Record of Truth" planning protocol.
+**Current Goal**: Documented Trainer Workflow blockers and fixed build/runtime errors.
 
 ### High Priority & Cleanup
+- [x] Fix critical Turbopack build errors in `workouts/assign/page.tsx`
+- [x] Fix backend runtime `PathError` (Express 5 compatibility)
 - [ ] Fix backend environment crash (Missing `JWT_SECRET`)
 - [ ] Resolve `role` vs `roles` inconsistency across entire stack
 - [ ] Fix registration redirect (Point to Client Dashboard instead of `/trainers`)
-- [ ] Cleanup `backend/src/app.ts` (Standardize ESM/imports)
-- [ ] Prune dead state in `AuthContext` and `apiClient`
-- [ ] Decompose monolithic components (`Navigation`, `AdminClasses`)
 
 ### Stability & Security
+- [x] Implement local dev cookie workaround (HTTP vs HTTPS)
 - [ ] Enforce `trainer_id` ownership in workout assignments
 - [ ] Implement global API error interceptor for 401/403 handling
-- [ ] Add Zod validation schemas for core API endpoints
-- [ ] Implement Square Webhook signature verification
-- [ ] Build core unit/integration test suite
-
-
-
 
 ---
 
 ## 🛠️ Master TODO & Roadmap
 
 ### 🔴 High Priority
-- [ ] **Verify Production Migrations** - Ensure all recent migrations (Cart, Multi-day, etc.) are executed on Render production DB.
-- [ ] **Login/Sign-up Redirect Loop Fix**: Verify and monitor the fix for the `useAuth` loading state check.
+- [ ] **Resume Trainer Workflow Audit** - Once auth/roles are standardized.
+- [ ] **Verify Production Migrations** - Ensure all recent migrations are executed on Render production DB.
 
 ### 🟡 Medium Priority
 - [x] **Real-time workout logging**
