@@ -78,12 +78,7 @@ class UserModel {
     // Find user by ID
     async findById(id: string): Promise<User | null> {
         const result: QueryResult = await query(
-            `SELECT u.*, 
-             COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
-             FROM users u
-             LEFT JOIN user_roles ur ON u.id = ur.user_id
-             WHERE u.id = $1
-             GROUP BY u.id`,
+            'SELECT * FROM users WHERE id = $1',
             [id]
         );
 
@@ -93,12 +88,7 @@ class UserModel {
     // Find user by email
     async findByEmail(email: string): Promise<User | null> {
         const result: QueryResult = await query(
-            `SELECT u.*, 
-             COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
-             FROM users u
-             LEFT JOIN user_roles ur ON u.id = ur.user_id
-             WHERE u.email = $1
-             GROUP BY u.id`,
+            'SELECT * FROM users WHERE email = $1',
             [email]
         );
 
@@ -108,15 +98,10 @@ class UserModel {
     // Get all users by role
     async findByRole(role: 'client' | 'trainer' | 'admin'): Promise<User[]> {
         const result: QueryResult = await query(
-            `SELECT u.*, 
-             COALESCE(array_agg(ur2.role) FILTER (WHERE ur2.role IS NOT NULL), u.roles, ARRAY['client']::text[]) as roles
-             FROM users u
-             LEFT JOIN user_roles ur ON u.id = ur.user_id
-             LEFT JOIN user_roles ur2 ON u.id = ur2.user_id
-             WHERE ur.role::text = $1 OR u.role::text = $1 OR u.roles @> ARRAY[$1]::TEXT[]
-             AND u.is_active = true
-             GROUP BY u.id
-             ORDER BY u.created_at DESC`,
+            `SELECT * FROM users
+             WHERE ((roles IS NOT NULL AND roles @> ARRAY[$1]::TEXT[]) OR role::TEXT = $1)
+             AND is_active = true
+             ORDER BY created_at DESC`,
             [role]
         );
 
