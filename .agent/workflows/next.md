@@ -24,8 +24,7 @@ The AI will:
 - Provide context and files you might need
 
 ## What Gets Reviewed
-- `TODO.md` - Current task status
-- `PROGRESS.md` - Recent work history
+- `PROJECT_STATUS.md` - Current roadmap, pending tasks, and recent session history.
 - Recent conversation summaries
 
 ## Example

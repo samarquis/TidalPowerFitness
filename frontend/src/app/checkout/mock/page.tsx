@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { apiClient } from '@/lib/api';
 
 function MockCheckoutContent() {
     const searchParams = useSearchParams();
@@ -50,18 +51,10 @@ function MockCheckoutContent() {
                 ? { items: cartItems }
                 : { packageId };
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/payments/confirm-mock`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(payload)
-            });
+            const response = await apiClient.confirmMockPayment(payload);
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || 'Payment failed');
+            if (response.error) {
+                throw new Error(response.error);
             }
 
             setSuccess(true);

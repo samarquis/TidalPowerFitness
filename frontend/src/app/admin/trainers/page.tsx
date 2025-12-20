@@ -160,6 +160,11 @@ export default function AdminTrainersPage() {
     return (
         <div className="min-h-screen bg-black text-white pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
+                <div className="mb-4">
+                    <Link href="/admin" className="text-teal-400 hover:text-teal-300 inline-flex items-center gap-2">
+                        ← Back to Admin Dashboard
+                    </Link>
+                </div>
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-teal-400">Manage Trainers</h1>
                     <button
@@ -168,7 +173,7 @@ export default function AdminTrainersPage() {
                             setFormData(initialFormData);
                             setIsModalOpen(true);
                         }}
-                        className="px-4 py-2 bg-teal-6 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
                     >
                         Add New Trainer
                     </button>
@@ -348,7 +353,7 @@ export default function AdminTrainersPage() {
                                         id="is_accepting_clients"
                                         checked={formData.is_accepting_clients}
                                         onChange={e => setFormData({ ...formData, is_accepting_clients: e.target.checked })}
-                                        className="w-4 h-4 text-teal-6 rounded focus:ring-teal-500 bg-gray-700 border-gray-600"
+                                        className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 bg-gray-700 border-gray-600"
                                     />
                                     <label htmlFor="is_accepting_clients" className="text-sm font-medium text-gray-300">
                                         Accepting New Clients
@@ -365,7 +370,7 @@ export default function AdminTrainersPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 bg-teal-6 hover:bg-teal-700 text-white rounded-lg transition-colors font-semibold"
+                                        className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors font-semibold"
                                     >
                                         {editingId ? 'Update Trainer' : 'Create Trainer'}
                                     </button>

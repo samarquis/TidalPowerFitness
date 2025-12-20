@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 import Link from 'next/link';
 
 function WorkoutCompleteContent() {
@@ -18,20 +19,11 @@ function WorkoutCompleteContent() {
     const handleFinish = async () => {
         setSaving(true);
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
             // Update session with end time and notes
-            await fetch(`${apiUrl}/workout-sessions/${sessionId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    end_time: new Date(),
-                    duration_minutes: parseInt(duration || '0'),
-                    notes: notes
-                })
+            await apiClient.updateWorkoutSession(sessionId!, {
+                end_time: new Date(),
+                duration_minutes: parseInt(duration || '0'),
+                notes: notes
             });
 
             router.push('/workouts/templates');

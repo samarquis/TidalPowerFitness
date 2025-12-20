@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 
 interface Exercise {
     id: string;
@@ -37,7 +38,7 @@ interface BodyFocusArea {
 }
 
 export default function NewTemplatePage() {
-    const { user, token } = useAuth();
+    const { user, loading: authLoading, token } = useAuth();
     const router = useRouter();
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [workoutTypes, setWorkoutTypes] = useState<WorkoutType[]>([]);
@@ -58,15 +59,18 @@ export default function NewTemplatePage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Wait for auth to finish loading
+        if (authLoading) return;
+
         // Redirect to login if not authenticated
         if (!user) {
-      router.push('/login?redirect=/workouts/templates/new');
-      return;
-    }
+            router.push('/login?redirect=/workouts/templates/new');
+            return;
+        }
         fetchExercises();
         fetchWorkoutTypes();
         fetchBodyFocusAreas();
-    }, [user, router]);
+    }, [user, authLoading, router]);
 
     const fetchExercises = async () => {
         try {
@@ -177,23 +181,16 @@ export default function NewTemplatePage() {
         setError(null);
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    ...formData,
-                    trainer_id: user?.id,
-                    exercises: selectedExercises
-                })
-            });
+            const body = {
+                ...formData,
+                trainer_id: user?.id,
+                exercises: selectedExercises
+            };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to create template: ${response.status}`);
+            const response = await apiClient.createWorkoutTemplate(body);
+
+            if (response.error) {
+                throw new Error(response.error);
             }
 
             router.push('/workouts/templates');
@@ -355,8 +352,8 @@ export default function NewTemplatePage() {
                                             </div>
                                             {exercise.difficulty_level && (
                                                 <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                                        exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                            'bg-red-500/20 text-red-400'
+                                                    exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                        'bg-red-500/20 text-red-400'
                                                     }`}>
                                                     {exercise.difficulty_level}
                                                 </span>

@@ -1,6 +1,7 @@
 import { query } from '../config/db';
 import { QueryResult } from 'pg';
 import WorkoutTemplateModel from './WorkoutTemplate';
+import ProgressModel from './Progress';
 
 export interface WorkoutSession {
     id: string;
@@ -323,7 +324,7 @@ class WorkoutSessionModel {
         return result.rows[0] || null;
     }
 
-    // Log exercise set
+    // Log exercise set (with UPSERT support)
     async logExercise(logData: ExerciseLog): Promise<any> {
         const result: QueryResult = await query(
             `INSERT INTO exercise_logs (
@@ -332,6 +333,18 @@ class WorkoutSessionModel {
                 distance_miles, rest_taken_seconds, rpe, form_rating,
                 notes, logged_by
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            ON CONFLICT (session_exercise_id, client_id, set_number) 
+            DO UPDATE SET 
+                reps_completed = EXCLUDED.reps_completed,
+                weight_used_lbs = EXCLUDED.weight_used_lbs,
+                duration_seconds = EXCLUDED.duration_seconds,
+                distance_miles = EXCLUDED.distance_miles,
+                rest_taken_seconds = EXCLUDED.rest_taken_seconds,
+                rpe = EXCLUDED.rpe,
+                form_rating = EXCLUDED.form_rating,
+                notes = EXCLUDED.notes,
+                logged_by = EXCLUDED.logged_by,
+                logged_at = CURRENT_TIMESTAMP
             RETURNING *`,
             [
                 logData.session_exercise_id,
@@ -349,7 +362,54 @@ class WorkoutSessionModel {
             ]
         );
 
-        return result.rows[0];
+        const log = result.rows[0];
+
+        // --- AUTOMATIC PR DETECTION ---
+        if (log.weight_used_lbs && log.reps_completed) {
+            const exerciseIdResult = await query(
+                'SELECT exercise_id FROM session_exercises WHERE id = $1',
+                [log.session_exercise_id]
+            );
+
+            if (exerciseIdResult.rows.length > 0) {
+                const exerciseId = exerciseIdResult.rows[0].exercise_id;
+
+                // 1. Max Weight PR
+                await ProgressModel.updatePR(
+                    log.client_id, exerciseId, 'max_weight',
+                    log.weight_used_lbs, log.logged_at || new Date(), log.id
+                );
+
+                // 2. Max Volume PR (Weight * Reps)
+                const volume = log.weight_used_lbs * log.reps_completed;
+                await ProgressModel.updatePR(
+                    log.client_id, exerciseId, 'max_volume',
+                    volume, log.logged_at || new Date(), log.id
+                );
+
+                // 3. Max Reps PR
+                await ProgressModel.updatePR(
+                    log.client_id, exerciseId, 'max_reps',
+                    log.reps_completed, log.logged_at || new Date(), log.id
+                );
+            }
+        }
+
+        return log;
+    }
+
+    // Get all logs for a specific session
+    async getSessionLogs(sessionId: string): Promise<any[]> {
+        const result: QueryResult = await query(
+            `SELECT el.*, se.exercise_id, e.name as exercise_name
+             FROM exercise_logs el
+             JOIN session_exercises se ON el.session_exercise_id = se.id
+             JOIN exercises e ON se.exercise_id = e.id
+             WHERE se.session_id = $1
+             ORDER BY el.logged_at ASC`,
+            [sessionId]
+        );
+        return result.rows;
     }
 
     // Publish session to clients

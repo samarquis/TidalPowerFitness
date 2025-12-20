@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 import BadgeCard from '@/components/BadgeCard';
+import ProgressDashboard from '@/components/ProgressDashboard';
 
 interface WorkoutStats {
     total_workouts: number;
@@ -57,19 +58,15 @@ export default function ProfilePage() {
 
             // Fetch Stats, History, and Credits
             const [statsRes, historyRes, creditsRes, allAchievementsRes, userAchievementsRes] = await Promise.all([
-                fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/stats`, {
-                    credentials: 'include'
-                }),
-                fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/workout-sessions/client/${user.id}/history`, {
-                    credentials: 'include'
-                }),
+                apiClient.getClientStats(user.id),
+                apiClient.getClientHistory(user.id),
                 apiClient.getUserCredits(user.id),
                 apiClient.getAllAchievements(),
                 apiClient.getUserAchievements(user.id)
             ]);
 
-            if (statsRes.ok) setStats(await statsRes.json());
-            if (historyRes.ok) setHistory(await historyRes.json());
+            if (statsRes.data) setStats(statsRes.data);
+            if (historyRes.data) setHistory(historyRes.data);
             if (creditsRes.data) setCredits(creditsRes.data.credits);
 
             const allAchievements = allAchievementsRes.data || [];
@@ -233,6 +230,11 @@ export default function ProfilePage() {
                         )}
                     </div>
                 )}
+
+                {/* Progress Dashboard */}
+                <div className="mb-12">
+                    <ProgressDashboard clientId={user.id} />
+                </div>
 
                 {/* Workout History */}
                 <h2 className="text-2xl font-bold mb-6">Recent Workouts</h2>

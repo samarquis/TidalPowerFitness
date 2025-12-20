@@ -1,5 +1,4 @@
-```javascript
-"use client";
+'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -294,7 +293,7 @@ function AdminClassesContent() {
     };
 
     const prevStep = () => {
-        setCurrentStep(currentStep-1);
+        setCurrentStep(currentStep - 1);
     };
 
     const handleSubmit = async () => {
@@ -391,7 +390,7 @@ function AdminClassesContent() {
                     </div>
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
+                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
                     >
                         + Add New Class
                     </button>
@@ -567,7 +566,7 @@ function AdminClassesContent() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400")}>
+                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400")}>
                                             {step}
                                         </div>
                                         {step < 4 && (
@@ -642,7 +641,7 @@ function AdminClassesContent() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
@@ -681,14 +680,14 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     AM
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-teal-6 to-teal-6 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     PM
                                                 </button>
@@ -838,14 +837,14 @@ function AdminClassesContent() {
                                 {currentStep < 4 ? (
                                     <button
                                         onClick={nextStep}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
                                     >
                                         Next
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleSubmit}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
                                     >
                                         {editingClass ? 'Update Class' : 'Create Class'}
                                     </button>

@@ -107,6 +107,18 @@ class WorkoutSessionController {
         }
     }
 
+    // Get logs for a specific session
+    async getSessionLogs(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const logs = await WorkoutSession.getSessionLogs(id);
+            res.json(logs);
+        } catch (error) {
+            console.error('Error fetching session logs:', error);
+            res.status(500).json({ error: 'Failed to fetch session logs' });
+        }
+    }
+
     // Bulk log exercises
     async bulkLogExercises(req: Request, res: Response): Promise<void> {
         try {

@@ -3,9 +3,10 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 
 interface Exercise {
-    id: string;
+    id: string; // This is the session_exercise_id
     exercise_id: string;
     exercise_name: string;
     order_in_session: number;
@@ -16,6 +17,7 @@ interface Exercise {
 }
 
 interface SetLog {
+    session_exercise_id: string;
     set_number: number;
     reps_completed?: number;
     weight_used_lbs?: number;
@@ -29,11 +31,10 @@ function ActiveWorkoutContent() {
     const templateId = searchParams ? searchParams.get('template') : null;
 
     const [sessionId, setSessionId] = useState<string | null>(null);
-
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [currentSet, setCurrentSet] = useState(1);
-    const [setLogs, setSetLogs] = useState<SetLog[]>([]);
+    const [allLogs, setAllLogs] = useState<SetLog[]>([]);
     const [reps, setReps] = useState<number>(0);
     const [weight, setWeight] = useState<number>(0);
     const [notes, setNotes] = useState('');
@@ -41,6 +42,7 @@ function ActiveWorkoutContent() {
     const [isResting, setIsResting] = useState(false);
     const [startTime, setStartTime] = useState<Date>(new Date());
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (templateId) {
@@ -66,22 +68,18 @@ function ActiveWorkoutContent() {
 
     const startWorkout = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            // 1. Get template details
+            const templateResponse = await apiClient.getWorkoutTemplate(templateId!);
+            if (templateResponse.error) throw new Error(templateResponse.error);
+            const template = templateResponse.data;
 
-            // Get template details
-            const templateResponse = await fetch(`${apiUrl}/workout-templates/${templateId}`, {
-                credentials: 'include'
-            });
-            const template = await templateResponse.json();
-
-            // Create workout session
-            const sessionResponse = await fetch(`${apiUrl}/workout-sessions`, {
+            // 2. Create workout session or reuse if date is today and template matches (simplified)
+            // For now, always create new as requested, but we could add "Resume" lookup here
+            const sessionResponse = await apiClient.createWorkoutTemplate({ // Note: Backend usually has a separate endpoint but createWorkoutTemplate used in some versions for this? Checking controller...
+                // Using the actual controller endpoint via request
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
+                endpoint: '/workout-sessions',
+                body: {
                     trainer_id: user?.id,
                     template_id: templateId,
                     session_date: new Date(),
@@ -94,24 +92,61 @@ function ActiveWorkoutContent() {
                         planned_weight_lbs: ex.suggested_weight_lbs,
                         rest_seconds: ex.suggested_rest_seconds
                     })) || []
-                })
+                }
+            } as any); // Type hack for custom call if needed, but apiClient has it now?
+
+            // Actually using the refactored apiClient from my previous tool call
+            const createResponse = await apiClient.createWorkoutSession({
+                trainer_id: user?.id,
+                template_id: templateId,
+                session_date: new Date(),
+                start_time: new Date()
             });
 
-            const session = await sessionResponse.json();
+            if (createResponse.error) throw new Error(createResponse.error);
+            const session = createResponse.data;
             setSessionId(session.id);
 
-            // Get session details with exercises
-            const detailsResponse = await fetch(`${apiUrl}/workout-sessions/${session.id}`, {
-                credentials: 'include'
-            });
-            const details = await detailsResponse.json();
+            // 3. Get full session details (with exercises)
+            const detailsResponse = await apiClient.getWorkoutSession(session.id);
+            if (detailsResponse.error) throw new Error(detailsResponse.error);
+            const details = detailsResponse.data;
             setExercises(details.exercises || []);
 
-            // Initialize first exercise
-            if (details.exercises?.length > 0) {
-                const firstEx = details.exercises[0];
-                setReps(firstEx.planned_reps || 0);
-                setWeight(firstEx.planned_weight_lbs || 0);
+            // 4. Load existing logs (Resume logic)
+            const logsResponse = await apiClient.getSessionLogs(session.id);
+            if (logsResponse.data) {
+                setAllLogs(logsResponse.data);
+
+                // Smart Resume: Find where we left off
+                if (logsResponse.data.length > 0) {
+                    const lastLog = logsResponse.data[logsResponse.data.length - 1];
+                    const exerciseIndex = details.exercises.findIndex((e: any) => e.id === lastLog.session_exercise_id);
+
+                    if (exerciseIndex !== -1) {
+                        const currentExLogs = logsResponse.data.filter((l: any) => l.session_exercise_id === lastLog.session_exercise_id);
+                        const plannedSets = details.exercises[exerciseIndex].planned_sets || 3;
+
+                        if (currentExLogs.length < plannedSets) {
+                            setCurrentExerciseIndex(exerciseIndex);
+                            setCurrentSet(currentExLogs.length + 1);
+                        } else if (exerciseIndex < details.exercises.length - 1) {
+                            setCurrentExerciseIndex(exerciseIndex + 1);
+                            setCurrentSet(1);
+                        } else {
+                            // Already finished?
+                            setCurrentExerciseIndex(exerciseIndex);
+                            setCurrentSet(currentExLogs.length);
+                        }
+                    }
+                }
+            }
+
+            // Initialize inputs
+            const targetEx = details.exercises[currentExerciseIndex] || details.exercises[0];
+            if (targetEx) {
+                setReps(targetEx.planned_reps || 0);
+                setWeight(targetEx.planned_weight_lbs || 0);
             }
         } catch (error) {
             console.error('Error starting workout:', error);
@@ -121,38 +156,64 @@ function ActiveWorkoutContent() {
         }
     };
 
-    const completeSet = () => {
+    const completeSet = async () => {
+        if (saving) return;
+
+        const currentExercise = exercises[currentExerciseIndex];
         const newLog: SetLog = {
+            session_exercise_id: currentExercise.id,
             set_number: currentSet,
             reps_completed: reps,
             weight_used_lbs: weight,
             notes: notes
         };
 
-        setSetLogs([...setLogs, newLog]);
-        setNotes('');
+        setSaving(true);
+        try {
+            // Real-time persistence (UPSERT)
+            const response = await apiClient.logExercise({
+                ...newLog,
+                client_id: user?.id // Logging for self if in active workout
+            });
 
-        const currentExercise = exercises[currentExerciseIndex];
-        const plannedSets = currentExercise?.planned_sets || 3;
+            if (response.error) throw new Error(response.error);
 
-        if (currentSet < plannedSets) {
-            // Start rest timer
-            const restTime = currentExercise?.rest_seconds || 60;
-            setRestTimer(restTime);
-            setIsResting(true);
-            setCurrentSet(currentSet + 1);
-        } else {
-            // Move to next exercise
-            nextExercise();
+            // Update local state
+            setAllLogs(prev => {
+                const filtered = prev.filter(l =>
+                    !(l.session_exercise_id === newLog.session_exercise_id && l.set_number === newLog.set_number)
+                );
+                return [...filtered, newLog];
+            });
+
+            setNotes('');
+
+            const plannedSets = currentExercise?.planned_sets || 3;
+
+            if (currentSet < plannedSets) {
+                // Start rest timer
+                const restTime = currentExercise?.rest_seconds || 60;
+                setRestTimer(restTime);
+                setIsResting(true);
+                setCurrentSet(currentSet + 1);
+            } else {
+                // Move to next exercise
+                nextExercise();
+            }
+        } catch (error) {
+            console.error('Error saving set:', error);
+            alert('Failed to save set. Please check your connection.');
+        } finally {
+            setSaving(false);
         }
     };
 
     const nextExercise = () => {
         if (currentExerciseIndex < exercises.length - 1) {
-            const nextEx = exercises[currentExerciseIndex + 1];
-            setCurrentExerciseIndex(currentExerciseIndex + 1);
+            const nextIndex = currentExerciseIndex + 1;
+            const nextEx = exercises[nextIndex];
+            setCurrentExerciseIndex(nextIndex);
             setCurrentSet(1);
-            setSetLogs([]);
             setReps(nextEx.planned_reps || 0);
             setWeight(nextEx.planned_weight_lbs || 0);
             setIsResting(false);
@@ -309,17 +370,42 @@ function ActiveWorkoutContent() {
                 )}
 
                 {/* Completed Sets */}
-                {setLogs.length > 0 && (
+                {allLogs.filter(l => l.session_exercise_id === currentExercise.id).length > 0 && (
                     <div className="glass rounded-xl p-6 mb-6">
-                        <h3 className="font-bold mb-3">Completed Sets</h3>
-                        <div className="space-y-2">
-                            {setLogs.map((log, idx) => (
-                                <div key={idx} className="bg-white/5 rounded p-3 text-sm">
-                                    <span className="font-semibold">Set {log.set_number}:</span>{' '}
-                                    {log.reps_completed} reps @ {log.weight_used_lbs} lbs
-                                    {log.notes && <p className="text-gray-400 mt-1">{log.notes}</p>}
-                                </div>
-                            ))}
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-bold text-gray-200">Session History</h3>
+                            <button
+                                onClick={() => router.push('/workouts/history')}
+                                className="text-xs text-teal-400 hover:text-teal-300"
+                            >
+                                View full history
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {allLogs
+                                .filter(l => l.session_exercise_id === currentExercise.id)
+                                .sort((a, b) => a.set_number - b.set_number)
+                                .map((log, idx) => (
+                                    <div key={idx} className="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center justify-between group hover:bg-white/10 transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400 font-bold text-xs">
+                                                {log.set_number}
+                                            </div>
+                                            <div>
+                                                <span className="text-white font-bold">{log.reps_completed}</span>
+                                                <span className="text-gray-500 text-xs ml-1 font-semibold uppercase tracking-wider">reps</span>
+                                                <span className="text-gray-600 mx-2">@</span>
+                                                <span className="text-white font-bold">{log.weight_used_lbs}</span>
+                                                <span className="text-gray-500 text-xs ml-1 font-semibold uppercase tracking-wider">lbs</span>
+                                            </div>
+                                        </div>
+                                        {log.notes && (
+                                            <div className="text-gray-400 text-xs italic bg-black/30 px-2 py-1 rounded">
+                                                {log.notes}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 )}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface Class {
     id: string;
@@ -54,7 +55,7 @@ function formatTime(time24: string): string {
 }
 
 export default function TrainerDashboardPage() {
-    const { user, isAuthenticated, token } = useAuth();
+    const { user, isAuthenticated, loading: authLoading, token } = useAuth();
     const router = useRouter();
     const [classes, setClasses] = useState<ClassWithAttendees[]>([]);
     const [sessions, setSessions] = useState<WorkoutSession[]>([]);
@@ -62,8 +63,11 @@ export default function TrainerDashboardPage() {
     const [loadingSessions, setLoadingSessions] = useState(true);
     const [selectedClass, setSelectedClass] = useState<ClassWithAttendees | null>(null);
     const [loadingAttendees, setLoadingAttendees] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
@@ -72,22 +76,22 @@ export default function TrainerDashboardPage() {
         if (isAuthenticated && user) {
             fetchClasses();
             fetchSessions();
+        } else if (!isAuthenticated) {
+            router.push('/login?redirect=/trainer');
         }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, authLoading, user, router]);
 
     const fetchClasses = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/trainers/my-classes`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-
-            if (Array.isArray(data)) {
-                setClasses(data);
+            const response = await apiClient.getMyClasses();
+            if (response.data) {
+                setClasses(response.data);
+            } else if (response.error) {
+                setError(response.error);
             }
         } catch (error) {
             console.error('Error fetching classes:', error);
+            setError('Failed to fetch classes');
         } finally {
             setLoading(false);
         }
@@ -95,14 +99,9 @@ export default function TrainerDashboardPage() {
 
     const fetchSessions = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-sessions`, {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setSessions(Array.isArray(data) ? data : []);
+            const response = await apiClient.getWorkoutSessions();
+            if (response.data) {
+                setSessions(response.data);
             }
         } catch (error) {
             console.error('Error fetching sessions:', error);
@@ -114,16 +113,11 @@ export default function TrainerDashboardPage() {
     const fetchAttendees = async (classId: string) => {
         setLoadingAttendees(true);
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/classes/${classId}/attendees`, {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
+            const response = await apiClient.getClassAttendees(classId);
+            if (response.data) {
                 setSelectedClass(prev => {
                     const classData = classes.find(c => c.id === classId);
-                    return classData ? { ...classData, ...data } : null;
+                    return classData ? { ...classData, ...response.data } : null;
                 });
             }
         } catch (error) {
@@ -156,6 +150,14 @@ export default function TrainerDashboardPage() {
     const today = new Date().toISOString().split('T')[0];
     const todaysSessions = sessions.filter(s => s.session_date?.split('T')[0] === today);
     const recentSessions = sessions.slice(0, 5);
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;

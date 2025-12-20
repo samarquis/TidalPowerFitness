@@ -156,12 +156,144 @@ class ApiClient {
         });
     }
 
+    async getMyClasses() {
+        return this.request<any>('/trainers/my-classes', { method: 'GET' });
+    }
+
+    async getClassAttendees(classId: string) {
+        return this.request<any>(`/classes/${classId}/attendees`, { method: 'GET' });
+    }
+
+    async getMyClients() {
+        return this.request<any>('/trainers/my-clients', { method: 'GET' });
+    }
+
+    async getClientWorkouts(clientId: string) {
+        return this.request<any>(`/trainers/clients/${clientId}/workouts`, { method: 'GET' });
+    }
+
     // Form submission
     async submitForm(formData: { form_type: string; form_data: any }) {
         return this.request<any>('/forms', {
             method: 'POST',
             body: JSON.stringify(formData),
         });
+    }
+
+    // Availability endpoints
+    async getAvailability(trainerId: string) {
+        return this.request<any>(`/availability/trainer/${trainerId}`, { method: 'GET' });
+    }
+
+    async createAvailability(data: any) {
+        return this.request<any>('/availability', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateAvailability(id: string, data: any) {
+        return this.request<any>(`/availability/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteAvailability(id: string) {
+        return this.request<any>(`/availability/${id}`, { method: 'DELETE' });
+    }
+
+    // Exercise endpoints
+    async getExercises() {
+        return this.request<any>('/exercises', { method: 'GET' });
+    }
+
+    // Workout Template endpoints
+
+    async getWorkoutTemplates(includePublic: boolean = true) {
+        return this.request<any>(`/workout-templates?include_public=${includePublic}`, { method: 'GET' });
+    }
+
+    async getWorkoutTemplate(id: string) {
+        return this.request<any>(`/workout-templates/${id}`, { method: 'GET' });
+    }
+
+    async createWorkoutTemplate(data: any) {
+        return this.request<any>('/workout-templates', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteWorkoutTemplate(id: string) {
+        return this.request<any>(`/workout-templates/${id}`, { method: 'DELETE' });
+    }
+
+    async copyWorkoutTemplate(id: string, newName?: string) {
+        return this.request<any>(`/workout-templates/${id}/copy`, {
+            method: 'POST',
+            body: JSON.stringify({ new_name: newName }),
+        });
+    }
+
+    // Workout Session endpoints
+    async getWorkoutSessions() {
+        return this.request<any>('/workout-sessions', { method: 'GET' });
+    }
+
+    async getWorkoutSession(id: string) {
+        return this.request<any>(`/workout-sessions/${id}`, { method: 'GET' });
+    }
+
+    async createWorkoutSession(data: any) {
+        return this.request<any>('/workout-sessions', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateWorkoutSession(id: string, data: any) {
+        return this.request<any>(`/workout-sessions/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async getClientStats(clientId: string) {
+        return this.request<any>(`/workout-sessions/client/${clientId}/stats`, { method: 'GET' });
+    }
+
+    async getClientHistory(clientId: string) {
+        return this.request<any[]>(`/workout-sessions/client/${clientId}/history`, { method: 'GET' });
+    }
+
+    async logExercise(data: any) {
+        return this.request<any>('/workout-sessions/log-exercise', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async getSessionLogs(sessionId: string) {
+        return this.request<any>(`/workout-sessions/${sessionId}/logs`, { method: 'GET' });
+    }
+
+    // Progress endpoints
+    async logMetric(data: any) {
+        return this.request<any>('/progress/metrics', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async getMetrics(clientId?: string) {
+        const endpoint = clientId ? `/progress/metrics/${clientId}` : '/progress/metrics';
+        return this.request<any[]>(endpoint, { method: 'GET' });
+    }
+
+    async getPersonalRecords(clientId?: string) {
+        const endpoint = clientId ? `/progress/personal-records/${clientId}` : '/progress/personal-records';
+        return this.request<any[]>(endpoint, { method: 'GET' });
     }
 
     // Package endpoints
@@ -208,6 +340,13 @@ class ApiClient {
     async checkoutCart() {
         return this.request<any>('/payments/checkout-cart', {
             method: 'POST',
+        });
+    }
+
+    async confirmMockPayment(payload: { packageId?: string | null; items?: any[] }) {
+        return this.request<any>('/payments/confirm-mock', {
+            method: 'POST',
+            body: JSON.stringify(payload),
         });
     }
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface AvailabilitySlot {
     id: string;
@@ -43,14 +44,15 @@ export default function TrainerAvailabilityPage() {
 
     const fetchAvailability = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/availability/trainer/${user?.id}`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            setAvailability(data);
+            const response = await apiClient.getAvailability(user?.id || '');
+            if (response.data) {
+                setAvailability(response.data);
+            } else if (response.error) {
+                setError(response.error);
+            }
         } catch (error) {
             console.error('Error fetching availability:', error);
+            setError('Failed to fetch availability');
         } finally {
             setLoading(false);
         }
@@ -85,28 +87,16 @@ export default function TrainerAvailabilityPage() {
         setError('');
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const url = editingSlot
-                ? `${apiUrl}/availability/${editingSlot.id}`
-                : `${apiUrl}/availability`;
-
-            const method = editingSlot ? 'PUT' : 'POST';
             const body = editingSlot
                 ? formData
                 : { ...formData, trainer_id: user?.id };
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(body)
-            });
+            const response = editingSlot
+                ? await apiClient.updateAvailability(editingSlot.id, body)
+                : await apiClient.createAvailability(body);
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || 'Failed to save availability');
+            if (response.error) {
+                throw new Error(response.error);
             }
 
             await fetchAvailability();
@@ -120,20 +110,16 @@ export default function TrainerAvailabilityPage() {
         if (!confirm('Are you sure you want to delete this availability slot?')) return;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/availability/${id}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
+            const response = await apiClient.deleteAvailability(id);
 
-            if (!response.ok) {
-                throw new Error('Failed to delete availability');
+            if (response.error) {
+                throw new Error(response.error);
             }
 
             await fetchAvailability();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting availability:', error);
-            alert('Failed to delete availability slot');
+            alert(error.message || 'Failed to delete availability slot');
         }
     };
 

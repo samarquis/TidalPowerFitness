@@ -124,6 +124,8 @@ import { getClassesByInstructorId } from '../models/Class';
 export const updateTrainer = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
+        console.log('Updating trainer:', { userId, body: req.body });
+
         const {
             // User fields
             first_name,
@@ -139,6 +141,7 @@ export const updateTrainer = async (req: Request, res: Response) => {
             acuity_calendar_id,
             is_accepting_clients
         } = req.body;
+
 
         // Check permissions (Admin or Self)
         if (!req.user?.roles?.includes('admin') && req.user?.id !== userId) {
@@ -165,7 +168,11 @@ export const updateTrainer = async (req: Request, res: Response) => {
             is_accepting_clients
         });
 
+        console.log('TrainerProfile updated:', trainer);
+
         if (!trainer) {
+            console.log('Profile not found, creating new one for user:', userId);
+
             // Profile doesn't exist yet, create it
             const newTrainer = await TrainerProfile.create({
                 user_id: userId,

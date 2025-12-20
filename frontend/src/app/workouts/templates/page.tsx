@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface WorkoutTemplate {
     id: string;
@@ -24,7 +25,7 @@ const DIFFICULTY_COLORS = {
 };
 
 export default function WorkoutTemplatesPage() {
-    const { user, isAuthenticated, token } = useAuth();
+    const { user, isAuthenticated, loading: authLoading, token } = useAuth();
     const router = useRouter();
     const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
     const [loading, setLoading] = useState(true);
@@ -32,6 +33,8 @@ export default function WorkoutTemplatesPage() {
     const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
@@ -39,18 +42,22 @@ export default function WorkoutTemplatesPage() {
 
         if (isAuthenticated) {
             fetchTemplates();
+        } else {
+            router.push('/login?redirect=/workouts/templates');
         }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, authLoading, user, router]);
 
     const fetchTemplates = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            // Handle both array response and object with templates property
-            setTemplates(Array.isArray(data) ? data : (data.templates || []));
+            const response = await apiClient.getWorkoutTemplates();
+            if (response.data) {
+                const data = response.data;
+                // Handle both array response and object with templates property
+                setTemplates(Array.isArray(data) ? data : (data.templates || []));
+            } else if (response.error) {
+                console.error('API Error fetching templates:', response.error);
+                setTemplates([]);
+            }
         } catch (error) {
             console.error('Error fetching templates:', error);
             setTemplates([]); // Set empty array on error
@@ -63,14 +70,10 @@ export default function WorkoutTemplatesPage() {
         if (!confirm('Are you sure you want to delete this template?')) return;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates/${id}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
+            const response = await apiClient.deleteWorkoutTemplate(id);
 
-            if (!response.ok) {
-                throw new Error('Failed to delete template');
+            if (response.error) {
+                throw new Error(response.error);
             }
 
             await fetchTemplates();
@@ -87,6 +90,14 @@ export default function WorkoutTemplatesPage() {
         const matchesDifficulty = difficultyFilter === 'all' || template.difficulty_level === difficultyFilter;
         return matchesSearch && matchesDifficulty;
     });
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;

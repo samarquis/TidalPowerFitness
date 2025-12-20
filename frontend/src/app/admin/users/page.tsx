@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 
 
@@ -179,6 +180,9 @@ export default function UserManagementPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
+                    <Link href="/admin" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                        ← Back to Admin Dashboard
+                    </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         User <span className="text-gradient">Management</span>
                     </h1>
@@ -206,7 +210,7 @@ export default function UserManagementPage() {
                                     key={role}
                                     onClick={() => setFilter(role)}
                                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === role
-                                        ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                        ? 'bg-gradient-to-r from-teal-600 to-teal-600 text-white'
                                         : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                         }`}
                                 >
@@ -251,7 +255,7 @@ export default function UserManagementPage() {
                                                     {(['client', 'trainer', 'admin'] as const).map((role) => (
                                                         <label
                                                             key={role}
-                                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer transition-all ${u.roles.includes(role)
+                                                            className={`flex items-center gap-1.5 px-2 py-1 rounded-md border cursor-pointer transition-all ${u.roles.includes(role)
                                                                 ? getRoleBadgeColor(role)
                                                                 : 'bg-white/5 text-gray-500 border-white/10 hover:bg-white/10'
                                                                 }`}
@@ -382,7 +386,7 @@ export default function UserManagementPage() {
                                 <button
                                     type="submit"
                                     disabled={resetLoading}
-                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
                                 >
                                     {resetLoading ? 'Saving...' : 'Save Password'}
                                 </button>

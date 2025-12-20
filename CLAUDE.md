@@ -202,12 +202,25 @@ After deploying to production:
 - tailwindcss - Styling (v4)
 - TypeScript - Type safety
 
+## Planning & Protocol
+
+This project uses a **Single Record of Truth** philosophy for planning and progress tracking.
+
+### 1. The Project Status File
+- **File**: `PROJECT_STATUS.md` in the root directory.
+- **Purpose**: Contains the current roadmap, active session tasks, known bugs, and a historical log of sessions.
+- **Rule**: ALWAYS update `PROJECT_STATUS.md` before starting work and after completing a session.
+- **Avoid Artifacts**: Do not create separate `task.md`, `implementation_plan.md`, or `walkthrough.md` files in temporary brain directories unless specifically requested for a large-scale architectural review. Prefer consolidating all planning into `PROJECT_STATUS.md`.
+
+### 2. Session Management
+- **Start Session**: Review "Active Session" and "Master TODO" in `PROJECT_STATUS.md` (or use `/next`).
+- **End Session**: Move completed "Active Session" items to "Session History" and update the "Master TODO" (or use `/eod`).
+
 ## Documentation Files
-- `TODO.md` - Current development roadmap and pending tasks
-- `PROGRESS.md` - Daily progress log
-- `.agent/workflows/eod.md` - End of day workflow template
-- `.agent/workflows/next.md` - Resume work workflow template
-- `docs/archive/` - Archived deployment guides
+- `PROJECT_STATUS.md` - Single source of truth for Roadmap, TODOs, Bugs, and History
+- `CLAUDE.md` - Current project architecture and development instructions
+- `README.md` - Technical setup and overview
+- `.agent/workflows/` - Automated workflows for session management
 
 ---
 

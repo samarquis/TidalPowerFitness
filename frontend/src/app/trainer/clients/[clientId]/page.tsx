@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface WorkoutSession {
     id: string;
@@ -23,7 +24,7 @@ interface ClientInfo {
 }
 
 export default function ClientWorkoutsPage() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const params = useParams();
     const clientId = params?.clientId as string;
@@ -34,6 +35,8 @@ export default function ClientWorkoutsPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
@@ -41,29 +44,28 @@ export default function ClientWorkoutsPage() {
 
         if (isAuthenticated && clientId) {
             fetchClientWorkouts();
+        } else if (!isAuthenticated) {
+            router.push(`/login?redirect=/trainer/clients/${clientId}`);
         }
-    }, [isAuthenticated, user, router, clientId]);
+    }, [isAuthenticated, authLoading, user, router, clientId]);
 
     const fetchClientWorkouts = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/trainers/clients/${clientId}/workouts`, {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setWorkouts(data);
+            const response = await apiClient.getClientWorkouts(clientId);
+            if (response.data) {
+                setWorkouts(response.data);
 
                 // Get client info from first workout or fetch separately
-                if (data.length > 0) {
+                if (response.data.length > 0) {
                     // For now, we'll fetch client info from the clients list
                     fetchClientInfo();
                 }
-            } else if (response.status === 403) {
-                setError('You do not have access to this client');
-            } else {
-                setError('Failed to load client workouts');
+            } else if (response.error) {
+                if (response.error.includes('access')) {
+                    setError('You do not have access to this client');
+                } else {
+                    setError('Failed to load client workouts');
+                }
             }
         } catch (error) {
             console.error('Error fetching client workouts:', error);
@@ -75,13 +77,9 @@ export default function ClientWorkoutsPage() {
 
     const fetchClientInfo = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/trainers/my-clients`, {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const clients = await response.json();
+            const response = await apiClient.getMyClients();
+            if (response.data) {
+                const clients = response.data;
                 const client = clients.find((c: any) => c.id === clientId);
                 if (client) {
                     setClientInfo(client);
@@ -91,6 +89,14 @@ export default function ClientWorkoutsPage() {
             console.error('Error fetching client info:', error);
         }
     };
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;

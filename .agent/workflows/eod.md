@@ -24,8 +24,7 @@ The AI will:
 - Suggest what to tackle next session
 
 ## What Gets Updated
-- `PROGRESS.md` - Daily log with dated entries
-- `TODO.md` - Marks completed items and updates status
+- `PROJECT_STATUS.md` - Updates the "Active Session", "Master TODO", and "Session History" sections.
 - Session summary in the conversation
 
 ## Example

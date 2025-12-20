@@ -157,107 +157,148 @@ export default function ClassesPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="min-h-screen bg-black pt-24 pb-16 px-4">
             <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Class Schedule</h1>
-                    <p className="text-gray-600">Browse and book classes using your credits</p>
+                <div className="mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                        Class <span className="text-gradient">Schedule</span>
+                    </h1>
+                    <p className="text-gray-400 text-lg">Browse and book classes using your credits</p>
                 </div>
 
                 {/* Credits Display */}
                 {isAuthenticated && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-900">Your Credits</h2>
-                                <p className="text-3xl font-bold text-teal-600 mt-2">
-                                    {credits?.total || 0} {credits?.total === 1 ? 'Credit' : 'Credits'}
-                                </p>
+                    <div className="glass rounded-xl p-8 mb-12 border border-white/10">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="text-center md:text-left">
+                                <h2 className="text-xl font-semibold text-white mb-2">Available Credits</h2>
+                                <div className="text-5xl font-bold text-teal-400">
+                                    {credits?.total || 0}
+                                    <span className="text-lg text-gray-500 ml-2 font-normal">
+                                        {credits?.total === 1 ? 'Credit' : 'Credits'}
+                                    </span>
+                                </div>
                             </div>
-                            <a
-                                href="/packages"
-                                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
-                            >
-                                Buy More Credits
-                            </a>
+                            <div className="w-full md:w-auto">
+                                <a
+                                    href="/packages"
+                                    className="block text-center px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-500 hover:to-teal-500 text-white rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-teal-500/20"
+                                >
+                                    Purchase Packages
+                                </a>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* Error/Success Messages */}
                 {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl mb-8 animate-shake">
                         {error}
                     </div>
                 )}
                 {success && (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    <div className="bg-green-500/20 border border-green-500/50 text-green-200 px-6 py-4 rounded-xl mb-8">
                         {success}
                     </div>
                 )}
 
+                {/* Day Selection Tabs (Optional enhancement for better organization) */}
+
                 {/* Classes by Day */}
-                <div className="space-y-8">
+                <div className="space-y-16">
                     {classesByDay.map(({ day, classes: dayClasses }) => (
-                        <div key={day}>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">{day}</h2>
+                        <div key={day} className="scroll-mt-24">
+                            <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/10 pb-4 inline-block pr-12">
+                                {day}
+                            </h2>
                             {dayClasses.length === 0 ? (
-                                <p className="text-gray-500">No classes scheduled</p>
+                                <div className="bg-white/5 rounded-xl p-8 text-center text-gray-500 border border-dashed border-white/10">
+                                    No classes scheduled for {day}
+                                </div>
                             ) : (
-                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {dayClasses.map((classItem) => (
                                         <div
                                             key={classItem.id}
-                                            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+                                            className="glass rounded-xl p-6 border border-white/5 hover:border-teal-500/30 transition-all group overflow-hidden relative"
                                         >
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                            <div className="absolute top-0 right-0 p-4">
+                                                <span className="bg-teal-500/20 text-teal-400 text-xs font-bold px-3 py-1 rounded-full border border-teal-500/30">
+                                                    {classItem.category || 'Fitness'}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-2xl font-bold text-white mb-3 pt-4">
                                                 {classItem.name}
                                             </h3>
-                                            <p className="text-gray-600 text-sm mb-4">
+                                            <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[2.5rem]">
                                                 {classItem.description}
                                             </p>
-                                            <div className="space-y-2 text-sm text-gray-700 mb-4">
-                                                <div className="flex items-center">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    {classItem.start_time} • {classItem.duration_minutes} min
+
+                                            <div className="space-y-4 mb-8">
+                                                <div className="flex items-center text-gray-300">
+                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
+                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 uppercase font-bold">Time & Duration</div>
+                                                        <div className="text-sm">{classItem.start_time.slice(0, 5)} • {classItem.duration_minutes} min</div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                    </svg>
-                                                    {classItem.instructor_name}
+
+                                                <div className="flex items-center text-gray-300">
+                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
+                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 uppercase font-bold">Instructor</div>
+                                                        <div className="text-sm">{classItem.instructor_name}</div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                                    </svg>
-                                                    <span className="font-semibold text-teal-600">1 Credit</span>
+
+                                                <div className="flex items-center text-gray-300">
+                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
+                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 uppercase font-bold">Cost</div>
+                                                        <div className="text-sm font-semibold text-teal-400">1 Credit</div>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                             <button
                                                 onClick={() => handleBookClass(classItem.id)}
                                                 disabled={bookingClass === classItem.id || !isAuthenticated}
-                                                className="w-full py-2 px-4 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                                                className={`w-full py-4 px-6 rounded-xl font-bold transition-all flex items-center justify-center ${isAuthenticated
+                                                        ? 'bg-white/10 hover:bg-teal-600 text-white border border-white/10 hover:border-teal-500'
+                                                        : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
+                                                    }`}
                                             >
                                                 {bookingClass === classItem.id ? (
                                                     <>
-                                                        <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <svg className="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                         </svg>
-                                                        Booking...
+                                                        Processing...
                                                     </>
                                                 ) : (
-                                                    isAuthenticated ? 'Book Class' : 'Login to Book'
+                                                    isAuthenticated ? 'Book This Class' : 'Login to Book'
                                                 )}
                                             </button>
                                         </div>

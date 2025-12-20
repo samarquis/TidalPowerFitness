@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface WorkoutSession {
     id: string;
@@ -15,37 +16,36 @@ interface WorkoutSession {
 }
 
 export default function HistoryPage() {
-    const { user, token } = useAuth();
+    const { user, loading: authLoading, token } = useAuth();
     const router = useRouter();
     const [sessions, setSessions] = useState<WorkoutSession[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Wait for auth to finish loading
+        if (authLoading) return;
+
         // Redirect to login if not authenticated
         if (!user) {
             router.push('/login?redirect=/workouts/history');
             return;
         }
         fetchSessions();
-    }, [user, router]);
+    }, [user, authLoading, router]);
 
     const fetchSessions = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-sessions`, {
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch sessions: ${response.status}`);
+            const response = await apiClient.getWorkoutSessions();
+            if (response.data) {
+                const data = response.data;
+                setSessions(Array.isArray(data) ? data : []);
+            } else if (response.error) {
+                throw new Error(response.error);
             }
-
-            const data = await response.json();
-            setSessions(Array.isArray(data) ? data : []);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching sessions:', error);
-            setError('Failed to load workout history. Please try again later.');
+            setError(error.message || 'Failed to load workout history. Please try again later.');
         } finally {
             setLoading(false);
         }

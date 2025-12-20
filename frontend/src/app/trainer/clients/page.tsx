@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface Client {
     id: string;
@@ -16,7 +17,7 @@ interface Client {
 }
 
 export default function MyClientsPage() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const [clients, setClients] = useState<Client[]>([]);
     const [filteredClients, setFilteredClients] = useState<Client[]>([]);
@@ -24,6 +25,8 @@ export default function MyClientsPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
             return;
@@ -31,8 +34,10 @@ export default function MyClientsPage() {
 
         if (isAuthenticated) {
             fetchClients();
+        } else if (!isAuthenticated) {
+            router.push('/login?redirect=/trainer/clients');
         }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, authLoading, user, router]);
 
     useEffect(() => {
         if (searchTerm) {
@@ -48,15 +53,10 @@ export default function MyClientsPage() {
 
     const fetchClients = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/trainers/my-clients`, {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setClients(data);
-                setFilteredClients(data);
+            const response = await apiClient.getMyClients();
+            if (response.data) {
+                setClients(response.data);
+                setFilteredClients(response.data);
             }
         } catch (error) {
             console.error('Error fetching clients:', error);
@@ -64,6 +64,14 @@ export default function MyClientsPage() {
             setLoading(false);
         }
     };
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+            </div>
+        );
+    }
 
     if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;
