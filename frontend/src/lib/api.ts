@@ -131,6 +131,12 @@ class ApiClient {
         });
     }
 
+    async impersonateUser(userId: string) {
+        return this.request<{ token: string; user: any }>(`/users/${userId}/impersonate`, {
+            method: 'POST',
+        });
+    }
+
     // Trainer endpoints
     async getTrainers() {
         return this.request<any>('/trainers', { method: 'GET' });

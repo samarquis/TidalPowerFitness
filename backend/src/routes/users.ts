@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
+import { generateToken } from '../utils/jwt';
 import UserCreditModel from '../models/UserCredit';
 
 const router = express.Router();
@@ -195,6 +195,63 @@ router.post('/:id/reset-password', authenticate, authorize('admin'), async (req:
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ error: 'Failed to reset password' });
+    }
+});
+
+// Impersonate user (admin only)
+router.post('/:id/impersonate', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const adminId = req.user!.id;
+
+        // Prevent impersonating yourself
+        if (id === adminId) {
+            res.status(400).json({ error: 'Cannot impersonate yourself' });
+            return;
+        }
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
+        // Generate impersonation token
+        const token = generateToken({
+            id: user.id,
+            userId: user.id,
+            email: user.email,
+            roles: user.roles,
+            is_demo_mode_enabled: false, // Default to false for impersonation unless tracked in DB
+            impersonatedBy: adminId
+        });
+
+        // Set cookie
+        const isProduction = process.env.NODE_ENV === 'production';
+        const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: isProduction && !isLocalhost,
+            sameSite: (isProduction && !isLocalhost) ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/',
+        });
+
+        res.status(200).json({
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                roles: user.roles
+            }
+        });
+    } catch (error) {
+        console.error('Impersonation error:', error);
+        res.status(500).json({ error: 'Failed to impersonate user' });
     }
 });
 

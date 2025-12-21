@@ -33,8 +33,8 @@ This file is the **single source of truth** for the current state of the Tidal P
 
 ### 🔴 High Priority (Code Review Findings - 2025-12-21)
 - [ ] **Complete Square Payment Integration** - `backend/src/services/paymentService.ts` has TODO for Square checkout
-- [ ] **Implement Admin User Impersonation** - `frontend/src/app/admin/users/page.tsx:163` has TODO for impersonation feature
-- [ ] **Add TypeScript Types for Request Objects** - Replace `(req as any)` with proper `AuthenticatedRequest` interface across controllers
+- [x] **Implement Admin User Impersonation** - Implemented full stack (AuthContext refresh + cookie support)
+- [ ] **Add TypeScript Types for Request Objects** - `AuthenticatedRequest` type created. `workoutAssignmentController` refactored. Pending: `workoutTemplateController`, `workoutSessionController`.
 - [ ] **Resume Trainer Workflow Audit** - Once auth/roles are standardized
 - [ ] **Verify Production Migrations** - Apply migrations 010 and 011 via admin UI
 

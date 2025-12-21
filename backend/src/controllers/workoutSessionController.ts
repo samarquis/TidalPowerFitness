@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../types/auth';
 import WorkoutSession from '../models/WorkoutSession';
 
 class WorkoutSessionController {
     // Get all sessions for trainer (or all for admin)
     async getSessions(req: Request, res: Response): Promise<void> {
         try {
-            const trainerId = req.user?.id;
-            const isAdmin = req.user?.roles?.includes('admin');
+            const authReq = req as AuthenticatedRequest;
+            const trainerId = authReq.user?.id;
+            const isAdmin = authReq.user?.roles?.includes('admin');
 
             if (!trainerId && !isAdmin) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -53,11 +55,12 @@ class WorkoutSessionController {
     // Create new session
     async createSession(req: Request, res: Response): Promise<void> {
         try {
+            const authReq = req as AuthenticatedRequest;
             const sessionData = {
                 ...req.body,
-                trainer_id: (req.user?.roles?.includes('admin') && req.body.trainer_id)
+                trainer_id: (authReq.user?.roles?.includes('admin') && req.body.trainer_id)
                     ? req.body.trainer_id
-                    : req.user?.id
+                    : authReq.user?.id
             };
 
             const session = await WorkoutSession.create(sessionData);
@@ -71,10 +74,11 @@ class WorkoutSessionController {
     // Update session
     async updateSession(req: Request, res: Response): Promise<void> {
         try {
+            const authReq = req as AuthenticatedRequest;
             const { id } = req.params;
             const updates = req.body;
-            const userId = (req as any).user?.id;
-            const isAdmin = (req as any).user?.roles?.includes('admin');
+            const userId = authReq.user?.id;
+            const isAdmin = authReq.user?.roles?.includes('admin');
 
             // Fetch session to verify ownership
             const session = await WorkoutSession.getById(id);
@@ -111,7 +115,9 @@ class WorkoutSessionController {
         try {
             const logData = {
                 ...req.body,
-                logged_by: req.user?.id
+            const logData = {
+                ...req.body,
+                logged_by: (req as AuthenticatedRequest).user?.id
             };
 
             const log = await WorkoutSession.logExercise(logData);
@@ -148,7 +154,9 @@ class WorkoutSessionController {
             for (const logData of logs) {
                 const log = await WorkoutSession.logExercise({
                     ...logData,
-                    logged_by: req.user?.id
+                const log = await WorkoutSession.logExercise({
+                    ...logData,
+                    logged_by: (req as AuthenticatedRequest).user?.id
                 });
                 results.push(log);
             }
@@ -181,11 +189,12 @@ class WorkoutSessionController {
     async getClientHistory(req: Request, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId;
+            const authReq = req as AuthenticatedRequest;
 
             // Authorization check: User can only see their own history unless they are trainer/admin
-            if (req.user?.id !== clientId &&
-                !req.user?.roles?.includes('trainer') &&
-                !req.user?.roles?.includes('admin')) {
+            if (authReq.user?.id !== clientId &&
+                !authReq.user?.roles?.includes('trainer') &&
+                !authReq.user?.roles?.includes('admin')) {
                 res.status(403).json({ error: 'Unauthorized to view this history' });
                 return;
             }
@@ -202,11 +211,12 @@ class WorkoutSessionController {
     async getClientStats(req: Request, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId;
+            const authReq = req as AuthenticatedRequest;
 
             // Authorization check
-            if (req.user?.id !== clientId &&
-                !req.user?.roles?.includes('trainer') &&
-                !req.user?.roles?.includes('admin')) {
+            if (authReq.user?.id !== clientId &&
+                !authReq.user?.roles?.includes('trainer') &&
+                !authReq.user?.roles?.includes('admin')) {
                 res.status(403).json({ error: 'Unauthorized' });
                 return;
             }

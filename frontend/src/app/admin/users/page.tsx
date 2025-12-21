@@ -19,7 +19,7 @@ interface User {
 }
 
 export default function UserManagementPage() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, refreshUser } = useAuth();
     const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -158,9 +158,27 @@ export default function UserManagementPage() {
         }
     };
 
-    const handleViewAsUser = (userToImpersonate: User) => {
-        console.log(`Viewing as user: ${userToImpersonate.first_name} ${userToImpersonate.last_name} (${userToImpersonate.email})`);
-        // TODO: Implement backend API call and context update for impersonation
+    const handleViewAsUser = async (userToImpersonate: User) => {
+        if (!confirm(`Are you sure you want to log in as ${userToImpersonate.first_name} ${userToImpersonate.last_name}?`)) {
+            return;
+        }
+
+        try {
+            const { data, error } = await apiClient.impersonateUser(userToImpersonate.id);
+
+            if (data && data.token) {
+                // Token is now set in HttpOnly cookie by backend
+                // Refresh user state to reflect the new identity
+                await refreshUser();
+                router.push('/dashboard');
+            } else {
+                console.error('Impersonation failed:', error);
+                alert(`Failed to impersonate user: ${error}`);
+            }
+        } catch (error) {
+            console.error('Impersonation error:', error);
+            alert('An error occurred while trying to impersonate user');
+        }
     };
 
     const getRoleBadgeColor = (role: string) => {

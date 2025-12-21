@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../types/auth';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 
 class WorkoutTemplateController {
     // Get all templates for trainer
     async getTemplates(req: Request, res: Response): Promise<void> {
         try {
-            const trainerId = req.user?.id;
+            const trainerId = (req as AuthenticatedRequest).user?.id;
             if (!trainerId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
@@ -42,7 +43,9 @@ class WorkoutTemplateController {
         try {
             const templateData = {
                 ...req.body,
-                trainer_id: req.user?.id
+            const templateData = {
+                ...req.body,
+                trainer_id: (req as AuthenticatedRequest).user?.id
             };
 
             const template = await WorkoutTemplate.create(templateData);
@@ -56,7 +59,8 @@ class WorkoutTemplateController {
     // Copy template
     async copyTemplate(req: Request, res: Response): Promise<void> {
         try {
-            const trainerId = req.user?.id;
+            const authReq = req as AuthenticatedRequest;
+            const trainerId = authReq.user?.id;
             if (!trainerId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
@@ -74,9 +78,10 @@ class WorkoutTemplateController {
     // Delete template
     async deleteTemplate(req: Request, res: Response): Promise<void> {
         try {
+            const authReq = req as AuthenticatedRequest;
             const templateId = req.params.id;
-            const userId = (req as any).user?.id;
-            const isAdmin = (req as any).user?.roles?.includes('admin');
+            const userId = authReq.user?.id;
+            const isAdmin = authReq.user?.roles?.includes('admin');
 
             // Fetch template to verify ownership
             const template = await WorkoutTemplate.getById(templateId);

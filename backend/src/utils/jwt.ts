@@ -14,6 +14,7 @@ export interface JWTPayload {
     role?: 'client' | 'trainer' | 'admin'; // Keep for backward compatibility
     roles: string[];
     is_demo_mode_enabled: boolean;
+    impersonatedBy?: string; // ID of the admin impersonating this user
 }
 
 // Generate JWT token
