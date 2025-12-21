@@ -31,23 +31,46 @@ This file is the **single source of truth** for the current state of the Tidal P
 
 ## 🛠️ Master TODO & Roadmap
 
-### 🔴 High Priority
-- [ ] **Resume Trainer Workflow Audit** - Once auth/roles are standardized.
-- [ ] **Verify Production Migrations** - Ensure all recent migrations are executed on Render production DB.
+### 🔴 High Priority (Code Review Findings - 2025-12-21)
+- [ ] **Complete Square Payment Integration** - `backend/src/services/paymentService.ts` has TODO for Square checkout
+- [ ] **Implement Admin User Impersonation** - `frontend/src/app/admin/users/page.tsx:163` has TODO for impersonation feature
+- [ ] **Add TypeScript Types for Request Objects** - Replace `(req as any)` with proper `AuthenticatedRequest` interface across controllers
+- [ ] **Resume Trainer Workflow Audit** - Once auth/roles are standardized
+- [ ] **Verify Production Migrations** - Apply migrations 010 and 011 via admin UI
 
-### 🟡 Medium Priority
+### 🟡 Medium Priority (Code Quality & Security)
+- [ ] **Replace console.log with Proper Logger** - Implement winston logger for production
+- [ ] **Add Input Validation to All Endpoints** - Use express-validator consistently
+- [ ] **Implement Rate Limiting** - Protect against API abuse (100 req/15min general, 5 req/15min auth)
+- [ ] **Configure Database Connection Pooling** - Add max connections, timeouts, error handling
+- [ ] **Add CSRF Protection** - Implement csurf middleware for state-changing routes
+- [ ] **Implement Error Boundaries** - Add React error boundary for graceful error handling
+- [ ] **Add Loading Skeletons** - Replace generic "Loading..." with skeleton components
+- [ ] **Implement Optimistic UI Updates** - For cart and booking operations
+- [ ] **Add Pagination to List Endpoints** - `/api/classes`, `/api/trainers`, `/api/exercises`
+- [ ] **Add Database Indexes** - For frequently queried columns (user email, booking IDs, session dates)
+- [ ] **Implement Request Timeout Handling** - 30s timeout for API requests
+- [ ] **Add Environment Variable Validation** - Validate required env vars on startup
 - [x] **Real-time workout logging**
 - [x] **Client progress dashboard** (Body metrics + PR detection)
 - [ ] **Attendance reports**
 - [ ] **Multi-attendee bookings**
-- [x] **Real-time workout logging**
-- [x] **Client progress dashboard** (Body metrics + PR detection)
-- [ ] **Trainer Client Data Access**: Enhance trainers' ability to see client progress from their dashboard.
-- [x] **Refactor Role System**: Migrated from `role` column to strict `user_roles` table.
+- [ ] **Trainer Client Data Access**: Enhance trainers' ability to see client progress from their dashboard
+- [x] **Refactor Role System**: Migrated from `role` column to strict `user_roles` table
 
-### 🟢 Low Priority
-- [ ] Input validation hardening across all endpoints.
-- [ ] Expand E2E test coverage with Cypress.
+### 🟢 Low Priority (Polish & Documentation)
+- [ ] **Add JSDoc Comments** - Document all public APIs
+- [ ] **Implement Unit Tests** - For critical business logic (ownership enforcement, etc.)
+- [ ] **Implement Soft Deletes** - Add `deleted_at` column to critical tables
+- [ ] **Improve Accessibility** - Add ARIA labels and roles
+- [ ] **Optimize Images** - Use Next.js Image component
+- [ ] **Add Breadcrumb Navigation** - For deep pages (template details, client details)
+- [ ] **Document Backup Strategy** - Add to README or operations guide
+- [ ] **Standardize Naming Conventions** - Ensure consistent camelCase/snake_case usage
+- [ ] Input validation hardening across all endpoints
+- [ ] Expand E2E test coverage with Cypress
+
+**📄 Full Site Review**: See `SITE_REVIEW.md` for detailed analysis, code examples, and implementation roadmap
 
 ---
 
