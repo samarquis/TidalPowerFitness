@@ -1,8 +1,10 @@
+import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User';
 import { authenticate, authorize } from '../middleware/auth';
 import { generateToken } from '../utils/jwt';
 import UserCreditModel from '../models/UserCredit';
+import { AuthenticatedRequest } from '../types/auth';
 
 const router = express.Router();
 
@@ -202,7 +204,8 @@ router.post('/:id/reset-password', authenticate, authorize('admin'), async (req:
 router.post('/:id/impersonate', authenticate, authorize('admin'), async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const adminId = req.user!.id;
+        const authReq = req as AuthenticatedRequest;
+        const adminId = authReq.user!.id;
 
         // Prevent impersonating yourself
         if (id === adminId) {
@@ -259,9 +262,10 @@ router.post('/:id/impersonate', authenticate, authorize('admin'), async (req: Re
 router.get('/:id/credits', authenticate, async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
+        const authReq = req as AuthenticatedRequest;
 
         // Allow users to view their own credits, or admins/trainers to view any
-        if (req.user!.id !== id && !req.user!.roles.includes('admin') && !req.user!.roles.includes('trainer')) {
+        if (authReq.user!.id !== id && !authReq.user!.roles.includes('admin') && !authReq.user!.roles.includes('trainer')) {
             res.status(403).json({ error: 'Unauthorized' });
             return;
         }

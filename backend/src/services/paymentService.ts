@@ -69,7 +69,7 @@ class PaymentService {
                                 name: pkg.name,
                                 quantity: '1',
                                 basePriceMoney: {
-                                    amount: BigInt(Math.round(pkg.price * 100)), // Convert to cents
+                                    amount: BigInt(pkg.price_cents), // Already in cents
                                     currency: 'USD'
                                 }
                             }
@@ -81,7 +81,7 @@ class PaymentService {
                 });
 
                 // Check response structure - use casting if type definitions are incomplete in this version
-                const result: any = response.result || response;
+                const result: any = (response as any).result || response;
 
                 if (result.paymentLink?.url) {
                     return { url: result.paymentLink.url };
