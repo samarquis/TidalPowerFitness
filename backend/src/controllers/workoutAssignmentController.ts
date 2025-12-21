@@ -49,7 +49,6 @@ export const getClassesForAssignment = async (req: Request, res: Response) => {
 export const assignWorkout = async (req: Request, res: Response) => {
     try {
         const {
-            trainer_id,
             session_date,
             start_time,
             template_id,
@@ -61,9 +60,16 @@ export const assignWorkout = async (req: Request, res: Response) => {
             notes
         } = req.body;
 
+        // Get trainer_id from authenticated user (prevents impersonation)
+        const trainer_id = (req as any).user?.id;
+
         // Validation
-        if (!trainer_id || !session_date) {
-            return res.status(400).json({ error: 'Trainer ID and session date are required' });
+        if (!trainer_id) {
+            return res.status(401).json({ error: 'Unauthorized - must be authenticated as trainer' });
+        }
+
+        if (!session_date) {
+            return res.status(400).json({ error: 'Session date is required' });
         }
 
         // Must have either class_id or participant_ids
@@ -90,8 +96,17 @@ export const assignWorkout = async (req: Request, res: Response) => {
             });
 
             if (existingSessions.length > 0) {
-                // Update existing session
+                // Update existing session - verify ownership first
                 session = existingSessions[0];
+
+                // Only allow update if trainer owns the session or is admin
+                const isAdmin = (req as any).user?.roles?.includes('admin');
+                if (session.trainer_id !== trainer_id && !isAdmin) {
+                    return res.status(403).json({
+                        error: 'Forbidden - you can only update your own workout sessions'
+                    });
+                }
+
                 await WorkoutSessionModel.update(session.id, {
                     trainer_id,
                     template_id,

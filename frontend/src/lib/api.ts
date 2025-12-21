@@ -34,6 +34,21 @@ class ApiClient {
                 credentials: 'include', // Send cookies with request
             });
 
+            // Global error handling for authentication/authorization
+            if (response.status === 401) {
+                // Unauthorized - clear auth and redirect to login
+                if (typeof window !== 'undefined') {
+                    // Clear any client-side auth state
+                    window.location.href = '/login';
+                }
+                return { error: 'Unauthorized - please log in' };
+            }
+
+            if (response.status === 403) {
+                // Forbidden - user doesn't have permission
+                return { error: 'You do not have permission to perform this action' };
+            }
+
             if (response.status === 204) {
                 return { data: {} as T };
             }

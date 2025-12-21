@@ -74,7 +74,27 @@ class WorkoutTemplateController {
     // Delete template
     async deleteTemplate(req: Request, res: Response): Promise<void> {
         try {
-            const success = await WorkoutTemplate.delete(req.params.id);
+            const templateId = req.params.id;
+            const userId = (req as any).user?.id;
+            const isAdmin = (req as any).user?.roles?.includes('admin');
+
+            // Fetch template to verify ownership
+            const template = await WorkoutTemplate.getById(templateId);
+
+            if (!template) {
+                res.status(404).json({ error: 'Template not found' });
+                return;
+            }
+
+            // Verify ownership (only owner or admin can delete)
+            if (template.trainer_id !== userId && !isAdmin) {
+                res.status(403).json({
+                    error: 'Forbidden - you can only delete your own templates'
+                });
+                return;
+            }
+
+            const success = await WorkoutTemplate.delete(templateId);
 
             if (!success) {
                 res.status(404).json({ error: 'Template not found' });

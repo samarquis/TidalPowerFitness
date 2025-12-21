@@ -73,9 +73,24 @@ class WorkoutSessionController {
         try {
             const { id } = req.params;
             const updates = req.body;
+            const userId = (req as any).user?.id;
+            const isAdmin = (req as any).user?.roles?.includes('admin');
 
-            // Optional: Check permissions (trainer owns session or admin)
-            // For now assuming authorize('trainer', 'admin') middleware covers basic access
+            // Fetch session to verify ownership
+            const session = await WorkoutSession.getById(id);
+
+            if (!session) {
+                res.status(404).json({ error: 'Session not found' });
+                return;
+            }
+
+            // Check permissions (trainer owns session or admin)
+            if (session.trainer_id !== userId && !isAdmin) {
+                res.status(403).json({
+                    error: 'Forbidden - you can only update your own workout sessions'
+                });
+                return;
+            }
 
             const updatedSession = await WorkoutSession.update(id, updates);
 
