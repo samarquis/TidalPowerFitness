@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 
 interface Exercise {
@@ -212,6 +213,13 @@ export default function NewTemplatePage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Back Navigation */}
+                <div className="mb-4">
+                    <Link href="/workouts/templates" className="text-teal-400 hover:text-teal-300 inline-flex items-center gap-2">
+                        ← Back to Templates
+                    </Link>
+                </div>
+
                 <h1 className="text-4xl font-bold mb-8">
                     Create <span className="text-gradient">Workout Template</span>
                 </h1>

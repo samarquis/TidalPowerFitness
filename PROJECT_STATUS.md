@@ -54,7 +54,7 @@ This file is the **single source of truth** for the current state of the Tidal P
 ## 🐛 Known Issues & Bug Tracker
 - [~] **Trainer Update Button**: User reports "Update Trainer" button not working in edit profile.
   - *Investigation*: Code in `admin/trainers/page.tsx` appears correct - calls `apiClient.updateTrainer()` properly. May be a backend issue or already resolved.
-- [ ] **Trainer Dashboard Navigation**: Needs easier ways to go back to the dashboard from specific manage pages.
+- [x] **Trainer Dashboard Navigation**: Added back navigation links to workout template creation page. Most pages already have proper back buttons.
 - [~] **Workout Assignment UI**: "Choose workout type" reportedly locked to "Use Template".
   - *Investigation*: Could not locate this specific UI element in `workouts/assign/page.tsx`. May be resolved or on different page.
 
