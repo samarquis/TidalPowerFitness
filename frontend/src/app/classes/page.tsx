@@ -38,6 +38,8 @@ export default function ClassesPage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
+
     useEffect(() => {
         fetchClasses();
         if (isAuthenticated && user) {
@@ -144,14 +146,16 @@ export default function ClassesPage() {
     };
 
     // Group classes by day
-    const classesByDay = DAYS.map((day, dayIndex) => ({
+    const filteredDays = DAYS.map((day, index) => ({ day, index })).filter(({ index }) => selectedDay === -1 || index === selectedDay);
+
+    const classesByDay = filteredDays.map(({ day, index }) => ({
         day,
         classes: classes.filter(c => {
             // Check if class is scheduled for this day (supporting both legacy and new array format)
             if (c.days_of_week && c.days_of_week.length > 0) {
-                return c.days_of_week.includes(dayIndex);
+                return c.days_of_week.includes(index);
             }
-            return c.day_of_week === dayIndex;
+            return c.day_of_week === index;
         })
     }));
 
@@ -210,7 +214,30 @@ export default function ClassesPage() {
                     </div>
                 )}
 
-                {/* Day Selection Tabs (Optional enhancement for better organization) */}
+                {/* Day Selection Tabs */}
+                <div className="flex overflow-x-auto pb-4 mb-8 gap-2 no-scrollbar">
+                    <button
+                        onClick={() => setSelectedDay(-1)}
+                        className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === -1
+                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                            }`}
+                    >
+                        All Days
+                    </button>
+                    {DAYS.map((day, index) => (
+                        <button
+                            key={day}
+                            onClick={() => setSelectedDay(index)}
+                            className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === index
+                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                }`}
+                        >
+                            {day}
+                        </button>
+                    ))}
+                </div>
 
                 {/* Classes by Day */}
                 <div className="space-y-16">
@@ -285,8 +312,8 @@ export default function ClassesPage() {
                                                 onClick={() => handleBookClass(classItem.id)}
                                                 disabled={bookingClass === classItem.id || !isAuthenticated}
                                                 className={`w-full py-4 px-6 rounded-xl font-bold transition-all flex items-center justify-center ${isAuthenticated
-                                                        ? 'bg-white/10 hover:bg-teal-600 text-white border border-white/10 hover:border-teal-500'
-                                                        : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
+                                                    ? 'bg-white/10 hover:bg-teal-600 text-white border border-white/10 hover:border-teal-500'
+                                                    : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
                                                     }`}
                                             >
                                                 {bookingClass === classItem.id ? (

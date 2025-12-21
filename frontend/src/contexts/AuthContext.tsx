@@ -15,7 +15,7 @@ interface AuthContextType {
     user: User | null;
     token: string | null;
     loading: boolean;
-    login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    login: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: User }>;
     register: (userData: any) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     isAuthenticated: boolean;
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const { user } = response.data;
             // Token is set in HttpOnly cookie by backend
             setUser(user);
-            return { success: true };
+            return { success: true, user };
         }
         return { success: false, error: response.error };
     };

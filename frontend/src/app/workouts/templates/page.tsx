@@ -31,6 +31,7 @@ export default function WorkoutTemplatesPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
+    const [showAll, setShowAll] = useState(true); // Default to showing all
 
     useEffect(() => {
         if (authLoading) return;
@@ -45,14 +46,15 @@ export default function WorkoutTemplatesPage() {
         } else {
             router.push('/login?redirect=/workouts/templates');
         }
-    }, [isAuthenticated, authLoading, user, router]);
+    }, [isAuthenticated, authLoading, user, router, showAll]); // Re-fetch when showAll changes
 
     const fetchTemplates = async () => {
         try {
-            const response = await apiClient.getWorkoutTemplates();
+            // If showAll is true, we ask for public ones too (default).
+            // If false, we explicitly pass false.
+            const response = await apiClient.getWorkoutTemplates(showAll);
             if (response.data) {
                 const data = response.data;
-                // Handle both array response and object with templates property
                 setTemplates(Array.isArray(data) ? data : (data.templates || []));
             } else if (response.error) {
                 console.error('API Error fetching templates:', response.error);
@@ -60,7 +62,7 @@ export default function WorkoutTemplatesPage() {
             }
         } catch (error) {
             console.error('Error fetching templates:', error);
-            setTemplates([]); // Set empty array on error
+            setTemplates([]);
         } finally {
             setLoading(false);
         }
@@ -79,7 +81,7 @@ export default function WorkoutTemplatesPage() {
             await fetchTemplates();
         } catch (error) {
             console.error('Error deleting template:', error);
-            alert('Failed to delete template');
+            alert('Failed to delete template: ' + error);
         }
     };
 
@@ -108,7 +110,7 @@ export default function WorkoutTemplatesPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/dashboard" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
                         &larr; Back to Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -120,7 +122,7 @@ export default function WorkoutTemplatesPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                <div className="mb-8 flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
                     <Link
                         href="/workouts/templates/new"
                         className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
@@ -128,7 +130,17 @@ export default function WorkoutTemplatesPage() {
                         + Create Template
                     </Link>
 
-                    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto items-center">
+                        <label className="flex items-center gap-2 text-white cursor-pointer bg-white/5 px-4 py-3 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={showAll}
+                                onChange={(e) => setShowAll(e.target.checked)}
+                                className="w-5 h-5 rounded border-gray-600 text-teal-600 focus:ring-teal-500"
+                            />
+                            <span>Show Shared/Admin Templates</span>
+                        </label>
+
                         <input
                             type="text"
                             placeholder="Search templates..."
@@ -167,51 +179,81 @@ export default function WorkoutTemplatesPage() {
                     </div>
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredTemplates.map((template) => (
-                            <div key={template.id} className="glass rounded-xl p-6 hover:bg-white/10 transition-all">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-xl font-bold text-white">{template.name}</h3>
-                                    {template.difficulty_level && (
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${DIFFICULTY_COLORS[template.difficulty_level as keyof typeof DIFFICULTY_COLORS] || 'bg-gray-500/20 text-gray-400'}`}>
-                                            {template.difficulty_level}
-                                        </span>
-                                    )}
-                                </div>
+                        {filteredTemplates.map((template) => {
+                            const isOwner = template.trainer_id === user?.id;
+                            const isShared = !isOwner;
 
-                                {template.description && (
-                                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                                        {template.description}
-                                    </p>
-                                )}
+                            return (
+                                <div key={template.id} className={`glass rounded-xl p-6 hover:bg-white/10 transition-all relative ${isShared ? 'border-l-4 border-l-blue-500' : ''}`}>
+                                    {isShared && (
+                                        <div className="absolute top-4 right-4 bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full border border-blue-500/30">
+                                            Unknown (Shared)
+                                        </div>
+                                    )}
 
-                                <div className="flex flex-wrap gap-2 mb-4 text-sm text-gray-400">
-                                    {template.estimated_duration_minutes && (
-                                        <span>⏱️ {template.estimated_duration_minutes} min</span>
-                                    )}
-                                    {template.exercise_count !== undefined && (
-                                        <span>💪 {template.exercise_count} exercises</span>
-                                    )}
-                                    {template.workout_type_name && (
-                                        <span>🏋️ {template.workout_type_name}</span>
-                                    )}
-                                </div>
+                                    <div className="flex justify-between items-start mb-4 pr-16">
+                                        <h3 className="text-xl font-bold text-white">{template.name}</h3>
+                                    </div>
 
-                                <div className="flex gap-2">
-                                    <Link
-                                        href={`/workouts/templates/${template.id}`}
-                                        className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-semibold text-center transition-all"
-                                    >
-                                        View
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(template.id)}
-                                        className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-sm font-semibold transition-all"
-                                    >
-                                        Delete
-                                    </button>
+                                    <div className="flex gap-2 mb-4">
+                                        {template.difficulty_level && (
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${DIFFICULTY_COLORS[template.difficulty_level as keyof typeof DIFFICULTY_COLORS] || 'bg-gray-500/20 text-gray-400'}`}>
+                                                {template.difficulty_level}
+                                            </span>
+                                        )}
+                                        {isShared && (
+                                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-900/40 text-blue-300 border border-blue-800">
+                                                Shared
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {template.description && (
+                                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                                            {template.description}
+                                        </p>
+                                    )}
+
+                                    <div className="flex flex-wrap gap-2 mb-4 text-sm text-gray-400">
+                                        {template.estimated_duration_minutes && (
+                                            <span>⏱️ {template.estimated_duration_minutes} min</span>
+                                        )}
+                                        {template.exercise_count !== undefined && (
+                                            <span>💪 {template.exercise_count} exercises</span>
+                                        )}
+                                        {template.workout_type_name && (
+                                            <span>🏋️ {template.workout_type_name}</span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <Link
+                                            href={`/workouts/templates/${template.id}`}
+                                            className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-semibold text-center transition-all"
+                                        >
+                                            View
+                                        </Link>
+                                        {isOwner && (
+                                            <button
+                                                onClick={() => handleDelete(template.id)}
+                                                className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-sm font-semibold transition-all"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
+                                        {!isOwner && (
+                                            <button
+                                                onClick={() => apiClient.copyWorkoutTemplate(template.id).then(() => { fetchTemplates(); alert('Template copied!') })}
+                                                className="px-4 py-2 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded-lg text-sm font-semibold transition-all"
+                                                title="Copy to my templates"
+                                            >
+                                                Copy
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>

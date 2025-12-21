@@ -23,7 +23,12 @@ function LoginContent() {
         const result = await login(email, password);
 
         if (result.success) {
-            router.push(redirectPath);
+            // Check roles for redirect
+            if (result.user?.roles?.includes('trainer') || result.user?.roles?.includes('admin')) {
+                router.push('/dashboard');
+            } else {
+                router.push(redirectPath);
+            }
         } else {
             setError(result.error || 'Login failed');
             setLoading(false);

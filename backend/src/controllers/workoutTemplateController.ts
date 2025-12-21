@@ -43,8 +43,6 @@ class WorkoutTemplateController {
         try {
             const templateData = {
                 ...req.body,
-            const templateData = {
-                ...req.body,
                 trainer_id: (req as AuthenticatedRequest).user?.id
             };
 

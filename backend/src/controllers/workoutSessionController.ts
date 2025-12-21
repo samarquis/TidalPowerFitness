@@ -113,11 +113,10 @@ class WorkoutSessionController {
     // Log exercise set
     async logExercise(req: Request, res: Response): Promise<void> {
         try {
+            const authReq = req as AuthenticatedRequest;
             const logData = {
                 ...req.body,
-            const logData = {
-                ...req.body,
-                logged_by: (req as AuthenticatedRequest).user?.id
+                logged_by: authReq.user?.id
             };
 
             const log = await WorkoutSession.logExercise(logData);
@@ -143,6 +142,7 @@ class WorkoutSessionController {
     // Bulk log exercises
     async bulkLogExercises(req: Request, res: Response): Promise<void> {
         try {
+            const authReq = req as AuthenticatedRequest;
             const { logs } = req.body;
 
             if (!Array.isArray(logs)) {
@@ -154,9 +154,7 @@ class WorkoutSessionController {
             for (const logData of logs) {
                 const log = await WorkoutSession.logExercise({
                     ...logData,
-                const log = await WorkoutSession.logExercise({
-                    ...logData,
-                    logged_by: (req as AuthenticatedRequest).user?.id
+                    logged_by: authReq.user?.id
                 });
                 results.push(log);
             }

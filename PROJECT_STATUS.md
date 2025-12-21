@@ -32,7 +32,7 @@ This file is the **single source of truth** for the current state of the Tidal P
 ## 🛠️ Master TODO & Roadmap
 
 ### 🔴 High Priority (Code Review Findings - 2025-12-21)
-- [ ] **Complete Square Payment Integration** - `backend/src/services/paymentService.ts` has TODO for Square checkout
+- [x] **Complete Square Payment Integration** - Verified & Configured with Sandbox.
 - [x] **Implement Admin User Impersonation** - Implemented full stack (AuthContext refresh + cookie support)
 - [ ] **Add TypeScript Types for Request Objects** - `AuthenticatedRequest` type created. `workoutAssignmentController` refactored. Pending: `workoutTemplateController`, `workoutSessionController`.
 - [ ] **Resume Trainer Workflow Audit** - Once auth/roles are standardized
@@ -57,6 +57,37 @@ This file is the **single source of truth** for the current state of the Tidal P
 - [ ] **Multi-attendee bookings**
 - [ ] **Trainer Client Data Access**: Enhance trainers' ability to see client progress from their dashboard
 - [x] **Refactor Role System**: Migrated from `role` column to strict `user_roles` table
+
+### 🔵 Feature Requests (User Feedback 2025-12-21)
+
+#### Trainer Workflow Overhaul
+- [x] **Classes UI**: Redesign to avoid excessive scrolling (Compact/Grid view).
+- [x] **Dashboard Redirect**: Redirect trainers directly to Dashboard on login (Hide 'Classes' menu).
+- [x] **Shared Templates**: Allow trainers to view others' templates (Checkbox: "Show All / Admin Templates").
+- [ ] **Assignment UI**:
+    - [ ] Improve Start Time picker (Clock UI).
+    - [ ] Fix "Use Template" picker (currently empty/hidden).
+- [ ] **Exercise Library**: Add "Push/Pull/Legs" filters.
+- [ ] **Today's Session**: Redesign large/confusing control.
+
+#### Admin Dashboard Improvements
+- [ ] **Classes Calendar View**: Add visual calendar view for class scheduling.
+- [ ] **Class Management**:
+    - [ ] Improve Time Picker (Clock control).
+    - [ ] Remove Acuity Appointment ID field.
+- [ ] **User Management**: Fix DataGridView scaling, replace text actions with Icon Buttons.
+- [ ] **Reference Data**: Polish UI, add instructions, use Icon Buttons.
+- [ ] **Packages**:
+    - [ ] Add full CRUD (Edit/Add/Delete).
+    - [ ] Add Manual Credit Adjustment (Credit back sick clients).
+
+#### Reporting System
+- [ ] **Trainer Reports**: Clients trained list + Date Range filter.
+- [ ] **Client Reports**: Class attendance history + Date Range filter.
+- [ ] **Admin Reports**: Site visits, error logs, business stats.
+
+#### Demo / Simulation
+- [ ] **Simulation Engine**: Generate 10 random attendees with full workout data (Sets/Reps/Weight) for all classes when in Demo Mode.
 
 ### 🟢 Low Priority (Polish & Documentation)
 - [ ] **Add JSDoc Comments** - Document all public APIs
@@ -88,30 +119,25 @@ This file is the **single source of truth** for the current state of the Tidal P
 ### 2025-12-21
 - **Session ID**: 536
 - **Accomplishments**:
-  - Fixed critical `JWT_SECRET` environment variable issue - backend now starts without crashes.
-  - **Implemented comprehensive security enhancements**:
-    - Fixed trainer impersonation vulnerability in `assignWorkout` (now uses JWT token ID).
-    - Added ownership verification to `deleteTemplate` and `updateSession`.
-    - Implemented global 401/403 error handling in frontend API client.
-  - **Improved trainer dashboard navigation**:
-    - Added back navigation link to workout template creation page.
-    - Verified all trainer and workout pages have proper navigation.
-  - Verified migrations 010 and 011 are ready for production deployment.
-  - Confirmed local development environment is fully functional (backend on port 5000, frontend on port 3001).
-  - Investigated known issues and added documentation notes.
-  - Committed and pushed all changes to GitHub (5 commits total).
-- **Notes**: All high-priority cleanup items, security enhancements, and navigation improvements are complete. Ready to apply migrations via production admin UI and resume trainer workflow audit.
+  - **Square Payment Integration**:
+      - Verified & configured Sandbox credentials with `backend/.env`.
+      - Refactored `paymentService.ts` to use correct `SquareClient` SDK syntax.
+      - Confirmed connectivity with verification script.
+  - **Trainer Workflow Improvements**:
+      - **Dashboard Redirect**: Trainers now redirect to `/dashboard` on login.
+      - **Shared Templates**: Implemented "Show Shared/Admin Templates" filter with Copy functionality.
+      - **Classes UI**: Redesigned to use Day Tabs, eliminating excessive scrolling.
+  - **Security & Fixes**:
+      - Fixed critical `JWT_SECRET` environment variable issue - backend now starts without crashes.
+      - Fixed trainer impersonation vulnerability in `assignWorkout` (now uses JWT token ID).
+      - Added ownership verification to `deleteTemplate` and `updateSession`.
+      - Implemented global 401/403 error handling in frontend API client.
+      - Verified migrations 010 and 011 are ready for production deployment.
+  - Committed and pushed all changes to GitHub.
+- **Notes**: Square integration is verified and ready for use. Trainer workflow received significant UI/UX upgrades. Ready to proceed with Assignment UI refinements.
 
-### 2025-12-20
-- **Session ID**: 535
-- **Accomplishments**: 
-  - Consolidated documentation into `PROJECT_STATUS.md`.
-  - Fixed `Link` import error in `admin/trainers/page.tsx` preventing production build.
-  - Implemented **Professional Admin Changelog** with timeline view and version tracking.
-  - Pushed all pending fixes to GitHub `main` branch.
-- **Notes**: Repository is now in sync with remote. Ready to resume Trainer Workflow Audit.
 > [!IMPORTANT]
-> Since the project is on the Free tier of Render, after the site redeploys, you **must go to the [Migration Page](file:///admin/migrations)** to apply the 010 and 011 SQL migrations.
+> Since the project is on the Free tier of Render, after the site redeploys, you **must go to the [Migration Page](file:///admin/migrations)** to apply the 010 and 011 SQL migrations to enable the `user_roles` table changes.
 
 ### 2025-12-09
 - **Accomplishments**: Fixed 401 Unauthorized errors by correcting CORS and Cookie settings.
