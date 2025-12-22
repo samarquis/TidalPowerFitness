@@ -193,7 +193,7 @@ export default function ClassesPage() {
                             <div className="w-full md:w-auto">
                                 <a
                                     href="/packages"
-                                    className="block text-center px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-500 hover:to-teal-500 text-white rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-teal-500/20"
+                                    className="block text-center px-8 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-pacific-cyan/20"
                                 >
                                     Purchase Packages
                                 </a>
@@ -219,8 +219,8 @@ export default function ClassesPage() {
                     <button
                         onClick={() => setSelectedDay(-1)}
                         className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === -1
-                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
                             }`}
                     >
                         All Days
@@ -230,8 +230,8 @@ export default function ClassesPage() {
                             key={day}
                             onClick={() => setSelectedDay(index)}
                             className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === index
-                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                 }`}
                         >
                             {day}

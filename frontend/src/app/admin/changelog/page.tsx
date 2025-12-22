@@ -82,7 +82,7 @@ export default function AdminChangelogPage() {
 
     const getCategoryStyles = (category: string) => {
         switch (category) {
-            case 'feature': return 'bg-teal-900/50 text-teal-200 border-teal-700';
+            case 'feature': return 'bg-dark-teal/50 text-turquoise-surf border-dark-teal';
             case 'fix': return 'bg-red-900/50 text-red-200 border-red-700';
             case 'improvement': return 'bg-blue-900/50 text-blue-200 border-blue-700';
             case 'security': return 'bg-purple-900/50 text-purple-200 border-purple-700';
@@ -181,7 +181,7 @@ export default function AdminChangelogPage() {
                                 />
                                 <label htmlFor="published" className="text-sm text-gray-300">Publish immediately</label>
                             </div>
-                            <button type="submit" className="w-full md:w-auto px-8 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-all">
+                            <button type="submit" className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-xl transition-all">
                                 Save Release Note
                             </button>
                         </form>
@@ -190,7 +190,7 @@ export default function AdminChangelogPage() {
 
                 <div className="relative">
                     {/* Vertical line for timeline */}
-                    <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-teal-500/50 via-gray-800 to-transparent sm:left-1/2 sm:-ml-[1px]" />
+                    <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-pacific-cyan/50 via-gray-800 to-transparent sm:left-1/2 sm:-ml-[1px]" />
 
                     {changelogs.length === 0 ? (
                         <div className="text-center py-20 bg-gray-900/20 rounded-3xl border border-dashed border-white/10">
@@ -201,11 +201,11 @@ export default function AdminChangelogPage() {
                             {changelogs.map((entry, index) => (
                                 <div key={entry.id} className="relative flex flex-col sm:flex-row items-start">
                                     {/* Timeline dot */}
-                                    <div className="absolute left-[6px] top-1.5 w-3 h-3 rounded-full bg-teal-500 ring-4 ring-black z-10 sm:left-1/2 sm:-ml-1.5" />
+                                    <div className="absolute left-[6px] top-1.5 w-3 h-3 rounded-full bg-pacific-cyan ring-4 ring-black z-10 sm:left-1/2 sm:-ml-1.5" />
 
                                     <div className={`w-full sm:w-[45%] flex flex-col ${index % 2 === 0 ? 'sm:items-end sm:text-right' : 'sm:order-last sm:items-start sm:text-left'} pl-10 sm:pl-0`}>
                                         <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-1">
-                                            <span className="text-xl font-bold font-mono text-teal-400">v{entry.version}</span>
+                                            <span className="text-xl font-bold font-mono text-turquoise-surf">v{entry.version}</span>
                                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getCategoryStyles(entry.category)}`}>
                                                 {entry.category}
                                             </span>
@@ -248,7 +248,7 @@ export default function AdminChangelogPage() {
                 </div>
 
                 <div className="mt-20 pt-10 border-t border-white/5 flex justify-center">
-                    <Link href="/admin" className="text-teal-400 hover:text-teal-300 text-sm font-semibold transition-colors flex items-center gap-2">
+                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan text-sm font-semibold transition-colors flex items-center gap-2">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         Back to Admin Dashboard
                     </Link>

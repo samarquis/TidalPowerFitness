@@ -233,7 +233,7 @@ function ActiveWorkoutContent() {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     <p className="mt-4 text-gray-400">Starting workout...</p>
                 </div>
             </div>
@@ -254,7 +254,7 @@ function ActiveWorkoutContent() {
     const progress = ((currentExerciseIndex + 1) / exercises.length) * 100;
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Progress */}
                 <div className="mb-8">
@@ -264,7 +264,7 @@ function ActiveWorkoutContent() {
                     </div>
                     <div className="w-full bg-gray-800 rounded-full h-2">
                         <div
-                            className="bg-gradient-to-r from-teal-6 to-teal-6 h-2 rounded-full transition-all"
+                            className="bg-gradient-to-r from-cerulean to-pacific-cyan h-2 rounded-full transition-all"
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
@@ -282,7 +282,7 @@ function ActiveWorkoutContent() {
                 {isResting && (
                     <div className="glass rounded-xl p-8 mb-6">
                         <p className="text-gray-400 mb-4 text-center">Rest Time</p>
-                        <p className="text-6xl font-bold text-teal-4 text-center mb-6">{restTimer}s</p>
+                        <p className="text-6xl font-bold text-turquoise-surf text-center mb-6">{restTimer}s</p>
 
                         {/* Timer Controls */}
                         <div className="flex flex-col gap-3">
@@ -317,7 +317,7 @@ function ActiveWorkoutContent() {
                                     setRestTimer(0);
                                     setIsResting(false);
                                 }}
-                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all"
+                                className="w-full px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all"
                             >
                                 Skip Rest
                             </button>
@@ -335,7 +335,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={reps}
                                     onChange={(e) => setReps(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-turquoise-surf"
                                 />
                             </div>
                             <div>
@@ -344,7 +344,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={weight}
                                     onChange={(e) => setWeight(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-turquoise-surf"
                                 />
                             </div>
                         </div>
@@ -356,13 +356,13 @@ function ActiveWorkoutContent() {
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="How did this set feel?"
-                                className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                             />
                         </div>
 
                         <button
                             onClick={completeSet}
-                            className="w-full px-6 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all"
+                            className="w-full px-6 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all"
                         >
                             Complete Set
                         </button>
@@ -376,7 +376,7 @@ function ActiveWorkoutContent() {
                             <h3 className="font-bold text-gray-200">Session History</h3>
                             <button
                                 onClick={() => router.push('/workouts/history')}
-                                className="text-xs text-teal-400 hover:text-teal-300"
+                                className="text-xs text-turquoise-surf hover:text-pacific-cyan"
                             >
                                 View full history
                             </button>
@@ -388,7 +388,7 @@ function ActiveWorkoutContent() {
                                 .map((log, idx) => (
                                     <div key={idx} className="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center justify-between group hover:bg-white/10 transition-all">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400 font-bold text-xs">
+                                            <div className="w-8 h-8 rounded-full bg-pacific-cyan/20 flex items-center justify-center text-turquoise-surf font-bold text-xs">
                                                 {log.set_number}
                                             </div>
                                             <div>
@@ -437,7 +437,7 @@ export default function ActiveWorkoutPage() {
         <Suspense fallback={
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     <p className="mt-4 text-gray-400">Loading workout...</p>
                 </div>
             </div>

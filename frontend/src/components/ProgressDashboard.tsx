@@ -81,7 +81,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                 <h2 className="text-2xl font-bold">Body Metrics</h2>
                 <button
                     onClick={() => setShowLogForm(!showLogForm)}
-                    className="px-4 py-2 bg-teal-600/20 hover:bg-teal-600/30 text-teal-400 border border-teal-600/50 rounded-lg text-sm font-semibold transition-all"
+                    className="px-4 py-2 bg-cerulean/20 hover:bg-cerulean/30 text-turquoise-surf border border-cerulean/50 rounded-lg text-sm font-semibold transition-all"
                 >
                     {showLogForm ? 'Cancel' : 'Log Measurements'}
                 </button>
@@ -89,7 +89,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
 
             {/* Log Form */}
             {showLogForm && (
-                <div className="glass p-6 rounded-xl border-teal-500/30">
+                <div className="glass p-6 rounded-xl border-pacific-cyan/30">
                     <form onSubmit={handleLogMetric} className="grid md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-xs text-gray-400 uppercase mb-2">Weight (lbs)</label>
@@ -98,7 +98,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                                 step="0.1"
                                 value={weight}
                                 onChange={(e) => setWeight(e.target.value)}
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-500 outline-none"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-pacific-cyan outline-none"
                                 placeholder="0.0"
                             />
                         </div>
@@ -109,7 +109,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                                 step="0.1"
                                 value={bodyFat}
                                 onChange={(e) => setBodyFat(e.target.value)}
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-500 outline-none"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-pacific-cyan outline-none"
                                 placeholder="0.0"
                             />
                         </div>
@@ -117,7 +117,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                             <button
                                 type="submit"
                                 disabled={logging}
-                                className="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-lg transition-all disabled:opacity-50"
+                                className="w-full py-2 bg-cerulean hover:bg-pacific-cyan text-white font-bold rounded-lg transition-all disabled:opacity-50"
                             >
                                 {logging ? 'Saving...' : 'Save Measurements'}
                             </button>
@@ -146,7 +146,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                                 {metrics.slice(0, 10).reverse().map((m, i) => (
                                     <div
                                         key={i}
-                                        className="flex-1 bg-teal-500/20 hover:bg-teal-500/40 rounded-t transition-all cursor-help relative group"
+                                        className="flex-1 bg-pacific-cyan/20 hover:bg-pacific-cyan/40 rounded-t transition-all cursor-help relative group"
                                         style={{ height: `${(m.weight_lbs! / Math.max(...metrics.map(x => x.weight_lbs! || 1))) * 100}%` }}
                                     >
                                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-[10px] px-2 py-1 rounded whitespace-nowrap z-20">

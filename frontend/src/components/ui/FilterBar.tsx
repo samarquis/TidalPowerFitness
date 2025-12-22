@@ -52,11 +52,10 @@ export default function FilterBar({
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => onFilterChange('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  activeFilter === 'all'
-                    ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${activeFilter === 'all'
+                    ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white'
                     : 'glass hover:bg-white/10'
-                }`}
+                  }`}
               >
                 All Trainers
               </button>
@@ -64,11 +63,10 @@ export default function FilterBar({
                 <button
                   key={specialty}
                   onClick={() => onFilterChange(specialty)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    activeFilter === specialty
-                      ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${activeFilter === specialty
+                      ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white'
                       : 'glass hover:bg-white/10'
-                  }`}
+                    }`}
                 >
                   {specialty}
                 </button>
@@ -82,7 +80,7 @@ export default function FilterBar({
             <select
               value={activeSort}
               onChange={(e) => onSortChange(e.target.value)}
-              className="w-full md:w-auto glass rounded-lg px-4 py-2 bg-transparent border border-white/10 focus:border-teal-5 focus:outline-none"
+              className="w-full md:w-auto glass rounded-lg px-4 py-2 bg-transparent border border-white/10 focus:border-pacific-cyan focus:outline-none"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value} className="bg-gray-900">

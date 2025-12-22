@@ -180,7 +180,7 @@ export default function UserDashboard() {
                 {/* Credits Banner */}
                 <div className="glass rounded-xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center">
                             <span className="text-2xl font-bold">{credits.total}</span>
                         </div>
                         <div>
@@ -188,7 +188,7 @@ export default function UserDashboard() {
                             <p className="font-semibold">Ready to book classes</p>
                         </div>
                     </div>
-                    <Link href="/packages" className="px-5 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg font-semibold transition-colors">
+                    <Link href="/packages" className="px-5 py-2 bg-cerulean hover:bg-dark-teal rounded-lg font-semibold transition-colors">
                         Buy More Credits
                     </Link>
                 </div>
@@ -231,16 +231,16 @@ export default function UserDashboard() {
                                             onClick={() => setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
                                             className={`
                                                 aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
-                                                ${isSelected ? 'bg-teal-600 text-white ring-2 ring-teal-400' : 'bg-white/5 hover:bg-white/10'}
-                                                ${isToday ? 'border-2 border-teal-400' : ''}
+                                                ${isSelected ? 'bg-cerulean text-white ring-2 ring-turquoise-surf' : 'bg-white/5 hover:bg-white/10'}
+                                                ${isToday ? 'border-2 border-turquoise-surf' : ''}
                                             `}
                                         >
                                             <span className="text-sm font-medium">{day}</span>
                                             {hasClasses && (
                                                 <div className="flex gap-0.5 mt-1">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-teal-400'}`}></div>
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-turquoise-surf'}`}></div>
                                                     {dayClasses.length > 1 && (
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-teal-400'}`}></div>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-turquoise-surf'}`}></div>
                                                     )}
                                                 </div>
                                             )}
@@ -252,7 +252,7 @@ export default function UserDashboard() {
                             {/* Legend */}
                             <div className="flex gap-6 mt-4 text-sm text-gray-400">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-teal-400"></div>
+                                    <div className="w-3 h-3 rounded-full bg-turquoise-surf"></div>
                                     <span>Classes Available</span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -269,7 +269,7 @@ export default function UserDashboard() {
                             </h2>
                             {loading ? (
                                 <div className="flex justify-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400"></div>
+                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
                                 </div>
                             ) : selectedDayClasses.length === 0 ? (
                                 <p className="text-gray-400 py-8 text-center">No classes scheduled for this day.</p>
@@ -300,12 +300,12 @@ export default function UserDashboard() {
                                                         <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-300">
                                                             <span>🕐 {classItem.start_time} • {classItem.duration_minutes}min</span>
                                                             <span>👤 {classItem.instructor_name}</span>
-                                                            <span className="text-teal-400 font-semibold">⚡ 1 Credit</span>
+                                                            <span className="text-turquoise-surf font-semibold">⚡ 1 Credit</span>
                                                         </div>
                                                     </div>
                                                     {!booked && (
                                                         <button
-                                                            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm font-semibold transition-colors"
+                                                            className="px-4 py-2 bg-cerulean hover:bg-dark-teal rounded-lg text-sm font-semibold transition-colors"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleClassClick(classItem);
@@ -357,11 +357,11 @@ export default function UserDashboard() {
                                     <div key={stat.muscle}>
                                         <div className="flex justify-between text-sm mb-1">
                                             <span className="text-gray-300">{stat.muscle}</span>
-                                            <span className="font-bold text-teal-400">{stat.weight} {stat.unit}</span>
+                                            <span className="font-bold text-turquoise-surf">{stat.weight} {stat.unit}</span>
                                         </div>
                                         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full"
+                                                className="h-full bg-gradient-to-r from-cerulean to-turquoise-surf rounded-full"
                                                 style={{ width: `${(stat.weight / 1500) * 100}%` }}
                                             ></div>
                                         </div>
@@ -392,7 +392,7 @@ export default function UserDashboard() {
                         <div className="glass rounded-xl p-6">
                             <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
                             <div className="space-y-3">
-                                <Link href="/classes" className="block w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 rounded-lg text-center font-bold transition-colors">
+                                <Link href="/classes" className="block w-full py-3 px-4 bg-cerulean hover:bg-dark-teal rounded-lg text-center font-bold transition-colors">
                                     Browse All Classes
                                 </Link>
                                 <Link href="/trainers" className="block w-full py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg text-center font-semibold transition-colors">

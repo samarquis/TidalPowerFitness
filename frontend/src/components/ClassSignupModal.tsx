@@ -68,7 +68,7 @@ export default function ClassSignupModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-white/10 overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4">
+                <div className="bg-gradient-to-r from-cerulean to-pacific-cyan px-6 py-4">
                     <h2 className="text-xl font-bold text-white">Confirm Class Booking</h2>
                 </div>
 
@@ -81,19 +81,19 @@ export default function ClassSignupModal({
 
                         <div className="space-y-2 text-sm">
                             <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 {formattedDate}
                             </div>
                             <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 {formatTime(classInfo.start_time)} • {classInfo.duration_minutes} min
                             </div>
                             <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 Instructor: {classInfo.instructor_name}
@@ -109,7 +109,7 @@ export default function ClassSignupModal({
                         </div>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-gray-400">Your Balance</span>
-                            <span className={`font-bold ${hasEnoughCredits ? 'text-teal-400' : 'text-red-400'}`}>
+                            <span className={`font-bold ${hasEnoughCredits ? 'text-turquoise-surf' : 'text-red-400'}`}>
                                 {userCredits} Credits
                             </span>
                         </div>
@@ -151,7 +151,7 @@ export default function ClassSignupModal({
                         <button
                             onClick={handleConfirm}
                             disabled={isLoading}
-                            className="flex-1 py-3 px-4 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center"
+                            className="flex-1 py-3 px-4 bg-cerulean hover:bg-dark-teal disabled:bg-gray-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center"
                         >
                             {isLoading ? (
                                 <>
@@ -168,7 +168,7 @@ export default function ClassSignupModal({
                     ) : (
                         <a
                             href="/packages"
-                            className="flex-1 py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors text-center"
+                            className="flex-1 py-3 px-4 bg-cerulean hover:bg-dark-teal text-white rounded-lg font-semibold transition-colors text-center"
                         >
                             Buy Credits
                         </a>

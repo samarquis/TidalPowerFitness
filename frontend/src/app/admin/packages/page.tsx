@@ -158,7 +158,7 @@ export default function AdminPackagesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
@@ -169,7 +169,7 @@ export default function AdminPackagesPage() {
                     </div>
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                     >
                         + Create Package
                     </button>
@@ -177,7 +177,7 @@ export default function AdminPackagesPage() {
 
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     </div>
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -201,8 +201,8 @@ export default function AdminPackagesPage() {
                                 <div className="flex justify-between items-start mb-4">
                                     <h3 className="text-xl font-bold text-white">{pkg.name}</h3>
                                     <span className={`px-2 py-1 rounded text-xs font-semibold ${pkg.type === 'subscription'
-                                            ? 'bg-purple-500/20 text-purple-400'
-                                            : 'bg-teal-500/20 text-teal-4'
+                                        ? 'bg-purple-500/20 text-purple-400'
+                                        : 'bg-pacific-cyan/20 text-turquoise-surf'
                                         }`}>
                                         {pkg.type === 'subscription' ? 'Subscription' : 'One-time'}
                                     </span>
@@ -248,7 +248,7 @@ export default function AdminPackagesPage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                 />
                             </div>
 
@@ -257,7 +257,7 @@ export default function AdminPackagesPage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     rows={3}
                                 />
                             </div>
@@ -271,7 +271,7 @@ export default function AdminPackagesPage() {
                                         min="0"
                                         value={formData.price_cents}
                                         onChange={(e) => setFormData({ ...formData, price_cents: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">${(formData.price_cents / 100).toFixed(2)}</p>
                                 </div>
@@ -283,7 +283,7 @@ export default function AdminPackagesPage() {
                                         min="1"
                                         value={formData.credit_count}
                                         onChange={(e) => setFormData({ ...formData, credit_count: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     />
                                 </div>
                             </div>
@@ -297,7 +297,7 @@ export default function AdminPackagesPage() {
                                         min="1"
                                         value={formData.duration_days}
                                         onChange={(e) => setFormData({ ...formData, duration_days: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     />
                                 </div>
                                 <div>
@@ -305,7 +305,7 @@ export default function AdminPackagesPage() {
                                     <select
                                         value={formData.type}
                                         onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     >
                                         <option value="one_time">One-time</option>
                                         <option value="subscription">Subscription</option>
@@ -323,7 +323,7 @@ export default function AdminPackagesPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                    className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                                 >
                                     {editingPackage ? 'Update Package' : 'Create Package'}
                                 </button>

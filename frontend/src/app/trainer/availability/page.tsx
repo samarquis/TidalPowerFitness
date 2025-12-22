@@ -134,11 +134,11 @@ export default function TrainerAvailabilityPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/trainer" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -153,7 +153,7 @@ export default function TrainerAvailabilityPage() {
                 <div className="mb-8">
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
+                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all transform hover:scale-105"
                     >
                         + Add Availability Slot
                     </button>
@@ -162,7 +162,7 @@ export default function TrainerAvailabilityPage() {
                 {/* Weekly Calendar */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading availability...</p>
                     </div>
                 ) : (
@@ -177,7 +177,7 @@ export default function TrainerAvailabilityPage() {
                                         slots.map((slot) => (
                                             <div
                                                 key={slot.id}
-                                                className="bg-gradient-to-r from-teal-500 to-teal-600 p-3 rounded-lg text-white text-sm"
+                                                className="bg-gradient-to-r from-pacific-cyan to-cerulean p-3 rounded-lg text-white text-sm"
                                             >
                                                 <div className="font-bold">
                                                     {slot.start_time} - {slot.end_time}
@@ -227,7 +227,7 @@ export default function TrainerAvailabilityPage() {
                                     <select
                                         value={formData.day_of_week}
                                         onChange={(e) => setFormData({ ...formData, day_of_week: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     >
                                         {DAYS.map((day, index) => (
                                             <option key={index} value={index}>{day}</option>
@@ -243,7 +243,7 @@ export default function TrainerAvailabilityPage() {
                                         type="time"
                                         value={formData.start_time}
                                         onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                         required
                                     />
                                 </div>
@@ -256,7 +256,7 @@ export default function TrainerAvailabilityPage() {
                                         type="time"
                                         value={formData.end_time}
                                         onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                         required
                                     />
                                 </div>
@@ -271,7 +271,7 @@ export default function TrainerAvailabilityPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                        className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                                     >
                                         {editingSlot ? 'Update' : 'Add'}
                                     </button>

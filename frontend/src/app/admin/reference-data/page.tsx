@@ -142,7 +142,7 @@ export default function ReferenceDataPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-4xl md:text-5xl font-bold mb-8">
                     Reference Data <span className="text-gradient">Management</span>
@@ -151,7 +151,7 @@ export default function ReferenceDataPage() {
 
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     </div>
                 ) : (
                     <div className="grid md:grid-cols-2 gap-8">
@@ -161,7 +161,7 @@ export default function ReferenceDataPage() {
                                 <h2 className="text-2xl font-bold">Body Focus Areas</h2>
                                 <button
                                     onClick={() => openCreateModal('body')}
-                                    className="px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                                 >
                                     + Add New
                                 </button>
@@ -206,7 +206,7 @@ export default function ReferenceDataPage() {
                                 <h2 className="text-2xl font-bold">Workout Types</h2>
                                 <button
                                     onClick={() => openCreateModal('workout')}
-                                    className="px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                                 >
                                     + Add New
                                 </button>
@@ -268,7 +268,7 @@ export default function ReferenceDataPage() {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     placeholder={modalType === 'body' ? 'e.g., Chest' : 'e.g., Strength'}
                                 />
                                 {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
@@ -279,7 +279,7 @@ export default function ReferenceDataPage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     rows={3}
                                     placeholder="Optional description..."
                                 />
@@ -295,7 +295,7 @@ export default function ReferenceDataPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                                 >
                                     {editingItem ? 'Update' : 'Create'}
                                 </button>

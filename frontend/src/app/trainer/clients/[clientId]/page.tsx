@@ -93,7 +93,7 @@ export default function ClientWorkoutsPage() {
     if (authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
@@ -103,18 +103,18 @@ export default function ClientWorkoutsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/trainer/clients" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/trainer/clients" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to Clients
                     </Link>
 
                     {clientInfo && (
                         <div className="glass rounded-xl p-6 mb-6">
                             <div className="flex items-center">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-3xl font-bold mr-6">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-turquoise-surf to-cerulean flex items-center justify-center text-white text-3xl font-bold mr-6">
                                     {clientInfo.first_name[0]}{clientInfo.last_name[0]}
                                 </div>
                                 <div>
@@ -122,7 +122,7 @@ export default function ClientWorkoutsPage() {
                                         {clientInfo.first_name} {clientInfo.last_name}
                                     </h1>
                                     <p className="text-gray-400">{clientInfo.email}</p>
-                                    <p className="text-teal-400 mt-1">{workouts.length} workout sessions</p>
+                                    <p className="text-turquoise-surf mt-1">{workouts.length} workout sessions</p>
                                 </div>
                             </div>
                         </div>
@@ -136,7 +136,7 @@ export default function ClientWorkoutsPage() {
                 {/* Content */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading workout history...</p>
                     </div>
                 ) : error ? (
@@ -162,7 +162,7 @@ export default function ClientWorkoutsPage() {
                                                 {workout.class_name || workout.workout_type_name || 'Workout Session'}
                                             </h3>
                                             {workout.workout_type_name && (
-                                                <span className="px-3 py-1 bg-teal-500/20 text-teal-400 rounded-full text-sm font-semibold">
+                                                <span className="px-3 py-1 bg-pacific-cyan/20 text-turquoise-surf rounded-full text-sm font-semibold">
                                                     {workout.workout_type_name}
                                                 </span>
                                             )}
@@ -182,7 +182,7 @@ export default function ClientWorkoutsPage() {
                                     </div>
 
                                     <div className="ml-4">
-                                        <div className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg font-semibold text-sm">
+                                        <div className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan text-white rounded-lg font-semibold text-sm">
                                             View Details →
                                         </div>
                                     </div>

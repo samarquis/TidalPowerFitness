@@ -66,7 +66,7 @@ export default function SessionDetailsPage() {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     <p className="mt-4 text-gray-400">Loading details...</p>
                 </div>
             </div>
@@ -80,7 +80,7 @@ export default function SessionDetailsPage() {
                     <p className="text-xl text-gray-400 mb-4">Session not found</p>
                     <Link
                         href="/workouts/history"
-                        className="inline-block px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg"
+                        className="inline-block px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg"
                     >
                         Back to History
                     </Link>
@@ -90,11 +90,11 @@ export default function SessionDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/workouts/history" className="text-teal-4 hover:text-teal-3 mb-4 inline-block">
+                    <Link href="/workouts/history" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to History
                     </Link>
                     <h1 className="text-4xl font-bold mb-2">

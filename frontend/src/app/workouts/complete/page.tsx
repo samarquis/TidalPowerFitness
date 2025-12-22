@@ -36,7 +36,7 @@ function WorkoutCompleteContent() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Success Message */}
                 <div className="text-center mb-8">
@@ -73,7 +73,7 @@ function WorkoutCompleteContent() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="How did the workout feel? Any observations?"
-                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         rows={4}
                     />
                 </div>
@@ -83,7 +83,7 @@ function WorkoutCompleteContent() {
                     <button
                         onClick={handleFinish}
                         disabled={saving}
-                        className="flex-1 px-6 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all disabled:opacity-50"
+                        className="flex-1 px-6 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all disabled:opacity-50"
                     >
                         {saving ? 'Saving...' : 'Finish & Save'}
                     </button>
@@ -104,7 +104,7 @@ export default function WorkoutCompletePage() {
         <Suspense fallback={
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     <p className="mt-4 text-gray-400">Loading summary...</p>
                 </div>
             </div>

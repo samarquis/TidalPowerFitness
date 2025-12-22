@@ -28,7 +28,7 @@ const getClassColor = (className: string): string => {
         'from-orange-500 to-orange-600',
         'from-yellow-500 to-yellow-600',
         'from-green-500 to-green-600',
-        'from-teal-500 to-teal-600',
+        'from-pacific-cyan to-cerulean',
         'from-cyan-500 to-cyan-600',
         'from-indigo-500 to-indigo-600',
     ];
@@ -89,7 +89,7 @@ export default function ClassScheduleSection() {
 
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading schedule...</p>
                     </div>
                 ) : (
@@ -143,7 +143,7 @@ export default function ClassScheduleSection() {
                         <div className="text-center">
                             <Link
                                 href="/classes"
-                                className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                                className="inline-block px-8 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
                             >
                                 View Full Schedule & Book
                             </Link>

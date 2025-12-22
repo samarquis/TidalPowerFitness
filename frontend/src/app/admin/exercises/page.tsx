@@ -341,7 +341,7 @@ export default function AdminExercisesPage() {
     const inactiveExercises = exercises.filter(e => !e.is_active);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
@@ -353,7 +353,7 @@ export default function AdminExercisesPage() {
                     </div>
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
+                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all transform hover:scale-105"
                     >
                         + Add New Exercise
                     </button>
@@ -362,7 +362,7 @@ export default function AdminExercisesPage() {
                 {/* Stats */}
                 <div className="grid md:grid-cols-4 gap-6 mb-8">
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-4">{exercises.length}</div>
+                        <div className="text-3xl font-bold text-turquoise-surf">{exercises.length}</div>
                         <div className="text-gray-400 mt-1">Total Exercises</div>
                     </div>
                     <div className="glass rounded-xl p-6">
@@ -388,14 +388,14 @@ export default function AdminExercisesPage() {
                             placeholder="Search exercises..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
                         />
 
                         {/* Status filter */}
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Status</option>
                             <option value="active">Active Only</option>
@@ -406,7 +406,7 @@ export default function AdminExercisesPage() {
                         <select
                             value={workoutTypeFilter}
                             onChange={(e) => setWorkoutTypeFilter(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Workout Types</option>
                             {workoutTypes.map((type) => (
@@ -416,384 +416,382 @@ export default function AdminExercisesPage() {
 
                         {/* Body Part filter */}
                         <select
-                            value={bodyPartFilter}
-                            onChange={(e) => {
-                                setBodyPartFilter(e.target.value);
-                                setMuscleGroupFilter('all'); // Reset muscle filter when body part changes
                             }}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                        className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
-                            <option value="all">All Body Parts</option>
-                            {bodyParts.map((part) => (
-                                <option key={part.id} value={part.id}>{part.name}</option>
+                        <option value="all">All Body Parts</option>
+                        {bodyParts.map((part) => (
+                            <option key={part.id} value={part.id}>{part.name}</option>
+                        ))}
+                    </select>
+
+                    {/* Muscle group filter */}
+                    <select
+                        value={muscleGroupFilter}
+                        onChange={(e) => setMuscleGroupFilter(e.target.value)}
+                        className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                    >
+                        <option value="all">All Muscle Groups</option>
+                        {bodyFocusAreas
+                            .filter(area => bodyPartFilter === 'all' || area.body_part_id === bodyPartFilter)
+                            .map((area) => (
+                                <option key={area.id} value={area.id}>{area.name}</option>
                             ))}
-                        </select>
-
-                        {/* Muscle group filter */}
-                        <select
-                            value={muscleGroupFilter}
-                            onChange={(e) => setMuscleGroupFilter(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                        >
-                            <option value="all">All Muscle Groups</option>
-                            {bodyFocusAreas
-                                .filter(area => bodyPartFilter === 'all' || area.body_part_id === bodyPartFilter)
-                                .map((area) => (
-                                    <option key={area.id} value={area.id}>{area.name}</option>
-                                ))}
-                        </select>
-                    </div>
+                    </select>
                 </div>
-
-                {/* Exercises table */}
-                {loading ? (
-                    <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
-                        <p className="mt-4 text-gray-400">Loading exercises...</p>
-                    </div>
-                ) : (
-                    <div className="glass rounded-xl overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-white/5">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Exercise Name</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Workout Type</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Muscle Group</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Equipment</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Difficulty</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/10">
-                                    {filteredExercises.map((exercise) => (
-                                        <tr key={exercise.id} className="hover:bg-white/5 transition-colors">
-                                            <td className="px-6 py-4">
-                                                <div className="font-medium text-white">{exercise.name}</div>
-                                                {exercise.description && (
-                                                    <div className="text-sm text-gray-400 mt-1 line-clamp-1">{exercise.description}</div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-400">{exercise.workout_type_name || '-'}</td>
-                                            <td className="px-6 py-4 text-gray-400">{exercise.muscle_group_name || '-'}</td>
-                                            <td className="px-6 py-4 text-gray-400">{exercise.equipment_required || 'None'}</td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                                    exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        exercise.difficulty_level === 'Advanced' ? 'bg-red-500/20 text-red-400' :
-                                                            'bg-gray-500/20 text-gray-400'
-                                                    }`}>
-                                                    {exercise.difficulty_level || '-'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${exercise.is_active
-                                                    ? 'bg-green-500/20 text-green-400'
-                                                    : 'bg-gray-500/20 text-gray-400'
-                                                    }`}>
-                                                    {exercise.is_active ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => openEditModal(exercise)}
-                                                        className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-semibold transition-all"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
-                                                        className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${exercise.is_active
-                                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                                                            }`}
-                                                    >
-                                                        {exercise.is_active ? 'Deactivate' : 'Activate'}
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {filteredExercises.length === 0 && (
-                            <div className="text-center py-12 text-gray-400">
-                                No exercises found matching your criteria.
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
 
-            {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="glass rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-8">
-                            {/* Modal Header */}
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-3xl font-bold">
-                                    {editingExercise ? 'Edit Exercise' : 'Create New Exercise'}
-                                </h2>
-                                <button
-                                    onClick={closeModal}
-                                    className="text-gray-400 hover:text-white text-2xl"
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            {/* Progress Steps */}
-                            <div className="flex justify-between mb-8">
-                                {[1, 2, 3, 4].map((step) => (
-                                    <div key={step} className="flex items-center">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= step
-                                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
-                                            : 'bg-white/10 text-gray-400'
-                                            }`}>
-                                            {step}
-                                        </div>
-                                        {step < 4 && (
-                                            <div className={`w-16 h-1 mx-2 ${currentStep > step ? 'bg-teal-6' : 'bg-white/10'
-                                                }`}></div>
-                                        )}
-                                    </div>
+            {/* Exercises table */}
+            {loading ? (
+                <div className="text-center py-20">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
+                    <p className="mt-4 text-gray-400">Loading exercises...</p>
+                </div>
+            ) : (
+                <div className="glass rounded-xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-white/5">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Exercise Name</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Workout Type</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Muscle Group</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Equipment</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Difficulty</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/10">
+                                {filteredExercises.map((exercise) => (
+                                    <tr key={exercise.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-white">{exercise.name}</div>
+                                            {exercise.description && (
+                                                <div className="text-sm text-gray-400 mt-1 line-clamp-1">{exercise.description}</div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-400">{exercise.workout_type_name || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-400">{exercise.muscle_group_name || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-400">{exercise.equipment_required || 'None'}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
+                                                exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                    exercise.difficulty_level === 'Advanced' ? 'bg-red-500/20 text-red-400' :
+                                                        'bg-gray-500/20 text-gray-400'
+                                                }`}>
+                                                {exercise.difficulty_level || '-'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${exercise.is_active
+                                                ? 'bg-green-500/20 text-green-400'
+                                                : 'bg-gray-500/20 text-gray-400'
+                                                }`}>
+                                                {exercise.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => openEditModal(exercise)}
+                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-semibold transition-all"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
+                                                    className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${exercise.is_active
+                                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                                        }`}
+                                                >
+                                                    {exercise.is_active ? 'Deactivate' : 'Activate'}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 ))}
-                            </div>
-
-                            {/* Step 1: Basic Info */}
-                            {currentStep === 1 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Basic Information</h3>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Exercise Name *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            placeholder="e.g., Barbell Squat"
-                                        />
-                                        {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Description</label>
-                                        <textarea
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            rows={4}
-                                            placeholder="Describe the exercise..."
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Difficulty Level *</label>
-                                        <select
-                                            value={formData.difficulty_level}
-                                            onChange={(e) => setFormData({ ...formData, difficulty_level: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                        >
-                                            <option value="">Select difficulty</option>
-                                            {DIFFICULTY_LEVELS.map((level) => (
-                                                <option key={level} value={level}>{level}</option>
-                                            ))}
-                                        </select>
-                                        {errors.difficulty_level && <p className="text-red-400 text-sm mt-1">{errors.difficulty_level}</p>}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 2: Classification */}
-                            {currentStep === 2 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Classification</h3>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Workout Type *</label>
-                                        <select
-                                            value={formData.workout_type_id}
-                                            onChange={(e) => setFormData({ ...formData, workout_type_id: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                        >
-                                            <option value="">Select workout type</option>
-                                            {workoutTypes.map((type) => (
-                                                <option key={type.id} value={type.id}>{type.name}</option>
-                                            ))}
-                                        </select>
-                                        {errors.workout_type_id && <p className="text-red-400 text-sm mt-1">{errors.workout_type_id}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Body Part *</label>
-                                        <select
-                                            value={formData.body_part_id}
-                                            onChange={(e) => {
-                                                setFormData({
-                                                    ...formData,
-                                                    body_part_id: e.target.value,
-                                                    primary_muscle_group: '' // Reset muscle group when body part changes
-                                                });
-                                            }}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                        >
-                                            <option value="">Select body part</option>
-                                            {bodyParts.map((part) => (
-                                                <option key={part.id} value={part.id}>{part.name}</option>
-                                            ))}
-                                        </select>
-                                        {errors.body_part_id && <p className="text-red-400 text-sm mt-1">{errors.body_part_id}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Primary Muscle Group *</label>
-                                        <select
-                                            value={formData.primary_muscle_group}
-                                            onChange={(e) => setFormData({ ...formData, primary_muscle_group: e.target.value })}
-                                            disabled={!formData.body_part_id}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4 disabled:opacity-50"
-                                        >
-                                            <option value="">Select muscle group</option>
-                                            {bodyFocusAreas
-                                                .filter(area => area.body_part_id === formData.body_part_id)
-                                                .map((area) => (
-                                                    <option key={area.id} value={area.id}>{area.name}</option>
-                                                ))}
-                                        </select>
-                                        {errors.primary_muscle_group && <p className="text-red-400 text-sm mt-1">{errors.primary_muscle_group}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Equipment Required</label>
-                                        <input
-                                            type="text"
-                                            value={formData.equipment_required}
-                                            onChange={(e) => setFormData({ ...formData, equipment_required: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            placeholder="e.g., Barbell, Dumbbells, None"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 3: Instructions */}
-                            {currentStep === 3 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Instructions & Media</h3>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Instructions</label>
-                                        <textarea
-                                            value={formData.instructions}
-                                            onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            rows={6}
-                                            placeholder="Step-by-step instructions for performing the exercise..."
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Video URL</label>
-                                        <input
-                                            type="text"
-                                            value={formData.video_url}
-                                            onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
-                                            placeholder="https://youtube.com/..."
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">Optional: Link to a demonstration video</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 4: Review */}
-                            {currentStep === 4 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Review & Confirm</h3>
-
-                                    <div className="glass rounded-lg p-6 space-y-3">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Exercise Name:</span>
-                                            <span className="text-white font-semibold">{formData.name}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Difficulty:</span>
-                                            <span className="text-white">{formData.difficulty_level}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Workout Type:</span>
-                                            <span className="text-white">{workoutTypes.find(t => t.id === formData.workout_type_id)?.name || '-'}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Body Part:</span>
-                                            <span className="text-white">{bodyParts.find(p => p.id === formData.body_part_id)?.name || '-'}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Muscle Group:</span>
-                                            <span className="text-white">{bodyFocusAreas.find(a => a.id === formData.primary_muscle_group)?.name || '-'}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Equipment:</span>
-                                            <span className="text-white">{formData.equipment_required || 'None'}</span>
-                                        </div>
-                                        {formData.description && (
-                                            <div className="pt-3 border-t border-white/10">
-                                                <span className="text-gray-400">Description:</span>
-                                                <p className="text-white mt-2">{formData.description}</p>
-                                            </div>
-                                        )}
-                                        {formData.instructions && (
-                                            <div className="pt-3 border-t border-white/10">
-                                                <span className="text-gray-400">Instructions:</span>
-                                                <p className="text-white mt-2 whitespace-pre-wrap">{formData.instructions}</p>
-                                            </div>
-                                        )}
-                                        {formData.video_url && (
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-400">Video:</span>
-                                                <a href={formData.video_url} target="_blank" rel="noopener noreferrer" className="text-teal-4 hover:underline">View</a>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Modal Actions */}
-                            <div className="flex justify-between mt-8">
-                                <button
-                                    onClick={currentStep === 1 ? closeModal : prevStep}
-                                    className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
-                                >
-                                    {currentStep === 1 ? 'Cancel' : 'Back'}
-                                </button>
-
-                                {currentStep < 4 ? (
-                                    <button
-                                        onClick={nextStep}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
-                                    >
-                                        Next
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleSubmit}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
-                                    >
-                                        {editingExercise ? 'Update Exercise' : 'Create Exercise'}
-                                    </button>
-                                )}
-                            </div>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
+
+                    {filteredExercises.length === 0 && (
+                        <div className="text-center py-12 text-gray-400">
+                            No exercises found matching your criteria.
+                        </div>
+                    )}
                 </div>
             )}
         </div>
+
+            {/* Modal */ }
+    {
+        showModal && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                <div className="glass rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="p-8">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold">
+                                {editingExercise ? 'Edit Exercise' : 'Create New Exercise'}
+                            </h2>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-400 hover:text-white text-2xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {/* Progress Steps */}
+                        <div className="flex justify-between mb-8">
+                            {[1, 2, 3, 4].map((step) => (
+                                <div key={step} className="flex items-center">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= step
+                                        ? 'bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black'
+                                        : 'bg-white/10 text-gray-400'
+                                        }`}>
+                                        {step}
+                                    </div>
+                                    {step < 4 && (
+                                        <div className={`w-16 h-1 mx-2 ${currentStep > step ? 'bg-turquoise-surf' : 'bg-white/10'
+                                            }`}></div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Step 1: Basic Info */}
+                        {currentStep === 1 && (
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold mb-4">Basic Information</h3>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Exercise Name *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        placeholder="e.g., Barbell Squat"
+                                    />
+                                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Description</label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        rows={4}
+                                        placeholder="Describe the exercise..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Difficulty Level *</label>
+                                    <select
+                                        value={formData.difficulty_level}
+                                        onChange={(e) => setFormData({ ...formData, difficulty_level: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    >
+                                        <option value="">Select difficulty</option>
+                                        {DIFFICULTY_LEVELS.map((level) => (
+                                            <option key={level} value={level}>{level}</option>
+                                        ))}
+                                    </select>
+                                    {errors.difficulty_level && <p className="text-red-400 text-sm mt-1">{errors.difficulty_level}</p>}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 2: Classification */}
+                        {currentStep === 2 && (
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold mb-4">Classification</h3>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Workout Type *</label>
+                                    <select
+                                        value={formData.workout_type_id}
+                                        onChange={(e) => setFormData({ ...formData, workout_type_id: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    >
+                                        <option value="">Select workout type</option>
+                                        {workoutTypes.map((type) => (
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.workout_type_id && <p className="text-red-400 text-sm mt-1">{errors.workout_type_id}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Body Part *</label>
+                                    <select
+                                        value={formData.body_part_id}
+                                        onChange={(e) => {
+                                            setFormData({
+                                                ...formData,
+                                                body_part_id: e.target.value,
+                                                primary_muscle_group: '' // Reset muscle group when body part changes
+                                            });
+                                        }}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    >
+                                        <option value="">Select body part</option>
+                                        {bodyParts.map((part) => (
+                                            <option key={part.id} value={part.id}>{part.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.body_part_id && <p className="text-red-400 text-sm mt-1">{errors.body_part_id}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Primary Muscle Group *</label>
+                                    <select
+                                        value={formData.primary_muscle_group}
+                                        onChange={(e) => setFormData({ ...formData, primary_muscle_group: e.target.value })}
+                                        disabled={!formData.body_part_id}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf disabled:opacity-50"
+                                    >
+                                        <option value="">Select muscle group</option>
+                                        {bodyFocusAreas
+                                            .filter(area => area.body_part_id === formData.body_part_id)
+                                            .map((area) => (
+                                                <option key={area.id} value={area.id}>{area.name}</option>
+                                            ))}
+                                    </select>
+                                    {errors.primary_muscle_group && <p className="text-red-400 text-sm mt-1">{errors.primary_muscle_group}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Equipment Required</label>
+                                    <input
+                                        type="text"
+                                        value={formData.equipment_required}
+                                        onChange={(e) => setFormData({ ...formData, equipment_required: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        placeholder="e.g., Barbell, Dumbbells, None"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Instructions */}
+                        {currentStep === 3 && (
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold mb-4">Instructions & Media</h3>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Instructions</label>
+                                    <textarea
+                                        value={formData.instructions}
+                                        onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        rows={6}
+                                        placeholder="Step-by-step instructions for performing the exercise..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Video URL</label>
+                                    <input
+                                        type="text"
+                                        value={formData.video_url}
+                                        onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        placeholder="https://youtube.com/..."
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Optional: Link to a demonstration video</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Review */}
+                        {currentStep === 4 && (
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold mb-4">Review & Confirm</h3>
+
+                                <div className="glass rounded-lg p-6 space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Exercise Name:</span>
+                                        <span className="text-white font-semibold">{formData.name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Difficulty:</span>
+                                        <span className="text-white">{formData.difficulty_level}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Workout Type:</span>
+                                        <span className="text-white">{workoutTypes.find(t => t.id === formData.workout_type_id)?.name || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Body Part:</span>
+                                        <span className="text-white">{bodyParts.find(p => p.id === formData.body_part_id)?.name || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Muscle Group:</span>
+                                        <span className="text-white">{bodyFocusAreas.find(a => a.id === formData.primary_muscle_group)?.name || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Equipment:</span>
+                                        <span className="text-white">{formData.equipment_required || 'None'}</span>
+                                    </div>
+                                    {formData.description && (
+                                        <div className="pt-3 border-t border-white/10">
+                                            <span className="text-gray-400">Description:</span>
+                                            <p className="text-white mt-2">{formData.description}</p>
+                                        </div>
+                                    )}
+                                    {formData.instructions && (
+                                        <div className="pt-3 border-t border-white/10">
+                                            <span className="text-gray-400">Instructions:</span>
+                                            <p className="text-white mt-2 whitespace-pre-wrap">{formData.instructions}</p>
+                                        </div>
+                                    )}
+                                    {formData.video_url && (
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Video:</span>
+                                            <a href={formData.video_url} target="_blank" rel="noopener noreferrer" className="text-turquoise-surf hover:underline">View</a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Modal Actions */}
+                        <div className="flex justify-between mt-8">
+                            <button
+                                onClick={currentStep === 1 ? closeModal : prevStep}
+                                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
+                            >
+                                {currentStep === 1 ? 'Cancel' : 'Back'}
+                            </button>
+
+                            {currentStep < 4 ? (
+                                <button
+                                    onClick={nextStep}
+                                    className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                >
+                                    Next
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleSubmit}
+                                    className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                >
+                                    {editingExercise ? 'Update Exercise' : 'Create Exercise'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+        </div >
     );
 }
 

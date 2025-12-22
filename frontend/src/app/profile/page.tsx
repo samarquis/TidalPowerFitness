@@ -119,7 +119,7 @@ export default function ProfilePage() {
     }, {} as Record<string, { date: string; exercises: Record<string, WorkoutSession[]> }>);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Profile Header */}
                 <div className="glass rounded-2xl p-8 mb-8">

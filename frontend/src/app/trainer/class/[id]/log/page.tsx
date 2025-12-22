@@ -252,7 +252,7 @@ export default function WorkoutLogPage() {
 
     if (!session) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+            <div className="min-h-screen pt-24 pb-16">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h1 className="text-3xl font-bold mb-4">Session Not Found</h1>
                     <Link href="/trainer" className="text-teal-400 hover:underline">
@@ -268,7 +268,7 @@ export default function WorkoutLogPage() {
         : [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -312,8 +312,8 @@ export default function WorkoutLogPage() {
                                         key={p.client_id}
                                         onClick={() => setSelectedClient(p)}
                                         className={`w-full text-left p-3 rounded-lg transition-colors ${selectedClient?.client_id === p.client_id
-                                                ? 'bg-teal-600'
-                                                : 'bg-white/5 hover:bg-white/10'
+                                            ? 'bg-teal-600'
+                                            : 'bg-white/5 hover:bg-white/10'
                                             }`}
                                     >
                                         <div className="font-semibold">{p.first_name} {p.last_name}</div>
@@ -333,8 +333,8 @@ export default function WorkoutLogPage() {
                                     key={ex.id}
                                     onClick={() => setCurrentExerciseIndex(index)}
                                     className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${currentExerciseIndex === index
-                                            ? 'bg-teal-600'
-                                            : 'bg-white/10 hover:bg-white/20'
+                                        ? 'bg-teal-600'
+                                        : 'bg-white/10 hover:bg-white/20'
                                         }`}
                                 >
                                     {index + 1}. {ex.exercise_name}

@@ -246,10 +246,10 @@ function AssignWorkoutContent() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 px-4">
+        <div className="min-h-screen pt-24 pb-16 px-4">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-8">
-                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/trainer" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -268,7 +268,7 @@ function AssignWorkoutContent() {
                             {['Date', 'Workout', 'Recipients', 'Review'].map((label, index) => (
                                 <span
                                     key={label}
-                                    className={`text-sm font-semibold ${step > index ? 'text-teal-400' : 'text-gray-500'
+                                    className={`text-sm font-semibold ${step > index ? 'text-turquoise-surf' : 'text-gray-500'
                                         }`}
                                 >
                                     {label}
@@ -277,7 +277,7 @@ function AssignWorkoutContent() {
                         </div>
                         <div className="w-full bg-white/10 rounded-full h-2">
                             <div
-                                className="bg-gradient-to-r from-teal-400 to-teal-600 h-2 rounded-full transition-all duration-300"
+                                className="bg-gradient-to-r from-turquoise-surf to-pacific-cyan h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${(step / 4) * 100}%` }}
                             />
                         </div>
@@ -300,7 +300,7 @@ function AssignWorkoutContent() {
                                     type="date"
                                     value={sessionDate}
                                     onChange={(e) => setSessionDate(e.target.value)}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
                                     min={new Date().toISOString().split('T')[0]}
                                 />
                             </div>
@@ -312,7 +312,7 @@ function AssignWorkoutContent() {
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
                                 />
                             </div>
                         </div>
@@ -326,28 +326,28 @@ function AssignWorkoutContent() {
                                     Choose Workout Type
                                 </label>
                                 <div className="space-y-3">
-                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-pacific-cyan/50 transition-all">
                                         <input
                                             type="radio"
                                             name="workoutMode"
                                             value="template"
                                             checked={workoutMode === 'template'}
                                             onChange={() => setWorkoutMode('template')}
-                                            className="mr-4 w-4 h-4 text-teal-500"
+                                            className="mr-4 w-4 h-4 text-pacific-cyan"
                                         />
                                         <div>
                                             <div className="font-semibold text-white">Use Template</div>
                                             <div className="text-sm text-gray-400">Select from your saved workout templates</div>
                                         </div>
                                     </label>
-                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-pacific-cyan/50 transition-all">
                                         <input
                                             type="radio"
                                             name="workoutMode"
                                             value="custom"
                                             checked={workoutMode === 'custom'}
                                             onChange={() => setWorkoutMode('custom')}
-                                            className="mr-4 w-4 h-4 text-teal-500"
+                                            className="mr-4 w-4 h-4 text-pacific-cyan"
                                         />
                                         <div>
                                             <div className="font-semibold text-white">Create Custom</div>
@@ -405,28 +405,28 @@ function AssignWorkoutContent() {
                                     Assign To
                                 </label>
                                 <div className="space-y-3">
-                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-pacific-cyan/50 transition-all">
                                         <input
                                             type="radio"
                                             name="recipientMode"
                                             value="class"
                                             checked={recipientMode === 'class'}
                                             onChange={() => setRecipientMode('class')}
-                                            className="mr-4 w-4 h-4 text-teal-500"
+                                            className="mr-4 w-4 h-4 text-pacific-cyan"
                                         />
                                         <div>
                                             <div className="font-semibold text-white">Assign to Class</div>
                                             <div className="text-sm text-gray-400">All participants in the class</div>
                                         </div>
                                     </label>
-                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-teal-500/50 transition-all">
+                                    <label className="flex items-center p-4 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-pacific-cyan/50 transition-all">
                                         <input
                                             type="radio"
                                             name="recipientMode"
                                             value="clients"
                                             checked={recipientMode === 'clients'}
                                             onChange={() => setRecipientMode('clients')}
-                                            className="mr-4 w-4 h-4 text-teal-500"
+                                            className="mr-4 w-4 h-4 text-pacific-cyan"
                                         />
                                         <div>
                                             <div className="font-semibold text-white">Assign to Individual Clients</div>
@@ -449,7 +449,7 @@ function AssignWorkoutContent() {
                                         <select
                                             value={selectedClass}
                                             onChange={(e) => setSelectedClass(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
                                         >
                                             <option value="" className="bg-gray-900">-- Select a class --</option>
                                             {classes.map((cls) => (
@@ -477,7 +477,7 @@ function AssignWorkoutContent() {
                                                     type="checkbox"
                                                     checked={selectedClients.includes(client.id)}
                                                     onChange={() => toggleClient(client.id)}
-                                                    className="mr-4 w-4 h-4 text-teal-500"
+                                                    className="mr-4 w-4 h-4 text-pacific-cyan"
                                                 />
                                                 <span className="text-white">{client.full_name}</span>
                                             </label>
@@ -492,7 +492,7 @@ function AssignWorkoutContent() {
                     {step === 4 && (
                         <div className="space-y-6">
                             <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-4">
-                                <h3 className="font-bold text-xl mb-4 text-teal-400">Review Assignment</h3>
+                                <h3 className="font-bold text-xl mb-4 text-turquoise-surf">Review Assignment</h3>
                                 <div className="flex justify-between border-b border-white/10 pb-3">
                                     <span className="text-gray-400">Date:</span>
                                     <span className="text-white font-semibold">{new Date(sessionDate).toLocaleDateString()}</span>
@@ -529,7 +529,7 @@ function AssignWorkoutContent() {
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={4}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
                                     placeholder="Add any notes or instructions for this workout..."
                                 />
                             </div>
@@ -549,7 +549,7 @@ function AssignWorkoutContent() {
                         {step < 4 ? (
                             <button
                                 onClick={handleNext}
-                                className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+                                className="px-8 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-semibold rounded-lg transition-all transform hover:scale-105"
                             >
                                 Next
                             </button>

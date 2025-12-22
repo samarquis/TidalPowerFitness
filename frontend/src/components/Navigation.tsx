@@ -155,7 +155,7 @@ export default function Navigation() {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white rounded-lg transition-all"
+                                    className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-all"
                                 >
                                     Get Started
                                 </Link>
@@ -227,8 +227,8 @@ export default function Navigation() {
                         {isAuthenticated ? (
                             <>
                                 {isAdmin && (
-                                    <div className="space-y-2 pl-4 border-l-2 border-teal-600/30">
-                                        <div className="text-xs font-bold text-teal-500 uppercase">Admin</div>
+                                    <div className="space-y-2 pl-4 border-l-2 border-cerulean/30">
+                                        <div className="text-xs font-bold text-pacific-cyan uppercase">Admin</div>
                                         <Link href="/admin/classes" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Classes</Link>
                                         <Link href="/admin/trainers" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Trainers</Link>
                                         <Link href="/admin/users" className="block text-gray-400 hover:text-white py-1" onClick={() => setMobileMenuOpen(false)}>Users</Link>
@@ -308,7 +308,7 @@ export default function Navigation() {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="block px-4 py-2 bg-gradient-to-r from-teal-6 to-teal-6 text-white rounded-lg text-center"
+                                    className="block px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan text-white rounded-lg text-center"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Get Started

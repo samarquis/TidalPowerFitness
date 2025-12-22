@@ -1,11 +1,22 @@
 @import "tailwindcss";
 
+
+:root {
+  /* Brand Colors */
+  --alabaster-grey: #d9d9d9ff;
+  --white: #fefefeff;
+  --pacific-cyan: #478ea0ff;
+  --dark-teal: #114b61ff;
+  --cerulean: #18809eff;
+  --turquoise-surf: #08acd6ff;
+}
+
 @layer utilities {
   .text-gradient {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    background-image: linear-gradient(to right, rgb(20 184 166), rgb(13 148 136));
+    background-image: linear-gradient(to right, var(--turquoise-surf), var(--pacific-cyan));
   }
 
   .glass {
@@ -16,6 +27,8 @@
 
   .logo-watermark {
     position: relative;
+    background-image: linear-gradient(to bottom, black, #111827, black);
+    background-attachment: fixed;
   }
 
   .logo-watermark::before {
@@ -39,8 +52,8 @@
 
   .btn-primary {
     padding: 0.75rem 1.5rem;
-    background-image: linear-gradient(to right, rgb(20 184 166), rgb(13 148 136));
-    color: white;
+    background-image: linear-gradient(to right, var(--turquoise-surf), var(--cerulean));
+    color: var(--white);
     font-weight: 600;
     border-radius: 0.5rem;
     transition: all 0.3s;
@@ -48,7 +61,7 @@
   }
 
   .btn-primary:hover {
-    background-image: linear-gradient(to right, rgb(17 94 89), rgb(15 118 110));
+    background-image: linear-gradient(to right, var(--pacific-cyan), var(--dark-teal));
     transform: scale(1.05);
   }
 
@@ -56,15 +69,16 @@
     padding: 0.75rem 1.5rem;
     background-color: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(20, 184, 166, 0.3);
-    color: white;
+    border: 1px solid var(--pacific-cyan);
+    color: var(--white);
     font-weight: 600;
     border-radius: 0.5rem;
     transition: all 0.3s;
   }
 
   .btn-secondary:hover {
-    background-color: rgba(20, 184, 166, 0.1);
-    border-color: rgba(20, 184, 166, 0.5);
+    background-color: rgba(8, 172, 214, 0.1);
+    /* turquoise-surf with opacity */
+    border-color: var(--turquoise-surf);
   }
 }

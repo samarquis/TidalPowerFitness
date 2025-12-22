@@ -55,7 +55,7 @@ export default function TrainerBiosSection() {
 
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading trainers...</p>
                     </div>
                 ) : (
@@ -67,7 +67,7 @@ export default function TrainerBiosSection() {
                                     className="glass rounded-2xl p-6 hover:bg-white/10 transition-all transform hover:scale-105"
                                 >
                                     {/* Profile Image */}
-                                    <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-teal-6 to-teal-6 flex items-center justify-center text-4xl font-bold text-white">
+                                    <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-pacific-cyan to-turquoise-surf flex items-center justify-center text-4xl font-bold text-white">
                                         {trainer.profile_image_url ? (
                                             <img
                                                 src={trainer.profile_image_url}
@@ -86,7 +86,7 @@ export default function TrainerBiosSection() {
 
                                     {/* Specialties */}
                                     {trainer.specialties && (
-                                        <p className="text-teal-4 text-center text-sm mb-3">
+                                        <p className="text-turquoise-surf text-center text-sm mb-3">
                                             {trainer.specialties}
                                         </p>
                                     )}
@@ -114,7 +114,7 @@ export default function TrainerBiosSection() {
                         <div className="text-center">
                             <Link
                                 href="/trainers"
-                                className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                                className="inline-block px-8 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
                             >
                                 Meet All Our Trainers
                             </Link>

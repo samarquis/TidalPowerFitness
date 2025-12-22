@@ -41,10 +41,10 @@ export default function ClassCard({
         <div className="glass rounded-2xl p-6 hover:bg-white/10 transition-all transform hover:scale-105">
             {/* Category badge */}
             <div className="flex justify-between items-start mb-4">
-                <span className="px-3 py-1 bg-teal-6/20 text-teal-4 rounded-full text-sm font-semibold">
+                <span className="px-3 py-1 bg-pacific-cyan/20 text-turquoise-surf rounded-full text-sm font-semibold">
                     {category}
                 </span>
-                <span className="text-2xl font-bold text-teal-4">
+                <span className="text-2xl font-bold text-turquoise-surf">
                     {formatPrice(priceCents)}
                 </span>
             </div>
@@ -92,7 +92,7 @@ export default function ClassCard({
                 href="https://app.acuityscheduling.com/schedule/cf017c84"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-center transition-all transform hover:scale-105"
+                className="block w-full px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-center transition-all transform hover:scale-105"
             >
                 Book This Class
             </a>

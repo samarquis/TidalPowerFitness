@@ -98,7 +98,7 @@ export default function Migrations() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-teal-900 to-gray-900 text-white p-8">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-dark-teal/20 to-gray-900 text-white p-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold text-gradient">Database Migrations</h1>
@@ -127,7 +127,7 @@ export default function Migrations() {
                     ) : status ? (
                         <>
                             <div className="mb-6">
-                                <h3 className="text-xl font-medium mb-3 text-teal-300">
+                                <h3 className="text-xl font-medium mb-3 text-turquoise-surf">
                                     ✅ Completed Migrations ({status?.completed?.length || 0})
                                 </h3>
                                 {status?.completed?.length > 0 ? (
@@ -206,7 +206,7 @@ export default function Migrations() {
                 </div>
 
                 <div className="glass rounded-xl p-6">
-                    <h3 className="text-xl font-semibold mb-4 text-teal-300">ℹ️ About Database Migrations</h3>
+                    <h3 className="text-xl font-semibold mb-4 text-turquoise-surf">ℹ️ About Database Migrations</h3>
                     <p className="mb-4 text-gray-300">
                         Database migrations update your database schema to support new features and improvements.
                         Each migration file contains SQL commands that modify the database structure.

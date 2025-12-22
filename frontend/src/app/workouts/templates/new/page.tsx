@@ -211,11 +211,11 @@ export default function NewTemplatePage() {
     });
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Navigation */}
                 <div className="mb-4">
-                    <Link href="/workouts/templates" className="text-teal-400 hover:text-teal-300 inline-flex items-center gap-2">
+                    <Link href="/workouts/templates" className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2">
                         ← Back to Templates
                     </Link>
                 </div>
@@ -254,7 +254,7 @@ export default function NewTemplatePage() {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     required
                                 />
                             </div>
@@ -264,7 +264,7 @@ export default function NewTemplatePage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     rows={3}
                                 />
                             </div>
@@ -274,7 +274,7 @@ export default function NewTemplatePage() {
                                 <select
                                     value={formData.workout_type_id}
                                     onChange={(e) => setFormData({ ...formData, workout_type_id: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                 >
                                     <option value="">Select workout type (optional)</option>
                                     {workoutTypes.map((type) => (
@@ -290,7 +290,7 @@ export default function NewTemplatePage() {
                                         type="number"
                                         value={formData.estimated_duration_minutes}
                                         onChange={(e) => setFormData({ ...formData, estimated_duration_minutes: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                         min="1"
                                     />
                                 </div>
@@ -300,7 +300,7 @@ export default function NewTemplatePage() {
                                     <select
                                         value={formData.difficulty_level}
                                         onChange={(e) => setFormData({ ...formData, difficulty_level: e.target.value })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     >
                                         <option value="Beginner">Beginner</option>
                                         <option value="Intermediate">Intermediate</option>
@@ -321,7 +321,7 @@ export default function NewTemplatePage() {
                                 <select
                                     value={bodyPartFilter}
                                     onChange={(e) => setBodyPartFilter(e.target.value)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                 >
                                     <option value="all">All Body Parts</option>
                                     {bodyFocusAreas.map((area) => (
@@ -336,7 +336,7 @@ export default function NewTemplatePage() {
                                     placeholder="Search by name..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
                                 />
                             </div>
                         </div>
@@ -428,7 +428,7 @@ export default function NewTemplatePage() {
                                                     type="number"
                                                     value={ex.suggested_reps || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_reps', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-teal-4"
+                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
                                                     min="1"
                                                 />
                                             </div>
@@ -438,7 +438,7 @@ export default function NewTemplatePage() {
                                                     type="number"
                                                     value={ex.suggested_weight_lbs || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_weight_lbs', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-teal-4"
+                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
                                                     min="0"
                                                 />
                                             </div>
@@ -448,7 +448,7 @@ export default function NewTemplatePage() {
                                                     type="number"
                                                     value={ex.suggested_rest_seconds || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_rest_seconds', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-teal-4"
+                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
                                                     min="0"
                                                 />
                                             </div>
@@ -471,7 +471,7 @@ export default function NewTemplatePage() {
                         <button
                             type="submit"
                             disabled={saving || !formData.name || selectedExercises.length === 0}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {saving ? 'Creating...' : 'Create Template'}
                         </button>

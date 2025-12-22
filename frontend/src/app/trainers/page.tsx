@@ -85,9 +85,9 @@ export default function TrainersPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-black">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-6 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-pacific-cyan mx-auto mb-4"></div>
                     <p className="text-gray-400">Loading our amazing trainers...</p>
                 </div>
             </div>
@@ -95,7 +95,7 @@ export default function TrainersPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-20 logo-watermark">
+        <div className="min-h-screen py-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-12">
@@ -143,7 +143,7 @@ export default function TrainersPage() {
                 {/* Trainers Grid */}
                 {filteredAndSortedTrainers.length === 0 ? (
                     <div className="text-center py-20">
-                        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-teal-6/20 to-teal-6/20 flex items-center justify-center">
+                        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-pacific-cyan/20 to-turquoise-surf/20 flex items-center justify-center">
                             <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -152,7 +152,7 @@ export default function TrainersPage() {
                         <p className="text-gray-500">Try adjusting your filters or check back soon!</p>
                         <button
                             onClick={() => setActiveFilter('all')}
-                            className="mt-6 px-6 py-2 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-all"
+                            className="mt-6 px-6 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-semibold rounded-lg transition-all"
                         >
                             Clear Filters
                         </button>
@@ -176,7 +176,7 @@ export default function TrainersPage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a
                             href="/contact"
-                            className="inline-block px-8 py-4 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
+                            className="inline-block px-8 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105"
                         >
                             Schedule Free Consultation
                         </a>

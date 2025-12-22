@@ -68,7 +68,7 @@ export default function MyClientsPage() {
     if (authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
@@ -78,11 +78,11 @@ export default function MyClientsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/trainer" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/trainer" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -98,14 +98,14 @@ export default function MyClientsPage() {
                         placeholder="Search by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-400 transition-all"
+                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf transition-all"
                     />
                 </div>
 
                 {/* Stats */}
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-400">{clients.length}</div>
+                        <div className="text-3xl font-bold text-turquoise-surf">{clients.length}</div>
                         <div className="text-gray-400 mt-1">Total Clients</div>
                     </div>
                     <div className="glass rounded-xl p-6">
@@ -130,7 +130,7 @@ export default function MyClientsPage() {
                 {/* Clients List */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading clients...</p>
                     </div>
                 ) : filteredClients.length === 0 ? (
@@ -149,7 +149,7 @@ export default function MyClientsPage() {
                             >
                                 {/* Avatar */}
                                 <div className="flex items-center mb-4">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-2xl font-bold mr-4">
+                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turquoise-surf to-cerulean flex items-center justify-center text-white text-2xl font-bold mr-4">
                                         {client.first_name[0]}{client.last_name[0]}
                                     </div>
                                     <div>
@@ -176,7 +176,7 @@ export default function MyClientsPage() {
 
                                 {/* View Button */}
                                 <div className="mt-4">
-                                    <div className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-center rounded-lg font-semibold">
+                                    <div className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan text-white text-center rounded-lg font-semibold">
                                         View Workouts →
                                     </div>
                                 </div>

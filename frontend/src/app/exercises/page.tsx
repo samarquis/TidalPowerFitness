@@ -74,13 +74,13 @@ export default function ExerciseLibraryPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-12 text-center">
@@ -98,7 +98,7 @@ export default function ExerciseLibraryPage() {
                             placeholder="Search exercises..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full px-6 py-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                            className="w-full px-6 py-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
                         />
                     </div>
                 </div>
@@ -111,7 +111,7 @@ export default function ExerciseLibraryPage() {
                             setSelectedMuscle(null);
                         }}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === 'all'
-                            ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                            ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white'
                             : 'bg-white/10 text-gray-300 hover:bg-white/20'
                             }`}
                     >
@@ -125,7 +125,7 @@ export default function ExerciseLibraryPage() {
                                 setSelectedMuscle(null);
                             }}
                             className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedBodyPart === part.id
-                                ? 'bg-gradient-to-r from-teal-6 to-teal-6 text-white'
+                                ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white'
                                 : 'bg-white/10 text-gray-300 hover:bg-white/20'
                                 }`}
                         >
@@ -145,13 +145,13 @@ export default function ExerciseLibraryPage() {
                                     <button
                                         key={muscle.id}
                                         onClick={() => setSelectedMuscle(muscle.id)}
-                                        className="glass rounded-xl p-6 hover:border-teal-4 transition-all group"
+                                        className="glass rounded-xl p-6 hover:border-turquoise-surf transition-all group"
                                     >
                                         <div className="text-center">
-                                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-teal-6 to-teal-700 rounded-full flex items-center justify-center text-3xl">
+                                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pacific-cyan to-dark-teal rounded-full flex items-center justify-center text-3xl">
                                                 💪
                                             </div>
-                                            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-teal-4 transition-colors">
+                                            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-turquoise-surf transition-colors">
                                                 {muscle.name}
                                             </h3>
                                             <p className="text-sm text-gray-400">
@@ -192,7 +192,7 @@ export default function ExerciseLibraryPage() {
                                         href={`/exercises/${exercise.id}`}
                                         className="glass rounded-xl p-6 hover:border-teal-4 transition-all group"
                                     >
-                                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-teal-4 transition-colors">
+                                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-turquoise-surf transition-colors">
                                             {exercise.name}
                                         </h3>
                                         <div className="space-y-2">

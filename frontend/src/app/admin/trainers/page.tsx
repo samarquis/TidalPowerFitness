@@ -162,19 +162,19 @@ export default function AdminTrainersPage() {
         <div className="min-h-screen bg-black text-white pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-4">
-                    <Link href="/admin" className="text-teal-400 hover:text-teal-300 inline-flex items-center gap-2">
+                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2">
                         ← Back to Admin Dashboard
                     </Link>
                 </div>
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-teal-400">Manage Trainers</h1>
+                    <h1 className="text-3xl font-bold text-turquoise-surf">Manage Trainers</h1>
                     <button
                         onClick={() => {
                             setEditingId(null);
                             setFormData(initialFormData);
                             setIsModalOpen(true);
                         }}
-                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                        className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-colors"
                     >
                         Add New Trainer
                     </button>
@@ -232,7 +232,7 @@ export default function AdminTrainersPage() {
                                             required
                                             value={formData.first_name}
                                             onChange={e => setFormData({ ...formData, first_name: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                     <div>
@@ -242,7 +242,7 @@ export default function AdminTrainersPage() {
                                             required
                                             value={formData.last_name}
                                             onChange={e => setFormData({ ...formData, last_name: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                 </div>
@@ -255,7 +255,7 @@ export default function AdminTrainersPage() {
                                             required
                                             value={formData.email}
                                             onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                             disabled={!!editingId} // Disable email edit as it's the primary key/login
                                         />
                                     </div>
@@ -267,7 +267,7 @@ export default function AdminTrainersPage() {
                                                 required
                                                 value={formData.password}
                                                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                             />
                                         </div>
                                     )}
@@ -279,7 +279,7 @@ export default function AdminTrainersPage() {
                                         type="tel"
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                     />
                                 </div>
 
@@ -289,7 +289,7 @@ export default function AdminTrainersPage() {
                                         rows={3}
                                         value={formData.bio}
                                         onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                     />
                                 </div>
 
@@ -301,7 +301,7 @@ export default function AdminTrainersPage() {
                                             value={formData.specialties}
                                             onChange={e => setFormData({ ...formData, specialties: e.target.value })}
                                             placeholder="e.g. HIIT, Yoga, Strength"
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                     <div>
@@ -311,7 +311,7 @@ export default function AdminTrainersPage() {
                                             value={formData.certifications}
                                             onChange={e => setFormData({ ...formData, certifications: e.target.value })}
                                             placeholder="e.g. NASM, ACE"
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                 </div>
@@ -324,7 +324,7 @@ export default function AdminTrainersPage() {
                                             min="0"
                                             value={formData.years_experience}
                                             onChange={e => setFormData({ ...formData, years_experience: parseInt(e.target.value) || 0 })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                     <div>
@@ -333,7 +333,7 @@ export default function AdminTrainersPage() {
                                             type="text"
                                             value={formData.acuity_calendar_id}
                                             onChange={e => setFormData({ ...formData, acuity_calendar_id: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                         />
                                     </div>
                                 </div>
@@ -344,7 +344,7 @@ export default function AdminTrainersPage() {
                                         type="url"
                                         value={formData.profile_image_url}
                                         onChange={e => setFormData({ ...formData, profile_image_url: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
                                     />
                                 </div>
 
@@ -354,7 +354,7 @@ export default function AdminTrainersPage() {
                                         id="is_accepting_clients"
                                         checked={formData.is_accepting_clients}
                                         onChange={e => setFormData({ ...formData, is_accepting_clients: e.target.checked })}
-                                        className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 bg-gray-700 border-gray-600"
+                                        className="w-4 h-4 text-pacific-cyan rounded focus:ring-pacific-cyan bg-gray-700 border-gray-600"
                                     />
                                     <label htmlFor="is_accepting_clients" className="text-sm font-medium text-gray-300">
                                         Accepting New Clients
@@ -371,7 +371,7 @@ export default function AdminTrainersPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors font-semibold"
+                                        className="px-6 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-colors font-semibold"
                                     >
                                         {editingId ? 'Update Trainer' : 'Create Trainer'}
                                     </button>

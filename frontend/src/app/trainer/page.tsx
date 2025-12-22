@@ -154,7 +154,7 @@ export default function TrainerDashboardPage() {
     if (authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16 flex items-center justify-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
@@ -164,7 +164,7 @@ export default function TrainerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -180,7 +180,7 @@ export default function TrainerDashboardPage() {
                 <div className="mb-8 flex flex-wrap gap-4">
                     <Link
                         href="/trainer/clients"
-                        className="px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-lg font-semibold transition-colors"
+                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal rounded-lg font-semibold transition-colors"
                     >
                         👥 My Clients
                     </Link>
@@ -210,7 +210,7 @@ export default function TrainerDashboardPage() {
                         <h2 className="text-2xl font-bold">Today's Sessions</h2>
                         <Link
                             href="/workouts/history"
-                            className="text-teal-400 hover:underline text-sm"
+                            className="text-turquoise-surf hover:underline text-sm"
                         >
                             View All Sessions →
                         </Link>
@@ -218,14 +218,14 @@ export default function TrainerDashboardPage() {
 
                     {loadingSessions ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
                         </div>
                     ) : todaysSessions.length === 0 ? (
                         <div className="text-center py-8">
                             <p className="text-gray-400 mb-4">No sessions scheduled for today.</p>
                             <Link
                                 href="/workouts/assign"
-                                className="text-teal-400 hover:underline"
+                                className="text-turquoise-surf hover:underline"
                             >
                                 Create a new session →
                             </Link>
@@ -235,7 +235,7 @@ export default function TrainerDashboardPage() {
                             {todaysSessions.map((session) => (
                                 <div
                                     key={session.id}
-                                    className="bg-gradient-to-br from-teal-900/30 to-teal-800/20 border border-teal-500/30 rounded-lg p-4"
+                                    className="bg-gradient-to-br from-dark-teal/30 to-dark-teal/20 border border-pacific-cyan/30 rounded-lg p-4"
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div>
@@ -243,7 +243,7 @@ export default function TrainerDashboardPage() {
                                             <p className="text-sm text-gray-400">{session.workout_type_name}</p>
                                         </div>
                                         {session.start_time && (
-                                            <span className="text-sm text-teal-400">
+                                            <span className="text-sm text-turquoise-surf">
                                                 {formatTime(session.start_time)}
                                             </span>
                                         )}
@@ -283,7 +283,7 @@ export default function TrainerDashboardPage() {
                                         </div>
                                         <Link
                                             href={`/trainer/class/${session.id}/log`}
-                                            className="text-teal-400 hover:underline text-sm"
+                                            className="text-turquoise-surf hover:underline text-sm"
                                         >
                                             View/Edit
                                         </Link>
@@ -301,7 +301,7 @@ export default function TrainerDashboardPage() {
 
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
                         </div>
                     ) : classes.length === 0 ? (
                         <p className="text-gray-400 text-center py-8">
@@ -311,7 +311,7 @@ export default function TrainerDashboardPage() {
                         <div className="space-y-6">
                             {classesByDay.filter(d => d.classes.length > 0).map(({ day, classes: dayClasses }) => (
                                 <div key={day}>
-                                    <h3 className="text-lg font-semibold text-teal-400 mb-3">{day}</h3>
+                                    <h3 className="text-lg font-semibold text-turquoise-surf mb-3">{day}</h3>
                                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {dayClasses.map((classItem) => (
                                             <div
@@ -323,7 +323,7 @@ export default function TrainerDashboardPage() {
                                                         <h4 className="font-bold text-lg">{classItem.name}</h4>
                                                         <p className="text-sm text-gray-400">{classItem.category}</p>
                                                     </div>
-                                                    <span className="text-sm text-teal-400">
+                                                    <span className="text-sm text-turquoise-surf">
                                                         {formatTime(classItem.start_time)}
                                                     </span>
                                                 </div>
@@ -338,7 +338,7 @@ export default function TrainerDashboardPage() {
                                                     </span>
                                                     <button
                                                         onClick={() => handleViewAttendees(classItem)}
-                                                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg text-sm font-semibold transition-colors"
+                                                        className="px-4 py-2 bg-cerulean hover:bg-dark-teal rounded-lg text-sm font-semibold transition-colors"
                                                     >
                                                         View Attendees
                                                     </button>
@@ -357,11 +357,11 @@ export default function TrainerDashboardPage() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
                         <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full border border-white/10 overflow-hidden max-h-[80vh] flex flex-col">
                             {/* Modal Header */}
-                            <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4">
+                            <div className="bg-gradient-to-r from-cerulean to-pacific-cyan px-6 py-4">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <h2 className="text-xl font-bold text-white">{selectedClass.name}</h2>
-                                        <p className="text-teal-100 text-sm">
+                                        <p className="text-white/80 text-sm">
                                             {formatTime(selectedClass.start_time)} • {selectedClass.duration_minutes} min
                                         </p>
                                     </div>
@@ -378,13 +378,13 @@ export default function TrainerDashboardPage() {
                             <div className="p-6 overflow-y-auto flex-1">
                                 {loadingAttendees ? (
                                     <div className="flex justify-center py-8">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400"></div>
+                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
                                     </div>
                                 ) : (
                                     <>
                                         {/* Attendee Count */}
                                         <div className="mb-6 p-4 bg-white/5 rounded-lg">
-                                            <div className="text-3xl font-bold text-teal-400">
+                                            <div className="text-3xl font-bold text-turquoise-surf">
                                                 {selectedClass.attendee_count || 0}
                                             </div>
                                             <div className="text-gray-400 text-sm">
@@ -407,7 +407,7 @@ export default function TrainerDashboardPage() {
                                                         className="flex items-center justify-between p-4 bg-white/5 rounded-lg"
                                                     >
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold">
+                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center text-white font-bold">
                                                                 {attendee.first_name?.[0]}{attendee.last_name?.[0]}
                                                             </div>
                                                             <div>

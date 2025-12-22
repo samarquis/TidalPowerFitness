@@ -54,7 +54,7 @@ function getCategoryColor(category: string): string {
         'Cardio': 'bg-orange-500/20 border-orange-500/50 text-orange-200',
         'HIIT': 'bg-yellow-500/20 border-yellow-500/50 text-yellow-200',
         'Yoga': 'bg-green-500/20 border-green-500/50 text-green-200',
-        'Pilates': 'bg-teal-500/20 border-teal-500/50 text-teal-200',
+        'Pilates': 'bg-pacific-cyan/20 border-pacific-cyan/50 text-turquoise-surf',
         'CrossFit': 'bg-blue-500/20 border-blue-500/50 text-blue-200',
         'Boxing': 'bg-purple-500/20 border-purple-500/50 text-purple-200',
         'Cycling': 'bg-pink-500/20 border-pink-500/50 text-pink-200',
@@ -117,13 +117,13 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                     return (
                         <div
                             key={day}
-                            className={`min-h-[100px] sm:min-h-[120px] md:min-h-[150px] bg-white/5 rounded-lg p-2 md:p-3 border transition-all hover:border-teal-500/30 group relative flex flex-col
-                                ${isToday ? 'border-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.2)]' : 'border-white/5'}
+                            className={`min-h-[100px] sm:min-h-[120px] md:min-h-[150px] bg-white/5 rounded-lg p-2 md:p-3 border transition-all hover:border-pacific-cyan/30 group relative flex flex-col
+                                ${isToday ? 'border-pacific-cyan shadow-[0_0_15px_rgba(71,142,160,0.2)]' : 'border-white/5'}
                             `}
                         >
                             {/* Date Number */}
                             <div className="flex justify-between items-start mb-1 md:mb-2">
-                                <span className={`text-base md:text-lg font-bold ${isToday ? 'text-teal-400' : 'text-gray-300'}`}>
+                                <span className={`text-base md:text-lg font-bold ${isToday ? 'text-turquoise-surf' : 'text-gray-300'}`}>
                                     {day}
                                 </span>
 
@@ -134,7 +134,7 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                                             e.stopPropagation();
                                             onAddClassClick(date);
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-teal-500/20 rounded text-teal-400 transition-all hidden sm:block"
+                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-pacific-cyan/20 rounded text-turquoise-surf transition-all hidden sm:block"
                                         title="Add class to this day"
                                     >
                                         <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

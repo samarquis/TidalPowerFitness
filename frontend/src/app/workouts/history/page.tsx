@@ -55,7 +55,7 @@ export default function HistoryPage() {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     <p className="mt-4 text-gray-400">Loading history...</p>
                 </div>
             </div>
@@ -72,7 +72,7 @@ export default function HistoryPage() {
                         <p className="text-gray-400 mb-6">{error}</p>
                         <button
                             onClick={() => window.location.reload()}
-                            className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                            className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                         >
                             Try Again
                         </button>
@@ -83,7 +83,7 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold">
@@ -91,7 +91,7 @@ export default function HistoryPage() {
                     </h1>
                     <Link
                         href="/workouts/templates"
-                        className="px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                     >
                         Start New Workout
                     </Link>
@@ -125,12 +125,12 @@ export default function HistoryPage() {
                                                 day: 'numeric'
                                             })}
                                         </div>
-                                        <h3 className="text-xl font-bold group-hover:text-teal-4 transition-colors">
+                                        <h3 className="text-xl font-bold group-hover:text-turquoise-surf transition-colors">
                                             {session.workout_type_name || session.class_name || 'Workout Session'}
                                         </h3>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-2xl font-bold text-teal-4">
+                                        <div className="text-2xl font-bold text-turquoise-surf">
                                             {session.duration_minutes || 0} min
                                         </div>
                                         {session.participant_count !== undefined && session.participant_count > 0 && (

@@ -50,7 +50,7 @@ function getCategoryColor(category: string): string {
         'Cardio': 'bg-orange-500/20 border-orange-500/50 text-orange-200',
         'HIIT': 'bg-yellow-500/20 border-yellow-500/50 text-yellow-200',
         'Yoga': 'bg-green-500/20 border-green-500/50 text-green-200',
-        'Pilates': 'bg-teal-500/20 border-teal-500/50 text-teal-200',
+        'Pilates': 'bg-pacific-cyan/20 border-pacific-cyan/50 text-turquoise-surf',
         'CrossFit': 'bg-blue-500/20 border-blue-500/50 text-blue-200',
         'Boxing': 'bg-purple-500/20 border-purple-500/50 text-purple-200',
         'Cycling': 'bg-pink-500/20 border-pink-500/50 text-pink-200',

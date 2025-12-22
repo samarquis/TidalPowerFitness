@@ -20,9 +20,9 @@ export default function CTAButton({
     const baseStyles = 'inline-flex items-center justify-center gap-2 font-bold rounded-lg transition-all transform hover:scale-105 active:scale-95';
 
     const variantStyles = {
-        primary: 'bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white shadow-lg shadow-teal-5/50',
+        primary: 'bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white shadow-lg shadow-pacific-cyan/50',
         secondary: 'bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20',
-        outline: 'border-2 border-teal-5 text-teal-4 hover:bg-teal-5/10'
+        outline: 'border-2 border-pacific-cyan text-turquoise-surf hover:bg-pacific-cyan/10'
     };
 
     const sizeStyles = {

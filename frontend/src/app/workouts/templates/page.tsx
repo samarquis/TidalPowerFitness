@@ -106,7 +106,7 @@ export default function WorkoutTemplatesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -151,7 +151,7 @@ export default function WorkoutTemplatesPage() {
                         <select
                             value={difficultyFilter}
                             onChange={(e) => setDifficultyFilter(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Levels</option>
                             <option value="Beginner">Beginner</option>
@@ -164,7 +164,7 @@ export default function WorkoutTemplatesPage() {
                 {/* Templates Grid */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading templates...</p>
                     </div>
                 ) : filteredTemplates.length === 0 ? (
@@ -172,7 +172,7 @@ export default function WorkoutTemplatesPage() {
                         <p className="text-xl text-gray-400 mb-4">No templates found</p>
                         <Link
                             href="/workouts/templates/new"
-                            className="inline-block px-6 py-3 bg-gradient-to-r from-teal-6 to-teal-6 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                            className="inline-block px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
                         >
                             Create Your First Template
                         </Link>

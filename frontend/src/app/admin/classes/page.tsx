@@ -378,7 +378,7 @@ function AdminClassesContent() {
     }, {} as Record<string, number>);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
@@ -390,7 +390,7 @@ function AdminClassesContent() {
                     </div>
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all transform hover:scale-105"
+                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all transform hover:scale-105"
                     >
                         + Add New Class
                     </button>
@@ -399,7 +399,7 @@ function AdminClassesContent() {
                 {/* Stats */}
                 <div className="grid md:grid-cols-4 gap-6 mb-8">
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-4">{classes.length}</div>
+                        <div className="text-3xl font-bold text-turquoise-surf">{classes.length}</div>
                         <div className="text-gray-400 mt-1">Total Classes</div>
                     </div>
                     <div className="glass rounded-xl p-6">
@@ -425,14 +425,14 @@ function AdminClassesContent() {
                             placeholder="Search classes or instructors..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
                         />
 
                         {/* Status filter */}
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Status</option>
                             <option value="active">Active Only</option>
@@ -443,7 +443,7 @@ function AdminClassesContent() {
                         <select
                             value={dayFilter === null ? 'all' : dayFilter}
                             onChange={(e) => setDayFilter(e.target.value === 'all' ? null : parseInt(e.target.value))}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Days</option>
                             {DAYS.map((day, index) => (
@@ -455,7 +455,7 @@ function AdminClassesContent() {
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                             <option value="all">All Categories</option>
                             {CATEGORIES.map((cat) => (
@@ -468,7 +468,7 @@ function AdminClassesContent() {
                 {/* Classes table */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading classes...</p>
                     </div>
                 ) : (
@@ -566,11 +566,11 @@ function AdminClassesContent() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400")}>
+                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400")}>
                                             {step}
                                         </div>
                                         {step < 4 && (
-                                            <div className={"w-16 h-1 mx-2 " + (currentStep > step ? "bg-teal-6" : "bg-white/10")}></div>
+                                            <div className={"w-16 h-1 mx-2 " + (currentStep > step ? "bg-turquoise-surf" : "bg-white/10")}></div>
                                         )}
                                     </div>
                                 ))}
@@ -587,7 +587,7 @@ function AdminClassesContent() {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             placeholder="e.g., Power Yoga"
                                         />
                                         {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
@@ -598,7 +598,7 @@ function AdminClassesContent() {
                                         <textarea
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             rows={4}
                                             placeholder="Describe the class..."
                                         />
@@ -610,7 +610,7 @@ function AdminClassesContent() {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                         >
                                             <option value="">Select a category</option>
                                             {CATEGORIES.map((cat) => (
@@ -641,7 +641,7 @@ function AdminClassesContent() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
@@ -657,7 +657,7 @@ function AdminClassesContent() {
                                             <select
                                                 value={timeHour}
                                                 onChange={(e) => setTimeHour(e.target.value)}
-                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             >
                                                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(h => (
                                                     <option key={h} value={h.toString()}>{h}</option>
@@ -668,7 +668,7 @@ function AdminClassesContent() {
                                             <select
                                                 value={timeMinute}
                                                 onChange={(e) => setTimeMinute(e.target.value)}
-                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             >
                                                 {['00', '15', '30', '45'].map(m => (
                                                     <option key={m} value={m}>{m}</option>
@@ -680,14 +680,14 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     AM
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-teal-600 to-teal-600 text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     PM
                                                 </button>
@@ -704,7 +704,7 @@ function AdminClassesContent() {
                                             pattern="[0-9]*"
                                             value={formData.duration_minutes}
                                             onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             placeholder="60"
                                         />
                                         {errors.duration_minutes && <p className="text-red-400 text-sm mt-1">{errors.duration_minutes}</p>}
@@ -722,7 +722,7 @@ function AdminClassesContent() {
                                         <select
                                             value={formData.instructor_id}
                                             onChange={(e) => handleTrainerChange(e.target.value)}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                         >
                                             <option value="">Select an instructor</option>
                                             {trainers.map((trainer) => (
@@ -742,7 +742,7 @@ function AdminClassesContent() {
                                             pattern="[0-9]*"
                                             value={formData.max_capacity}
                                             onChange={(e) => setFormData({ ...formData, max_capacity: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             placeholder="20"
                                         />
                                         {errors.max_capacity && <p className="text-red-400 text-sm mt-1">{errors.max_capacity}</p>}
@@ -755,7 +755,7 @@ function AdminClassesContent() {
                                             inputMode="decimal"
                                             value={(formData.price_cents / 100).toString()}
                                             onChange={(e) => setFormData({ ...formData, price_cents: Math.round(parseFloat(e.target.value || '0') * 100) })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             placeholder="20.00"
                                         />
                                         {errors.price_cents && <p className="text-red-400 text-sm mt-1">{errors.price_cents}</p>}
@@ -767,7 +767,7 @@ function AdminClassesContent() {
                                             type="text"
                                             value={formData.acuity_appointment_type_id}
                                             onChange={(e) => setFormData({ ...formData, acuity_appointment_type_id: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                             placeholder="Optional (e.g., 12345678)"
                                         />
                                         <p className="text-xs text-gray-500 mt-1">ID from Acuity Scheduling for direct booking integration.</p>
@@ -837,14 +837,14 @@ function AdminClassesContent() {
                                 {currentStep < 4 ? (
                                     <button
                                         onClick={nextStep}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
                                     >
                                         Next
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleSubmit}
-                                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold rounded-lg transition-all"
+                                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
                                     >
                                         {editingClass ? 'Update Class' : 'Create Class'}
                                     </button>
@@ -862,7 +862,7 @@ export default function AdminClassesPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         }>
             <AdminClassesContent />

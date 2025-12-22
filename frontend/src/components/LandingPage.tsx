@@ -46,14 +46,14 @@ export default function LandingPage() {
         fetchPackages();
     }, []);
     return (
-        <div className="min-h-screen logo-watermark">
+        <div className="min-h-screen">
             {/* Hero Section */}
             <section className="relative h-screen flex items-center justify-center overflow-hidden">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black">
                     <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-5 rounded-full filter blur-3xl animate-pulse"></div>
-                        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-5 rounded-full filter blur-3xl animate-pulse delay-1000"></div>
+                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pacific-cyan rounded-full filter blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pacific-cyan rounded-full filter blur-3xl animate-pulse delay-1000"></div>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@ export default function LandingPage() {
                     <div className="grid md:grid-cols-3 gap-8">
                         {/* Feature 1 */}
                         <div className="glass p-8 rounded-2xl hover:bg-white/10 transition-all transform hover:scale-105">
-                            <div className="w-16 h-16 bg-gradient-to-br from-teal-6 to-teal-6 rounded-xl flex items-center justify-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-br from-pacific-cyan to-turquoise-surf rounded-xl flex items-center justify-center mb-6">
                                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
@@ -126,7 +126,7 @@ export default function LandingPage() {
 
                         {/* Feature 2 */}
                         <div className="glass p-8 rounded-2xl hover:bg-white/10 transition-all transform hover:scale-105">
-                            <div className="w-16 h-16 bg-gradient-to-br from-teal-6 to-teal-6 rounded-xl flex items-center justify-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-br from-pacific-cyan to-turquoise-surf rounded-xl flex items-center justify-center mb-6">
                                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -139,7 +139,7 @@ export default function LandingPage() {
 
                         {/* Feature 3 */}
                         <div className="glass p-8 rounded-2xl hover:bg-white/10 transition-all transform hover:scale-105">
-                            <div className="w-16 h-16 bg-gradient-to-br from-teal-6 to-teal-6 rounded-xl flex items-center justify-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-br from-pacific-cyan to-turquoise-surf rounded-xl flex items-center justify-center mb-6">
                                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -168,7 +168,7 @@ export default function LandingPage() {
 
                     {loadingPackages ? (
                         <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         </div>
                     ) : packages.length > 0 ? (
                         <>
@@ -180,18 +180,17 @@ export default function LandingPage() {
                                     return (
                                         <div
                                             key={pkg.id}
-                                            className={`glass p-8 rounded-2xl relative hover:border-teal-400 transition-all ${
-                                                isFeatured
-                                                    ? 'border-2 border-teal-500 transform scale-105'
-                                                    : 'border border-white/10 hover:border-teal-500/50'
-                                            }`}
+                                            className={`glass p-8 rounded-2xl relative hover:border-turquoise-surf transition-all ${isFeatured
+                                                ? 'border-2 border-pacific-cyan transform scale-105'
+                                                : 'border border-white/10 hover:border-pacific-cyan/50'
+                                                }`}
                                         >
                                             {isFeatured && (
-                                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pacific-cyan to-cerulean text-white px-4 py-1 rounded-full text-sm font-semibold">
                                                     MOST POPULAR
                                                 </div>
                                             )}
-                                            <div className="text-sm text-teal-400 font-semibold mb-2 uppercase">{pkg.name}</div>
+                                            <div className="text-sm text-turquoise-surf font-semibold mb-2 uppercase">{pkg.name}</div>
                                             <div className="text-4xl font-bold mb-2">
                                                 ${(pkg.price_cents / 100).toFixed(0)}
                                                 <span className="text-lg text-gray-400">/{pkg.validity_days} days</span>
@@ -199,25 +198,25 @@ export default function LandingPage() {
                                             <div className="text-gray-400 mb-6">{pkg.description || 'Flexible membership'}</div>
                                             <ul className="space-y-3 mb-8">
                                                 <li className="flex items-start gap-2 text-gray-300">
-                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <svg className="w-5 h-5 text-turquoise-surf flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                     </svg>
                                                     {pkg.credits} class credits
                                                 </li>
                                                 <li className="flex items-start gap-2 text-gray-300">
-                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <svg className="w-5 h-5 text-turquoise-surf flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                     </svg>
                                                     Valid for {pkg.validity_days} days
                                                 </li>
                                                 <li className="flex items-start gap-2 text-gray-300">
-                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <svg className="w-5 h-5 text-turquoise-surf flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                     </svg>
                                                     Access to all group classes
                                                 </li>
                                                 <li className="flex items-start gap-2 text-gray-300">
-                                                    <svg className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <svg className="w-5 h-5 text-turquoise-surf flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                     </svg>
                                                     Online workout library
@@ -225,11 +224,10 @@ export default function LandingPage() {
                                             </ul>
                                             <Link
                                                 href="/packages"
-                                                className={`block w-full text-center px-6 py-3 font-semibold rounded-lg transition-all transform hover:scale-105 ${
-                                                    isFeatured
-                                                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white'
-                                                        : 'bg-white/10 hover:bg-white/20 text-white'
-                                                }`}
+                                                className={`block w-full text-center px-6 py-3 font-semibold rounded-lg transition-all transform hover:scale-105 ${isFeatured
+                                                    ? 'bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white'
+                                                    : 'bg-white/10 hover:bg-white/20 text-white'
+                                                    }`}
                                             >
                                                 {isFeatured ? 'Get Started' : 'View Details'}
                                             </Link>
@@ -245,7 +243,7 @@ export default function LandingPage() {
                     ) : (
                         <div className="text-center py-12">
                             <p className="text-gray-400 mb-6">No packages available at the moment.</p>
-                            <Link href="/packages" className="inline-block px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-all">
+                            <Link href="/packages" className="inline-block px-8 py-3 bg-cerulean hover:bg-dark-teal text-white font-semibold rounded-lg transition-all">
                                 View All Packages
                             </Link>
                         </div>
@@ -332,7 +330,7 @@ export default function LandingPage() {
 
                     <div className="text-center mt-12">
                         <p className="text-gray-400 mb-4">Still have questions?</p>
-                        <Link href="/contact" className="inline-block px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                        <Link href="/contact" className="inline-block px-8 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-semibold rounded-lg transition-all transform hover:scale-105">
                             Contact Us
                         </Link>
                     </div>
@@ -353,7 +351,7 @@ export default function LandingPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-r from-teal-6 to-teal-6">
+            <section className="py-20 bg-gradient-to-r from-pacific-cyan to-turquoise-surf">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-4xl font-bold mb-6">Ready to Start Your Transformation?</h2>
                     <p className="text-xl mb-8 text-white/90">

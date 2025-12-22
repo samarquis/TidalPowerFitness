@@ -184,7 +184,7 @@ export default function UserManagementPage() {
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
             case 'admin': return 'bg-red-500/20 text-red-400 border-red-500/30';
-            case 'trainer': return 'bg-teal-500/20 text-teal-400 border-teal-500/30';
+            case 'trainer': return 'bg-pacific-cyan/20 text-turquoise-surf border-pacific-cyan/30';
             default: return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
         }
     };
@@ -194,11 +194,11 @@ export default function UserManagementPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
+        <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/admin" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
                         ← Back to Admin Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -217,7 +217,7 @@ export default function UserManagementPage() {
                                 placeholder="Search by name or email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-4"
+                                className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
                             />
                         </div>
 
@@ -228,7 +228,7 @@ export default function UserManagementPage() {
                                     key={role}
                                     onClick={() => setFilter(role)}
                                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === role
-                                        ? 'bg-gradient-to-r from-teal-600 to-teal-600 text-white'
+                                        ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white'
                                         : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                         }`}
                                 >
@@ -242,7 +242,7 @@ export default function UserManagementPage() {
                 {/* Users table */}
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-4"></div>
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                         <p className="mt-4 text-gray-400">Loading users...</p>
                     </div>
                 ) : (
@@ -282,7 +282,7 @@ export default function UserManagementPage() {
                                                                 type="checkbox"
                                                                 checked={u.roles.includes(role)}
                                                                 onChange={() => toggleUserRole(u.id, role)}
-                                                                className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900"
+                                                                className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-pacific-cyan focus:ring-pacific-cyan focus:ring-offset-gray-900"
                                                             />
                                                             <span className="text-sm font-semibold capitalize">{role}</span>
                                                         </label>
@@ -342,7 +342,7 @@ export default function UserManagementPage() {
                 {/* Stats */}
                 <div className="grid md:grid-cols-4 gap-6 mt-8">
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-4">{users.length}</div>
+                        <div className="text-3xl font-bold text-turquoise-surf">{users.length}</div>
                         <div className="text-gray-400 mt-1">Total Users</div>
                     </div>
                     <div className="glass rounded-xl p-6">
@@ -350,7 +350,7 @@ export default function UserManagementPage() {
                         <div className="text-gray-400 mt-1">Clients</div>
                     </div>
                     <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-teal-400">{users.filter(u => u.roles.includes('trainer')).length}</div>
+                        <div className="text-3xl font-bold text-turquoise-surf">{users.filter(u => u.roles.includes('trainer')).length}</div>
                         <div className="text-gray-400 mt-1">Trainers</div>
                     </div>
                     <div className="glass rounded-xl p-6">
@@ -380,7 +380,7 @@ export default function UserManagementPage() {
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-teal-4"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                                     placeholder="Enter new password"
                                     minLength={6}
                                     required
@@ -404,7 +404,7 @@ export default function UserManagementPage() {
                                 <button
                                     type="submit"
                                     disabled={resetLoading}
-                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
                                 >
                                     {resetLoading ? 'Saving...' : 'Save Password'}
                                 </button>
