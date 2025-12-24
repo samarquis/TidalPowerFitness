@@ -71,16 +71,12 @@ export default function WorkoutLogPage() {
 
     const fetchSession = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-sessions/${sessionId}`, {
-                credentials: 'include'
-            });
+            const response = await apiClient.getWorkoutSession(sessionId);
 
-            if (response.ok) {
-                const data = await response.json();
-                setSession(data);
-                if (data.participants?.length > 0) {
-                    setSelectedClient(data.participants[0]);
+            if (response.data) {
+                setSession(response.data);
+                if (response.data.participants?.length > 0) {
+                    setSelectedClient(response.data.participants[0]);
                 }
             } else {
                 console.error('Failed to fetch session');
@@ -215,20 +211,12 @@ export default function WorkoutLogPage() {
                 return;
             }
 
-            const response = await fetch(`${apiUrl}/workout-sessions/log-exercises/bulk`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ logs })
-            });
+            const response = await apiClient.bulkLogExercises(logs);
 
-            if (response.ok) {
+            if (response.data) {
                 setSaveMessage(`✓ Saved ${logs.length} sets successfully!`);
             } else {
-                const error = await response.json();
-                setSaveMessage(`Error: ${error.error || 'Failed to save'}`);
+                setSaveMessage(`Error: ${response.error || 'Failed to save'}`);
             }
         } catch (error) {
             console.error('Error saving logs:', error);

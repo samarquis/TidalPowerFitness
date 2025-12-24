@@ -229,6 +229,14 @@ class ApiClient {
         return this.request<any>('/exercises', { method: 'GET' });
     }
 
+    async getWorkoutTypes() {
+        return this.request<any>('/exercises/workout-types', { method: 'GET' });
+    }
+
+    async getBodyFocusAreas() {
+        return this.request<any>('/exercises/body-focus-areas', { method: 'GET' });
+    }
+
     // Workout Template endpoints
 
     async getWorkoutTemplates(includePublic: boolean = true) {
@@ -242,6 +250,13 @@ class ApiClient {
     async createWorkoutTemplate(data: any) {
         return this.request<any>('/workout-templates', {
             method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateWorkoutTemplate(id: string, data: any) {
+        return this.request<any>(`/workout-templates/${id}`, {
+            method: 'PUT',
             body: JSON.stringify(data),
         });
     }
@@ -297,6 +312,13 @@ class ApiClient {
 
     async getSessionLogs(sessionId: string) {
         return this.request<any>(`/workout-sessions/${sessionId}/logs`, { method: 'GET' });
+    }
+
+    async bulkLogExercises(logs: any[]) {
+        return this.request<any>('/workout-sessions/log-exercises/bulk', {
+            method: 'POST',
+            body: JSON.stringify({ logs }),
+        });
     }
 
     // Progress endpoints
@@ -379,6 +401,10 @@ class ApiClient {
     // Class endpoints
     async getClasses() {
         return this.request<any>('/classes', { method: 'GET' });
+    }
+
+    async getClassesByDay(dayOfWeek: number) {
+        return this.request<any>(`/assignments/classes?day_of_week=${dayOfWeek}`, { method: 'GET' });
     }
 
     async createClass(classData: any) {

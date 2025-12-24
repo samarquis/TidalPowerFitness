@@ -45,10 +45,15 @@ function ActiveWorkoutContent() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+
         if (templateId) {
             startWorkout();
         }
-    }, [templateId]);
+    }, [templateId, user, router]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -68,34 +73,6 @@ function ActiveWorkoutContent() {
 
     const startWorkout = async () => {
         try {
-            // 1. Get template details
-            const templateResponse = await apiClient.getWorkoutTemplate(templateId!);
-            if (templateResponse.error) throw new Error(templateResponse.error);
-            const template = templateResponse.data;
-
-            // 2. Create workout session or reuse if date is today and template matches (simplified)
-            // For now, always create new as requested, but we could add "Resume" lookup here
-            const sessionResponse = await apiClient.createWorkoutTemplate({ // Note: Backend usually has a separate endpoint but createWorkoutTemplate used in some versions for this? Checking controller...
-                // Using the actual controller endpoint via request
-                method: 'POST',
-                endpoint: '/workout-sessions',
-                body: {
-                    trainer_id: user?.id,
-                    template_id: templateId,
-                    session_date: new Date(),
-                    start_time: new Date(),
-                    exercises: template.exercises?.map((ex: any, idx: number) => ({
-                        exercise_id: ex.exercise_id,
-                        order_in_session: idx + 1,
-                        planned_sets: ex.suggested_sets,
-                        planned_reps: ex.suggested_reps,
-                        planned_weight_lbs: ex.suggested_weight_lbs,
-                        rest_seconds: ex.suggested_rest_seconds
-                    })) || []
-                }
-            } as any); // Type hack for custom call if needed, but apiClient has it now?
-
-            // Actually using the refactored apiClient from my previous tool call
             const createResponse = await apiClient.createWorkoutSession({
                 trainer_id: user?.id,
                 template_id: templateId,
@@ -107,13 +84,13 @@ function ActiveWorkoutContent() {
             const session = createResponse.data;
             setSessionId(session.id);
 
-            // 3. Get full session details (with exercises)
+            // Get full session details (with exercises)
             const detailsResponse = await apiClient.getWorkoutSession(session.id);
             if (detailsResponse.error) throw new Error(detailsResponse.error);
             const details = detailsResponse.data;
             setExercises(details.exercises || []);
 
-            // 4. Load existing logs (Resume logic)
+            // Load existing logs (Resume logic)
             const logsResponse = await apiClient.getSessionLogs(session.id);
             if (logsResponse.data) {
                 setAllLogs(logsResponse.data);

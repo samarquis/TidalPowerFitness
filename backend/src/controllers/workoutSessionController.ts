@@ -4,11 +4,10 @@ import WorkoutSession from '../models/WorkoutSession';
 
 class WorkoutSessionController {
     // Get all sessions for trainer (or all for admin)
-    async getSessions(req: Request, res: Response): Promise<void> {
+    async getSessions(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
-            const trainerId = authReq.user?.id;
-            const isAdmin = authReq.user?.roles?.includes('admin');
+            const trainerId = req.user?.id;
+            const isAdmin = req.user?.roles?.includes('admin');
 
             if (!trainerId && !isAdmin) {
                 res.status(401).json({ error: 'Unauthorized' });
@@ -53,14 +52,13 @@ class WorkoutSessionController {
     }
 
     // Create new session
-    async createSession(req: Request, res: Response): Promise<void> {
+    async createSession(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
             const sessionData = {
                 ...req.body,
-                trainer_id: (authReq.user?.roles?.includes('admin') && req.body.trainer_id)
+                trainer_id: (req.user?.roles?.includes('admin') && req.body.trainer_id)
                     ? req.body.trainer_id
-                    : authReq.user?.id
+                    : req.user?.id
             };
 
             const session = await WorkoutSession.create(sessionData);
@@ -72,13 +70,12 @@ class WorkoutSessionController {
     }
 
     // Update session
-    async updateSession(req: Request, res: Response): Promise<void> {
+    async updateSession(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
             const { id } = req.params;
             const updates = req.body;
-            const userId = authReq.user?.id;
-            const isAdmin = authReq.user?.roles?.includes('admin');
+            const userId = req.user?.id;
+            const isAdmin = req.user?.roles?.includes('admin');
 
             // Fetch session to verify ownership
             const session = await WorkoutSession.getById(id);
@@ -111,12 +108,11 @@ class WorkoutSessionController {
     }
 
     // Log exercise set
-    async logExercise(req: Request, res: Response): Promise<void> {
+    async logExercise(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
             const logData = {
                 ...req.body,
-                logged_by: authReq.user?.id
+                logged_by: req.user?.id
             };
 
             const log = await WorkoutSession.logExercise(logData);
@@ -140,9 +136,8 @@ class WorkoutSessionController {
     }
 
     // Bulk log exercises
-    async bulkLogExercises(req: Request, res: Response): Promise<void> {
+    async bulkLogExercises(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
             const { logs } = req.body;
 
             if (!Array.isArray(logs)) {
@@ -154,7 +149,7 @@ class WorkoutSessionController {
             for (const logData of logs) {
                 const log = await WorkoutSession.logExercise({
                     ...logData,
-                    logged_by: authReq.user?.id
+                    logged_by: req.user?.id
                 });
                 results.push(log);
             }
@@ -184,15 +179,14 @@ class WorkoutSessionController {
     }
 
     // Get exercise history for a client
-    async getClientHistory(req: Request, res: Response): Promise<void> {
+    async getClientHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId;
-            const authReq = req as AuthenticatedRequest;
 
             // Authorization check: User can only see their own history unless they are trainer/admin
-            if (authReq.user?.id !== clientId &&
-                !authReq.user?.roles?.includes('trainer') &&
-                !authReq.user?.roles?.includes('admin')) {
+            if (req.user?.id !== clientId &&
+                !req.user?.roles?.includes('trainer') &&
+                !req.user?.roles?.includes('admin')) {
                 res.status(403).json({ error: 'Unauthorized to view this history' });
                 return;
             }
@@ -206,15 +200,14 @@ class WorkoutSessionController {
     }
 
     // Get workout stats for a client
-    async getClientStats(req: Request, res: Response): Promise<void> {
+    async getClientStats(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId;
-            const authReq = req as AuthenticatedRequest;
 
             // Authorization check
-            if (authReq.user?.id !== clientId &&
-                !authReq.user?.roles?.includes('trainer') &&
-                !authReq.user?.roles?.includes('admin')) {
+            if (req.user?.id !== clientId &&
+                !req.user?.roles?.includes('trainer') &&
+                !req.user?.roles?.includes('admin')) {
                 res.status(403).json({ error: 'Unauthorized' });
                 return;
             }

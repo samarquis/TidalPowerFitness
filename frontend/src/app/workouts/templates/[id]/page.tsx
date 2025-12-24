@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface TemplateExercise {
     exercise_name: string;
     order_in_template: number;
     suggested_sets?: number;
     suggested_reps?: number;
+
     suggested_weight_lbs?: number;
     suggested_rest_seconds?: number;
     notes?: string;
@@ -28,26 +30,29 @@ interface WorkoutTemplate {
 }
 
 export default function TemplateDetailsPage() {
-    const { user, token } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const params = useParams();
     const [template, setTemplate] = useState<WorkoutTemplate | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
         if (params?.id) {
             fetchTemplate(params.id as string);
         }
-    }, [params]);
+    }, [params, authLoading, isAuthenticated, router]);
 
     const fetchTemplate = async (id: string) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates/${id}`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            setTemplate(data);
+            const response = await apiClient.getWorkoutTemplate(id);
+            if (response.data) {
+                setTemplate(response.data);
+            }
         } catch (error) {
             console.error('Error fetching template:', error);
         } finally {
@@ -60,16 +65,7 @@ export default function TemplateDetailsPage() {
         if (!params?.id) return;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-templates/${params.id}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete template');
-            }
-
+            await apiClient.deleteWorkoutTemplate(params.id as string);
             router.push('/workouts/templates');
         } catch (error) {
             console.error('Error deleting template:', error);
@@ -77,7 +73,7 @@ export default function TemplateDetailsPage() {
         }
     };
 
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
@@ -200,12 +196,20 @@ export default function TemplateDetailsPage() {
                         Start Workout
                     </Link>
                     {user?.id === template.trainer_id && (
-                        <button
-                            onClick={handleDelete}
-                            className="px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-bold rounded-lg transition-all"
-                        >
-                            Delete
-                        </button>
+                        <>
+                            <Link
+                                href={`/workouts/templates/${template.id}/edit`}
+                                className="px-6 py-3 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 font-bold rounded-lg transition-all"
+                            >
+                                Edit
+                            </Link>
+                            <button
+                                onClick={handleDelete}
+                                className="px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-bold rounded-lg transition-all"
+                            >
+                                Delete
+                            </button>
+                        </>
                     )}
                 </div>
 

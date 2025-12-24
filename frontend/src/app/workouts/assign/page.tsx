@@ -115,15 +115,9 @@ function AssignWorkoutContent() {
                 const date = new Date(sessionDate);
                 const dayOfWeek = date.getDay();
 
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/assignments/classes?day_of_week=${dayOfWeek}`,
-                    {
-                        credentials: 'include'
-                    }
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    setClasses(data);
+                const response = await apiClient.getClassesByDay(dayOfWeek);
+                if (response.data) {
+                    setClasses(response.data);
                 }
             } catch (error) {
                 console.error('Error fetching classes:', error);

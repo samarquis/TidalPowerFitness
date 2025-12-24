@@ -4,9 +4,9 @@ import WorkoutTemplate from '../models/WorkoutTemplate';
 
 class WorkoutTemplateController {
     // Get all templates for trainer
-    async getTemplates(req: Request, res: Response): Promise<void> {
+    async getTemplates(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const trainerId = (req as AuthenticatedRequest).user?.id;
+            const trainerId = req.user?.id;
             if (!trainerId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
@@ -39,11 +39,11 @@ class WorkoutTemplateController {
     }
 
     // Create new template
-    async createTemplate(req: Request, res: Response): Promise<void> {
+    async createTemplate(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const templateData = {
                 ...req.body,
-                trainer_id: (req as AuthenticatedRequest).user?.id
+                trainer_id: req.user?.id
             };
 
             const template = await WorkoutTemplate.create(templateData);
@@ -55,10 +55,9 @@ class WorkoutTemplateController {
     }
 
     // Copy template
-    async copyTemplate(req: Request, res: Response): Promise<void> {
+    async copyTemplate(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
-            const trainerId = authReq.user?.id;
+            const trainerId = req.user?.id;
             if (!trainerId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
@@ -74,12 +73,11 @@ class WorkoutTemplateController {
     }
 
     // Delete template
-    async deleteTemplate(req: Request, res: Response): Promise<void> {
+    async deleteTemplate(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const authReq = req as AuthenticatedRequest;
             const templateId = req.params.id;
-            const userId = authReq.user?.id;
-            const isAdmin = authReq.user?.roles?.includes('admin');
+            const userId = req.user?.id;
+            const isAdmin = req.user?.roles?.includes('admin');
 
             // Fetch template to verify ownership
             const template = await WorkoutTemplate.getById(templateId);

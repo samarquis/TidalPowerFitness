@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api';
 
 interface ExerciseLog {
+    id: string;
     exercise_name: string;
     set_number: number;
     reps_completed?: number;
@@ -23,38 +25,38 @@ interface WorkoutSession {
     exercises: any[]; // Raw exercises from API
 }
 
+type GroupedLogs = {
+    [key: string]: ExerciseLog[];
+};
+
+
 export default function SessionDetailsPage() {
-    const { token } = useAuth();
+    const { isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
     const params = useParams();
     const [session, setSession] = useState<WorkoutSession | null>(null);
     const [logs, setLogs] = useState<ExerciseLog[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+
         if (params?.id) {
             fetchSession(params.id as string);
         }
-    }, [params]);
+    }, [params, authLoading, isAuthenticated, router]);
 
     const fetchSession = async (id: string) => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await fetch(`${apiUrl}/workout-sessions/${id}`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            setSession(data);
-
-            // Process exercises into logs format if needed, or use existing structure
-            // The backend returns exercises with logs attached or separate logs
-            // For now assuming we need to fetch logs separately or they are included
-            // Let's check the structure in the console if needed, but based on model:
-            // session.exercises contains planned exercises. We need actual logs.
-            // Actually, the getById endpoint returns exercises, but logs are in a separate table
-            // Let's assume for this MVP we display the planned exercises and any notes
-            // If we need actual logs, we might need to update the backend to include them in getById
-            // or fetch them separately.
-            // Let's stick to what getById returns for now.
+            const response = await apiClient.getWorkoutSession(id);
+            if (response.data) {
+                setSession(response.data);
+                fetchSessionLogs(id);
+            }
         } catch (error) {
             console.error('Error fetching session:', error);
         } finally {
@@ -62,7 +64,27 @@ export default function SessionDetailsPage() {
         }
     };
 
-    if (loading) {
+    const fetchSessionLogs = async (id: string) => {
+        try {
+            const response = await apiClient.getSessionLogs(id);
+            if (response.data) {
+                setLogs(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching session logs:', error);
+        }
+    };
+
+    const groupedLogs = logs.reduce((acc, log) => {
+        if (!acc[log.exercise_name]) {
+            acc[log.exercise_name] = [];
+        }
+        acc[log.exercise_name].push(log);
+        return acc;
+    }, {} as GroupedLogs);
+
+
+    if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 flex items-center justify-center">
                 <div className="text-center">
@@ -118,7 +140,7 @@ export default function SessionDetailsPage() {
                     </div>
                     <div className="glass p-4 rounded-xl text-center">
                         <div className="text-sm text-gray-400 mb-1">Exercises</div>
-                        <div className="text-2xl font-bold">{session.exercises?.length || 0}</div>
+                        <div className="text-2xl font-bold">{Object.keys(groupedLogs).length || 0}</div>
                     </div>
                 </div>
 
@@ -134,32 +156,32 @@ export default function SessionDetailsPage() {
                 <div className="glass rounded-xl p-6">
                     <h2 className="text-2xl font-bold mb-6">Exercises Performed</h2>
                     <div className="space-y-6">
-                        {session.exercises?.map((exercise, idx) => (
-                            <div key={idx} className="bg-white/5 rounded-lg p-4">
-                                <h3 className="text-lg font-bold mb-2">{exercise.exercise_name}</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                    {exercise.planned_sets && (
-                                        <div>
-                                            <span className="text-gray-400">Sets:</span> {exercise.planned_sets}
-                                        </div>
-                                    )}
-                                    {exercise.planned_reps && (
-                                        <div>
-                                            <span className="text-gray-400">Reps:</span> {exercise.planned_reps}
-                                        </div>
-                                    )}
-                                    {exercise.planned_weight_lbs && (
-                                        <div>
-                                            <span className="text-gray-400">Weight:</span> {exercise.planned_weight_lbs} lbs
-                                        </div>
-                                    )}
-                                </div>
-                                {exercise.notes && (
-                                    <p className="mt-2 text-sm text-gray-400 italic">{exercise.notes}</p>
-                                )}
+                        {Object.keys(groupedLogs).map((exerciseName) => (
+                            <div key={exerciseName} className="bg-white/5 rounded-lg p-4">
+                                <h3 className="text-lg font-bold mb-4">{exerciseName}</h3>
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-white/10">
+                                            <th className="text-left pb-2 font-semibold text-gray-400">Set</th>
+                                            <th className="text-left pb-2 font-semibold text-gray-400">Reps</th>
+                                            <th className="text-left pb-2 font-semibold text-gray-400">Weight (lbs)</th>
+                                            <th className="text-left pb-2 font-semibold text-gray-400">Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {groupedLogs[exerciseName].map((log) => (
+                                            <tr key={log.id} className="border-b border-white/5">
+                                                <td className="py-2">{log.set_number}</td>
+                                                <td className="py-2">{log.reps_completed ?? '-'}</td>
+                                                <td className="py-2">{log.weight_used_lbs ?? '-'}</td>
+                                                <td className="py-2">{log.notes ?? '-'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         ))}
-                        {(!session.exercises || session.exercises.length === 0) && (
+                        {Object.keys(groupedLogs).length === 0 && (
                             <p className="text-gray-400 text-center py-4">No exercises recorded for this session.</p>
                         )}
                     </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 
@@ -38,9 +38,12 @@ interface BodyFocusArea {
     name: string;
 }
 
-export default function NewTemplatePage() {
-    const { user, loading: authLoading, token } = useAuth();
+export default function EditTemplatePage() {
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
+    const params = useParams();
+    const id = params?.id as string;
+
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [workoutTypes, setWorkoutTypes] = useState<WorkoutType[]>([]);
     const [bodyFocusAreas, setBodyFocusAreas] = useState<BodyFocusArea[]>([]);
@@ -60,54 +63,48 @@ export default function NewTemplatePage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Wait for auth to finish loading
         if (authLoading) return;
-
-        // Redirect to login if not authenticated
         if (!user) {
-            router.push('/login?redirect=/workouts/templates/new');
+            router.push(`/login?redirect=/workouts/templates/${id}/edit`);
             return;
         }
-        fetchExercises();
-        fetchWorkoutTypes();
-        fetchBodyFocusAreas();
-    }, [user, authLoading, router]);
 
-    const fetchExercises = async () => {
-        try {
-            const response = await apiClient.getExercises();
-            if (response.data) {
-                setExercises(Array.isArray(response.data) ? response.data : []);
-            } else {
-                throw new Error(response.error || 'Failed to fetch exercises');
-            }
-        } catch (error) {
-            console.error('Error fetching exercises:', error);
-            setError('Failed to load exercises. Please try again later.');
-        }
-    };
+        const fetchInitialData = async () => {
+            try {
+                const [templateRes, exercisesRes, workoutTypesRes, bodyFocusAreasRes] = await Promise.all([
+                    apiClient.getWorkoutTemplate(id),
+                    apiClient.getExercises(),
+                    apiClient.getWorkoutTypes(),
+                    apiClient.getBodyFocusAreas()
+                ]);
 
-    const fetchWorkoutTypes = async () => {
-        try {
-            const response = await apiClient.getWorkoutTypes();
-            if (response.data) {
-                setWorkoutTypes(response.data);
-            }
-        } catch (error) {
-            console.error('Error fetching workout types:', error);
-        }
-    };
+                if (templateRes.data) {
+                    setFormData({
+                        name: templateRes.data.name,
+                        description: templateRes.data.description || '',
+                        workout_type_id: templateRes.data.workout_type_id || '',
+                        estimated_duration_minutes: templateRes.data.estimated_duration_minutes || 60,
+                        difficulty_level: templateRes.data.difficulty_level || 'Intermediate',
+                        is_public: templateRes.data.is_public || false,
+                    });
+                    setSelectedExercises(templateRes.data.exercises || []);
+                } else {
+                    setError("Failed to load template data.");
+                }
 
-    const fetchBodyFocusAreas = async () => {
-        try {
-            const response = await apiClient.getBodyFocusAreas();
-            if (response.data) {
-                setBodyFocusAreas(response.data);
+                setExercises(exercisesRes.data || []);
+                setWorkoutTypes(workoutTypesRes.data || []);
+                setBodyFocusAreas(bodyFocusAreasRes.data || []);
+
+            } catch (err) {
+                setError("An error occurred while loading data.");
+                console.error(err);
             }
-        } catch (error) {
-            console.error('Error fetching body focus areas:', error);
-        }
-    };
+        };
+        
+        fetchInitialData();
+
+    }, [id, user, authLoading, router]);
 
     const addExercise = (exercise: Exercise) => {
         if (selectedExercises.find(e => e.exercise_id === exercise.id)) return;
@@ -125,7 +122,6 @@ export default function NewTemplatePage() {
 
     const removeExercise = (exerciseId: string) => {
         const filtered = selectedExercises.filter(e => e.exercise_id !== exerciseId);
-        // Reorder remaining exercises
         const reordered = filtered.map((e, index) => ({ ...e, order_in_template: index + 1 }));
         setSelectedExercises(reordered);
     };
@@ -152,7 +148,6 @@ export default function NewTemplatePage() {
         const [draggedItem] = newExercises.splice(draggedIndex, 1);
         newExercises.splice(dropIndex, 0, draggedItem);
 
-        // Update order_in_template for all exercises
         const reordered = newExercises.map((ex, index) => ({
             ...ex,
             order_in_template: index + 1
@@ -164,32 +159,30 @@ export default function NewTemplatePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         setSaving(true);
         setError(null);
 
         try {
             const body = {
                 ...formData,
-                trainer_id: user?.id,
                 exercises: selectedExercises
             };
 
-            const response = await apiClient.createWorkoutTemplate(body);
+            const response = await apiClient.updateWorkoutTemplate(id, body);
 
             if (response.error) {
                 throw new Error(response.error);
             }
 
-            router.push('/workouts/templates');
+            router.push(`/workouts/templates/${id}`);
         } catch (error) {
-            console.error('Error creating template:', error);
-            setError(error instanceof Error ? error.message : 'Failed to create template. Please try again.');
+            console.error('Error updating template:', error);
+            setError(error instanceof Error ? error.message : 'Failed to update template.');
         } finally {
             setSaving(false);
         }
     };
-
+    
     const filteredExercises = exercises.filter(ex => {
         const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
         const notSelected = !selectedExercises.find(se => se.exercise_id === ex.id);
@@ -200,38 +193,23 @@ export default function NewTemplatePage() {
     return (
         <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Back Navigation */}
                 <div className="mb-4">
-                    <Link href="/workouts/templates" className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2">
-                        ← Back to Templates
+                    <Link href={`/workouts/templates/${id}`} className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2">
+                        ← Back to Template
                     </Link>
                 </div>
 
                 <h1 className="text-4xl font-bold mb-8">
-                    Create <span className="text-gradient">Workout Template</span>
+                    Edit <span className="text-gradient">Workout Template</span>
                 </h1>
 
-                {/* Error Banner */}
                 {error && (
                     <div className="glass rounded-xl p-4 mb-6 border border-red-400/20 bg-red-400/10">
-                        <div className="flex items-start gap-3">
-                            <div className="text-red-400 text-2xl">⚠️</div>
-                            <div className="flex-1">
-                                <h3 className="font-bold text-red-400 mb-1">Error</h3>
-                                <p className="text-gray-300">{error}</p>
-                            </div>
-                            <button
-                                onClick={() => setError(null)}
-                                className="text-gray-400 hover:text-white"
-                            >
-                                ✕
-                            </button>
-                        </div>
+                        <p className="text-red-400">{error}</p>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Template Details */}
                     <div className="glass rounded-xl p-6">
                         <h2 className="text-2xl font-bold mb-4">Template Details</h2>
                         <div className="space-y-4">
@@ -241,7 +219,7 @@ export default function NewTemplatePage() {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                     required
                                 />
                             </div>
@@ -251,19 +229,19 @@ export default function NewTemplatePage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                     rows={3}
                                 />
                             </div>
-
+                            
                             <div>
                                 <label className="block text-sm font-semibold text-gray-300 mb-2">Workout Type</label>
                                 <select
                                     value={formData.workout_type_id}
                                     onChange={(e) => setFormData({ ...formData, workout_type_id: e.target.value })}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                 >
-                                    <option value="">Select workout type (optional)</option>
+                                    <option value="">Select workout type</option>
                                     {workoutTypes.map((type) => (
                                         <option key={type.id} value={type.id}>{type.name}</option>
                                     ))}
@@ -277,17 +255,17 @@ export default function NewTemplatePage() {
                                         type="number"
                                         value={formData.estimated_duration_minutes}
                                         onChange={(e) => setFormData({ ...formData, estimated_duration_minutes: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                         min="1"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Difficulty Level</label>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Difficulty</label>
                                     <select
                                         value={formData.difficulty_level}
                                         onChange={(e) => setFormData({ ...formData, difficulty_level: e.target.value })}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                     >
                                         <option value="Beginner">Beginner</option>
                                         <option value="Intermediate">Intermediate</option>
@@ -298,17 +276,15 @@ export default function NewTemplatePage() {
                         </div>
                     </div>
 
-                    {/* Exercise Selection */}
                     <div className="glass rounded-xl p-6">
-                        <h2 className="text-2xl font-bold mb-4">Add Exercises</h2>
-
+                        <h2 className="text-2xl font-bold mb-4">Exercises</h2>
                         <div className="grid md:grid-cols-2 gap-4 mb-4">
-                            <div>
+                             <div>
                                 <label className="block text-sm font-semibold text-gray-300 mb-2">Filter by Body Part</label>
                                 <select
                                     value={bodyPartFilter}
                                     onChange={(e) => setBodyPartFilter(e.target.value)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                 >
                                     <option value="all">All Body Parts</option>
                                     {bodyFocusAreas.map((area) => (
@@ -320,123 +296,88 @@ export default function NewTemplatePage() {
                                 <label className="block text-sm font-semibold text-gray-300 mb-2">Search Exercises</label>
                                 <input
                                     type="text"
-                                    placeholder="Search by name..."
+                                    placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
                                 />
                             </div>
                         </div>
 
-                        {(searchTerm || bodyPartFilter !== 'all') && filteredExercises.length > 0 && (
+                        {searchTerm && filteredExercises.length > 0 && (
                             <div className="max-h-64 overflow-y-auto space-y-2">
-                                {filteredExercises.slice(0, 20).map((exercise) => (
+                                {filteredExercises.slice(0, 10).map((exercise) => (
                                     <button
                                         key={exercise.id}
                                         type="button"
                                         onClick={() => addExercise(exercise)}
-                                        className="w-full text-left px-4 py-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
+                                        className="w-full text-left px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg"
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="font-semibold">{exercise.name}</div>
-                                                <div className="text-sm text-gray-400 mt-1">
-                                                    {exercise.muscle_group_name || exercise.muscle_group}
-                                                    {exercise.equipment_required && ` • ${exercise.equipment_required}`}
-                                                </div>
-                                            </div>
-                                            {exercise.difficulty_level && (
-                                                <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                                    exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        'bg-red-500/20 text-red-400'
-                                                    }`}>
-                                                    {exercise.difficulty_level}
-                                                </span>
-                                            )}
-                                        </div>
+                                        {exercise.name}
                                     </button>
                                 ))}
                             </div>
                         )}
-                        {(searchTerm || bodyPartFilter !== 'all') && filteredExercises.length === 0 && (
-                            <p className="text-gray-400 text-center py-4">No exercises found</p>
-                        )}
                     </div>
 
-                    {/* Selected Exercises */}
                     {selectedExercises.length > 0 && (
                         <div className="glass rounded-xl p-6">
-                            <h2 className="text-2xl font-bold mb-4">Selected Exercises ({selectedExercises.length})</h2>
-                            <p className="text-sm text-gray-400 mb-4">💡 Drag exercises to reorder them</p>
+                             <h2 className="text-2xl font-bold mb-4">Selected Exercises ({selectedExercises.length})</h2>
                             <div className="space-y-3">
                                 {selectedExercises.map((ex, index) => (
-                                    <div
+                                     <div
                                         key={ex.exercise_id}
                                         draggable
                                         onDragStart={() => handleDragStart(index)}
                                         onDragOver={(e) => handleDragOver(e, index)}
                                         onDrop={(e) => handleDrop(e, index)}
-                                        className={`bg-white/5 rounded-lg p-4 cursor-move transition-all ${draggedIndex === index ? 'opacity-50 scale-95' : 'hover:bg-white/10'
-                                            }`}
+                                        className="bg-white/5 rounded-lg p-4 cursor-move"
                                     >
-                                        <div className="flex items-start gap-3 mb-3">
-                                            <div className="text-2xl cursor-grab active:cursor-grabbing">⋮⋮</div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <span className="text-gray-400 text-sm">#{index + 1}</span>
-                                                        <h3 className="font-bold">{ex.exercise_name}</h3>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeExercise(ex.exercise_id)}
-                                                        className="text-red-400 hover:text-red-300 text-sm font-semibold"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold">{ex.exercise_name}</h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExercise(ex.exercise_id)}
+                                                className="text-red-400 hover:text-red-300 text-sm"
+                                            >
+                                                Remove
+                                            </button>
                                         </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ml-8">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                             <div>
-                                                <label className="block text-xs text-gray-400 mb-1">Sets</label>
+                                                <label className="text-xs text-gray-400">Sets</label>
                                                 <input
                                                     type="number"
                                                     value={ex.suggested_sets || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_sets', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-teal-4"
-                                                    min="1"
+                                                    className="w-full p-2 bg-black/50 border border-white/10 rounded text-sm"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs text-gray-400 mb-1">Reps</label>
+                                                <label className="text-xs text-gray-400">Reps</label>
                                                 <input
                                                     type="number"
                                                     value={ex.suggested_reps || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_reps', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
-                                                    min="1"
+                                                    className="w-full p-2 bg-black/50 border border-white/10 rounded text-sm"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs text-gray-400 mb-1">Weight (lbs)</label>
+                                                <label className="text-xs text-gray-400">Weight (lbs)</label>
                                                 <input
                                                     type="number"
                                                     value={ex.suggested_weight_lbs || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_weight_lbs', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
-                                                    min="0"
+                                                    className="w-full p-2 bg-black/50 border border-white/10 rounded text-sm"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs text-gray-400 mb-1">Rest (sec)</label>
+                                                <label className="text-xs text-gray-400">Rest (sec)</label>
                                                 <input
                                                     type="number"
                                                     value={ex.suggested_rest_seconds || ''}
                                                     onChange={(e) => updateExercise(ex.exercise_id, 'suggested_rest_seconds', parseInt(e.target.value))}
-                                                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-turquoise-surf"
-                                                    min="0"
+                                                    className="w-full p-2 bg-black/50 border border-white/10 rounded text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -445,22 +386,21 @@ export default function NewTemplatePage() {
                             </div>
                         </div>
                     )}
-
-                    {/* Actions */}
+                    
                     <div className="flex gap-4">
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-all"
+                            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving || !formData.name || selectedExercises.length === 0}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan rounded-lg disabled:opacity-50"
                         >
-                            {saving ? 'Creating...' : 'Create Template'}
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </form>
