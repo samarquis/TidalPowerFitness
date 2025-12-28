@@ -4,19 +4,19 @@
 -- Insert admin users
 -- Scott Marquis - Primary Admin (password: admin123 - hashed with bcrypt)
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
-('samarquis4@gmail.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Scott', 'Marquis', 'admin', ARRAY['admin'], '555-0001'),
-('admin@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100');
+('samarquis4@gmail.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Scott', 'Marquis', 'admin', ARRAY['admin'], '555-0001'),
+('admin@tidalpower.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100');
 
 -- Insert sample trainers
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
-('john.smith@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'John', 'Smith', 'trainer', ARRAY['trainer'], '555-0101'),
-('sarah.johnson@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Sarah', 'Johnson', 'trainer', ARRAY['trainer'], '555-0102'),
-('mike.williams@tidalpower.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Mike', 'Williams', 'trainer', ARRAY['trainer'], '555-0103');
+('john.smith@tidalpower.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'John', 'Smith', 'trainer', ARRAY['trainer'], '555-0101'),
+('sarah.johnson@tidalpower.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Sarah', 'Johnson', 'trainer', ARRAY['trainer'], '555-0102'),
+('mike.williams@tidalpower.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Mike', 'Williams', 'trainer', ARRAY['trainer'], '555-0103');
 
 -- Insert sample clients
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
-('client1@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Jane', 'Doe', 'client', ARRAY['client'], '555-0201'),
-('client2@example.com', '$2b$10$rKZYvJ5Nh5qX5Z5Z5Z5Z5eO5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z', 'Bob', 'Anderson', 'client', ARRAY['client'], '555-0202');
+('client1@example.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Jane', 'Doe', 'client', ARRAY['client'], '555-0201'),
+('client2@example.com', '$2b$10$aPBIbEH2suutrtkI3lnvTeDL81azmj0FGzAby9MT/q3NHbHYC.yBG', 'Bob', 'Anderson', 'client', ARRAY['client'], '555-0202');
 
 -- Create trainer profiles
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)
