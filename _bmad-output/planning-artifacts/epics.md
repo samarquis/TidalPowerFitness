@@ -412,14 +412,15 @@ So that I am always aware of my available purchasing power.
 <h3>[COMPLETED] Story 6.1: Local Database Setup and Seeding</h3>
 
 As a developer,
-I want to easily set up a local PostgreSQL instance and seed it with initial data,
+I want to easily set up a local PostgreSQL 15 instance and seed it with initial data,
 So that I can develop and test the application without relying on a remote database.
 
 **Acceptance Criteria:**
-*   **Given** I am a developer with Docker installed (or local PostgreSQL setup instructions).
-*   **When** I follow the setup instructions for the local development environment.
-*   **Then** a local PostgreSQL database instance should be running and accessible.
-*   **And** the database should be populated with necessary schema (`init.sql`) and seed data (`seed.sql`).
+*   **Given** I am a developer with local PostgreSQL 15 installed.
+*   **When** I follow the setup instructions (using full paths to `psql.exe` if not in PATH).
+*   **Then** a local PostgreSQL database instance (`tidal_power_fitness`) should be running and accessible.
+*   **And** the database should be populated with necessary schema (`001_initial_schema.sql`) and seed data (`seed.sql`).
+*   **And** any redundant or conflicting migration files (like `006_add_is_demo_mode_enabled_to_users.sql`) should be removed or ignored.
 *   **And** I should be able to connect to this database from both the backend and frontend applications.
 *   **And** the `init-database.html`, `run-migration.html`, `seed-database.html` (if exists) or similar scripts should be functional for this setup.
 
@@ -463,6 +464,19 @@ So that missing or incorrectly configured variables are caught early, preventing
 *   **Then** all critical environment variables (e.g., `DATABASE_URL`, `JWT_SECRET`) should be checked for presence and correct format.
 *   **And** if any required environment variable is missing or invalid, the application should fail to start with a clear error message.
 *   **And** this validation should apply to both local development and deployment environments.
+
+<h3>[COMPLETED] Story 6.5: Resolve Backend Stability and Mixed Module Issues</h3>
+
+As a developer,
+I want the backend application to compile and run without errors related to missing imports or mixed CommonJS/ESM syntax,
+So that development is stable and the server remains operational.
+
+**Acceptance Criteria:**
+*   **Given** The backend application is using ES modules.
+*   **When** The server starts using `ts-node` or `nodemon`.
+*   **Then** all route and controller files must have correct `import` statements (e.g., `import express from 'express'`).
+*   **And** mixed syntax (using `require` and `module.exports` alongside `import`/`export`) must be eliminated from core route files (`bookings`, `availability`, `workoutSessions`).
+*   **And** the application should start without TypeScript compiler crashes (e.g., bypassing misleading Square API type errors by fixing root source errors).
 
 <h2>Epic 7: Deployment and Operations</h2>
 **Goal:** Ensure the application can be reliably deployed, maintained, and operated in production environments, addressing critical migration and error handling needs.

@@ -29,5 +29,3 @@ router.post('/:id/impersonate', authenticate, authorize('admin'), userController
 router.get('/:id/credits', authenticate, userController.getUserCredits);
 
 export default router;
-
-export default router;

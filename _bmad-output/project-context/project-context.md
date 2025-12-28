@@ -48,7 +48,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 *   **TypeScript Strict Mode:** Adherence to strict TypeScript configurations to ensure type safety.
 *   **Path Aliases:** Utilize path aliases (e.g., `@/`) for cleaner and more maintainable imports, especially in the frontend.
-*   **ES Modules:** Consistent use of `import` and `export` for module management.
+*   **ES Modules:** Consistent use of `import` and `export` for module management. Avoid mixing `require`/`module.exports` with ES `import`/`export` in the same file.
+*   **Missing Imports:** Ensure `express` is explicitly imported in all route files where `express.Router()` is used.
 *   **Async/Await:** Prefer `async/await` for asynchronous operations, always wrapped in `try/catch` blocks for robust error handling.
 *   **Backend Error Handling:** Controllers should return JSON error responses with appropriate HTTP status codes, and log errors for debugging.
 
@@ -83,7 +84,9 @@ _This file contains critical rules and patterns that AI agents must follow when 
 *   **Version Control (GitHub):** All code changes are managed through GitHub, which serves as the primary repository for the project.
 *   **Deployment (Render):** The application is hosted on Render, which is configured to monitor the GitHub repository for new pushes to trigger deployments automatically.
 *   **Local Development Environment:**
-    *   **Database Setup:** A local PostgreSQL instance should be installed and configured. Tables need to be created and potentially seeded with data for local development.
+    *   **Database Setup:** A local PostgreSQL 15 instance should be installed and configured.
+    *   **Database Tools:** Use full paths to PostgreSQL binaries if not in PATH (e.g., `C:\Program Files\PostgreSQL\15\bin\psql.exe`).
+    *   **Schema Application:** Prefer manual application of the initial schema (`001_initial_schema.sql`) if automatic migrations encounter duplicate type errors.
     *   The goal is to enable running the entire application locally for development and testing purposes, reducing reliance on the deployed Render site for immediate feedback on changes.
 *   **Branching Strategy (Git Flow Lite):**
     *   `main`: Represents the production-ready code. Only stable, tested releases are merged here.

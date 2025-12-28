@@ -1,15 +1,15 @@
-const express = require('express');
+import express from 'express';
+import availabilityController from '../controllers/availabilityController';
+import { authenticate, authorize } from '../middleware/auth';
+
 const router = express.Router();
-const availabilityController = require('../controllers/availabilityController');
-const { authenticate, authorize } = require('../middleware/auth');
 
 // Public route - get trainer availability
-router.get('/trainer/:trainerId', availabilityController.default.getTrainerAvailability);
+router.get('/trainer/:trainerId', availabilityController.getTrainerAvailability);
 
 // Protected routes - trainer/admin only
-router.post('/', authenticate, availabilityController.default.createAvailability);
-router.put('/:id', authenticate, availabilityController.default.updateAvailability);
-router.delete('/:id', authenticate, availabilityController.default.deleteAvailability);
+router.post('/', authenticate, availabilityController.createAvailability);
+router.put('/:id', authenticate, availabilityController.updateAvailability);
+router.delete('/:id', authenticate, availabilityController.deleteAvailability);
 
-module.exports = router;
 export default router;

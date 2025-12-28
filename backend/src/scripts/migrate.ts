@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 import fs from 'fs';
 import pool from '../config/db';
@@ -22,8 +22,8 @@ const migrate = async () => {
     try {
         console.log('Starting database migration...\n');
 
-        // Ensure init.sql is run first (table creation)
-        await executeSqlFile(path.join(__dirname, '../../database/init.sql'));
+        // NOTE: Skipping init.sql because 001_initial_schema.sql contains the complete schema
+        // await executeSqlFile(path.join(__dirname, '../../database/init.sql'));
 
         const migrationsDir = path.join(__dirname, '../../migrations');
         const migrationFiles = fs.readdirSync(migrationsDir)

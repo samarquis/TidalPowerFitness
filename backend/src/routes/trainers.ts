@@ -38,5 +38,3 @@ router.get('/reports/attendance', authenticate, authorize('trainer', 'admin'), t
 router.get('/reports/analytics', authenticate, authorize('trainer', 'admin'), trainerController.getTrainerAnalytics);
 
 export default router;
-
-export default router;

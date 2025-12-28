@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --ignore logs --ignore dist --exec ts-node src/index.ts",
+    "dev": "nodemon --ignore logs --ignore dist --exec ts-node --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:migrate": "ts-node -r dotenv/config src/scripts/migrate.ts migrate",

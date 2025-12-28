@@ -23,6 +23,12 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "exclude": [
     "**/__tests__",
     "**/*.test.ts",

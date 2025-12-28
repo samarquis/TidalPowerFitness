@@ -1,3 +1,4 @@
+import express from 'express';
 import bookingController from '../controllers/bookingController';
 import { authenticate } from '../middleware/auth';
 import { createBookingValidation, validate } from '../middleware/validation';
@@ -11,6 +12,6 @@ router.post('/', authenticate, createBookingValidation, validate, bookingControl
 router.get('/user/:userId', authenticate, bookingController.getUserBookings);
 
 // DELETE /api/bookings/:id - Cancel a booking
-router.delete('/:id', authenticate, validateCancelBooking, handleValidationErrors, bookingController.cancelBooking);
+router.delete('/:id', authenticate, bookingController.cancelBooking);
 
 export default router;
