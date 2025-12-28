@@ -140,3 +140,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Remove rules that become obvious over time
 
 Last Updated: December 28, 2025
+
+*   **Database Operations (Critical Anti-Pattern):**
+    *   **Shell Variable Expansion in SQL:** When running SQL commands via command line (e.g., `psql -c "UPDATE..."`), **NEVER** include strings with `$` characters (like bcrypt hashes) directly in the command. Shells (PowerShell/Bash) will interpret `$var` as a variable and replace it (often with an empty string), causing silent data corruption (e.g., truncated password hashes).
+    *   **Resolution:** Always use a separate SQL file (`.sql`) for updates involving special characters and execute it using `-f filename.sql`.
