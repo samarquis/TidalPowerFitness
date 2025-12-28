@@ -30,21 +30,27 @@ interface UserCredits {
     total: number;
 }
 
-// Mock data for stats - these will be replaced with real data in Phase 4
-const STATS = {
-    weightLifted: [
-        { muscle: 'Legs', weight: 1250, unit: 'lbs' },
-        { muscle: 'Chest', weight: 850, unit: 'lbs' },
-        { muscle: 'Back', weight: 950, unit: 'lbs' },
-        { muscle: 'Arms', weight: 450, unit: 'lbs' },
-        { muscle: 'Shoulders', weight: 350, unit: 'lbs' }
-    ],
-    badges: [
-        { id: 1, name: 'Early Bird', icon: '🌅', description: 'Completed 5 morning classes' },
-        { id: 2, name: 'Heavy Lifter', icon: '💪', description: 'Lifted over 1000lbs total' },
-        { id: 3, name: 'Streak Master', icon: '🔥', description: '3 week workout streak' }
-    ]
-};
+interface WorkoutStats {
+    total_workouts: number;
+    total_sets: number;
+    total_volume_lbs: number;
+}
+
+interface Achievement {
+    id: string;
+    name: string;
+    description: string;
+    earned_at: string;
+    icon_url?: string;
+}
+
+interface PersonalRecord {
+    id: string;
+    exercise_name: string;
+    record_type: string;
+    value: number;
+    achieved_at: string;
+}
 
 export default function UserDashboard() {
     const { user, token } = useAuth();
@@ -53,6 +59,9 @@ export default function UserDashboard() {
     const [classes, setClasses] = useState<Class[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [credits, setCredits] = useState<UserCredits>({ total: 0 });
+    const [stats, setStats] = useState<WorkoutStats | null>(null);
+    const [achievements, setAchievements] = useState<Achievement[]>([]);
+    const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState<Class | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -64,38 +73,41 @@ export default function UserDashboard() {
         }
     }, [user, token]);
 
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            setSuccessMessage('Payment successful! Your credits have been updated.');
+            // Remove the query parameter from the URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, []);
+
     const fetchData = async () => {
         try {
-            // Fetch classes
-            const { data: classesData, error: classesError } = await apiClient.getClasses();
-            if (classesData && Array.isArray(classesData)) {
-                setClasses(classesData);
-            } else if (classesError) {
-                console.error('Error fetching classes:', classesError);
-            }
+            // Fetch everything in parallel
+            const [
+                classesRes,
+                bookingsRes,
+                creditsRes,
+                statsRes,
+                achievementsRes,
+                prRes
+            ] = await Promise.all([
+                apiClient.getClasses(),
+                apiClient.getUserBookings(user!.id),
+                apiClient.getUserCredits(user!.id),
+                apiClient.getClientStats(user!.id),
+                apiClient.getUserAchievements(user!.id),
+                apiClient.getPersonalRecords(user!.id)
+            ]);
 
-            // Fetch user's bookings
-            const { data: bookingsData, error: bookingsError } = await apiClient.getUserBookings(user!.id);
-            if (bookingsData) {
-                setBookings(bookingsData.filter((b: Booking) => b.status === 'confirmed'));
-            } else if (bookingsError) {
-                console.error('Error fetching bookings:', bookingsError);
-            }
+            if (classesRes.data) setClasses(classesRes.data);
+            if (bookingsRes.data) setBookings(bookingsRes.data.filter((b: Booking) => b.status === 'confirmed'));
+            if (creditsRes.data) setCredits({ total: creditsRes.data.credits || 0 });
+            if (statsRes.data) setStats(statsRes.data);
+            if (achievementsRes.data) setAchievements(achievementsRes.data);
+            if (prRes.data) setPersonalRecords(prRes.data);
 
-            // Fetch user credits
-            console.log('Fetching credits for user:', user!.id);
-            const { data: creditsData, error: creditsError } = await apiClient.getUserCredits(user!.id);
-            console.log('Credits response:', creditsData);
-
-            if (creditsData) {
-                // standardized response { credits: number, details: UserCredit[] }
-                // Explicitly check for validation
-                const total = creditsData.credits !== undefined ? creditsData.credits : 0;
-                console.log('Setting credits total to:', total);
-                setCredits({ total });
-            } else if (creditsError) {
-                console.error('Error fetching credits:', creditsError);
-            }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -103,17 +115,28 @@ export default function UserDashboard() {
         }
     };
 
-    const handleBookClass = async (classId: string) => {
-        const { error } = await apiClient.bookClass(classId);
+    const handleBookClass = async (classId: string, attendeeCount: number = 1) => {
+        try {
+            const response = await (apiClient as any).request('/bookings', {
+                method: 'POST',
+                body: JSON.stringify({
+                    class_id: classId,
+                    attendee_count: attendeeCount
+                })
+            });
 
-        if (error) {
-            throw new Error(error);
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            // Refresh data after booking
+            await fetchData();
+            setSuccessMessage(`Class booked successfully for ${attendeeCount} ${attendeeCount === 1 ? 'person' : 'people'}! ${attendeeCount} ${attendeeCount === 1 ? 'credit has' : 'credits have'} been deducted.`);
+            setTimeout(() => setSuccessMessage(''), 5000);
+        } catch (error: any) {
+            console.error('Booking error:', error);
+            alert(error.message || 'Failed to book class');
         }
-
-        // Refresh data after booking
-        await fetchData();
-        setSuccessMessage('Class booked successfully! 1 credit has been deducted.');
-        setTimeout(() => setSuccessMessage(''), 5000);
     };
 
     const handleClassClick = (classItem: Class) => {
@@ -159,14 +182,21 @@ export default function UserDashboard() {
     const selectedDayClasses = getClassesForDate(selectedDate.getDate());
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-black page-container">
+            <div className="max-w-7xl mx-auto">
                 {/* Welcome Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">
-                        Welcome back, <span className="text-gradient">{user?.first_name}</span>
-                    </h1>
-                    <p className="text-gray-400">Here's your fitness overview for today.</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+                    <div>
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                            Welcome back, <span className="text-gradient">{user?.first_name}</span>
+                        </h1>
+                        <p className="text-gray-400 text-lg">Here's your fitness overview for today.</p>
+                    </div>
+                    <div className="flex gap-4">
+                        <Link href="/classes" className="btn-primary">
+                            Book a Class
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Success Message */}
@@ -178,31 +208,47 @@ export default function UserDashboard() {
                 )}
 
                 {/* Credits Banner */}
-                <div className="glass rounded-xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+                <div className="glass-card mb-12 flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center">
                             <span className="text-2xl font-bold">{credits.total}</span>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-400">Available Credits</p>
-                            <p className="font-semibold">Ready to book classes</p>
+                            <p className="text-sm text-gray-400 uppercase font-bold">Available Tokens</p>
+                            <p className="font-semibold text-white">Ready to book classes</p>
                         </div>
                     </div>
-                    <Link href="/packages" className="px-5 py-2 bg-cerulean hover:bg-dark-teal rounded-lg font-semibold transition-colors">
-                        Buy More Credits
+                    <Link href="/packages" className="btn-primary">
+                        Buy More Tokens
                     </Link>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Left Column: Calendar & Selected Day Classes */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Overall Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="glass-card text-center">
+                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Total Workouts</p>
+                                <p className="text-3xl font-bold text-turquoise-surf">{stats?.total_workouts || 0}</p>
+                            </div>
+                            <div className="glass-card text-center">
+                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Total Sets</p>
+                                <p className="text-3xl font-bold text-blue-400">{stats?.total_sets || 0}</p>
+                            </div>
+                            <div className="glass-card text-center">
+                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Volume (lbs)</p>
+                                <p className="text-3xl font-bold text-purple-400">{stats?.total_volume_lbs?.toLocaleString() || 0}</p>
+                            </div>
+                        </div>
+
                         {/* Calendar Section */}
-                        <div className="glass rounded-xl p-6">
-                            <div className="flex justify-between items-center mb-6">
+                        <div className="glass-card">
+                            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                                 <h2 className="text-2xl font-bold">Class Schedule</h2>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4 bg-white/5 p-1 rounded-xl border border-white/10">
                                     <button onClick={handlePrevMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors">←</button>
-                                    <span className="font-semibold w-40 text-center">
+                                    <span className="font-bold w-32 text-center text-sm">
                                         {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                                     </span>
                                     <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors">→</button>
@@ -210,7 +256,7 @@ export default function UserDashboard() {
                             </div>
 
                             {/* Calendar Grid */}
-                            <div className="grid grid-cols-7 gap-2 mb-2 text-center text-gray-400 text-sm">
+                            <div className="grid grid-cols-7 gap-2 mb-2 text-center text-gray-500 text-[10px] font-bold uppercase tracking-wider">
                                 <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                             </div>
                             <div className="grid grid-cols-7 gap-2">
@@ -230,17 +276,17 @@ export default function UserDashboard() {
                                             key={day}
                                             onClick={() => setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
                                             className={`
-                                                aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
-                                                ${isSelected ? 'bg-cerulean text-white ring-2 ring-turquoise-surf' : 'bg-white/5 hover:bg-white/10'}
-                                                ${isToday ? 'border-2 border-turquoise-surf' : ''}
+                                                aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
+                                                ${isSelected ? 'bg-gradient-to-br from-cerulean to-pacific-cyan text-white ring-2 ring-turquoise-surf shadow-lg' : 'bg-white/5 hover:bg-white/10 border border-white/5'}
+                                                ${isToday && !isSelected ? 'border-2 border-turquoise-surf' : ''}
                                             `}
                                         >
-                                            <span className="text-sm font-medium">{day}</span>
+                                            <span className="text-sm font-bold">{day}</span>
                                             {hasClasses && (
-                                                <div className="flex gap-0.5 mt-1">
+                                                <div className="flex gap-1 mt-1">
                                                     <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-turquoise-surf'}`}></div>
                                                     {dayClasses.length > 1 && (
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-turquoise-surf'}`}></div>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400 shadow-sm' : 'bg-turquoise-surf'}`}></div>
                                                     )}
                                                 </div>
                                             )}
@@ -248,23 +294,12 @@ export default function UserDashboard() {
                                     );
                                 })}
                             </div>
-
-                            {/* Legend */}
-                            <div className="flex gap-6 mt-4 text-sm text-gray-400">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-turquoise-surf"></div>
-                                    <span>Classes Available</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                                    <span>You're Booked</span>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Selected Day Classes */}
-                        <div className="glass rounded-xl p-6">
-                            <h2 className="text-2xl font-bold mb-4">
+                        <div className="glass-card">
+                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                                <span className="w-2 h-2 rounded-full bg-turquoise-surf"></span>
                                 Classes on {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                             </h2>
                             {loading ? (
@@ -272,7 +307,9 @@ export default function UserDashboard() {
                                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
                                 </div>
                             ) : selectedDayClasses.length === 0 ? (
-                                <p className="text-gray-400 py-8 text-center">No classes scheduled for this day.</p>
+                                <div className="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10">
+                                    <p className="text-gray-500 text-lg">No classes scheduled for this day.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {selectedDayClasses.map((classItem) => {
@@ -280,32 +317,32 @@ export default function UserDashboard() {
                                         return (
                                             <div
                                                 key={classItem.id}
-                                                className={`p-4 rounded-lg border transition-all ${booked
+                                                className={`p-5 rounded-2xl border transition-all ${booked
                                                     ? 'bg-green-500/10 border-green-500/30'
-                                                    : 'bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer'
+                                                    : 'bg-white/5 border-white/10 hover:border-turquoise-surf/30 hover:bg-white/10 cursor-pointer group'
                                                     }`}
                                                 onClick={() => !booked && handleClassClick(classItem)}
                                             >
-                                                <div className="flex justify-between items-start">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                                                     <div>
-                                                        <h3 className="font-bold text-lg flex items-center gap-2">
+                                                        <h3 className="font-bold text-xl flex items-center gap-3 group-hover:text-turquoise-surf transition-colors">
                                                             {classItem.name}
                                                             {booked && (
-                                                                <span className="px-2 py-0.5 text-xs bg-green-500/30 text-green-300 rounded-full">
+                                                                <span className="px-3 py-1 text-[10px] font-bold bg-green-500/20 text-green-400 rounded-full border border-green-500/20 uppercase tracking-wider">
                                                                     ✓ Booked
                                                                 </span>
                                                             )}
                                                         </h3>
-                                                        <p className="text-sm text-gray-400 mt-1">{classItem.description}</p>
-                                                        <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-300">
-                                                            <span>🕐 {classItem.start_time} • {classItem.duration_minutes}min</span>
-                                                            <span>👤 {classItem.instructor_name}</span>
-                                                            <span className="text-turquoise-surf font-semibold">⚡ 1 Credit</span>
+                                                        <p className="text-sm text-gray-400 mt-2 line-clamp-1">{classItem.description}</p>
+                                                        <div className="flex flex-wrap gap-4 mt-4 text-xs font-medium text-gray-300">
+                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {classItem.start_time.slice(0, 5)} <span className="text-gray-600">•</span> {classItem.duration_minutes}m</span>
+                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">👤</span> {classItem.instructor_name}</span>
+                                                            <span className="flex items-center gap-1.5 px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded-md">⚡ 1 Credit</span>
                                                         </div>
                                                     </div>
                                                     {!booked && (
                                                         <button
-                                                            className="px-4 py-2 bg-cerulean hover:bg-dark-teal rounded-lg text-sm font-semibold transition-colors"
+                                                            className="btn-primary w-full sm:w-auto py-2 px-6"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleClassClick(classItem);
@@ -323,24 +360,72 @@ export default function UserDashboard() {
                         </div>
                     </div>
 
-                    {/* Right Column: Stats & Badges */}
+                    {/* Right Column: PRs & Achievements */}
                     <div className="space-y-8">
-                        {/* My Bookings */}
-                        <div className="glass rounded-xl p-6">
-                            <h2 className="text-xl font-bold mb-4">My Upcoming Classes</h2>
+                        {/* Personal Records */}
+                        <div className="glass-card">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold">Personal Records</h2>
+                                <Link href="/progress" className="text-xs font-bold text-turquoise-surf hover:underline uppercase tracking-wider">View All</Link>
+                            </div>
+                            
+                            {personalRecords.length === 0 ? (
+                                <p className="text-gray-500 text-sm italic">No personal records yet. Keep pushing!</p>
+                            ) : (
+                                <div className="space-y-4">
+                                    {personalRecords.slice(0, 4).map((pr) => (
+                                        <div key={pr.id} className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{pr.exercise_name}</p>
+                                            <div className="flex justify-between items-baseline">
+                                                <p className="font-bold text-white text-lg">
+                                                    {pr.value} <span className="text-xs text-gray-500 font-normal">{pr.record_type === 'max_weight' ? 'lbs' : pr.record_type === 'max_reps' ? 'reps' : ''}</span>
+                                                </p>
+                                                <p className="text-[10px] text-gray-600">{new Date(pr.achieved_at).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Achievements */}
+                        <div className="glass-card">
+                            <h2 className="text-xl font-bold mb-6">Achievements</h2>
+                            {achievements.length === 0 ? (
+                                <p className="text-gray-500 text-sm italic">Unlock badges by completing workouts!</p>
+                            ) : (
+                                <div className="grid grid-cols-3 gap-4">
+                                    {achievements.map((achievement) => (
+                                        <div key={achievement.id} className="flex flex-col items-center text-center group cursor-help relative">
+                                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 group-hover:bg-yellow-500/20 transition-all duration-300">
+                                                🏆
+                                            </div>
+                                            <span className="text-[10px] font-bold text-gray-400 leading-tight uppercase tracking-tighter">{achievement.name}</span>
+                                            <div className="absolute bottom-full mb-3 px-3 py-2 bg-gray-900 text-[10px] font-medium text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-normal w-32 shadow-2xl pointer-events-none z-10 border border-white/10 text-center">
+                                                {achievement.description}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* My Upcoming Bookings */}
+                        <div className="glass-card">
+                            <h2 className="text-xl font-bold mb-6">Upcoming Classes</h2>
                             {bookings.length === 0 ? (
-                                <p className="text-gray-400 text-sm">No upcoming classes booked.</p>
+                                <p className="text-gray-500 text-sm italic">No upcoming classes booked.</p>
                             ) : (
                                 <div className="space-y-3">
-                                    {bookings.slice(0, 5).map((booking) => (
-                                        <div key={booking.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                                            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                                    {bookings.slice(0, 3).map((booking) => (
+                                        <div key={booking.id} className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
+                                            <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 text-xs border border-green-500/20">
                                                 ✓
                                             </div>
-                                            <div>
-                                                <p className="font-semibold text-sm">{booking.class_name}</p>
-                                                <p className="text-xs text-gray-400">
-                                                    Booked {new Date(booking.booking_date).toLocaleDateString()}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-sm text-white truncate">{booking.class_name}</p>
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase">
+                                                    {new Date(booking.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                                 </p>
                                             </div>
                                         </div>
@@ -349,54 +434,15 @@ export default function UserDashboard() {
                             )}
                         </div>
 
-                        {/* Weight Lifted Stats (Placeholder for Phase 4) */}
-                        <div className="glass rounded-xl p-6">
-                            <h2 className="text-xl font-bold mb-6">Weight Lifted</h2>
-                            <div className="space-y-4">
-                                {STATS.weightLifted.map((stat) => (
-                                    <div key={stat.muscle}>
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span className="text-gray-300">{stat.muscle}</span>
-                                            <span className="font-bold text-turquoise-surf">{stat.weight} {stat.unit}</span>
-                                        </div>
-                                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-gradient-to-r from-cerulean to-turquoise-surf rounded-full"
-                                                style={{ width: `${(stat.weight / 1500) * 100}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Badges (Placeholder for Phase 5) */}
-                        <div className="glass rounded-xl p-6">
-                            <h2 className="text-xl font-bold mb-4">Achievements</h2>
-                            <div className="grid grid-cols-3 gap-4">
-                                {STATS.badges.map((badge) => (
-                                    <div key={badge.id} className="flex flex-col items-center text-center group cursor-help relative">
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition-transform">
-                                            {badge.icon}
-                                        </div>
-                                        <span className="text-xs font-semibold text-gray-300">{badge.name}</span>
-                                        <div className="absolute bottom-full mb-2 px-2 py-1 bg-black text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                                            {badge.description}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
                         {/* Quick Actions */}
-                        <div className="glass rounded-xl p-6">
-                            <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+                        <div className="glass-card bg-gradient-to-br from-dark-teal/20 to-black border-teal-500/20">
+                            <h2 className="text-xl font-bold mb-6">Quick Actions</h2>
                             <div className="space-y-3">
-                                <Link href="/classes" className="block w-full py-3 px-4 bg-cerulean hover:bg-dark-teal rounded-lg text-center font-bold transition-colors">
-                                    Browse All Classes
+                                <Link href="/classes" className="btn-primary w-full text-sm">
+                                    Browse Classes
                                 </Link>
-                                <Link href="/trainers" className="block w-full py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg text-center font-semibold transition-colors">
-                                    View Trainers
+                                <Link href="/workouts/templates" className="btn-secondary w-full text-sm">
+                                    My Templates
                                 </Link>
                             </div>
                         </div>

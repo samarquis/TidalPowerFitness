@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import Progress from '../models/Progress';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class ProgressController {
     // Log body metric
-    async logMetric(req: Request, res: Response): Promise<void> {
+    async logMetric(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const data = {
                 ...req.body,
@@ -18,7 +19,7 @@ class ProgressController {
     }
 
     // Get metrics history
-    async getMetrics(req: Request, res: Response): Promise<void> {
+    async getMetrics(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId || req.user?.id;
 
@@ -37,7 +38,7 @@ class ProgressController {
     }
 
     // Get personal records
-    async getPersonalRecords(req: Request, res: Response): Promise<void> {
+    async getPersonalRecords(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const clientId = req.params.clientId || req.user?.id;
 

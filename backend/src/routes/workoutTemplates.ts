@@ -1,17 +1,18 @@
-const express = require('express');
+import express from 'express';
+import workoutTemplateController from '../controllers/workoutTemplateController';
+import { authenticate, authorize } from '../middleware/auth';
+import { createTemplateValidation, validate } from '../middleware/validation';
+
 const router = express.Router();
-const workoutTemplateController = require('../controllers/workoutTemplateController');
-const { authenticate, authorize } = require('../middleware/auth');
 
 // All routes require trainer/admin authentication
 router.use(authenticate);
 router.use(authorize('trainer', 'admin'));
 
-router.get('/', workoutTemplateController.default.getTemplates);
-router.get('/:id', workoutTemplateController.default.getTemplate);
-router.post('/', workoutTemplateController.default.createTemplate);
-router.post('/:id/copy', workoutTemplateController.default.copyTemplate);
-router.delete('/:id', workoutTemplateController.default.deleteTemplate);
+router.get('/', workoutTemplateController.getTemplates);
+router.get('/:id', workoutTemplateController.getTemplate);
+router.post('/', createTemplateValidation, validate, workoutTemplateController.createTemplate);
+router.post('/:id/copy', workoutTemplateController.copyTemplate);
+router.delete('/:id', workoutTemplateController.deleteTemplate);
 
-module.exports = router;
 export default router;

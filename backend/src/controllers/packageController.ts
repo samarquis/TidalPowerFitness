@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Package from '../models/Package';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class PackageController {
     // Get all active packages
@@ -29,7 +30,7 @@ class PackageController {
     }
 
     // Create package
-    async createPackage(req: Request, res: Response): Promise<void> {
+    async createPackage(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const pkg = await Package.create(req.body);
             res.status(201).json(pkg);
@@ -40,7 +41,7 @@ class PackageController {
     }
 
     // Update package
-    async updatePackage(req: Request, res: Response): Promise<void> {
+    async updatePackage(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const pkg = await Package.update(req.params.id, req.body);
             if (!pkg) {
@@ -55,7 +56,7 @@ class PackageController {
     }
 
     // Delete package (soft delete)
-    async deletePackage(req: Request, res: Response): Promise<void> {
+    async deletePackage(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await Package.deactivate(req.params.id);
             if (!success) {

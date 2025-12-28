@@ -37,7 +37,7 @@ SELECT
     ARRAY['ACE-CPT', 'FMS Level 2'],
     6,
     true
-FROM users WHERE email = 'sarah.johnson@tidalpower.com');
+FROM users WHERE email = 'sarah.johnson@tidalpower.com';
 
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)
 SELECT 
@@ -47,7 +47,7 @@ SELECT
     ARRAY['ISSA-CPT', 'Precision Nutrition Level 1'],
     5,
     true
-FROM users WHERE email = 'mike.williams@tidalpower.com');
+FROM users WHERE email = 'mike.williams@tidalpower.com';
 
 -- Insert sample appointments
 INSERT INTO appointments (client_id, trainer_id, appointment_type, scheduled_at, duration_minutes, status)
@@ -62,7 +62,7 @@ SELECT
 INSERT INTO appointments (client_id, trainer_id, appointment_type, scheduled_at, duration_minutes, status)
 SELECT 
     (SELECT id FROM users WHERE email = 'client2@example.com'),
-    (SELECT id FROM users WHERE email = 'sarah.johnson@titanpower.com'),
+    (SELECT id FROM users WHERE email = 'sarah.johnson@tidalpower.com'),
     'Initial Consultation',
     CURRENT_TIMESTAMP + INTERVAL '3 days',
     30,

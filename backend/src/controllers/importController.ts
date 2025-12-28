@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import importExercises from '../scripts/importExercises';
 import { query } from '../config/db';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class ImportController {
     // Import exercises from free-exercise-db
-    async importExercises(req: Request, res: Response): Promise<void> {
+    async importExercises(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             console.log('Starting exercise import...');
 
@@ -25,7 +26,7 @@ class ImportController {
     }
 
     // Debug endpoint to check import status
-    async checkStatus(req: Request, res: Response): Promise<void> {
+    async checkStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             // Count body parts
             const bodyPartsResult = await query('SELECT COUNT(*) as count FROM body_parts');

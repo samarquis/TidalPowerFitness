@@ -46,6 +46,13 @@ describe('Auth Endpoints', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body).toHaveProperty('token');
             expect(res.body.user.email).toEqual(testUser.email);
+            
+            // Verify cookie is set
+            const setCookie = res.get('Set-Cookie');
+            expect(setCookie).toBeDefined();
+            expect(setCookie[0]).toContain('token=');
+            expect(setCookie[0]).toContain('HttpOnly');
+
             // Ensure the DB was queried for the user
             expect(mockedQuery).toHaveBeenCalledWith(
                 'SELECT * FROM users WHERE email = $1',

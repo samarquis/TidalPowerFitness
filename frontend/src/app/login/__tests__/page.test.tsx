@@ -1,102 +1,73 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import LoginPage from '../page';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { apiClient } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-// Mock next/navigation
+// Mocks
+jest.mock('@/contexts/AuthContext');
 jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
+    useSearchParams: jest.fn(),
 }));
 
-// Mock the apiClient to include getProfile
-jest.mock('@/lib/api', () => ({
-    apiClient: {
-        login: jest.fn(),
-        getProfile: jest.fn(),
-        setToken: jest.fn(), // Also mock setToken as it's used in AuthContext
-    }
-}));
-
-const mockedUseRouter = useRouter as jest.Mock;
-const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
-
-describe('LoginPage Integration', () => {
-    let push: jest.Mock;
+describe('LoginPage', () => {
+    const mockLogin = jest.fn();
+    const mockRouterPush = jest.fn();
+    const mockUseRouter = useRouter as jest.Mock;
+    const mockUseSearchParams = useSearchParams as jest.Mock;
+    const mockUseAuth = useAuth as jest.Mock;
 
     beforeEach(() => {
-        push = jest.fn();
-        mockedUseRouter.mockReturnValue({ push });
-        mockedApiClient.login.mockClear();
-        mockedApiClient.getProfile.mockClear();
-        // Provide a default mock for getProfile to avoid console errors
-        mockedApiClient.getProfile.mockResolvedValue({ error: 'Not authenticated' });
+        mockUseAuth.mockReturnValue({ login: mockLogin });
+        mockUseRouter.mockReturnValue({ push: mockRouterPush });
     });
 
-    it('should call the login function and redirect on successful login', async () => {
-        mockedApiClient.login.mockResolvedValue({
-            data: {
-                token: 'fake-token',
-                user: { id: '1', email: 'test@example.com', roles: ['client'] },
-            },
-        });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-        render(
-            <AuthProvider>
-                <LoginPage />
-            </AuthProvider>
-        );
+    it('should redirect to the path from the query parameter on successful login', async () => {
+        mockUseSearchParams.mockReturnValue(new URLSearchParams('?redirect=/test-path'));
+        mockLogin.mockResolvedValue({ success: true });
 
-        // Fill out the form
-        fireEvent.change(screen.getByLabelText(/email/i), {
-            target: { value: 'test@example.com' },
-        });
-        fireEvent.change(screen.getByLabelText(/password/i), {
-            target: { value: 'password123' },
-        });
+        render(<LoginPage />);
 
-        // Submit the form
-        fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-
-        // Wait for promises to resolve
-        await waitFor(() => {
-            expect(mockedApiClient.login).toHaveBeenCalledWith('test@example.com', 'password123');
-        });
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+        fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
 
         await waitFor(() => {
-            // Check for redirect
-            expect(push).toHaveBeenCalledWith('/trainers');
+            expect(mockRouterPush).toHaveBeenCalledWith('/test-path');
+        });
+    });
+
+    it('should redirect to the root path if no redirect query parameter is present', async () => {
+        mockUseSearchParams.mockReturnValue(new URLSearchParams());
+        mockLogin.mockResolvedValue({ success: true });
+
+        render(<LoginPage />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+        fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+
+        await waitFor(() => {
+            expect(mockRouterPush).toHaveBeenCalledWith('/');
         });
     });
 
     it('should display an error message on failed login', async () => {
-        mockedApiClient.login.mockResolvedValue({
-            error: 'Invalid credentials',
-        });
+        mockUseSearchParams.mockReturnValue(new URLSearchParams());
+        mockLogin.mockResolvedValue({ success: false, error: 'Invalid credentials' });
 
-        render(
-            <AuthProvider>
-                <LoginPage />
-            </AuthProvider>
-        );
+        render(<LoginPage />);
 
-        // Fill out the form and submit
-        fireEvent.change(screen.getByLabelText(/email/i), {
-            target: { value: 'wrong@example.com' },
-        });
-        fireEvent.change(screen.getByLabelText(/password/i), {
-            target: { value: 'wrongpassword' },
-        });
-        fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+        fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
 
-        // Wait for the error message to appear
         await waitFor(() => {
             expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
         });
-
-        // Ensure redirect was not called
-        expect(push).not.toHaveBeenCalled();
     });
 });

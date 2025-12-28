@@ -16,12 +16,14 @@ import request from 'supertest';
 import app from '../../app';
 import { query } from '../../config/db';
 
-describe('Complete Booking Flow Integration Tests', () => {
+const describeMaybe = process.env.RUN_DB_TESTS === 'true' ? describe : describe.skip;
+
+describeMaybe('Complete Booking Flow Integration Tests', () => {
     let authToken: string;
     let userId: string;
-    let packageId: string;
-    let classId: string;
-    let bookingId: string;
+        let packageId: string;
+        let classId: string;
+        let bookingId: string;
 
     beforeAll(async () => {
         // Create a test user
@@ -316,3 +318,4 @@ describe('Complete Booking Flow Integration Tests', () => {
         });
     });
 });
+

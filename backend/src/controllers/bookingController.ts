@@ -2,26 +2,31 @@ import { Request, Response } from 'express';
 import pool from '../config/db';
 import UserCreditModel from '../models/UserCredit';
 import AchievementModel from '../models/Achievement';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class BookingController {
     // Book a class
-    async createBooking(req: any, res: Response) {
+    async createBooking(req: AuthenticatedRequest, res: Response) {
         try {
-            const { class_id } = req.body;
+            const { class_id, attendee_count = 1 } = req.body;
             const userId = req.user.id;
 
             if (!class_id) {
                 return res.status(400).json({ error: 'Class ID is required' });
             }
 
+            if (attendee_count < 1) {
+                return res.status(400).json({ error: 'Attendee count must be at least 1' });
+            }
+
             // 1. Check if user has sufficient credits
             const credits = await UserCreditModel.getUserCredits(userId);
             const totalCredits = credits.reduce((sum, c) => sum + c.remaining_credits, 0);
 
-            if (totalCredits < 1) {
+            if (totalCredits < attendee_count) {
                 return res.status(400).json({
                     error: 'Insufficient credits',
-                    message: 'You need at least 1 credit to book a class. Please purchase a package.'
+                    message: `You need at least ${attendee_count} credits to book this class for ${attendee_count} people. Please purchase more packages.`
                 });
             }
 
@@ -35,46 +40,45 @@ class BookingController {
             if (existingBooking.rows.length > 0) {
                 return res.status(400).json({
                     error: 'Already booked',
-                    message: 'You have already booked this class.'
+                    message: 'You have already booked this class for this date. To change the number of attendees, please cancel and re-book.'
                 });
             }
 
             // 3. Deduct credit
-            const deducted = await UserCreditModel.deductCredit(userId, 1);
+            const deducted = await UserCreditModel.deductCredit(userId, attendee_count);
 
             if (!deducted) {
                 return res.status(500).json({
-                    error: 'Failed to deduct credit',
+                    error: 'Failed to deduct credits',
                     message: 'An error occurred while processing your booking.'
                 });
             }
 
             // 4. Create booking
             const result = await pool.query(
-                `INSERT INTO class_participants (class_id, user_id, credits_used, target_date)
-                 VALUES ($1, $2, 1, $3)
+                `INSERT INTO class_participants (class_id, user_id, credits_used, attendee_count, target_date)
+                 VALUES ($1, $2, $3, $4, $5)
                  RETURNING *`,
-                [class_id, userId, targetDate]
+                [class_id, userId, attendee_count, attendee_count, targetDate]
             );
 
             // 5. Check for Achievements (Bookings Count)
             try {
                 const countResult = await pool.query(
-                    `SELECT COUNT(*) as count FROM class_participants 
+                    `SELECT SUM(attendee_count) as count FROM class_participants 
                      WHERE user_id = $1 AND status = 'confirmed'`,
                     [userId]
                 );
-                const bookingCount = parseInt(countResult.rows[0].count);
+                const totalAttendees = parseInt(countResult.rows[0].count);
 
-                await AchievementModel.checkAndAward(userId, 'bookings_count', bookingCount);
+                await AchievementModel.checkAndAward(userId, 'bookings_count', totalAttendees);
             } catch (achError) {
                 console.error('Error awarding achievement:', achError);
-                // Don't fail the booking if achievement fails
             }
 
-            // If in demo mode, add a credit back to simulate unlimited credits
+            // If in demo mode, add credits back
             if (req.user.is_demo_mode_enabled) {
-                await UserCreditModel.addCredits(userId, 'demo_package', 1, 365); // Add 1 credit, valid for a year
+                await UserCreditModel.addCredits(userId, 'demo_package', attendee_count, 365);
             }
 
             res.status(201).json({
@@ -92,7 +96,7 @@ class BookingController {
     }
 
     // Get user's bookings
-    async getUserBookings(req: any, res: Response) {
+    async getUserBookings(req: AuthenticatedRequest, res: Response) {
         try {
             const { userId } = req.params;
 
@@ -127,7 +131,7 @@ class BookingController {
     }
 
     // Cancel a booking
-    async cancelBooking(req: any, res: Response) {
+    async cancelBooking(req: AuthenticatedRequest, res: Response) {
         try {
             const { id } = req.params;
             const userId = req.user.id;

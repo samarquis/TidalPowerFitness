@@ -52,7 +52,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
     const isSubscription = pkg.type === 'subscription';
 
     return (
-        <div className="bg-gray-900 border border-white/10 rounded-xl p-6 flex flex-col h-full hover:border-pacific-cyan/50 transition-all duration-300 group">
+        <div className="glass-card flex flex-col h-full group">
             <div className="mb-4">
                 <h3 className="text-xl font-bold text-white group-hover:text-turquoise-surf transition-colors">{pkg.name}</h3>
                 <div className="mt-2 flex items-baseline text-white">
@@ -65,15 +65,15 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
                 <p className="text-gray-400 text-sm mb-4">{pkg.description}</p>
 
                 <div className="flex items-center space-x-2 text-sm text-gray-300 mb-6">
-                    <svg className="w-5 h-5 text-pacific-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span>{pkg.credit_count} Credits</span>
+                    <span className="font-semibold">{pkg.credit_count} Tokens</span>
                 </div>
             </div>
 
             <button
-                className={`w-full py-2 px-4 ${showSuccess ? 'bg-green-600' : 'bg-white/5 hover:bg-cerulean'} text-${showSuccess ? 'white' : 'turquoise-surf hover:text-white'} border border-${showSuccess ? 'green-600' : 'pacific-cyan/30 hover:border-pacific-cyan'} rounded-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center`}
+                className={`w-full ${showSuccess ? 'bg-green-600 border-green-600' : 'btn-primary'}`}
                 onClick={handleAddToCart}
                 disabled={loading || showSuccess}
             >

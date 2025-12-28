@@ -351,42 +351,88 @@ function AssignWorkoutContent() {
                                 </div>
                             </div>
 
-                        </div>
-                    )}
-
-                    {workoutMode === 'custom' && (
-                        <div className="space-y-4">
-                            <label className="block text-sm font-semibold text-gray-300 mb-2">
-                                Select Exercises * ({selectedCustomExercises.length} selected)
-                            </label>
-                            <div className="bg-white/5 border border-white/10 rounded-lg max-h-64 overflow-y-auto">
-                                {availableExercises.map((exercise) => (
-                                    <label
-                                        key={exercise.id}
-                                        className="flex items-center p-4 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedCustomExercises.includes(exercise.id)}
-                                            onChange={() => {
-                                                setSelectedCustomExercises(prev =>
-                                                    prev.includes(exercise.id)
-                                                        ? prev.filter(id => id !== exercise.id)
-                                                        : [...prev, exercise.id]
-                                                );
-                                            }}
-                                            className="mr-4 w-4 h-4 text-teal-500"
-                                        />
-                                        <div>
-                                            <span className="text-white font-medium">{exercise.name}</span>
-                                            <p className="text-xs text-gray-500">{exercise.workout_type_name} • {exercise.primary_muscle_group_name}</p>
-                                        </div>
+                            {workoutMode === 'template' && (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                        Select Template *
                                     </label>
-                                ))}
-                            </div>
-                            <p className="text-xs text-gray-500 italic">
-                                Note: For deep customization (sets, reps, etc.), create a Workout Template first.
-                            </p>
+                                    {templates.length === 0 ? (
+                                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-200/80 text-sm">
+                                            No templates found. <Link href="/workouts/templates/new" className="text-pacific-cyan underline">Create one first</Link> or use Custom mode.
+                                        </div>
+                                    ) : (
+                                        <div className="grid gap-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                                            {templates.map((template) => (
+                                                <div
+                                                    key={template.id}
+                                                    onClick={() => setSelectedTemplate(template.id)}
+                                                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                                                        selectedTemplate === template.id
+                                                            ? 'bg-pacific-cyan/20 border-pacific-cyan'
+                                                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                                    }`}
+                                                >
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <h4 className="font-bold text-white">{template.name}</h4>
+                                                        {selectedTemplate === template.id && (
+                                                            <div className="bg-pacific-cyan text-black rounded-full p-0.5">
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-400 line-clamp-1">{template.description || 'No description'}</p>
+                                                    <div className="flex gap-3 mt-2">
+                                                        <span className="text-[10px] uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded text-gray-400">
+                                                            {template.workout_type_name}
+                                                        </span>
+                                                        <span className="text-[10px] uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded text-gray-400">
+                                                            {template.exercise_count} Exercises
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {workoutMode === 'custom' && (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                        Select Exercises * ({selectedCustomExercises.length} selected)
+                                    </label>
+                                    <div className="bg-white/5 border border-white/10 rounded-lg max-h-64 overflow-y-auto custom-scrollbar">
+                                        {availableExercises.map((exercise) => (
+                                            <label
+                                                key={exercise.id}
+                                                className="flex items-center p-4 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedCustomExercises.includes(exercise.id)}
+                                                    onChange={() => {
+                                                        setSelectedCustomExercises(prev =>
+                                                            prev.includes(exercise.id)
+                                                                ? prev.filter(id => id !== exercise.id)
+                                                                : [...prev, exercise.id]
+                                                        );
+                                                    }}
+                                                    className="mr-4 w-4 h-4 text-teal-500 rounded border-white/20 bg-white/5"
+                                                />
+                                                <div>
+                                                    <span className="text-white font-medium">{exercise.name}</span>
+                                                    <p className="text-xs text-gray-500">{exercise.workout_type_name} • {exercise.primary_muscle_group_name}</p>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-gray-500 italic">
+                                        Note: For deep customization (sets, reps, etc.), create a Workout Template first.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     )}
 

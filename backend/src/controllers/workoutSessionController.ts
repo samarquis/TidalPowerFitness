@@ -35,7 +35,7 @@ class WorkoutSessionController {
     }
 
     // Get session by ID
-    async getSession(req: Request, res: Response): Promise<void> {
+    async getSession(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const session = await WorkoutSession.getById(req.params.id);
 
@@ -124,7 +124,7 @@ class WorkoutSessionController {
     }
 
     // Get logs for a specific session
-    async getSessionLogs(req: Request, res: Response): Promise<void> {
+    async getSessionLogs(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
             const logs = await WorkoutSession.getSessionLogs(id);
@@ -162,7 +162,7 @@ class WorkoutSessionController {
     }
 
     // Publish session to clients
-    async publishSession(req: Request, res: Response): Promise<void> {
+    async publishSession(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await WorkoutSession.publish(req.params.id);
 

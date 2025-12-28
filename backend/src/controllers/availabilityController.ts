@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import TrainerAvailabilityModel from '../models/TrainerAvailability';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 export const getTrainerAvailability = async (req: Request, res: Response) => {
     try {
@@ -12,7 +13,7 @@ export const getTrainerAvailability = async (req: Request, res: Response) => {
     }
 };
 
-export const createAvailability = async (req: Request, res: Response) => {
+export const createAvailability = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { trainer_id, day_of_week, start_time, end_time } = req.body;
 
@@ -59,7 +60,7 @@ export const createAvailability = async (req: Request, res: Response) => {
     }
 };
 
-export const updateAvailability = async (req: Request, res: Response) => {
+export const updateAvailability = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const { day_of_week, start_time, end_time } = req.body;
@@ -97,7 +98,7 @@ export const updateAvailability = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteAvailability = async (req: Request, res: Response) => {
+export const deleteAvailability = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const success = await TrainerAvailabilityModel.delete(id);

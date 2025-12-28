@@ -54,7 +54,7 @@ export default function RegisterPage() {
         });
 
         if (result.success) {
-            router.push('/profile');
+            router.push('/');
         } else {
             setError(result.error || 'Registration failed');
             setLoading(false);

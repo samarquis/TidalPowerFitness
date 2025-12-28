@@ -1,18 +1,18 @@
 import express from 'express';
 import { register, login, getProfile, updateProfile, changePassword, logout } from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
-import { validateRegister, validateLogin, validateUpdateProfile, handleValidationErrors } from '../middleware/validation';
+import { registerValidation, loginValidation, updateProfileValidation, validate } from '../middleware/validation';
 
 const router = express.Router();
 
 // Public routes
-router.post('/register', validateRegister, handleValidationErrors, register);
-router.post('/login', validateLogin, handleValidationErrors, login);
+router.post('/register', registerValidation, validate, register);
+router.post('/login', loginValidation, validate, login);
 router.post('/logout', authenticate, logout);
 
 // Protected routes (require authentication)
 router.get('/profile', authenticate, getProfile);
-router.put('/profile', authenticate, validateUpdateProfile, handleValidationErrors, updateProfile);
+router.put('/profile', authenticate, updateProfileValidation, validate, updateProfile);
 router.post('/change-password', authenticate, changePassword);
 
 export default router;

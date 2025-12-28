@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
+import Skeleton from '@/components/ui/Skeleton';
 
 interface Class {
     id: string;
@@ -164,61 +165,91 @@ export default function TrainerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen pt-24 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-black page-container">
+            <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <div className="mb-12">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         Trainer <span className="text-gradient">Dashboard</span>
                     </h1>
-                    <p className="text-xl text-gray-300">
+                    <p className="text-xl text-gray-400">
                         Manage your classes and log workouts
                     </p>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="mb-8 flex flex-wrap gap-4">
+                <div className="mb-12 flex flex-wrap gap-4">
                     <Link
                         href="/trainer/clients"
-                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal rounded-lg font-semibold transition-colors"
+                        className="btn-primary"
                     >
                         👥 My Clients
                     </Link>
                     <Link
-                        href="/trainer/availability"
-                        className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"
+                        href="/trainer/calendar"
+                        className="btn-secondary"
                     >
-                        📅 Manage Availability
+                        📅 View Full Calendar
+                    </Link>
+                    <Link
+                        href="/trainer/availability"
+                        className="btn-secondary"
+                    >
+                        🕒 Manage Availability
+                    </Link>
+                    <Link
+                        href="/trainer/reports"
+                        className="btn-secondary"
+                    >
+                        📊 Attendance Reports
+                    </Link>
+                    <Link
+                        href="/trainer/analytics"
+                        className="btn-secondary"
+                    >
+                        📈 Trainer Analytics
                     </Link>
                     <Link
                         href="/workouts/templates"
-                        className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"
+                        className="btn-secondary"
                     >
                         💪 Workout Templates
                     </Link>
                     <Link
                         href="/workouts/assign"
-                        className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"
+                        className="btn-secondary"
                     >
                         📋 Assign Workouts
                     </Link>
                 </div>
 
                 {/* Today's Sessions */}
-                <div className="glass rounded-xl p-6 mb-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">Today's Sessions</h2>
+                <div className="glass-card mb-12">
+                    <div className="flex justify-between items-center mb-8">
+                        <h2 className="text-2xl font-bold flex items-center gap-3">
+                            <span className="w-2 h-2 rounded-full bg-turquoise-surf"></span>
+                            Today's Sessions
+                        </h2>
                         <Link
                             href="/workouts/history"
-                            className="text-turquoise-surf hover:underline text-sm"
+                            className="text-turquoise-surf hover:underline text-sm font-bold uppercase tracking-wider"
                         >
-                            View All Sessions →
+                            View All History →
                         </Link>
                     </div>
 
                     {loadingSessions ? (
-                        <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-4 h-32">
+                                    <Skeleton className="h-6 w-3/4 mb-3" />
+                                    <Skeleton className="h-4 w-1/2 mb-6" />
+                                    <div className="flex justify-between">
+                                        <Skeleton className="h-4 w-1/4" />
+                                        <Skeleton className="h-8 w-1/3" />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ) : todaysSessions.length === 0 ? (
                         <div className="text-center py-8">
@@ -295,52 +326,68 @@ export default function TrainerDashboardPage() {
                 </div>
 
                 {/* Classes Section */}
-                <div className="glass rounded-xl p-6 mb-8">
-                    <h2 className="text-2xl font-bold mb-6">My Classes</h2>
+                <div className="glass-card mb-12">
+                    <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                        <span className="w-2 h-2 rounded-full bg-cerulean"></span>
+                        My Weekly Schedule
+                    </h2>
 
 
                     {loading ? (
-                        <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 h-48">
+                                    <div className="flex justify-between mb-4">
+                                        <Skeleton className="h-6 w-1/2" />
+                                        <Skeleton className="h-4 w-1/4" />
+                                    </div>
+                                    <Skeleton className="h-4 w-full mb-2" />
+                                    <Skeleton className="h-4 w-full mb-6" />
+                                    <div className="flex justify-between items-center">
+                                        <Skeleton className="h-4 w-1/3" />
+                                        <Skeleton className="h-9 w-1/3" />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ) : classes.length === 0 ? (
-                        <p className="text-gray-400 text-center py-8">
-                            No classes assigned to you yet.
-                        </p>
+                        <div className="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10">
+                            <p className="text-gray-500 text-lg">No classes assigned to you yet.</p>
+                        </div>
                     ) : (
-                        <div className="space-y-6">
+                        <div className="space-y-10">
                             {classesByDay.filter(d => d.classes.length > 0).map(({ day, classes: dayClasses }) => (
                                 <div key={day}>
-                                    <h3 className="text-lg font-semibold text-turquoise-surf mb-3">{day}</h3>
-                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <h3 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2 inline-block pr-8 uppercase tracking-wider">{day}</h3>
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {dayClasses.map((classItem) => (
                                             <div
                                                 key={`${classItem.id}-${day}`}
-                                                className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors"
+                                                className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-turquoise-surf/30 transition-all group"
                                             >
-                                                <div className="flex justify-between items-start mb-3">
+                                                <div className="flex justify-between items-start mb-4">
                                                     <div>
-                                                        <h4 className="font-bold text-lg">{classItem.name}</h4>
-                                                        <p className="text-sm text-gray-400">{classItem.category}</p>
+                                                        <h4 className="font-bold text-xl text-white group-hover:text-turquoise-surf transition-colors">{classItem.name}</h4>
+                                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{classItem.category}</p>
                                                     </div>
-                                                    <span className="text-sm text-turquoise-surf">
+                                                    <span className="text-sm font-bold text-turquoise-surf bg-turquoise-surf/10 px-2 py-1 rounded-md">
                                                         {formatTime(classItem.start_time)}
                                                     </span>
                                                 </div>
 
-                                                <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                                                <p className="text-sm text-gray-400 mb-6 line-clamp-2">
                                                     {classItem.description}
                                                 </p>
 
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs text-gray-400">
-                                                        {classItem.duration_minutes} min • Max {classItem.max_capacity}
+                                                    <span className="text-xs font-medium text-gray-500">
+                                                        {classItem.duration_minutes}m • Max {classItem.max_capacity}
                                                     </span>
                                                     <button
                                                         onClick={() => handleViewAttendees(classItem)}
-                                                        className="px-4 py-2 bg-cerulean hover:bg-dark-teal rounded-lg text-sm font-semibold transition-colors"
+                                                        className="btn-primary py-2 px-4 text-xs"
                                                     >
-                                                        View Attendees
+                                                        Attendees
                                                     </button>
                                                 </div>
                                             </div>

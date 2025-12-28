@@ -1,12 +1,12 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth';
 import paymentService from '../services/paymentService';
-import Cart from '../models/Cart';
+import { checkoutValidation, validate } from '../middleware/validation';
 
 const router = express.Router();
 
 // POST /api/payments/checkout (single package)
-router.post('/checkout', authenticate, async (req: any, res) => {
+router.post('/checkout', authenticate, checkoutValidation, validate, async (req: any, res) => {
     try {
         const { packageId } = req.body;
         if (!packageId) {
@@ -24,27 +24,8 @@ router.post('/checkout', authenticate, async (req: any, res) => {
 // POST /api/payments/checkout-cart (entire cart)
 router.post('/checkout-cart', authenticate, async (req: any, res) => {
     try {
-        const cart = await Cart.getCartWithItems(req.user.id);
-
-        if (!cart || !cart.items || cart.items.length === 0) {
-            return res.status(400).json({ error: 'Cart is empty' });
-        }
-
-        // For mock payments, redirect to mock checkout with cart info
-        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-
-        // Create a query string with all package IDs and quantities
-        const cartData = cart.items.map(item => ({
-            packageId: item.package_id,
-            quantity: item.quantity
-        }));
-
-        // Encode cart data as base64 for the URL
-        const cartParam = Buffer.from(JSON.stringify(cartData)).toString('base64');
-
-        res.json({
-            url: `${baseUrl}/checkout/mock?cart=${encodeURIComponent(cartParam)}`
-        });
+        const session = await paymentService.createCartCheckoutSession(req.user.id);
+        res.json(session);
     } catch (error: any) {
         console.error('Cart checkout error:', error);
         res.status(500).json({ error: error.message || 'Failed to create cart checkout session' });
@@ -74,9 +55,23 @@ router.post('/confirm-mock', authenticate, async (req: any, res) => {
 });
 
 // POST /api/payments/webhook
-router.post('/webhook', async (req, res) => {
-    // TODO: Implement webhook signature verification for Square
-    res.status(200).send('OK');
+router.post('/webhook', async (req: any, res) => {
+    try {
+        const signature = req.headers['x-square-hmacsha256-signature'] as string;
+        const body = req.rawBody || JSON.stringify(req.body);
+        
+        // Use BACKEND_URL from env or construct it
+        const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+        const webhookUrl = `${backendUrl}/api/payments/webhook`;
+
+        await paymentService.handleSquareWebhook(req.body, signature, webhookUrl);
+        res.status(200).send('OK');
+    } catch (error: any) {
+        console.error('Webhook processing error:', error);
+        // Always return 200 to Square to avoid retries if it's a signature mismatch 
+        // that we might want to debug, but for now let's follow standard webhook practice
+        res.status(400).send(error.message);
+    }
 });
 
 export default router;

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import apiClient from '@/lib/api';
+import { apiClient } from '@/lib/api';
 
 interface Trainer {
     user_id: string;
@@ -51,9 +51,10 @@ const initialFormData: TrainerFormData = {
     is_accepting_clients: true
 };
 
-export default function AdminTrainersPage() {
-    const { user, isAuthenticated, token } = useAuth();
+function TrainersContent() {
+    const { user, isAuthenticated } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [trainers, setTrainers] = useState<Trainer[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,13 +71,27 @@ export default function AdminTrainersPage() {
         fetchTrainers();
     }, [isAuthenticated, user, router]);
 
+    // Handle 'edit' query param
+    useEffect(() => {
+        const editId = searchParams.get('edit');
+        if (editId && trainers.length > 0) {
+            const trainerToEdit = trainers.find(t => t.user_id === editId);
+            if (trainerToEdit) {
+                handleEdit(trainerToEdit);
+                // Clear the query param without refreshing
+                const url = new URL(window.location.href);
+                url.searchParams.delete('edit');
+                window.history.replaceState({}, '', url.pathname);
+            }
+        }
+    }, [searchParams, trainers]);
+
     const fetchTrainers = async () => {
         try {
             const { data, error } = await apiClient.getTrainers();
             if (error) {
                 console.error('Error fetching trainers:', error);
             } else if (data) {
-                // Handle both { trainers: [...] } object and direct [...] array formats
                 const trainersData = data.trainers || data;
                 if (Array.isArray(trainersData)) {
                     setTrainers(trainersData);
@@ -133,10 +148,8 @@ export default function AdminTrainersPage() {
 
             let response;
             if (editingId) {
-                // Update existing trainer
                 response = await apiClient.updateTrainer(editingId, payload);
             } else {
-                // Create new trainer
                 response = await apiClient.createTrainer(payload);
             }
 
@@ -149,8 +162,9 @@ export default function AdminTrainersPage() {
             setSuccess(`Trainer ${editingId ? 'updated' : 'created'} successfully!`);
             handleCloseModal();
             fetchTrainers();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+            setError(errorMessage);
         }
     };
 
@@ -162,7 +176,7 @@ export default function AdminTrainersPage() {
         <div className="min-h-screen bg-black text-white pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-4">
-                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2">
+                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan inline-flex items-center gap-2 transition-colors">
                         ← Back to Admin Dashboard
                     </Link>
                 </div>
@@ -174,18 +188,17 @@ export default function AdminTrainersPage() {
                             setFormData(initialFormData);
                             setIsModalOpen(true);
                         }}
-                        className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-colors"
+                        className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-all transform hover:scale-105 shadow-lg shadow-cerulean/20 font-bold"
                     >
                         Add New Trainer
                     </button>
                 </div>
 
-                {/* Trainers List */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {trainers.map((trainer) => (
-                        <div key={trainer.user_id} className="bg-gray-900 rounded-xl p-6 border border-white/10">
+                        <div key={trainer.user_id} className="glass rounded-xl p-6 border border-white/10 hover:border-turquoise-surf/30 transition-all group">
                             <div className="flex items-center space-x-4 mb-4">
-                                <div className="w-16 h-16 rounded-full bg-gray-800 overflow-hidden">
+                                <div className="w-16 h-16 rounded-full bg-white/5 overflow-hidden border border-white/10 shrink-0">
                                     {trainer.profile_image_url ? (
                                         <img src={trainer.profile_image_url} alt={trainer.first_name} className="w-full h-full object-cover" />
                                     ) : (
@@ -194,184 +207,207 @@ export default function AdminTrainersPage() {
                                         </div>
                                     )}
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold">{trainer.first_name} {trainer.last_name}</h3>
-                                    <p className="text-gray-400 text-sm">{trainer.email}</p>
+                                <div className="min-w-0">
+                                    <h3 className="text-xl font-bold truncate">{trainer.first_name} {trainer.last_name}</h3>
+                                    <p className="text-gray-400 text-sm truncate">{trainer.email}</p>
                                 </div>
                                 <button
                                     onClick={() => handleEdit(trainer)}
-                                    className="ml-auto px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors"
+                                    className="ml-auto p-2 bg-white/5 hover:bg-turquoise-surf/20 text-turquoise-surf rounded-lg transition-colors border border-white/10"
+                                    title="Edit Trainer"
                                 >
-                                    Edit
+                                    📝
                                 </button>
                             </div>
-                            <div className="space-y-2 text-sm text-gray-300">
-                                <p><span className="text-gray-500">Experience:</span> {trainer.years_experience} years</p>
-                                <p><span className="text-gray-500">Specialties:</span> {trainer.specialties?.join(', ')}</p>
-                                <p><span className="text-gray-500">Status:</span> <span className={trainer.is_accepting_clients ? 'text-green-400' : 'text-red-400'}>{trainer.is_accepting_clients ? 'Active' : 'Not Accepting Clients'}</span></p>
+                            <div className="space-y-3 text-sm text-gray-300">
+                                <div className="flex justify-between border-b border-white/5 pb-2">
+                                    <span className="text-gray-500">Experience</span>
+                                    <span className="font-semibold text-white">{trainer.years_experience} years</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 block mb-1">Specialties</span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {trainer.specialties?.length ? (
+                                            trainer.specialties.map(s => (
+                                                <span key={s} className="px-2 py-0.5 bg-pacific-cyan/10 text-turquoise-surf rounded-md text-[10px] font-bold border border-pacific-cyan/20">{s}</span>
+                                            ))
+                                        ) : <span className="text-gray-600 italic">None specified</span>}
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center pt-2">
+                                    <span className="text-gray-500">Status</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${trainer.is_accepting_clients ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                        {trainer.is_accepting_clients ? 'ACCEPTING CLIENTS' : 'NOT ACCEPTING'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Add/Edit Trainer Modal */}
                 {isModalOpen && (
                     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                        <div className="bg-gray-900 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
-                            <h2 className="text-2xl font-bold mb-6 text-white">{editingId ? 'Edit Trainer' : 'Add New Trainer'}</h2>
+                        <div className="bg-gray-900 rounded-2xl p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl">
+                            <div className="flex justify-between items-start mb-6">
+                                <h2 className="text-2xl font-bold text-white">{editingId ? 'Edit Trainer' : 'Add New Trainer'}</h2>
+                                <button onClick={handleCloseModal} className="text-gray-400 hover:text-white text-2xl transition-colors">×</button>
+                            </div>
 
-                            {error && <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg">{error}</div>}
-                            {success && <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 text-green-400 rounded-lg">{success}</div>}
+                            {error && <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg text-sm font-semibold">{error}</div>}
+                            {success && <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 text-green-400 rounded-lg text-sm font-semibold">{success}</div>}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">First Name *</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">First Name *</label>
                                         <input
                                             type="text"
                                             required
                                             value={formData.first_name}
                                             onChange={e => setFormData({ ...formData, first_name: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Last Name *</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Last Name *</label>
                                         <input
                                             type="text"
                                             required
                                             value={formData.last_name}
                                             onChange={e => setFormData({ ...formData, last_name: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Email *</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Email *</label>
                                         <input
                                             type="email"
                                             required
                                             value={formData.email}
                                             onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
-                                            disabled={!!editingId} // Disable email edit as it's the primary key/login
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all disabled:opacity-50"
+                                            disabled={!!editingId}
                                         />
                                     </div>
                                     {!editingId && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">Password *</label>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Password *</label>
                                             <input
                                                 type="password"
                                                 required
                                                 value={formData.password}
                                                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                             />
                                         </div>
                                     )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Phone</label>
                                     <input
                                         type="tel"
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
+                                        placeholder="(555) 000-0000"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Bio</label>
+                                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Bio</label>
                                     <textarea
                                         rows={3}
                                         value={formData.bio}
                                         onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
+                                        placeholder="Trainer biography..."
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Specialties</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Specialties</label>
                                         <input
                                             type="text"
                                             value={formData.specialties}
                                             onChange={e => setFormData({ ...formData, specialties: e.target.value })}
-                                            placeholder="e.g. HIIT, Yoga, Strength"
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            placeholder="HIIT, Yoga, Strength"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Certifications</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Certifications</label>
                                         <input
                                             type="text"
                                             value={formData.certifications}
                                             onChange={e => setFormData({ ...formData, certifications: e.target.value })}
-                                            placeholder="e.g. NASM, ACE"
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            placeholder="NASM, ACE"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Years Experience</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Years Experience</label>
                                         <input
                                             type="number"
                                             min="0"
                                             value={formData.years_experience}
                                             onChange={e => setFormData({ ...formData, years_experience: parseInt(e.target.value) || 0 })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Acuity Calendar ID</label>
+                                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Acuity Calendar ID</label>
                                         <input
                                             type="text"
                                             value={formData.acuity_calendar_id}
                                             onChange={e => setFormData({ ...formData, acuity_calendar_id: e.target.value })}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Profile Image URL</label>
+                                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Profile Image URL</label>
                                     <input
                                         type="url"
                                         value={formData.profile_image_url}
                                         onChange={e => setFormData({ ...formData, profile_image_url: e.target.value })}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-pacific-cyan outline-none"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-pacific-cyan focus:border-transparent outline-none transition-all"
+                                        placeholder="https://example.com/image.jpg"
                                     />
                                 </div>
 
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 p-4 bg-white/5 rounded-lg border border-white/5">
                                     <input
                                         type="checkbox"
                                         id="is_accepting_clients"
                                         checked={formData.is_accepting_clients}
                                         onChange={e => setFormData({ ...formData, is_accepting_clients: e.target.checked })}
-                                        className="w-4 h-4 text-pacific-cyan rounded focus:ring-pacific-cyan bg-gray-700 border-gray-600"
+                                        className="w-5 h-5 text-pacific-cyan rounded focus:ring-pacific-cyan bg-gray-700 border-gray-600 cursor-pointer"
                                     />
-                                    <label htmlFor="is_accepting_clients" className="text-sm font-medium text-gray-300">
+                                    <label htmlFor="is_accepting_clients" className="text-sm font-bold text-gray-300 cursor-pointer uppercase tracking-wider">
                                         Accepting New Clients
                                     </label>
                                 </div>
 
-                                <div className="flex justify-end space-x-4 pt-4 border-t border-white/10">
+                                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/10">
                                     <button
                                         type="button"
                                         onClick={handleCloseModal}
-                                        className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                                        className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-lg border border-white/10 transition-colors order-2 sm:order-1"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-colors font-semibold"
+                                        className="flex-1 px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-lg transition-all font-bold shadow-lg shadow-cerulean/20 order-1 sm:order-2"
                                     >
                                         {editingId ? 'Update Trainer' : 'Create Trainer'}
                                     </button>
@@ -382,5 +418,13 @@ export default function AdminTrainersPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function AdminTrainersPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center font-bold text-xl uppercase tracking-widest animate-pulse">Loading...</div>}>
+            <TrainersContent />
+        </Suspense>
     );
 }

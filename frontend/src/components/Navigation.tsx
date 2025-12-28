@@ -47,14 +47,28 @@ export default function Navigation() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-6">
+                        <Link
+                            href="/classes"
+                            className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
+                        >
+                            Classes
+                        </Link>
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-4">
-                                {/* Management Dropdown */}
+                                {/* My Bookings */}
                                 <Link
-                                    href="/classes"
+                                    href="/bookings"
                                     className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
                                 >
-                                    Classes
+                                    My Bookings
+                                </Link>
+                                
+                                {/* Workout History */}
+                                <Link
+                                    href="/workouts/history"
+                                    className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
+                                >
+                                    Workouts
                                 </Link>
 
                                 {isTrainerOrAdmin && (
@@ -85,6 +99,8 @@ export default function Navigation() {
                                                     <>
                                                         <Link href="/trainer" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Trainer Dashboard</Link>
                                                         <Link href="/trainer/availability" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>My Availability</Link>
+                                                        <Link href="/trainer/reports" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Attendance Reports</Link>
+                                                        <Link href="/trainer/analytics" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white" onClick={() => setManagementOpen(false)}>Trainer Analytics</Link>
                                                     </>
                                                 )}
 
@@ -121,9 +137,14 @@ export default function Navigation() {
 
                                 <Link
                                     href="/packages"
-                                    className="text-gray-300 hover:text-white text-sm transition-colors font-medium"
+                                    className="text-gray-300 hover:text-white text-sm transition-colors font-medium flex items-center gap-1"
                                 >
                                     Packages
+                                    {user?.credits !== undefined && (
+                                        <span className="bg-teal-500/20 text-teal-400 text-[10px] px-1.5 py-0.5 rounded-full border border-teal-500/30">
+                                            {user.credits} Tokens
+                                        </span>
+                                    )}
                                 </Link>
                                 <CartIcon />
                                 <Link
@@ -191,6 +212,14 @@ export default function Navigation() {
                             Home
                         </Link>
 
+                        <Link
+                            href="/classes"
+                            className="block text-gray-300 hover:text-white transition-colors py-2"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            Classes
+                        </Link>
+
                         {!isAuthenticated && (
                             <>
                                 <Link
@@ -199,13 +228,6 @@ export default function Navigation() {
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Trainers
-                                </Link>
-                                <Link
-                                    href="/classes"
-                                    className="block text-gray-300 hover:text-white transition-colors py-2"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Classes
                                 </Link>
                                 <Link
                                     href="/contact"
@@ -226,6 +248,20 @@ export default function Navigation() {
 
                         {isAuthenticated ? (
                             <>
+                                <Link
+                                    href="/bookings"
+                                    className="block text-gray-300 hover:text-white transition-colors py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    My Bookings
+                                </Link>
+                                <Link
+                                    href="/workouts/history"
+                                    className="block text-gray-300 hover:text-white transition-colors py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Workouts
+                                </Link>
                                 {isAdmin && (
                                     <div className="space-y-2 pl-4 border-l-2 border-cerulean/30">
                                         <div className="text-xs font-bold text-pacific-cyan uppercase">Admin</div>
@@ -269,29 +305,19 @@ export default function Navigation() {
 
                                 <div className="pt-4 border-t border-white/10">
                                     <Link
-                                        href="/classes"
-                                        className="block text-gray-300 hover:text-white py-2 font-medium"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        Classes
-                                    </Link>
-                                    <Link
-                                        href="/packages"
-                                        className="block text-gray-300 hover:text-white py-2 font-medium"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        Packages
-                                    </Link>
-                                    <Link
                                         href="/profile"
                                         className="block text-gray-300 hover:text-white py-2 font-medium"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         Profile: {user?.first_name} {user?.last_name}
                                     </Link>
+                                    <div className="flex gap-4 mt-4 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                                        <Link href="/privacy" onClick={() => setMobileMenuOpen(false)}>Privacy</Link>
+                                        <Link href="/terms" onClick={() => setMobileMenuOpen(false)}>Terms</Link>
+                                    </div>
                                     <button
                                         onClick={logout}
-                                        className="w-full mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                        className="w-full mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                                     >
                                         Logout
                                     </button>
@@ -313,6 +339,10 @@ export default function Navigation() {
                                 >
                                     Get Started
                                 </Link>
+                                <div className="flex gap-4 pt-4 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                                    <Link href="/privacy" onClick={() => setMobileMenuOpen(false)}>Privacy</Link>
+                                    <Link href="/terms" onClick={() => setMobileMenuOpen(false)}>Terms</Link>
+                                </div>
                             </div>
                         )}
                     </div>

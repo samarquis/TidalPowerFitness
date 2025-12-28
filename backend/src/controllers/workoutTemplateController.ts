@@ -22,7 +22,7 @@ class WorkoutTemplateController {
     }
 
     // Get template by ID
-    async getTemplate(req: Request, res: Response): Promise<void> {
+    async getTemplate(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const template = await WorkoutTemplate.getById(req.params.id);
 

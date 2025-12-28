@@ -1,4 +1,5 @@
 import { query } from '../config/db';
+import { PaginationParams, PaginatedResult, listPaginated } from '../utils/pagination';
 
 export interface Class {
     id: string;
@@ -27,6 +28,13 @@ export const getAllClasses = async (activeOnly: boolean = true): Promise<Class[]
 
     const result = await query(sql);
     return result.rows;
+};
+
+export const getPaginatedClasses = async (params: PaginationParams, activeOnly: boolean = true): Promise<PaginatedResult<Class>> => {
+    return listPaginated<Class>('classes', params, {
+        where: activeOnly ? 'is_active = true' : undefined,
+        orderBy: 'day_of_week, start_time'
+    });
 };
 
 export const getClassById = async (id: string): Promise<Class | null> => {

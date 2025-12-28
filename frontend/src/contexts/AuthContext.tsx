@@ -9,6 +9,7 @@ interface User {
     first_name: string;
     last_name: string;
     roles: string[];
+    credits?: number;
 }
 
 interface AuthContextType {

@@ -48,9 +48,8 @@ export const getClassesForAssignment = async (req: Request, res: Response) => {
 import { AuthenticatedRequest } from '../types/auth';
 
 // Assign workout to class or individual clients
-export const assignWorkout = async (req: Request, res: Response) => {
+export const assignWorkout = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const authReq = req as AuthenticatedRequest;
         const {
             session_date,
             start_time,
@@ -64,7 +63,7 @@ export const assignWorkout = async (req: Request, res: Response) => {
         } = req.body;
 
         // Get trainer_id from authenticated user (prevents impersonation)
-        const trainer_id = authReq.user?.id;
+        const trainer_id = req.user?.id;
 
         // Validation
         if (!trainer_id) {
@@ -103,7 +102,7 @@ export const assignWorkout = async (req: Request, res: Response) => {
                 session = existingSessions[0];
 
                 // Only allow update if trainer owns the session or is admin
-                const isAdmin = authReq.user.roles?.includes('admin');
+                const isAdmin = req.user.roles?.includes('admin');
                 if (session.trainer_id !== trainer_id && !isAdmin) {
                     return res.status(403).json({
                         error: 'Forbidden - you can only update your own workout sessions'

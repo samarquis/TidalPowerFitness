@@ -89,23 +89,41 @@ export default function HistoryPage() {
                     <h1 className="text-4xl font-bold">
                         Workout <span className="text-gradient">History</span>
                     </h1>
-                    <Link
-                        href="/workouts/templates"
-                        className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
-                    >
-                        Start New Workout
-                    </Link>
+                    {user?.roles?.includes('trainer') || user?.roles?.includes('admin') ? (
+                        <Link
+                            href="/workouts/templates"
+                            className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
+                        >
+                            Start New Workout
+                        </Link>
+                    ) : (
+                        <Link
+                            href="/classes"
+                            className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all"
+                        >
+                            Browse Classes
+                        </Link>
+                    )}
                 </div>
 
                 {sessions.length === 0 ? (
                     <div className="glass rounded-xl p-12 text-center">
                         <p className="text-xl text-gray-400 mb-6">No workouts found yet.</p>
-                        <Link
-                            href="/workouts/templates"
-                            className="inline-block px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg transition-all"
-                        >
-                            Browse Templates
-                        </Link>
+                        {user?.roles?.includes('trainer') || user?.roles?.includes('admin') ? (
+                            <Link
+                                href="/workouts/templates"
+                                className="inline-block px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg transition-all"
+                            >
+                                Browse Templates
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/classes"
+                                className="inline-block px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg transition-all"
+                            >
+                                Book a Class
+                            </Link>
+                        )}
                     </div>
                 ) : (
                     <div className="grid gap-4">

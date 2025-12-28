@@ -22,8 +22,13 @@ class ApiClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<ApiResponse<T>> {
+        const timeout = 15000; // 15 seconds timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
         const headers: any = {
             'Content-Type': 'application/json',
+            'X-TPF-Request': 'true',
             ...options.headers,
         };
 
@@ -32,7 +37,10 @@ class ApiClient {
                 ...options,
                 headers,
                 credentials: 'include', // Send cookies with request
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             // Global error handling for authentication/authorization
             if (response.status === 401) {
@@ -60,7 +68,10 @@ class ApiClient {
             }
 
             return { data };
-        } catch (error) {
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                return { error: 'Request timed out. Please check your connection.' };
+            }
             return { error: 'Network error' };
         }
     }
@@ -191,6 +202,18 @@ class ApiClient {
 
     async getClientWorkouts(clientId: string) {
         return this.request<any>(`/trainers/clients/${clientId}/workouts`, { method: 'GET' });
+    }
+
+    async getAttendanceReport(startDate?: string, endDate?: string) {
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        const query = params.toString() ? `?${params.toString()}` : '';
+        return this.request<any[]>(`/trainers/reports/attendance${query}`, { method: 'GET' });
+    }
+
+    async getTrainerAnalytics() {
+        return this.request<any>('/trainers/reports/analytics', { method: 'GET' });
     }
 
     // Form submission

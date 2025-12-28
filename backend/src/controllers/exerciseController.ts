@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Exercise from '../models/Exercise';
 import BodyPart from '../models/BodyPart';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class ExerciseController {
     // Get all exercises
@@ -44,7 +45,7 @@ class ExerciseController {
     }
 
     // Create new exercise
-    async createExercise(req: Request, res: Response): Promise<void> {
+    async createExercise(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const exerciseData = {
                 ...req.body,
@@ -60,7 +61,7 @@ class ExerciseController {
     }
 
     // Update exercise
-    async updateExercise(req: Request, res: Response): Promise<void> {
+    async updateExercise(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const exercise = await Exercise.update(req.params.id, req.body);
 
@@ -77,7 +78,7 @@ class ExerciseController {
     }
 
     // Delete exercise (soft delete)
-    async deleteExercise(req: Request, res: Response): Promise<void> {
+    async deleteExercise(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await Exercise.delete(req.params.id);
 
@@ -127,7 +128,7 @@ class ExerciseController {
     }
 
     // Create body focus area
-    async createBodyFocusArea(req: Request, res: Response): Promise<void> {
+    async createBodyFocusArea(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description, body_part_id } = req.body;
             if (!name) {
@@ -143,7 +144,7 @@ class ExerciseController {
     }
 
     // Update body focus area
-    async updateBodyFocusArea(req: Request, res: Response): Promise<void> {
+    async updateBodyFocusArea(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description, body_part_id } = req.body;
             const area = await Exercise.updateBodyFocusArea(req.params.id, { name, description, body_part_id });
@@ -159,7 +160,7 @@ class ExerciseController {
     }
 
     // Delete body focus area
-    async deleteBodyFocusArea(req: Request, res: Response): Promise<void> {
+    async deleteBodyFocusArea(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await Exercise.deleteBodyFocusArea(req.params.id);
             if (!success) {
@@ -174,7 +175,7 @@ class ExerciseController {
     }
 
     // Create workout type
-    async createWorkoutType(req: Request, res: Response): Promise<void> {
+    async createWorkoutType(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description } = req.body;
             if (!name) {
@@ -190,7 +191,7 @@ class ExerciseController {
     }
 
     // Update workout type
-    async updateWorkoutType(req: Request, res: Response): Promise<void> {
+    async updateWorkoutType(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description } = req.body;
             const type = await Exercise.updateWorkoutType(req.params.id, { name, description });
@@ -206,7 +207,7 @@ class ExerciseController {
     }
 
     // Delete workout type
-    async deleteWorkoutType(req: Request, res: Response): Promise<void> {
+    async deleteWorkoutType(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await Exercise.deleteWorkoutType(req.params.id);
             if (!success) {
@@ -220,7 +221,7 @@ class ExerciseController {
         }
     }
     // Create body part
-    async createBodyPart(req: Request, res: Response): Promise<void> {
+    async createBodyPart(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description } = req.body;
             if (!name) {
@@ -236,7 +237,7 @@ class ExerciseController {
     }
 
     // Update body part
-    async updateBodyPart(req: Request, res: Response): Promise<void> {
+    async updateBodyPart(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const { name, description } = req.body;
             const part = await BodyPart.update(req.params.id, { name, description });
@@ -252,7 +253,7 @@ class ExerciseController {
     }
 
     // Delete body part
-    async deleteBodyPart(req: Request, res: Response): Promise<void> {
+    async deleteBodyPart(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const success = await BodyPart.delete(req.params.id);
             if (!success) {

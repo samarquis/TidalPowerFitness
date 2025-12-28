@@ -35,6 +35,7 @@ export default function ClassesPage() {
     const [credits, setCredits] = useState<UserCredits | null>(null);
     const [loading, setLoading] = useState(true);
     const [bookingClass, setBookingClass] = useState<string | null>(null);
+    const [attendeeCount, setAttendeeCount] = useState<number>(1);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -95,18 +96,27 @@ export default function ClassesPage() {
 
     const handleBookClass = async (classId: string) => {
         if (!isAuthenticated) {
-            window.location.href = '/login?redirect=/classes';
+            window.location.href = `/login?redirect=/classes`;
             return;
         }
 
-        if (!credits || credits.total < 1) {
-            setError('You need at least 1 credit to book a class. Please purchase a package.');
+        if (!credits || credits.total < attendeeCount) {
+            setError(`You need at least ${attendeeCount} credits to book this class. Please purchase more packages.`);
             return;
         }
 
         setBookingClass(classId);
         setError('');
         setSuccess('');
+
+        // Optimistic update for credits
+        const previousCredits = credits ? { ...credits } : null;
+        if (credits) {
+            setCredits({
+                ...credits,
+                total: credits.total - attendeeCount
+            });
+        }
 
         try {
             // Calculate target date (next upcoming instance of this class)
@@ -119,26 +129,32 @@ export default function ClassesPage() {
                 const classDay = classItem.day_of_week;
 
                 let daysUntil = classDay - currentDay;
-                if (daysUntil < 0) daysUntil += 7; // It's strictly upcoming so if today is same day, assume today unless it's past? 
-                // Let's assume day_of_week means "Today if today matches, else next".
-                // We should check time?
-                // Simplification for MVP: If day matches, assume today. If passed time? API side issue.
+                if (daysUntil < 0) daysUntil += 7; 
 
                 const targetDate = new Date(today);
                 targetDate.setDate(today.getDate() + daysUntil);
-                // Format YYYY-MM-DD
                 targetDateStr = targetDate.toISOString().split('T')[0];
             }
 
-            const { error } = await apiClient.bookClass(classId, targetDateStr);
+            const response = await (apiClient as any).request('/bookings', {
+                method: 'POST',
+                body: JSON.stringify({
+                    class_id: classId,
+                    target_date: targetDateStr,
+                    attendee_count: attendeeCount
+                })
+            });
 
-            if (error) {
-                throw new Error(error);
+            if (response.error) {
+                throw new Error(response.error);
             }
 
-            setSuccess('Class booked successfully! 1 credit has been deducted.');
-            fetchUserCredits(); // Refresh credits
+            setSuccess(`Class booked successfully for ${attendeeCount} people! ${attendeeCount} ${attendeeCount === 1 ? 'credit has' : 'credits have'} been deducted.`);
+            fetchUserCredits(); // Refresh credits from server to be sure
+            setAttendeeCount(1); // Reset for next time
         } catch (error: any) {
+            // Revert credits on error
+            setCredits(previousCredits);
             setError(error.message || 'Failed to book class');
         } finally {
             setBookingClass(null);
@@ -168,7 +184,7 @@ export default function ClassesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black pt-24 pb-16 px-4">
+        <div className="min-h-screen bg-black page-container">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -179,23 +195,23 @@ export default function ClassesPage() {
 
                 {/* Credits Display */}
                 {isAuthenticated && (
-                    <div className="glass rounded-xl p-8 mb-12 border border-white/10">
+                    <div className="glass-card mb-12">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="text-center md:text-left">
-                                <h2 className="text-xl font-semibold text-white mb-2">Available Credits</h2>
+                                <h2 className="text-xl font-semibold text-white mb-2">Available Tokens</h2>
                                 <div className="text-5xl font-bold text-teal-400">
                                     {credits?.total || 0}
                                     <span className="text-lg text-gray-500 ml-2 font-normal">
-                                        {credits?.total === 1 ? 'Credit' : 'Credits'}
+                                        {credits?.total === 1 ? 'Token' : 'Tokens'}
                                     </span>
                                 </div>
                             </div>
                             <div className="w-full md:w-auto">
                                 <a
                                     href="/packages"
-                                    className="block text-center px-8 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-pacific-cyan/20"
+                                    className="block text-center btn-primary w-full md:w-auto"
                                 >
-                                    Purchase Packages
+                                    Purchase Tokens
                                 </a>
                             </div>
                         </div>
@@ -214,36 +230,38 @@ export default function ClassesPage() {
                     </div>
                 )}
 
-                {/* Day Selection Tabs */}
-                <div className="flex overflow-x-auto pb-4 mb-8 gap-2 no-scrollbar">
-                    <button
-                        onClick={() => setSelectedDay(-1)}
-                        className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === -1
-                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                            }`}
-                    >
-                        All Days
-                    </button>
-                    {DAYS.map((day, index) => (
+                {/* Day Selection Tabs - Sticky on Mobile */}
+                <div className="sticky top-20 z-10 bg-black/80 backdrop-blur-md py-4 mb-8 -mx-4 px-4 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:backdrop-blur-none md:border-none md:px-0">
+                    <div className="flex overflow-x-auto gap-2 no-scrollbar">
                         <button
-                            key={day}
-                            onClick={() => setSelectedDay(index)}
-                            className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${selectedDay === index
+                            onClick={() => setSelectedDay(-1)}
+                            className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all text-sm md:text-base ${selectedDay === -1
                                 ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
                                 : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                 }`}
                         >
-                            {day}
+                            All Days
                         </button>
-                    ))}
+                        {DAYS.map((day, index) => (
+                            <button
+                                key={day}
+                                onClick={() => setSelectedDay(index)}
+                                className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all text-sm md:text-base ${selectedDay === index
+                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                    }`}
+                            >
+                                {day}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Classes by Day */}
-                <div className="space-y-16">
+                <div className="space-y-12 md:space-y-16">
                     {classesByDay.map(({ day, classes: dayClasses }) => (
-                        <div key={day} className="scroll-mt-24">
-                            <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/10 pb-4 inline-block pr-12">
+                        <div key={day} className="scroll-mt-36 md:scroll-mt-24">
+                            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8 border-b border-white/10 pb-4 inline-block pr-12">
                                 {day}
                             </h2>
                             {dayClasses.length === 0 ? (
@@ -251,69 +269,76 @@ export default function ClassesPage() {
                                     No classes scheduled for {day}
                                 </div>
                             ) : (
-                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {dayClasses.map((classItem) => (
                                         <div
                                             key={classItem.id}
-                                            className="glass rounded-xl p-6 border border-white/5 hover:border-teal-500/30 transition-all group overflow-hidden relative"
+                                            className="glass-card group overflow-hidden relative"
                                         >
-                                            <div className="absolute top-0 right-0 p-4">
-                                                <span className="bg-teal-500/20 text-teal-400 text-xs font-bold px-3 py-1 rounded-full border border-teal-500/30">
+                                            <div className="absolute top-0 right-0 p-3 md:p-4">
+                                                <span className="bg-teal-500/10 text-teal-400 text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full border border-teal-500/20">
                                                     {classItem.category || 'Fitness'}
                                                 </span>
                                             </div>
 
-                                            <h3 className="text-2xl font-bold text-white mb-3 pt-4">
+                                            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 md:mb-3 pt-4">
                                                 {classItem.name}
                                             </h3>
-                                            <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[2.5rem]">
+                                            <p className="text-gray-400 text-xs md:text-sm mb-4 md:mb-6 line-clamp-2 min-h-[2.5rem]">
                                                 {classItem.description}
                                             </p>
 
-                                            <div className="space-y-4 mb-8">
+                                            <div className="grid grid-cols-2 gap-3 md:block md:space-y-4 mb-6 md:mb-8">
                                                 <div className="flex items-center text-gray-300">
-                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
+                                                    <div className="hidden md:flex w-10 h-10 rounded-lg bg-white/5 items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
                                                         <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs text-gray-500 uppercase font-bold">Time & Duration</div>
-                                                        <div className="text-sm">{classItem.start_time.slice(0, 5)} • {classItem.duration_minutes} min</div>
+                                                        <div className="text-[10px] text-gray-500 uppercase font-bold md:mb-0.5">Time</div>
+                                                        <div className="text-xs md:text-sm">{classItem.start_time.slice(0, 5)} <span className="text-gray-500">•</span> {classItem.duration_minutes}m</div>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex items-center text-gray-300">
-                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
+                                                    <div className="hidden md:flex w-10 h-10 rounded-lg bg-white/5 items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
                                                         <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                         </svg>
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs text-gray-500 uppercase font-bold">Instructor</div>
-                                                        <div className="text-sm">{classItem.instructor_name}</div>
+                                                        <div className="text-[10px] text-gray-500 uppercase font-bold md:mb-0.5">Instructor</div>
+                                                        <div className="text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{classItem.instructor_name}</div>
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                <div className="flex items-center text-gray-300">
-                                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
-                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs text-gray-500 uppercase font-bold">Cost</div>
-                                                        <div className="text-sm font-semibold text-teal-400">1 Credit</div>
-                                                    </div>
+                                            <div className="mb-4 flex items-center justify-between bg-white/5 p-2 md:p-3 rounded-lg border border-white/5">
+                                                <span className="text-xs md:text-sm font-semibold text-gray-300">Attendees</span>
+                                                <div className="flex items-center gap-2 md:gap-3">
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); setAttendeeCount(Math.max(1, attendeeCount - 1)) }}
+                                                        className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="text-base md:text-lg font-bold text-teal-400 w-4 text-center">{attendeeCount}</span>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); setAttendeeCount(Math.min(5, attendeeCount + 1)) }}
+                                                        className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                                    >
+                                                        +
+                                                    </button>
                                                 </div>
                                             </div>
 
                                             <button
                                                 onClick={() => handleBookClass(classItem.id)}
                                                 disabled={bookingClass === classItem.id || !isAuthenticated}
-                                                className={`w-full py-4 px-6 rounded-xl font-bold transition-all flex items-center justify-center ${isAuthenticated
-                                                    ? 'bg-white/10 hover:bg-teal-600 text-white border border-white/10 hover:border-teal-500'
-                                                    : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
+                                                className={`w-full ${isAuthenticated
+                                                    ? 'btn-primary'
+                                                    : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed py-3 rounded-xl'
                                                     }`}
                                             >
                                                 {bookingClass === classItem.id ? (
@@ -325,7 +350,7 @@ export default function ClassesPage() {
                                                         Processing...
                                                     </>
                                                 ) : (
-                                                    isAuthenticated ? 'Book This Class' : 'Login to Book'
+                                                    isAuthenticated ? `Book for ${attendeeCount}` : 'Login to Book'
                                                 )}
                                             </button>
                                         </div>

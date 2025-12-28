@@ -17,12 +17,12 @@ export default function CTAButton({
     icon,
     className = ''
 }: CTAButtonProps) {
-    const baseStyles = 'inline-flex items-center justify-center gap-2 font-bold rounded-lg transition-all transform hover:scale-105 active:scale-95';
+    const baseStyles = 'inline-flex items-center justify-center gap-2 transition-all active:scale-95';
 
     const variantStyles = {
-        primary: 'bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white shadow-lg shadow-pacific-cyan/50',
-        secondary: 'bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20',
-        outline: 'border-2 border-pacific-cyan text-turquoise-surf hover:bg-pacific-cyan/10'
+        primary: 'btn-primary',
+        secondary: 'btn-secondary',
+        outline: 'border-2 border-pacific-cyan text-turquoise-surf hover:bg-pacific-cyan/10 rounded-lg font-bold'
     };
 
     const sizeStyles = {
@@ -34,7 +34,7 @@ export default function CTAButton({
     return (
         <Link
             href={href}
-            className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+            className={`${baseStyles} ${variantStyles[variant]} ${variant !== 'outline' ? '' : sizeStyles[size]} ${className}`}
         >
             {children}
             {icon && <span>{icon}</span>}

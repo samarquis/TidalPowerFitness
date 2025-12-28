@@ -41,12 +41,14 @@ export default function PackagesPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-black pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-black page-container">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-white mb-4">Class Packages</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                        Class <span className="text-gradient">Tokens</span>
+                    </h1>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Choose the perfect package for your fitness journey. Flexible options to suit your schedule.
+                        Choose the token package that works for you. All tokens can be used for any class.
                     </p>
                 </div>
 

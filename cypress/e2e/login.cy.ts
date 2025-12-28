@@ -22,7 +22,7 @@ describe('Login Flow', () => {
         }).as('getProfile');
     });
 
-    it('should allow a user to log in and redirect to the trainers page', () => {
+    it('should allow a user to log in and redirect to the dashboard', () => {
         // Visit the login page
         cy.visit('/login');
 
@@ -39,8 +39,8 @@ describe('Login Flow', () => {
         // Wait for the login API call to be made
         cy.wait('@loginRequest');
 
-        // Assert that the URL has changed
-        cy.url().should('include', '/trainers');
+        // Assert that the URL has changed - it should be the home page (dashboard)
+        cy.url().should('eq', Cypress.config().baseUrl + '/');
     });
 
     it('should show an error message on failed login', () => {
@@ -60,6 +60,6 @@ describe('Login Flow', () => {
 
         // Assert that the error message is visible
         cy.get('.bg-red-600\/20').should('contain.text', 'Invalid credentials');
-        cy.url().should('not.include', '/trainers');
+        cy.url().should('not.include', '/dashboard');
     });
 });

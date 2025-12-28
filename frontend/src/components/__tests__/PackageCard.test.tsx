@@ -3,26 +3,36 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PackageCard from '../PackageCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 
-// Mock the AuthContext
+// Mock the contexts and next/navigation
 jest.mock('@/contexts/AuthContext');
+jest.mock('@/contexts/CartContext');
+jest.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: jest.fn(),
+    }),
+}));
 
 const mockedUseAuth = useAuth as jest.Mock;
+const mockedUseCart = useCart as jest.Mock;
 
 describe('PackageCard Component', () => {
     const mockPackage = {
-        id: 1,
+        id: '1',
         name: 'Starter Pack',
         description: 'A great way to get started.',
-        price: 50,
-        credit_amount: 5,
+        price_cents: 5000,
+        credit_count: 5,
+        type: 'one_time' as const,
     };
 
     beforeEach(() => {
-        // Provide a default mock implementation for useAuth
         mockedUseAuth.mockReturnValue({
             isAuthenticated: true,
-            token: 'fake-token',
+        });
+        mockedUseCart.mockReturnValue({
+            addToCart: jest.fn(),
         });
     });
 
@@ -31,15 +41,15 @@ describe('PackageCard Component', () => {
 
         // Check that all the details are in the document
         expect(screen.getByText('Starter Pack')).toBeInTheDocument();
-        expect(screen.getByText('$50')).toBeInTheDocument();
+        expect(screen.getByText('$50.00')).toBeInTheDocument();
         expect(screen.getByText('A great way to get started.')).toBeInTheDocument();
         expect(screen.getByText('5 Credits')).toBeInTheDocument();
     });
 
-    it('renders the "Buy Now" button', () => {
+    it('renders the "Add to Cart" button', () => {
         render(<PackageCard pkg={mockPackage} />);
         
-        const buyButton = screen.getByRole('button', { name: /buy now/i });
+        const buyButton = screen.getByRole('button', { name: /Add to Cart/i });
         expect(buyButton).toBeInTheDocument();
         expect(buyButton).not.toBeDisabled();
     });

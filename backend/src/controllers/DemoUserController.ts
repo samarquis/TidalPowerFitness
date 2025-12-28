@@ -1,6 +1,8 @@
-import { Request, Response } from 'express';
 import { query } from '../config/db';
 import bcrypt from 'bcrypt';
+import { AuthenticatedRequest } from '../types/auth';
+import { DemoDataService } from '../services/demoDataService';
+import logger from '../utils/logger';
 
 // Character names to use for demo users
 const characterNames = [
@@ -43,7 +45,7 @@ const randomArrayElements = <T>(arr: T[], min: number, max: number): T[] => {
   return shuffled.slice(0, count);
 };
 
-export const createDemoUsers = async (req: Request, res: Response) => {
+export const createDemoUsers = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { count = 10 } = req.body;
 
@@ -78,6 +80,10 @@ export const createDemoUsers = async (req: Request, res: Response) => {
 
         const createdUser = result.rows[0];
         createdUsers.push(createdUser);
+
+        // Generate workout history for all demo users (clients and trainers)
+        // This makes the dashboard look populated
+        await DemoDataService.generateWorkoutHistory(createdUser.id, 2);
 
         // If trainer, create trainer profile
         if (user.role === 'trainer') {
@@ -123,16 +129,27 @@ export const createDemoUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteDemoUsers = async (req: Request, res: Response) => {
+export const deleteDemoUsers = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // Delete all users where is_demo_mode_enabled is true
-    const result = await query(
-      `DELETE FROM users WHERE is_demo_mode_enabled = true RETURNING id, email, first_name, last_name`
-    );
+    // 1. Find all demo user IDs
+    const demoUsers = await query("SELECT id FROM users WHERE is_demo_mode_enabled = true");
+    const demoIds = demoUsers.rows.map(u => u.id);
+
+    if (demoIds.length > 0) {
+      // 2. Delete workout sessions created by or involving demo users
+      // Note: Cascade deletes handle most of this if schema is correct, 
+      // but session_participants might need explicit check if we want to delete the whole session
+      await query(
+        "DELETE FROM workout_sessions WHERE trainer_id = ANY($1)",
+        [demoIds]
+      );
+      
+      // 3. Delete the users (cascades to trainer_profiles, user_credits, etc.)
+      await query("DELETE FROM users WHERE is_demo_mode_enabled = true");
+    }
 
     res.json({
-      message: `Successfully deleted ${result.rows.length} demo users`,
-      deletedUsers: result.rows
+      message: `Successfully deleted ${demoIds.length} demo users and their associated data`,
     });
   } catch (error: any) {
     console.error('Error deleting demo users:', error);
@@ -140,7 +157,7 @@ export const deleteDemoUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const listDemoUsers = async (req: Request, res: Response) => {
+export const listDemoUsers = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const result = await query(
       `SELECT id, email, first_name, last_name, role, roles, phone, created_at

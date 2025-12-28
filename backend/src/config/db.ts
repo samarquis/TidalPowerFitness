@@ -1,18 +1,25 @@
 import { Pool, QueryResult } from 'pg';
 
 // Support both individual env vars (local) and DATABASE_URL (production)
-const pool = process.env.DATABASE_URL
-    ? new Pool({
+const poolConfig = process.env.DATABASE_URL
+    ? {
         connectionString: process.env.DATABASE_URL,
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    })
-    : new Pool({
+    }
+    : {
         host: process.env.DB_HOST || 'localhost',
         port: parseInt(process.env.DB_PORT || '5432'),
         database: process.env.DB_NAME || 'tidal_power_fitness',
         user: process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD,
-    });
+    };
+
+const pool = new Pool({
+    ...poolConfig,
+    max: 20, // Maximum number of clients in the pool
+    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+    connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+});
 
 // Test connection
 pool.on('connect', () => {

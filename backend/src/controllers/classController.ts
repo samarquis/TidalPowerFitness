@@ -1,10 +1,22 @@
 import { Request, Response } from 'express';
 import ClassModel from '../models/Class';
+import { AuthenticatedRequest } from '../types/auth';
+import pool from '../config/db';
 
 // Get all classes
 export const getClasses = async (req: Request, res: Response) => {
     try {
-        const { day, category } = req.query;
+        const { day, category, page, limit } = req.query;
+
+        // If pagination params are provided, use paginated method
+        if (page || limit) {
+            const paginationParams = {
+                page: parseInt(page as string) || 1,
+                limit: parseInt(limit as string) || 10
+            };
+            const result = await ClassModel.getPaginatedClasses(paginationParams);
+            return res.json(result);
+        }
 
         let classes;
         if (day !== undefined) {
@@ -40,28 +52,18 @@ export const getClass = async (req: Request, res: Response) => {
 };
 
 // Create new class (admin only)
-export const createClass = async (req: Request, res: Response) => {
+export const createClass = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        console.log('Creating class with data:', JSON.stringify(req.body, null, 2));
         const classData = req.body;
 
-        // Validate required fields
         if (!classData.name || !classData.category || !classData.instructor_name) {
-            console.error('Missing required fields:', {
-                name: !!classData.name,
-                category: !!classData.category,
-                instructor_name: !!classData.instructor_name
-            });
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
         const newClass = await ClassModel.createClass(classData);
-        console.log('Class created successfully:', newClass.id);
         res.status(201).json(newClass);
     } catch (error: any) {
         console.error('Error creating class:', error);
-        console.error('Error stack:', error.stack);
-        console.error('Error details:', error.message);
         res.status(500).json({
             error: 'Failed to create class',
             details: error.message
@@ -70,7 +72,7 @@ export const createClass = async (req: Request, res: Response) => {
 };
 
 // Update class (admin only)
-export const updateClass = async (req: Request, res: Response) => {
+export const updateClass = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const classData = req.body;
@@ -88,7 +90,7 @@ export const updateClass = async (req: Request, res: Response) => {
 };
 
 // Delete class (admin only)
-export const deleteClass = async (req: Request, res: Response) => {
+export const deleteClass = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const deleted = await ClassModel.deleteClass(id);
@@ -104,10 +106,60 @@ export const deleteClass = async (req: Request, res: Response) => {
     }
 };
 
+// Get attendees for a class (trainers and admins)
+export const getClassAttendees = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user!.id;
+        const userRoles = req.user!.roles || [];
+
+        const classData = await ClassModel.getClassById(id);
+
+        if (!classData) {
+            return res.status(404).json({ error: 'Class not found' });
+        }
+
+        const isAdmin = userRoles.includes('admin');
+        const isInstructor = classData.instructor_id === userId;
+
+        if (!isAdmin && !isInstructor && !userRoles.includes('trainer')) {
+            return res.status(403).json({ error: 'Not authorized to view attendees' });
+        }
+
+        const result = await pool.query(`
+            SELECT 
+                cp.id as booking_id,
+                cp.user_id,
+                cp.status,
+                cp.booking_date,
+                cp.credits_used,
+                u.first_name,
+                u.last_name,
+                u.email,
+                u.phone
+            FROM class_participants cp
+            JOIN users u ON cp.user_id = u.id
+            WHERE cp.class_id = $1 AND cp.status = 'confirmed'
+            ORDER BY cp.booking_date DESC
+        `, [id]);
+
+        res.json({
+            class_id: id,
+            attendee_count: result.rows.length,
+            attendees: result.rows
+        });
+
+    } catch (error: any) {
+        console.error('Error fetching class attendees:', error);
+        res.status(500).json({ error: 'Failed to fetch attendees' });
+    }
+};
+
 export default {
     getClasses,
     getClass,
     createClass,
     updateClass,
-    deleteClass
+    deleteClass,
+    getClassAttendees
 };

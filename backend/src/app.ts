@@ -1,38 +1,48 @@
-const dotenv = require('dotenv');
-dotenv.config();
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import logger from './utils/logger';
 
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
+// Load env vars
+dotenv.config();
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const trainerRoutes = require('./routes/trainers');
-const appointmentRoutes = require('./routes/appointments');
-const paymentRoutes = require('./routes/payments');
-const classRoutes = require('./routes/classes');
-const setupRoutes = require('./routes/setup');
-const exerciseRoutes = require('./routes/exercises');
-const workoutTemplateRoutes = require('./routes/workoutTemplates');
-const workoutSessionRoutes = require('./routes/workoutSessions');
-const availabilityRoutes = require('./routes/availability');
-const workoutAssignmentRoutes = require('./routes/workoutAssignments');
-const packageRoutes = require('./routes/packages');
-const importRoutes = require('./routes/import');
-const bookingRoutes = require('./routes/bookings');
-const migrationRoutes = require('./routes/migrations');
-const cartRoutes = require('./routes/cart');
-const demoUserRoutes = require('./routes/demoUsers');
-const achievementRoutes = require('./routes/achievements');
-const progressRoutes = require('./routes/progress');
-const changelogRoutes = require('./routes/changelog');
-
-dotenv.config();
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import trainerRoutes from './routes/trainers';
+import appointmentRoutes from './routes/appointments';
+import paymentRoutes from './routes/payments';
+import classRoutes from './routes/classes';
+import setupRoutes from './routes/setup';
+import exerciseRoutes from './routes/exercises';
+import workoutTemplateRoutes from './routes/workoutTemplates';
+import workoutSessionRoutes from './routes/workoutSessions';
+import availabilityRoutes from './routes/availability';
+import workoutAssignmentRoutes from './routes/workoutAssignments';
+import packageRoutes from './routes/packages';
+import importRoutes from './routes/import';
+import bookingRoutes from './routes/bookings';
+import migrationRoutes from './routes/migrations';
+import cartRoutes from './routes/cart';
+import demoUserRoutes from './routes/demoUsers';
+import achievementRoutes from './routes/achievements';
+import progressRoutes from './routes/progress';
+import changelogRoutes from './routes/changelog';
+import adminRoutes from './routes/admin';
 
 const app = express();
 
 // Middleware
+import { apiLimiter, authLimiter } from './middleware/rateLimit';
+import { csrfCheck } from './middleware/csrf';
+
+// Apply global rate limiter to all API routes
+app.use('/api', apiLimiter);
+
+// Apply CSRF protection to all state-changing API routes
+app.use('/api', csrfCheck);
+
 const allowedOrigins = [
     'http://localhost:3000',
     'https://tidal-power-frontend.onrender.com',
@@ -40,7 +50,7 @@ const allowedOrigins = [
     process.env.FRONTEND_URL
 ];
 
-const corsOptions = {
+const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
@@ -59,13 +69,24 @@ const corsOptions = {
         return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
     },
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-TPF-Request']
 };
 
 app.set('trust proxy', 1); // Trust first proxy
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(express.json());
+
+// Request logging middleware
+app.use((req: any, res: any, next: any) => {
+    logger.http(`${req.method} ${req.url}`);
+    next();
+});
+
+app.use(express.json({
+    verify: (req: any, res: any, buf: Buffer) => {
+        req.rawBody = buf.toString();
+    }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
@@ -79,62 +100,65 @@ app.get('/api', (req: any, res: any) => {
 });
 
 // Authentication routes
-app.use('/api/auth', authRoutes.default || authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 
 // User management routes
-app.use('/api/users', userRoutes.default || userRoutes);
+app.use('/api/users', userRoutes);
 
 // Trainer routes
-app.use('/api/trainers', trainerRoutes.default || trainerRoutes);
+app.use('/api/trainers', trainerRoutes);
 
 // Appointment routes (Acuity integration)
-app.use('/api/appointments', appointmentRoutes.default || appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Payment routes (Square integration)
-app.use('/api/payments', paymentRoutes.default || paymentRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Classes routes
-app.use('/api/classes', classRoutes.default || classRoutes);
+app.use('/api/classes', classRoutes);
 
 // Workout tracking routes
-app.use('/api/exercises', exerciseRoutes.default || exerciseRoutes);
-app.use('/api/workout-templates', workoutTemplateRoutes.default || workoutTemplateRoutes);
-app.use('/api/workout-sessions', workoutSessionRoutes.default || workoutSessionRoutes);
+app.use('/api/exercises', exerciseRoutes);
+app.use('/api/workout-templates', workoutTemplateRoutes);
+app.use('/api/workout-sessions', workoutSessionRoutes);
 
 // Trainer availability routes
-app.use('/api/availability', availabilityRoutes.default || availabilityRoutes);
+app.use('/api/availability', availabilityRoutes);
 
 // Workout assignment routes
-app.use('/api/assignments', workoutAssignmentRoutes.default || workoutAssignmentRoutes);
+app.use('/api/assignments', workoutAssignmentRoutes);
 
 // Package routes
-app.use('/api/packages', packageRoutes.default || packageRoutes);
+app.use('/api/packages', packageRoutes);
 
 // Booking routes
-app.use('/api/bookings', bookingRoutes.default || bookingRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Cart routes
-app.use('/api/cart', cartRoutes.default || cartRoutes);
+app.use('/api/cart', cartRoutes);
+
+// Admin routes
+app.use('/api/admin', adminRoutes);
 
 // Import routes (admin only)
-app.use('/api/import', importRoutes.default || importRoutes);
+app.use('/api/import', importRoutes);
 
 // Migration routes (admin only)
-app.use('/api/admin/migrate', migrationRoutes.default || migrationRoutes);
+app.use('/api/admin/migrate', migrationRoutes);
 
 // Demo user routes (admin only)
-app.use('/api/demo-users', demoUserRoutes.default || demoUserRoutes);
+app.use('/api/demo-users', demoUserRoutes);
 
 // Setup routes (one-time admin creation)
-app.use('/api/setup', setupRoutes.default || setupRoutes);
+app.use('/api/setup', setupRoutes);
 
 // Achievement routes
-app.use('/api/achievements', achievementRoutes.default || achievementRoutes);
+app.use('/api/achievements', achievementRoutes);
 
 // Progress routes
-app.use('/api/progress', progressRoutes.default || progressRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Changelog routes
-app.use('/api/changelog', changelogRoutes.default || changelogRoutes);
+app.use('/api/changelog', changelogRoutes);
 
-module.exports = app;
+export default app;

@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import LandingPage from '@/components/LandingPage';
 import UserDashboard from '@/components/dashboard/UserDashboard';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function HomePage() {
   const { isAuthenticated, loading } = useAuth();
@@ -15,5 +16,11 @@ export default function HomePage() {
     );
   }
 
-  return isAuthenticated ? <UserDashboard /> : <LandingPage />;
+  return isAuthenticated ? (
+    <ErrorBoundary>
+      <UserDashboard />
+    </ErrorBoundary>
+  ) : (
+    <LandingPage />
+  );
 }

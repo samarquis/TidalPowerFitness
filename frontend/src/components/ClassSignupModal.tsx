@@ -12,14 +12,16 @@ interface ClassInfo {
     category: string;
     day_of_week?: number;
     date?: Date;
-}
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import confetti from 'canvas-confetti';
 
 interface ClassSignupModalProps {
     classInfo: ClassInfo;
     userCredits: number;
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (classId: string) => Promise<void>;
+    onConfirm: (classId: string, attendeeCount: number) => Promise<void>;
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -41,19 +43,30 @@ export default function ClassSignupModal({
     onConfirm
 }: ClassSignupModalProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [attendeeCount, setAttendeeCount] = useState(1);
     const [error, setError] = useState('');
 
     if (!isOpen) return null;
 
-    const hasEnoughCredits = userCredits >= 1;
+    const totalCost = attendeeCount;
+    const hasEnoughCredits = userCredits >= totalCost;
 
     const handleConfirm = async () => {
         setIsLoading(true);
         setError('');
         try {
-            await onConfirm(classInfo.id);
+            await onConfirm(classInfo.id, attendees);
+            
+            // Trigger confetti for delight!
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#08acd6', '#478ea0', '#18809e', '#ffffff']
+            });
+
             onClose();
-        } catch (err: any) {
+        } catch (error) {
             setError(err.message || 'Failed to book class');
         } finally {
             setIsLoading(false);
@@ -101,11 +114,31 @@ export default function ClassSignupModal({
                         </div>
                     </div>
 
+                    {/* Attendee Selection */}
+                    <div className="mb-6 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/5">
+                        <span className="font-semibold text-gray-300">Number of Attendees</span>
+                        <div className="flex items-center gap-4">
+                            <button 
+                                onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
+                                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
+                            >
+                                -
+                            </button>
+                            <span className="text-2xl font-bold text-teal-400 w-6 text-center">{attendeeCount}</span>
+                            <button 
+                                onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
+                                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Credit Info */}
                     <div className="bg-white/5 rounded-xl p-4 mb-6">
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-gray-400">Class Cost</span>
-                            <span className="font-bold text-white">1 Credit</span>
+                            <span className="text-gray-400">Total Cost</span>
+                            <span className="font-bold text-white">{totalCost} {totalCost === 1 ? 'Credit' : 'Credits'}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-gray-400">Your Balance</span>
@@ -117,7 +150,7 @@ export default function ClassSignupModal({
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-400">After Booking</span>
                                 <span className="font-bold text-white">
-                                    {hasEnoughCredits ? userCredits - 1 : 0} Credits
+                                    {hasEnoughCredits ? userCredits - totalCost : 0} Credits
                                 </span>
                             </div>
                         </div>
@@ -134,7 +167,7 @@ export default function ClassSignupModal({
                     {!hasEnoughCredits && (
                         <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg mb-4">
                             <p className="font-semibold mb-1">Insufficient Credits</p>
-                            <p className="text-sm">You need at least 1 credit to book this class. Please purchase a package first.</p>
+                            <p className="text-sm">You need at least {totalCost} credits to book for {attendeeCount} people. Please purchase more credits.</p>
                         </div>
                     )}
                 </div>
@@ -162,7 +195,7 @@ export default function ClassSignupModal({
                                     Booking...
                                 </>
                             ) : (
-                                'Confirm Booking'
+                                `Book for ${attendeeCount}`
                             )}
                         </button>
                     ) : (

@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import AchievementModel from '../models/Achievement';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class AchievementController {
     // Get all achievements
-    async getAll(req: Request, res: Response): Promise<void> {
+    async getAll(req: Request, res: Response): Promise<void> { // This route might not require authentication
         try {
             const achievements = await AchievementModel.getAll();
             res.json(achievements);
@@ -14,7 +15,7 @@ class AchievementController {
     }
 
     // Get user's earned achievements
-    async getUserAchievements(req: Request, res: Response): Promise<void> {
+    async getUserAchievements(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const userId = req.params.userId;
 
@@ -35,7 +36,7 @@ class AchievementController {
     }
 
     // Check for new achievements (usually internal, but exposed for testing/manual triggers)
-    async checkAchievements(req: Request, res: Response): Promise<void> {
+    async checkAchievements(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const userId = req.params.userId;
             const { type, value } = req.body;

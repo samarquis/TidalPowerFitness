@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
+import UserCreditModel from '../models/UserCredit';
 import { hashPassword, comparePassword, validatePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 // Register new user
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -182,7 +184,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Get current user profile
-export const getProfile = async (req: Request, res: Response): Promise<void> => {
+export const getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         if (!req.user) {
             res.status(401).json({ error: 'Not authenticated' });
@@ -196,6 +198,10 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
+        // Fetch user credits
+        const creditsData = await UserCreditModel.getUserCredits(user.id);
+        const totalCredits = creditsData.reduce((sum, c) => sum + c.remaining_credits, 0);
+
         res.status(200).json({
             user: {
                 id: user.id,
@@ -206,6 +212,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
                 roles: user.roles,
                 is_active: user.is_active,
                 created_at: user.created_at,
+                credits: totalCredits,
             },
         });
     } catch (error) {
@@ -215,7 +222,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 };
 
 // Update user profile
-export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         if (!req.user) {
             res.status(401).json({ error: 'Not authenticated' });
@@ -253,7 +260,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 };
 
 // Change password
-export const changePassword = async (req: Request, res: Response): Promise<void> => {
+export const changePassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         if (!req.user) {
             res.status(401).json({ error: 'Not authenticated' });

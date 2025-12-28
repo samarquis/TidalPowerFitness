@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import Changelog from '../models/Changelog';
+import { AuthenticatedRequest } from '../types/auth'; // Added import
 
-export const getChangelogs = async (req: Request, res: Response) => {
+export const getChangelogs = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const isAdmin = req.user?.roles.includes('admin');
         const changelogs = await Changelog.findAll(!isAdmin);
@@ -12,7 +13,7 @@ export const getChangelogs = async (req: Request, res: Response) => {
     }
 };
 
-export const createChangelog = async (req: Request, res: Response) => {
+export const createChangelog = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { version, title, content, category, is_published } = req.body;
 
@@ -37,7 +38,7 @@ export const createChangelog = async (req: Request, res: Response) => {
     }
 };
 
-export const updateChangelog = async (req: Request, res: Response) => {
+export const updateChangelog = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const entry = await Changelog.update(id, req.body);
@@ -52,7 +53,7 @@ export const updateChangelog = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteChangelog = async (req: Request, res: Response) => {
+export const deleteChangelog = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
         const success = await Changelog.delete(id);
