@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import confetti from 'canvas-confetti';
 
 interface ClassInfo {
     id: string;
@@ -12,9 +13,7 @@ interface ClassInfo {
     category: string;
     day_of_week?: number;
     date?: Date;
-import React, { useState } from 'react';
-import { format } from 'date-fns';
-import confetti from 'canvas-confetti';
+}
 
 interface ClassSignupModalProps {
     classInfo: ClassInfo;
@@ -55,8 +54,8 @@ export default function ClassSignupModal({
         setIsLoading(true);
         setError('');
         try {
-            await onConfirm(classInfo.id, attendees);
-            
+            await onConfirm(classInfo.id, attendeeCount);
+
             // Trigger confetti for delight!
             confetti({
                 particleCount: 150,
@@ -66,7 +65,7 @@ export default function ClassSignupModal({
             });
 
             onClose();
-        } catch (error) {
+        } catch (err: any) {
             setError(err.message || 'Failed to book class');
         } finally {
             setIsLoading(false);
@@ -118,14 +117,14 @@ export default function ClassSignupModal({
                     <div className="mb-6 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/5">
                         <span className="font-semibold text-gray-300">Number of Attendees</span>
                         <div className="flex items-center gap-4">
-                            <button 
+                            <button
                                 onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
                                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
                             >
                                 -
                             </button>
                             <span className="text-2xl font-bold text-teal-400 w-6 text-center">{attendeeCount}</span>
-                            <button 
+                            <button
                                 onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
                                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
                             >
