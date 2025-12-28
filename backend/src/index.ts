@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import app from './app';
 import validateEnv from './config/validateEnv';
 import cron from 'node-cron';
 import { BackupService } from './services/backupService';
 import logger from './utils/logger';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
