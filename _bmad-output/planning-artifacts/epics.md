@@ -422,6 +422,7 @@ So that I can develop and test the application without relying on a remote datab
 *   **And** the database should be populated with necessary schema (`001_initial_schema.sql`) and seed data (`seed.sql`).
 *   **And** any redundant or conflicting migration files (like `006_add_is_demo_mode_enabled_to_users.sql`) should be removed or ignored.
 *   **And** I should be able to connect to this database from both the backend and frontend applications.
+*   **And** functional credentials should be provided for seeded users (e.g., placeholder "Z" hashes replaced with valid bcrypt hash for 'admin123').
 *   **And** the `init-database.html`, `run-migration.html`, `seed-database.html` (if exists) or similar scripts should be functional for this setup.
 
 <h3>[COMPLETED] Story 6.2: Local Backend Application Setup</h3>
@@ -477,6 +478,8 @@ So that development is stable and the server remains operational.
 *   **Then** all route and controller files must have correct `import` statements (e.g., `import express from 'express'`).
 *   **And** mixed syntax (using `require` and `module.exports` alongside `import`/`export`) must be eliminated from core route files (`bookings`, `availability`, `workoutSessions`).
 *   **And** the application should start without TypeScript compiler crashes (e.g., bypassing misleading Square API type errors by fixing root source errors).
+*   **And** backend rate limits should be significantly relaxed in development mode to prevent blocking during legitimate testing.
+*   **And** the frontend should not enter an infinite refresh cycle on the login page when encountering 401 Unauthorized errors.
 
 <h2>Epic 7: Deployment and Operations</h2>
 **Goal:** Ensure the application can be reliably deployed, maintained, and operated in production environments, addressing critical migration and error handling needs.

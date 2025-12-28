@@ -112,6 +112,10 @@ _This file contains critical rules and patterns that AI agents must follow when 
     *   **JWT Best Practices:** Store JWTs securely (e.g., HttpOnly cookies), ensure proper expiration, and validate them on the backend for every protected route.
     *   **Access Control:** Implement granular role-based access control (RBAC) on the backend for all sensitive operations and data access.
     *   **Input Validation:** Perform server-side validation for all incoming data, in addition to frontend validation, to protect against malicious input.
+*   **Authentication & Rate Limiting Rules:**
+    *   **Local Rate Limits:** Relax backend rate limits in `backend/src/middleware/rateLimit.ts` when `NODE_ENV === 'development'` to allow up to 1,000 authentication attempts per hour.
+    *   **Environment Loading:** Always call `dotenv.config()` as the first line of the application entry point (`backend/src/index.ts`) or early in `app.ts` to ensure configuration is available to all middleware during initialization.
+    *   **Login Loop Prevention:** In the frontend `apiClient` (global 401 interceptor), skip automatic redirects to `/login` if the user is already on the login page to prevent infinite refresh cycles.
 *   **Performance Gotchas:**
     *   **Frontend Bundle Size:** Monitor and optimize frontend bundle sizes to ensure fast loading times, especially for mobile users.
     *   **Inefficient Database Queries:** Profile and optimize complex database queries to prevent performance bottlenecks.
