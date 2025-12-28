@@ -45,6 +45,7 @@ app.use('/api', csrfCheck);
 
 const allowedOrigins = [
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
     'https://tidal-power-frontend.onrender.com',
     'https://tidal-power-frontend-app.onrender.com',
     process.env.FRONTEND_URL

@@ -45,9 +45,11 @@ class ApiClient {
             // Global error handling for authentication/authorization
             if (response.status === 401) {
                 // Unauthorized - clear auth and redirect to login
-                if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-                    // Clear any client-side auth state
-                    window.location.href = '/login';
+                if (typeof window !== 'undefined') {
+                    const currentPath = window.location.pathname.replace(/\/$/, '');
+                    if (currentPath !== '/login') {
+                        window.location.href = '/login';
+                    }
                 }
                 return { error: 'Unauthorized - please log in' };
             }
