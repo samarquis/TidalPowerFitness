@@ -1,6 +1,7 @@
 import express from 'express';
 import exerciseController from '../controllers/exerciseController';
 import { authenticate, authorize } from '../middleware/auth';
+import { createExerciseValidation, validate } from '../middleware/validation';
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.get('/body-parts', exerciseController.getBodyParts);
 router.get('/:id', exerciseController.getExercise);
 
 // Trainer/Admin only routes - Exercises
-router.post('/', authenticate, authorize('trainer', 'admin'), exerciseController.createExercise);
-router.put('/:id', authenticate, authorize('trainer', 'admin'), exerciseController.updateExercise);
+router.post('/', authenticate, authorize('trainer', 'admin'), createExerciseValidation, validate, exerciseController.createExercise);
+router.put('/:id', authenticate, authorize('trainer', 'admin'), createExerciseValidation, validate, exerciseController.updateExercise);
 router.delete('/:id', authenticate, authorize('admin'), exerciseController.deleteExercise);
 
 // Admin only routes - Body Focus Areas

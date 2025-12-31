@@ -15,11 +15,15 @@
 #   - {file-path}: File created/found (e.g., "docs/product-brief.md")
 #   - skipped: Optional/conditional workflow that was skipped
 
-generated: "{{generated}}"
+generated: "2025-12-30"
 project: "TidalPowerFitness"
-project_type: "{{project_type}}"
-selected_track: "{{selected_track}}"
-field_type: "{{field_type}}"
-user_description: "A comprehensive fitness management platform for personal trainers and their clients. The platform aims to streamline fitness-related activities through features like class scheduling, workout tracking, package/credit management, and a detailed exercise library. The primary users are trainers, who can manage their schedules and clients, and clients, who can book classes and track their progress."
-workflow_path: "{{workflow_path_file}}"
-workflow_status: "{{workflow_items}}"
+project_type: "Method"
+selected_track: "Greenfield"
+field_type: "Software"
+user_description: "A comprehensive fitness management platform for personal trainers and their clients."
+workflow_path: "_bmad/bmm/workflows"
+workflow_status:
+  prd: "required"
+  architecture: "_bmad-output/planning-artifacts/architecture.md"
+  epics: "_bmad-output/planning-artifacts/epics.md"
+  ux: "optional"

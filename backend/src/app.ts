@@ -27,9 +27,12 @@ import migrationRoutes from './routes/migrations';
 import cartRoutes from './routes/cart';
 import demoUserRoutes from './routes/demoUsers';
 import achievementRoutes from './routes/achievements';
+import notificationRoutes from './routes/notifications';
 import progressRoutes from './routes/progress';
+import leaderboardRoutes from './routes/leaderboard';
 import changelogRoutes from './routes/changelog';
 import adminRoutes from './routes/admin';
+import programRoutes from './routes/programs';
 
 const app = express();
 
@@ -141,6 +144,9 @@ app.use('/api/cart', cartRoutes);
 // Admin routes
 app.use('/api/admin', adminRoutes);
 
+// Program routes
+app.use('/api/programs', programRoutes);
+
 // Import routes (admin only)
 app.use('/api/import', importRoutes);
 
@@ -156,8 +162,14 @@ app.use('/api/setup', setupRoutes);
 // Achievement routes
 app.use('/api/achievements', achievementRoutes);
 
+// Notification routes
+app.use('/api/notifications', notificationRoutes);
+
 // Progress routes
 app.use('/api/progress', progressRoutes);
+
+// Leaderboard routes
+app.use('/api/leaderboard', leaderboardRoutes);
 
 // Changelog routes
 app.use('/api/changelog', changelogRoutes);

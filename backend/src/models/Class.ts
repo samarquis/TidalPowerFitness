@@ -140,6 +140,7 @@ export const deleteClass = async (id: string): Promise<boolean> => {
 
 export default {
     getAllClasses,
+    getPaginatedClasses, // Add this line
     getClassById,
     getClassesByDay,
     getClassesByCategory,

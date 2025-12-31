@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    AreaChart,
+    Area
+} from 'recharts';
 
 interface Metric {
     log_date: string;
@@ -126,58 +137,105 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                 </div>
             )}
 
-            {/* Metrics Overview / Trend (Simplified) */}
+            {/* Metrics Overview / Trend */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="glass p-6 rounded-xl">
-                    <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-4">Weight Trend</h3>
+                <div className="glass-card">
+                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Weight Trend (lbs)</h3>
                     {metrics.length > 0 ? (
-                        <div className="space-y-4">
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-bold text-white">{metrics[0].weight_lbs}</span>
-                                <span className="text-gray-500">lbs</span>
-                                {metrics.length > 1 && (
-                                    <span className={`text-sm ml-2 ${metrics[0].weight_lbs! < metrics[1].weight_lbs! ? 'text-green-400' : 'text-red-400'}`}>
-                                        {metrics[0].weight_lbs! < metrics[1].weight_lbs! ? '↓' : '↑'}
-                                        {Math.abs(metrics[0].weight_lbs! - metrics[1].weight_lbs!).toFixed(1)} lbs
-                                    </span>
-                                )}
-                            </div>
-                            <div className="h-24 flex items-end gap-1">
-                                {metrics.slice(0, 10).reverse().map((m, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex-1 bg-pacific-cyan/20 hover:bg-pacific-cyan/40 rounded-t transition-all cursor-help relative group"
-                                        style={{ height: `${(m.weight_lbs! / Math.max(...metrics.map(x => x.weight_lbs! || 1))) * 100}%` }}
-                                    >
-                                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-[10px] px-2 py-1 rounded whitespace-nowrap z-20">
-                                            {m.weight_lbs} lbs - {new Date(m.log_date).toLocaleDateString()}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="h-64 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                    data={[...metrics].reverse().map(m => ({
+                                        date: new Date(m.log_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                                        weight: m.weight_lbs
+                                    }))}
+                                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#00f2ff" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#00f2ff" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <XAxis 
+                                        dataKey="date" 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                        tick={{ fill: '#666', fontSize: 10 }}
+                                        minTickGap={20}
+                                    />
+                                    <YAxis 
+                                        hide={true} 
+                                        domain={['dataMin - 5', 'dataMax + 5']}
+                                    />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                                        itemStyle={{ color: '#00f2ff' }}
+                                    />
+                                    <Area 
+                                        type="monotone" 
+                                        dataKey="weight" 
+                                        stroke="#00f2ff" 
+                                        strokeWidth={3}
+                                        fillOpacity={1} 
+                                        fill="url(#colorWeight)" 
+                                        animationDuration={1500}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     ) : (
-                        <p className="text-gray-500 italic py-8 text-center text-sm">No weight data logged yet.</p>
+                        <p className="text-gray-500 italic py-20 text-center text-sm">No weight data logged yet.</p>
                     )}
                 </div>
 
-                <div className="glass p-6 rounded-xl">
-                    <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-4">Body Fat %</h3>
-                    {metrics.length > 0 && metrics[0].body_fat_percentage ? (
-                        <div className="space-y-4">
-                            <div className="text-4xl font-bold text-white">{metrics[0].body_fat_percentage}%</div>
-                            <div className="h-24 flex items-end gap-1">
-                                {metrics.slice(0, 10).reverse().map((m, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex-1 bg-blue-500/20 hover:bg-blue-500/40 rounded-t transition-all"
-                                        style={{ height: `${(m.body_fat_percentage || 0) * 4}%` }}
-                                    ></div>
-                                ))}
-                            </div>
+                <div className="glass-card">
+                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Body Fat Trend (%)</h3>
+                    {metrics.length > 0 && metrics.some(m => m.body_fat_percentage) ? (
+                        <div className="h-64 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                    data={[...metrics].reverse().filter(m => m.body_fat_percentage).map(m => ({
+                                        date: new Date(m.log_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                                        fat: m.body_fat_percentage
+                                    }))}
+                                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="colorFat" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <XAxis 
+                                        dataKey="date" 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                        tick={{ fill: '#666', fontSize: 10 }}
+                                        minTickGap={20}
+                                    />
+                                    <YAxis 
+                                        hide={true} 
+                                        domain={['dataMin - 2', 'dataMax + 2']}
+                                    />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                                        itemStyle={{ color: '#3b82f6' }}
+                                    />
+                                    <Area 
+                                        type="monotone" 
+                                        dataKey="fat" 
+                                        stroke="#3b82f6" 
+                                        strokeWidth={3}
+                                        fillOpacity={1} 
+                                        fill="url(#colorFat)" 
+                                        animationDuration={1500}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     ) : (
-                        <p className="text-gray-500 italic py-8 text-center text-sm">No body fat data logged yet.</p>
+                        <p className="text-gray-500 italic py-20 text-center text-sm">No body fat data logged yet.</p>
                     )}
                 </div>
             </div>

@@ -13,8 +13,10 @@ interface Exercise {
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
+    image_url?: string;
     instructions?: string;
     is_active: boolean;
+    secondary_muscle_groups?: Array<{ id: string; name: string }>;
 }
 
 export default function ExerciseDetailPage() {
@@ -93,32 +95,50 @@ export default function ExerciseDetailPage() {
 
                 {/* Exercise Header */}
                 <div className="glass rounded-2xl p-8 mb-8">
-                    <h1 className="text-4xl font-bold mb-4">{exercise.name}</h1>
+                    <div className="flex flex-col md:flex-row gap-8">
+                        {exercise.image_url && (
+                            <div className="w-full md:w-1/3 shrink-0">
+                                <img 
+                                    src={exercise.image_url} 
+                                    alt={exercise.name}
+                                    className="w-full h-auto rounded-xl shadow-2xl border border-white/5"
+                                />
+                            </div>
+                        )}
+                        <div className="flex-1">
+                            <h1 className="text-4xl font-bold mb-4">{exercise.name}</h1>
 
-                    <div className="flex flex-wrap gap-3 mb-6">
-                        {exercise.difficulty_level && (
-                            <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
-                                exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                                    'bg-red-500/20 text-red-400'
-                                }`}>
-                                {exercise.difficulty_level}
-                            </span>
-                        )}
-                        {exercise.muscle_group_name && (
-                            <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-teal-500/20 text-teal-4">
-                                {exercise.muscle_group_name}
-                            </span>
-                        )}
-                        {exercise.workout_type_name && (
-                            <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-blue-500/20 text-blue-400">
-                                {exercise.workout_type_name}
-                            </span>
-                        )}
+                            <div className="flex flex-wrap gap-3 mb-6">
+                                {exercise.difficulty_level && (
+                                    <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
+                                        exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                                            'bg-red-500/20 text-red-400'
+                                        }`}>
+                                        {exercise.difficulty_level}
+                                    </span>
+                                )}
+                                {exercise.muscle_group_name && (
+                                    <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-teal-500/20 text-teal-4">
+                                        Primary: {exercise.muscle_group_name}
+                                    </span>
+                                )}
+                                {exercise.secondary_muscle_groups?.map(mg => (
+                                    <span key={mg.id} className="px-3 py-1 rounded-lg text-sm font-semibold bg-gray-500/20 text-gray-400 border border-white/5">
+                                        Secondary: {mg.name}
+                                    </span>
+                                ))}
+                                {exercise.workout_type_name && (
+                                    <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-blue-500/20 text-blue-400">
+                                        {exercise.workout_type_name}
+                                    </span>
+                                )}
+                            </div>
+
+                            {exercise.description && (
+                                <p className="text-gray-300 text-lg">{exercise.description}</p>
+                            )}
+                        </div>
                     </div>
-
-                    {exercise.description && (
-                        <p className="text-gray-300 text-lg">{exercise.description}</p>
-                    )}
                 </div>
 
                 {/* Video Section */}

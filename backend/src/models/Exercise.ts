@@ -10,11 +10,13 @@ export interface Exercise {
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
+    image_url?: string;
     instructions?: string;
     is_active: boolean;
     created_by?: string;
     created_at: Date;
     updated_at: Date;
+    secondary_muscle_groups?: any[];
 }
 
 export interface CreateExerciseInput {
@@ -22,9 +24,11 @@ export interface CreateExerciseInput {
     description?: string;
     workout_type_id?: string;
     primary_muscle_group?: string;
+    secondary_muscle_group_ids?: string[];
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
+    image_url?: string;
     instructions?: string;
     created_by?: string;
 }
@@ -34,9 +38,11 @@ export interface UpdateExerciseInput {
     description?: string;
     workout_type_id?: string;
     primary_muscle_group?: string;
+    secondary_muscle_group_ids?: string[];
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
+    image_url?: string;
     instructions?: string;
     is_active?: boolean;
 }
@@ -110,7 +116,23 @@ class ExerciseModel {
              WHERE e.id = $1`,
             [id]
         );
-        return result.rows[0] || null;
+
+        if (result.rows.length === 0) return null;
+        
+        const exercise = result.rows[0];
+
+        // Fetch secondary muscle groups
+        const secondaryResult: QueryResult = await query(
+            `SELECT bf.*
+             FROM exercise_secondary_muscles esm
+             JOIN body_focus_areas bf ON esm.body_focus_id = bf.id
+             WHERE esm.exercise_id = $1`,
+            [id]
+        );
+
+        exercise.secondary_muscle_groups = secondaryResult.rows;
+
+        return exercise;
     }
 
     // Create new exercise
@@ -120,33 +142,55 @@ class ExerciseModel {
             description,
             workout_type_id,
             primary_muscle_group,
+            secondary_muscle_group_ids,
             equipment_required,
             difficulty_level,
             video_url,
+            image_url,
             instructions,
             created_by
         } = exerciseData;
 
-        const result: QueryResult = await query(
-            `INSERT INTO exercises (
-                name, description, workout_type_id, primary_muscle_group,
-                equipment_required, difficulty_level, video_url, instructions, created_by
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            RETURNING *`,
-            [name, description, workout_type_id, primary_muscle_group,
-                equipment_required, difficulty_level, video_url, instructions, created_by]
-        );
+        await query('BEGIN');
 
-        return result.rows[0];
+        try {
+            const result: QueryResult = await query(
+                `INSERT INTO exercises (
+                    name, description, workout_type_id, primary_muscle_group,
+                    equipment_required, difficulty_level, video_url, image_url, instructions, created_by
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                RETURNING *`,
+                [name, description, workout_type_id, primary_muscle_group,
+                    equipment_required, difficulty_level, video_url, image_url, instructions, created_by]
+            );
+
+            const exercise = result.rows[0];
+
+            if (secondary_muscle_group_ids && secondary_muscle_group_ids.length > 0) {
+                for (const bfaId of secondary_muscle_group_ids) {
+                    await query(
+                        'INSERT INTO exercise_secondary_muscles (exercise_id, body_focus_id) VALUES ($1, $2)',
+                        [exercise.id, bfaId]
+                    );
+                }
+            }
+
+            await query('COMMIT');
+            return this.getById(exercise.id) as any;
+        } catch (error) {
+            await query('ROLLBACK');
+            throw error;
+        }
     }
 
     // Update exercise
     async update(id: string, exerciseData: UpdateExerciseInput): Promise<Exercise | null> {
+        const { secondary_muscle_group_ids, ...directUpdates } = exerciseData;
         const fields: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
 
-        Object.entries(exerciseData).forEach(([key, value]) => {
+        Object.entries(directUpdates).forEach(([key, value]) => {
             if (value !== undefined) {
                 fields.push(`${key} = $${paramCount}`);
                 values.push(value);
@@ -154,17 +198,38 @@ class ExerciseModel {
             }
         });
 
-        if (fields.length === 0) {
+        await query('BEGIN');
+
+        try {
+            if (fields.length > 0) {
+                values.push(id);
+                await query(
+                    `UPDATE exercises SET ${fields.join(', ')} WHERE id = $${paramCount}`,
+                    values
+                );
+            }
+
+            if (secondary_muscle_group_ids !== undefined) {
+                // Clear old ones
+                await query('DELETE FROM exercise_secondary_muscles WHERE exercise_id = $1', [id]);
+                
+                // Add new ones
+                if (secondary_muscle_group_ids.length > 0) {
+                    for (const bfaId of secondary_muscle_group_ids) {
+                        await query(
+                            'INSERT INTO exercise_secondary_muscles (exercise_id, body_focus_id) VALUES ($1, $2)',
+                            [id, bfaId]
+                        );
+                    }
+                }
+            }
+
+            await query('COMMIT');
             return this.getById(id);
+        } catch (error) {
+            await query('ROLLBACK');
+            throw error;
         }
-
-        values.push(id);
-        const result: QueryResult = await query(
-            `UPDATE exercises SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
-            values
-        );
-
-        return result.rows[0] || null;
     }
 
     // Soft delete (deactivate)

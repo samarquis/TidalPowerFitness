@@ -10,6 +10,7 @@ export interface Package {
     duration_days?: number;
     type: 'one_time' | 'subscription';
     stripe_product_id?: string;
+    square_plan_id?: string;
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
@@ -23,6 +24,7 @@ export interface CreatePackageInput {
     duration_days?: number;
     type: 'one_time' | 'subscription';
     stripe_product_id?: string;
+    square_plan_id?: string;
 }
 
 class PackageModel {
@@ -47,8 +49,8 @@ class PackageModel {
     async create(data: CreatePackageInput): Promise<Package> {
         const result: QueryResult = await query(
             `INSERT INTO packages (
-                name, description, price_cents, credit_count, duration_days, type, stripe_product_id
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                name, description, price_cents, credit_count, duration_days, type, stripe_product_id, square_plan_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *`,
             [
                 data.name,
@@ -57,7 +59,8 @@ class PackageModel {
                 data.credit_count,
                 data.duration_days,
                 data.type,
-                data.stripe_product_id
+                data.stripe_product_id,
+                data.square_plan_id
             ]
         );
         return result.rows[0];

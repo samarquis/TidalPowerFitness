@@ -11,4 +11,7 @@ router.use(authorize('admin'));
 router.get('/settings', adminController.getSettings);
 router.put('/settings/:key', adminController.updateSetting);
 
+// Reports
+router.get('/reports/revenue', adminController.getRevenueReport);
+
 export default router;

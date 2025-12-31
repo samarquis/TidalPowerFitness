@@ -1,10 +1,11 @@
-import { SquareClient, SquareEnvironment } from 'square';
+import { SquareClient, SquareEnvironment, Currency } from 'square';
 import { v4 as uuidv4 } from 'uuid';
 import CreditService from './creditService';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
 import encBase64 from 'crypto-js/enc-base64';
 import PackageModel from '../models/Package';
 import AchievementModel from '../models/Achievement';
+import SubscriptionModel from '../models/Subscription';
 import CartModel from '../models/Cart';
 import pool from '../config/db';
 
@@ -63,6 +64,8 @@ class PaymentService {
                     throw new Error('SQUARE_LOCATION_ID is required for Square payments');
                 }
 
+                const isSubscription = pkg.type === 'subscription';
+                
                 const response = await this.squareClient.checkout.paymentLinks.create({
                     idempotencyKey: uuidv4(),
                     order: {
@@ -70,7 +73,7 @@ class PaymentService {
                         metadata: {
                             userId,
                             packageId,
-                            type: 'package_purchase'
+                            type: isSubscription ? 'subscription_purchase' : 'package_purchase'
                         },
                         lineItems: [
                             {
@@ -85,6 +88,7 @@ class PaymentService {
                     },
                     checkoutOptions: {
                         redirectUrl: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
+                        subscriptionPlanId: isSubscription ? pkg.square_plan_id : undefined
                     }
                 });
 
@@ -139,7 +143,7 @@ class PaymentService {
                     quantity: item.quantity.toString(),
                     basePriceMoney: {
                         amount: BigInt(item.package_price_cents || 0),
-                        currency: 'USD'
+                        currency: 'USD' as Currency
                     },
                     metadata: {
                         packageId: item.package_id
@@ -294,7 +298,7 @@ class PaymentService {
 
                 try {
                     // Fetch the order to get metadata and line items
-                    const orderResponse = await this.squareClient.orders.retrieveOrder({ orderId });
+                    const orderResponse = await this.squareClient.orders.get({ orderId });
                     const order: any = (orderResponse as any).result?.order || (orderResponse as any).order;
 
                     if (!order) {
@@ -318,6 +322,22 @@ class PaymentService {
                             if (pkg) {
                                 await CreditService.assignCreditsForPackage(userId, packageId);
                                 await AchievementModel.checkAndAward(userId, 'purchased_credits', pkg.credit_count);
+                            }
+                        }
+                    } else if (type === 'subscription_purchase') {
+                        const packageId = metadata.packageId;
+                        if (packageId) {
+                            const pkg = await PackageModel.getById(packageId);
+                            if (pkg) {
+                                // Initialize local subscription
+                                await SubscriptionModel.upsert({
+                                    user_id: userId,
+                                    package_id: packageId,
+                                    status: 'active',
+                                    current_period_start: new Date()
+                                    // Note: Real Square subscription ID would come from subscription.created event
+                                });
+                                await CreditService.assignCreditsForPackage(userId, packageId);
                             }
                         }
                     } else if (type === 'cart_purchase') {
@@ -348,6 +368,22 @@ class PaymentService {
                     console.log(`Square webhook: Successfully processed ${type} for userId: ${userId}, orderId: ${orderId}`);
                 } catch (error) {
                     console.error(`Square webhook: Error processing order ${orderId}:`, error);
+                }
+            }
+        } else if (eventType === 'subscription.created' || eventType === 'subscription.updated') {
+            const subscription = body.data.object.subscription;
+            if (subscription) {
+                try {
+                    await SubscriptionModel.upsert({
+                        square_subscription_id: subscription.id,
+                        status: subscription.status.toLowerCase(),
+                        current_period_start: subscription.start_date ? new Date(subscription.start_date) : undefined,
+                        current_period_end: subscription.charged_through_date ? new Date(subscription.charged_through_date) : undefined,
+                        cancel_at_period_end: subscription.canceled_date !== undefined
+                    });
+                    console.log(`Square webhook: Successfully synced subscription ${subscription.id}`);
+                } catch (error) {
+                    console.error(`Square webhook: Error syncing subscription ${subscription.id}:`, error);
                 }
             }
         }

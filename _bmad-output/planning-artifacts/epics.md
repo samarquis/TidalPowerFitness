@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-validate-prerequisites", "step-02-design-epics", "step-03-create-stories"]
+stepsCompleted: ["step-01-validate-prerequisites", "step-02-design-epics", "step-03-create-stories", "step-04-phase-2-planning"]
 inputDocuments: []
 ---
 
@@ -81,6 +81,39 @@ FR11: Epic 4 - User Management & Administrative Tools (User management table on 
 FR12: Epic 3 - Client Data Management for Trainers (View client workout data)
 FR13: Epic 5 - Purchasing & Credit System (Full purchasing process)
 
+### Phase 2 Functional Requirements
+
+FR14: As a trainer, I want to create multi-week workout programs (Routines) that I can assign to clients.
+FR15: As a user, I want to follow a structured program assigned by my trainer and see my progress throughout the program.
+FR16: As a user, I want to see exercise demonstration videos and detailed instructions within the exercise library.
+FR17: As a user, I want to receive email notifications for class bookings, cancellations, and workout reminders.
+FR18: As a user, I want to subscribe to a monthly membership that provides recurring credits or unlimited access.
+FR19: As a user, I want to see how I rank on class leaderboards for specific metrics (e.g., volume, attendance).
+FR20: As an admin, I want to see detailed business analytics, including revenue reports and client retention data.
+
+### FR Coverage Map
+
+FR1: Epic 1 - User Authentication & Onboarding Experience (User redirection after login)
+FR2: Epic 2 - Trainer Dashboard & Class Management (Trainer Dashboard authentication)
+FR3: Epic 2 - Trainer Dashboard & Class Management (Availability Page compilation error)
+FR4: Epic 2 - Trainer Dashboard & Class Management (Availability Page consistent authentication)
+FR5: Epic 4 - User Management & Administrative Tools (User Management UI responsiveness)
+FR6: Epic 4 - User Management & Administrative Tools (Trainer Edit Profile button functionality)
+FR7: Epic 1 - User Authentication & Onboarding Experience (Redirect after workout template creation)
+FR8: Epic 1 - User Authentication & Onboarding Experience (Redirect after workout history view)
+FR9: Epic 2 - Trainer Dashboard & Class Management (View assigned classes)
+FR10: Epic 2 - Trainer Dashboard & Class Management (Create, edit, delete availability slots)
+FR11: Epic 4 - User Management & Administrative Tools (User management table on mobile)
+FR12: Epic 3 - Client Data Management for Trainers (View client workout data)
+FR13: Epic 5 - Purchasing & Credit System (Full purchasing process)
+FR14: Epic 13 - Structured Training Programs (Create program templates)
+FR15: Epic 13 - Structured Training Programs (Follow assigned programs)
+FR16: Epic 14 - Enhanced Exercise Library & Media (Video and instructions)
+FR17: Epic 15 - Communications & Notifications (Email notifications)
+FR18: Epic 16 - Subscription Membership Models (Monthly memberships)
+FR19: Epic 17 - Community & Gamification v2 (Leaderboards)
+FR20: Epic 18 - Advanced Business Analytics (Revenue and retention)
+
 
 ## Epic List
 
@@ -131,6 +164,30 @@ FR13: Epic 5 - Purchasing & Credit System (Full purchasing process)
 ### Epic 12: Luxury Polish & Future Growth
 **Goal:** Elevate the platform from functional to world-class by adding micro-interactions, personalization, and advanced web capabilities.
 **FRs covered:** Growth & Retention
+
+### Epic 13: Structured Training Programs
+**Goal:** Enable trainers to create and assign multi-week workout programs to clients, providing a long-term structured approach to fitness.
+**FRs covered:** FR14, FR15
+
+### Epic 14: Enhanced Exercise Library & Media
+**Goal:** Enrich the exercise library with instructional videos, detailed descriptions, and muscle group mapping to improve user guidance and safety.
+**FRs covered:** FR16
+
+### Epic 15: Communications & Notifications
+**Goal:** Implement a robust communication and notification system to keep users engaged and informed about their schedule and progress.
+**FRs covered:** FR17
+
+### Epic 16: Subscription Membership Models
+**Goal:** Transition to a recurring revenue model by supporting monthly memberships with automatic billing and tiered access.
+**FRs covered:** FR18
+
+### Epic 17: Community & Gamification v2
+**Goal:** Foster a sense of community and healthy competition through leaderboards, social sharing, and collective challenges.
+**FRs covered:** FR19
+
+### Epic 18: Advanced Business Analytics
+**Goal:** Provide administrators and trainers with deep insights into business performance, client engagement, and operational efficiency.
+**FRs covered:** FR20
 
 <!-- Repeat for each epic in epics_list (N = 1, 2, 3...) -->
 
@@ -321,7 +378,7 @@ So that I can maintain accurate trainer data and resolve any issues.
 **Goal:** Implement a robust purchasing process that allows users to acquire packages and credits, enroll in classes, and track their transactional history.
 **FRs covered:** FR13
 
-<h3>Story 5.1: Purchase Package and Receive Credits</h3>
+<h3>[COMPLETED] Story 5.1: Purchase Package and Receive Credits</h3>
 
 As a user,
 I want to be able to purchase a package and receive the corresponding credits,
@@ -335,7 +392,7 @@ So that I can pay for classes and access premium features.
 *   **And** a confirmation of the successful purchase should be displayed.
 *   **And** the backend API endpoint `POST /api/payments/checkout-cart` should successfully process the package purchase.
 
-<h3>Story 5.2: Sign Up for Class Using Credits</h3>
+<h3>[COMPLETED] Story 5.2: Sign Up for Class Using Credits</h3>
 
 As a user,
 I want to be able to sign up for an available class using my accumulated credits,
@@ -350,7 +407,7 @@ So that I can schedule my training and utilize my purchased packages.
 *   **And** the backend API endpoint `POST /api/bookings` should successfully process the class booking.
 *   **And** if I do not have enough credits, I should be informed and prevented from booking.
 
-<h3>Story 5.3: View Class Bookings and Attendance Records</h3>
+<h3>[COMPLETED] Story 5.3: View Class Bookings and Attendance Records</h3>
 
 As a user,
 I want to view a history of my class bookings and attendance records,
@@ -364,7 +421,7 @@ So that I can keep track of my training progress and past activities.
 *   **And** I should be able to view details for each class, including date, time, and trainer.
 *   **And** the backend API endpoint `GET /api/bookings/user/:userId` should successfully retrieve my booking history.
 
-<h3>Story 5.4: Log and View Personal Workout Records</h3>
+<h3>[COMPLETED] Story 5.4: Log and View Personal Workout Records</h3>
 
 As a user,
 I want to view my personal workout records, and have a mechanism (potentially through a trainer) to log my workouts,
@@ -378,7 +435,7 @@ So that I can track my fitness journey and see my progress over time.
 *   **And** there should be a mechanism for workouts to be logged (e.g., by a trainer after a session or self-logged if applicable).
 *   **And** the backend API endpoints `GET /api/workout-sessions` and `POST /api/workout-sessions/:id/log` should support this functionality.
 
-<h3>Story 5.5: Support Multi-Attendee Class Bookings</h3>
+<h3>[COMPLETED] Story 5.5: Support Multi-Attendee Class Bookings</h3>
 
 As a user,
 I want to be able to book a class for multiple attendees (e.g., myself and a friend),
@@ -392,7 +449,7 @@ So that I can easily arrange group sessions.
 *   **And** each attendee should be correctly registered for the class.
 *   **And** the system should ensure there are enough available slots for all attendees.
 
-<h3>Story 5.6: Display User Credits Across Application</h3>
+<h3>[COMPLETED] Story 5.6: Display User Credits Across Application</h3>
 
 As a user,
 I want to see my current credit balance on my profile, dashboard, and class schedule pages,
@@ -485,7 +542,7 @@ So that development is stable and the server remains operational.
 **Goal:** Ensure the application can be reliably deployed, maintained, and operated in production environments, addressing critical migration and error handling needs.
 **FRs covered:** (None directly, but addresses critical infrastructure and operational needs)
 
-<h3>Story 7.1: Verify Production Database Migrations</h3>
+<h3>[COMPLETED] Story 7.1: Verify Production Database Migrations</h3>
 
 As an administrator,
 I want to apply and verify production database migrations (010 and 011) via the admin UI,
@@ -500,7 +557,7 @@ So that `user_roles` table changes are correctly implemented and the application
 *   **And** the application should remain functional after applying the migrations.
    **And** appropriate success or error messages should be displayed after the migration attempt.
 
-<h3>Story 7.2: Global API Error Interceptor (401/403)</h3>
+<h3>[COMPLETED] Story 7.2: Global API Error Interceptor (401/403)</h3>
 
 As a developer,
 I want a global API error interceptor to automatically handle 401 (Unauthorized) and 403 (Forbidden) responses,
@@ -516,7 +573,7 @@ So that user authentication issues are managed gracefully and consistently acros
 *   **Then** the global error interceptor should detect this and display an appropriate message to the user, indicating they do not have permission.
 *   **And** the interceptor should be implemented in both the frontend `apiClient` and potentially the backend for consistent error handling.
 
-<h3>Story 7.3: Implement Centralized Logging</h3>
+<h3>[COMPLETED] Story 7.3: Implement Centralized Logging</h3>
 
 As a developer,
 I want to replace `console.log` with a proper logging solution,
@@ -530,7 +587,7 @@ So that application events and errors can be consistently captured, monitored, a
 *   **And** logs from both frontend and backend should be captured in a consistent manner.
 *   **And** sensitive information should not be logged.
 
-<h3>Story 7.4: Configure Database Connection Pooling</h3>
+<h3>[COMPLETED] Story 7.4: Configure Database Connection Pooling</h3>
 
 As a developer,
 I want to configure database connection pooling for the backend,
@@ -543,7 +600,7 @@ So that database resource usage is optimized, performance is improved, and the a
 *   **And** the connection pool should have configurable parameters (e.g., `max` connections, `min` connections, `idleTimeoutMillis`).
 *   **And** connection errors should be handled gracefully, preventing application crashes.
 
-<h3>Story 7.5: Implement Database Indexes for Performance</h3>
+<h3>[COMPLETED] Story 7.5: Implement Database Indexes for Performance</h3>
 
 As a database administrator,
 I want to add appropriate database indexes to frequently queried columns,
@@ -556,7 +613,7 @@ So that database query performance is significantly improved and bottlenecks are
 *   **And** the impact of new indexes on write operations should be considered.
 *   **And** indexes should be added for columns like user email, booking IDs, and session dates where appropriate.
 
-<h3>Story 7.6: Implement API Request Timeout Handling</h3>
+<h3>[COMPLETED] Story 7.6: Implement API Request Timeout Handling</h3>
 
 As a developer,
 I want to implement request timeout handling for all API requests,
@@ -569,7 +626,7 @@ So that the application remains responsive and avoids hanging indefinitely due t
 *   **And** the user should receive appropriate feedback (e.g., a timeout error message).
 *   **And** the timeout duration should be configurable.
 
-<h3>Story 7.7: Implement Automated Database Backups</h3>
+<h3>[COMPLETED] Story 7.7: Implement Automated Database Backups</h3>
 
 As an administrator,
 I want automated daily database backups to be performed,
@@ -582,7 +639,7 @@ So that data loss is prevented and recovery is possible in case of a system fail
 *   **And** historical backups should be retained for a configured period.
 *   **And** a mechanism for restoring from backups should be documented.
 
-<h3>Story 7.8: Implement Custom Domain Support</h3>
+<h3>[COMPLETED] Story 7.8: Implement Custom Domain Support</h3>
 
 As an administrator,
 I want to be able to configure a custom domain for the deployed application,
@@ -599,7 +656,7 @@ So that users can access the platform via a branded and memorable URL.
 **Goal:** Enhance the application's security posture and data reliability through robust input validation, access controls, and protection against common vulnerabilities.
 **FRs covered:** (None directly, but addresses critical security and data integrity NFRs)
 
-<h3>Story 8.1: Implement Comprehensive Input Validation for API Endpoints</h3>
+<h3>[COMPLETED] Story 8.1: Implement Comprehensive Input Validation for API Endpoints</h3>
 
 As a developer,
 I want to implement robust input validation for all API endpoints,
@@ -613,7 +670,7 @@ So that the application is protected from malicious or malformed data and data i
 *   **And** the validation should cover all necessary endpoints in both the frontend and backend.
 *   **And** common validation libraries (e.g., `express-validator` for Node.js) should be used consistently.
 
-<h3>Story 8.2: Implement API Rate Limiting</h3>
+<h3>[COMPLETED] Story 8.2: Implement API Rate Limiting</h3>
 
 As a developer,
 I want to implement rate limiting on API endpoints,
@@ -626,7 +683,7 @@ So that the application is protected against brute-force attacks and abuse.
 *   **And** the API should respond with an appropriate status code (e.g., 429 Too Many Requests).
 *   **And** rate limits should be configurable.
 
-<h3>Story 8.3: Implement CSRF Protection</h3>
+<h3>[COMPLETED] Story 8.3: Implement CSRF Protection</h3>
 
 As a developer,
 I want to implement Cross-Site Request Forgery (CSRF) protection for state-changing routes,
@@ -639,7 +696,7 @@ So that the application is secured against malicious requests originating from o
 *   **And** requests without a valid CSRF token should be rejected.
 *   **And** the CSRF token should be securely generated and managed (e.g., using `csurf` middleware).
 
-<h3>Story 8.4: Implement Secure Secrets Management</h3>
+<h3>[COMPLETED] Story 8.4: Implement Secure Secrets Management</h3>
 
 As a developer,
 I want to securely manage application secrets (e.g., API keys, database credentials),
@@ -656,7 +713,7 @@ So that sensitive information is protected and not exposed in code or insecure c
 **Goal:** Improve the user experience and application stability by implementing UI/UX enhancements and robust error handling mechanisms in the frontend.
 **FRs covered:** (None directly, but addresses critical UX and stability NFRs)
 
-<h3>Story 9.1: Implement React Error Boundaries</h3>
+<h3>[COMPLETED] Story 9.1: Implement React Error Boundaries</h3>
 
 As a frontend developer,
 I want to implement React Error Boundaries,
@@ -669,7 +726,7 @@ So that UI crashes in components are gracefully handled and the rest of the appl
 *   **And** the error should be logged for debugging purposes (integrating with centralized logging from Story 7.3).
 *   **And** critical application sections should be wrapped in appropriate error boundaries.
 
-<h3>Story 9.2: Implement Loading Skeletons for Improved UX</h3>
+<h3>[COMPLETED] Story 9.2: Implement Loading Skeletons for Improved UX</h3>
 
 As a frontend developer,
 I want to replace generic "Loading..." indicators with loading skeletons,
@@ -682,7 +739,7 @@ So that users have a smoother and more visually appealing experience during data
 *   **And** the skeleton should closely resemble the final loaded content structure.
 *   **And** loading skeletons should be implemented for key data-intensive areas (e.g., dashboards, lists).
 
-<h3>Story 9.3: Implement Optimistic UI Updates</h3>
+<h3>[COMPLETED] Story 9.3: Implement Optimistic UI Updates</h3>
 
 As a frontend developer,
 I want to implement optimistic UI updates for interactive actions (e.g., adding to cart, booking),
@@ -696,7 +753,7 @@ So that user interactions feel instant and more responsive.
 *   **And** if the backend operation fails, the UI should revert to its previous state and display an appropriate error message.
 *   **And** optimistic updates should be applied to critical interactive flows like cart and booking operations.
 
-<h3>Story 9.4: Implement Pagination for List Endpoints</h3>
+<h3>[COMPLETED] Story 9.4: Implement Pagination for List Endpoints</h3>
 
 As a user,
 I want to view paginated results for large lists (e.g., classes, trainers, exercises),
@@ -710,7 +767,7 @@ So that the application loads faster and is easier to navigate.
 *   **And** the frontend UI should display controls to navigate between pages.
 *   **And** pagination should be implemented for `/api/classes`, `/api/trainers`, and `/api/exercises`.
 
-<h3>Story 9.5: Improve Overall Mobile UI and Responsiveness</h3>
+<h3>[COMPLETED] Story 9.5: Improve Overall Mobile UI and Responsiveness</h3>
 
 As a user,
 I want the entire application to be visually appealing and fully functional on mobile devices,
@@ -723,7 +780,7 @@ So that I can use the platform conveniently from my smartphone or tablet.
 *   **And** all interactive components (buttons, forms, navigation) should be easily usable with touch input.
 *   **And** there should be no horizontal scrolling or truncated content on common mobile screen resolutions.
 
-<h3>Story 9.6: Improve Navigation Visibility (Add Classes Link)</h3>
+<h3>[COMPLETED] Story 9.6: Improve Navigation Visibility (Add Classes Link)</h3>
 
 As a user,
 I want to easily find a "Classes" link in the main navigation,
@@ -739,7 +796,7 @@ So that I can quickly access the class schedule.
 **Goal:** Provide trainers and administrators with comprehensive reports and analytics to track class attendance, client progress, and overall business metrics.
 **FRs covered:** (None directly, but addresses reporting needs)
 
-<h3>Story 10.1: Generate Trainer Attendance Reports</h3>
+<h3>[COMPLETED] Story 10.1: Generate Trainer Attendance Reports</h3>
 
 As a trainer,
 I want to generate reports showing attendance for my classes,
@@ -752,7 +809,7 @@ So that I can track client participation and manage my records.
 *   **And** for each class, it should show the list of booked clients and their attendance status (attended/no-show).
 *   **And** I should be able to filter reports by date range.
 
-<h3>Story 10.2: Detailed Workout and Class Analytics</h3>
+<h3>[COMPLETED] Story 10.2: Detailed Workout and Class Analytics</h3>
 
 As a trainer/admin,
 I want to view detailed analytics for workouts and classes,
@@ -769,18 +826,274 @@ So that I can gain insights into performance, popularity, and areas for improvem
 **Goal:** Establish a robust testing strategy and implement various levels of automated tests to ensure the quality, reliability, and functionality of the application.
 **FRs covered:** (None directly, but crucial for software quality)
 
-<h3>Story 11.1: Implement End-to-End Tests for Major User Flows</h3>
+<h3>[COMPLETED] Story 11.1: Implement End-to-End Tests for Major User Flows</h3>
+
+
 
 As a QA engineer,
+
 I want to have end-to-end tests covering all major user flows,
+
 So that critical application functionality is continuously validated and regressions are prevented.
 
+
+
 **Acceptance Criteria:**
+
 *   **Given** The application is deployed in a test environment.
+
 *   **When** The E2E test suite is executed.
+
 *   **Then** all defined major user flows (e.g., user registration, login, class booking, package purchase) should be tested successfully.
+
 *   **And** the tests should simulate real user interactions using a tool like Cypress.
+
 *   **And** the test suite should be integrated into the CI/CD pipeline.
-$content
-$content
-$content
+
+
+
+<h2>Epic 12: Luxury Polish & Future Growth</h2>
+
+**Goal:** Elevate the platform from functional to world-class by adding micro-interactions, personalization, and advanced web capabilities.
+
+**FRs covered:** Growth & Retention
+
+
+
+<h3>[COMPLETED] Story 12.1: Modern UI Transitions and Micro-animations</h3>
+
+As a user,
+I want to experience smooth transitions and micro-animations throughout the application,
+So that the interface feels modern, responsive, and high-quality.
+
+**Acceptance Criteria:**
+*   **Given** I am navigating between pages or interacting with UI elements (buttons, cards).
+*   **When** I trigger an action or transition.
+*   **Then** smooth animations (e.g., using Framer Motion) should guide the transition.
+*   **And** hover and active states should have subtle, polished micro-animations.
+*   **And** loading states should be visually integrated with the transition logic.
+
+<h3>[COMPLETED] Story 12.2: Comprehensive Dark Mode Support</h3>
+
+As a user,
+I want the application to support dark mode,
+So that I can use it comfortably in low-light environments and according to my preference.
+
+**Acceptance Criteria:**
+*   **Given** I am on any page of the application.
+*   **When** I toggle the theme or my system preference is set to dark.
+*   **Then** the entire UI should adapt to a polished dark theme using Tailwind CSS dark mode.
+*   **And** the theme preference should be persisted in local storage or user profile.
+*   **And** all components (charts, tables, forms) must be legible and visually appealing in dark mode.
+
+
+
+<h3>[COMPLETED] Story 12.3: Progressive Web App (PWA) Integration</h3>
+
+As a user,
+I want to be able to install the application on my home screen and use it with offline capabilities,
+So that I can access my schedule and workout logs quickly and reliably.
+
+**Acceptance Criteria:**
+*   **Given** I am accessing the application on a compatible browser/device.
+*   **When** I am prompted or choose to install the app.
+*   **Then** the application should be installable as a PWA.
+*   **And** it should provide a "native-like" experience with a dedicated splash screen and icon.
+*   **And** basic offline functionality (e.g., viewing cached schedule/logs) should be available via service workers.
+
+
+
+<h3>Story 12.4: User Achievement & Gamification System</h3>
+
+
+
+As a user,
+
+I want to earn badges and track my workout streaks,
+
+So that I stay motivated and engaged with my fitness journey.
+
+
+
+**Acceptance Criteria:**
+
+*   **Given** I am performing actions (e.g., attending classes, completing workouts).
+
+*   **When** I hit specific milestones (e.g., "10th Class Attended", "5 Day Streak").
+
+*   **Then** I should be awarded a visual badge or achievement.
+
+*   *And* my current streaks and unlocked achievements should be visible on my dashboard.
+
+*   **And** the backend should track these metrics and trigger achievement events.
+
+
+
+<h3>Story 12.5: Interactive Progress Charts</h3>
+
+
+
+As a user,
+
+I want to view my progress through interactive and dynamic charts,
+
+So that I can better understand my fitness trends and performance over time.
+
+
+
+**Acceptance Criteria:**
+
+*   **Given** I am on my progress dashboard.
+
+*   **When** I view my workout or weight data.
+
+*   **Then** I should see interactive charts (e.g., using Recharts or Chart.js).
+
+*   **And** I should be able to hover over data points for details and filter the data by date range.
+
+*   **And** the charts should be responsive and performant on both desktop and mobile.
+
+<h2>Epic 13: Structured Training Programs</h2>
+**Goal:** Enable trainers to create and assign multi-week workout programs to clients, providing a long-term structured approach to fitness.
+**FRs covered:** FR14, FR15
+
+<h3>Story 13.1: Create Program Templates</h3>
+
+As a trainer,
+I want to create multi-week workout programs by grouping existing workout templates into a schedule,
+So that I can offer structured long-term training to my clients.
+
+**Acceptance Criteria:**
+*   **Given** I am a logged-in trainer.
+*   **When** I create a new "Program".
+*   **Then** I should be able to define the number of weeks.
+*   **And** for each week, I should be able to assign workout templates to specific days (e.g., Week 1, Day 1: "Upper Body Power").
+*   **And** I should be able to save this program as a reusable template.
+
+<h3>Story 13.2: Assign Program to Client</h3>
+
+As a trainer,
+I want to assign a workout program to a specific client,
+So that they can follow the structured plan I've designed for them.
+
+**Acceptance Criteria:**
+*   **Given** I am a logged-in trainer.
+*   **When** I view a client's profile.
+*   **Then** I should see an option to "Assign Program".
+*   **And** I should be able to select from my saved programs.
+*   **And** I should be able to set a start date for the program.
+
+<h3>Story 13.3: View and Follow Assigned Program</h3>
+
+As a client,
+I want to view my current assigned program and see which workout I need to perform today,
+So that I can follow my trainer's plan effectively.
+
+**Acceptance Criteria:**
+*   **Given** I am a logged-in client with an assigned program.
+*   **When** I access my dashboard.
+*   **Then** I should see my current program's progress (e.g., "Week 2, Day 3").
+*   **And** I should be able to start the scheduled workout for today with one click.
+*   **And** I should be able to view the upcoming schedule for the entire program.
+
+<h2>Epic 14: Enhanced Exercise Library & Media</h2>
+**Goal:** Enrich the exercise library with instructional videos, detailed descriptions, and muscle group mapping to improve user guidance and safety.
+**FRs covered:** FR16
+
+<h3>Story 14.1: Exercise Video & Image Support</h3>
+
+As a user,
+I want to see video demonstrations or images for each exercise,
+So that I can ensure I am performing the movements with correct form.
+
+**Acceptance Criteria:**
+*   **Given** I am viewing an exercise detail page or a workout log.
+*   **When** an exercise has a video URL or image associated with it.
+*   **Then** the media should be displayed clearly within the interface.
+*   **And** video players should be embedded (e.g., YouTube/Vimeo) or use standard HTML5 video.
+
+<h3>Story 14.2: Muscle Group Mapping & Visuals</h3>
+
+As a user,
+I want to see which muscle groups are targeted by an exercise,
+So that I can understand the impact of my workout.
+
+**Acceptance Criteria:**
+*   **Given** I am viewing an exercise.
+*   **Then** I should see a list of primary and secondary muscle groups.
+*   **And** ideally, a visual diagram (e.g., anatomical map) should highlight the targeted areas.
+
+<h2>Epic 15: Communications & Notifications</h2>
+**Goal:** Implement a robust communication and notification system to keep users engaged and informed about their schedule and progress.
+**FRs covered:** FR17
+
+<h3>Story 15.1: Backend Notification Infrastructure</h3>
+
+As a developer,
+I want a centralized notification service on the backend,
+So that the system can reliably send emails, push notifications, or in-app alerts.
+
+**Acceptance Criteria:**
+*   **Given** a system event occurs (e.g., booking confirmed).
+*   **Then** the notification service should trigger the appropriate delivery mechanism.
+*   **And** notification templates should be used for consistent messaging.
+*   **And** user notification preferences should be respected.
+
+<h3>Story 15.2: Email Notifications for Bookings</h3>
+
+As a user,
+I want to receive an email confirmation when I book or cancel a class,
+So that I have a record of my schedule outside of the application.
+
+**Acceptance Criteria:**
+*   **Given** I successfully book a class.
+*   **Then** I should receive an email with the class details, time, and location/link.
+*   **And** when a class is cancelled (by me or the trainer), I should receive a cancellation notice.
+
+<h2>Epic 16: Subscription Membership Models</h2>
+**Goal:** Transition to a recurring revenue model by supporting monthly memberships with automatic billing and tiered access.
+**FRs covered:** FR18
+
+<h3>Story 16.1: Recurring Membership Integration (Square)</h3>
+
+As an admin,
+I want to offer monthly subscription plans that bill users automatically,
+So that the business has predictable recurring revenue.
+
+**Acceptance Criteria:**
+*   **Given** a user chooses a "Monthly Membership".
+*   **When** they complete the checkout.
+*   **Then** a recurring subscription should be created in Square.
+*   **And** the user's account should be updated with the membership status.
+*   **And** credits should be automatically replenished or "unlimited" access granted based on the tier.
+
+<h2>Epic 17: Community & Gamification v2</h2>
+**Goal:** Foster a sense of community and healthy competition through leaderboards, social sharing, and collective challenges.
+**FRs covered:** FR19
+
+<h3>Story 17.1: Class & Global Leaderboards</h3>
+
+As a user,
+I want to see how I rank against others in my classes or globally,
+So that I am motivated by friendly competition.
+
+**Acceptance Criteria:**
+*   **Given** I am on a class page or dashboard.
+*   **Then** I should see a leaderboard for metrics like "Total Workouts this Month" or "Volume Leader".
+*   **And** users should have the option to opt-out of public leaderboards for privacy.
+
+<h2>Epic 18: Advanced Business Analytics</h2>
+**Goal:** Provide administrators and trainers with deep insights into business performance, client engagement, and operational efficiency.
+**FRs covered:** FR20
+
+<h3>Story 18.1: Admin Revenue Dashboard</h3>
+
+As an admin,
+I want to view a dashboard showing revenue trends, package popularity, and projected earnings,
+So that I can make informed business decisions.
+
+**Acceptance Criteria:**
+*   **Given** I am a logged-in admin.
+*   **Then** I should see charts showing revenue over time.
+*   **And** I should see a breakdown of sales by package type and membership.
+*   **And** the data should be filterable by date range.

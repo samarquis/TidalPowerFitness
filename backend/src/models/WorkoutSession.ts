@@ -8,6 +8,7 @@ export interface WorkoutSession {
     trainer_id: string;
     class_id?: string;
     template_id?: string;
+    program_assignment_id?: string;
     workout_type_id?: string;
     session_date: Date;
     start_time?: Date;
@@ -23,6 +24,7 @@ export interface CreateSessionInput {
     trainer_id: string;
     class_id?: string;
     template_id?: string;
+    program_assignment_id?: string;
     workout_type_id?: string;
     session_date: Date;
     start_time?: Date;
@@ -231,14 +233,15 @@ class WorkoutSessionModel {
             // Create session
             const sessionResult: QueryResult = await query(
                 `INSERT INTO workout_sessions (
-                    trainer_id, class_id, template_id, workout_type_id,
+                    trainer_id, class_id, template_id, program_assignment_id, workout_type_id,
                     session_date, start_time, notes
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 RETURNING *`,
                 [
                     sessionData.trainer_id,
                     sessionData.class_id,
                     sessionData.template_id,
+                    sessionData.program_assignment_id,
                     sessionData.workout_type_id,
                     sessionData.session_date,
                     sessionData.start_time,
@@ -454,6 +457,19 @@ class WorkoutSessionModel {
         `;
         const result: QueryResult = await query(sql, [clientId]);
         return result.rows[0];
+    }
+
+    // Mark attendance for a session participant
+    async markAttendance(sessionId: string, clientId: string, attended: boolean): Promise<any | null> {
+        const result: QueryResult = await query(
+            `UPDATE session_participants 
+             SET attended = $3, updated_at = NOW() 
+             WHERE session_id = $1 AND client_id = $2
+             RETURNING *`,
+            [sessionId, clientId, attended]
+        );
+
+        return result.rows[0] || null;
     }
 }
 

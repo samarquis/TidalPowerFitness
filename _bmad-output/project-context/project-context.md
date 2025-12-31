@@ -42,6 +42,15 @@ _This file contains critical rules and patterns that AI agents must follow when 
 *   Ensure efficient data fetching, robust error handling, and well-defined API contracts to support smooth frontend experiences.
 *   Align development practices with UX principles.
 
+## Phase 2 Strategic Goals (Engagement & Scaling)
+
+*   **Structured Programming:** Move beyond individual workouts to multi-week scheduled programs (Routines).
+*   **Media-Rich Library:** Integrated video demonstrations and anatomical mapping for exercises.
+*   **Subscription Ecosystem:** Recurring monthly memberships via Square Subscriptions API.
+*   **Proactive Engagement:** Centralized notification system for bookings and reminders.
+*   **Community & Competition:** Leaderboards and social achievement sharing to drive retention.
+*   **Business Intelligence:** Advanced analytics for revenue, retention, and operational capacity.
+
 ## Critical Implementation Rules
 
 ### Language-Specific Rules (TypeScript/JavaScript)

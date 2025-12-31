@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 interface Package {
     id: string;
@@ -52,7 +53,14 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
     const isSubscription = pkg.type === 'subscription';
 
     return (
-        <div className="glass-card flex flex-col h-full group">
+        <motion.div 
+            className="glass-card flex flex-col h-full group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
             <div className="mb-4">
                 <h3 className="text-xl font-bold text-white group-hover:text-turquoise-surf transition-colors">{pkg.name}</h3>
                 <div className="mt-2 flex items-baseline text-white">
@@ -93,7 +101,7 @@ const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
                     'Add to Cart'
                 )}
             </button>
-        </div>
+        </motion.div>
     );
 };
 

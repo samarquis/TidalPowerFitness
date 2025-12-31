@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import pool from '../config/db';
 import UserCreditModel from '../models/UserCredit';
 import AchievementModel from '../models/Achievement';
+import NotificationService, { NotificationType, DeliveryMethod } from '../services/NotificationService';
 import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class BookingController {
@@ -18,6 +19,13 @@ class BookingController {
             if (attendee_count < 1) {
                 return res.status(400).json({ error: 'Attendee count must be at least 1' });
             }
+
+            // Fetch class details for the notification later
+            const classResult = await pool.query('SELECT name, start_time FROM classes WHERE id = $1', [class_id]);
+            if (classResult.rows.length === 0) {
+                return res.status(404).json({ error: 'Class not found' });
+            }
+            const classDetails = classResult.rows[0];
 
             // 1. Check if user has sufficient credits
             const credits = await UserCreditModel.getUserCredits(userId);
@@ -62,7 +70,20 @@ class BookingController {
                 [class_id, userId, attendee_count, attendee_count, targetDate]
             );
 
-            // 5. Check for Achievements (Bookings Count)
+            // 5. Send Notification
+            try {
+                await NotificationService.notify({
+                    user_id: userId,
+                    type: NotificationType.BOOKING_CONFIRMATION,
+                    title: 'Booking Confirmed!',
+                    message: `Your booking for ${classDetails.name} on ${targetDate} at ${classDetails.start_time} has been confirmed. ${attendee_count > 1 ? `Attendees: ${attendee_count}` : ''}`,
+                    delivery_method: DeliveryMethod.BOTH
+                });
+            } catch (notifyError) {
+                console.error('Failed to send booking notification:', notifyError);
+            }
+
+            // 6. Check for Achievements (Bookings Count)
             try {
                 const countResult = await pool.query(
                     `SELECT SUM(attendee_count) as count FROM class_participants 
@@ -165,6 +186,26 @@ class BookingController {
                  WHERE id = $1`,
                 [id]
             );
+
+            // Fetch class details for notification
+            const classResult = await pool.query(
+                'SELECT c.name FROM classes c JOIN class_participants cp ON c.id = cp.class_id WHERE cp.id = $1',
+                [id]
+            );
+            const className = classResult.rows[0]?.name || 'a class';
+
+            // Send Notification
+            try {
+                await NotificationService.notify({
+                    user_id: userId,
+                    type: NotificationType.BOOKING_CANCELLATION,
+                    title: 'Booking Cancelled',
+                    message: `Your booking for ${className} on ${booking.target_date} has been cancelled. ${booking.credits_used} credit(s) have been refunded to your account.`,
+                    delivery_method: DeliveryMethod.BOTH
+                });
+            } catch (notifyError) {
+                console.error('Failed to send cancellation notification:', notifyError);
+            }
 
             // 5. Refund credit to user
             await UserCreditModel.addCredits(

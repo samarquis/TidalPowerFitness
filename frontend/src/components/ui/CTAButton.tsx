@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+
+const MotionLink = motion(Link);
 
 interface CTAButtonProps {
     href: string;
@@ -17,11 +20,12 @@ export default function CTAButton({
     icon,
     className = ''
 }: CTAButtonProps) {
-    const baseStyles = 'inline-flex items-center justify-center gap-2 transition-all active:scale-95';
+    // Removed active:scale-95 from baseStyles as Framer Motion handles it
+    const baseStyles = 'inline-flex items-center justify-center gap-2 transition-colors';
 
     const variantStyles = {
-        primary: 'btn-primary',
-        secondary: 'btn-secondary',
+        primary: 'btn-primary hover:!transform-none', // Disable CSS transform to let Motion handle it
+        secondary: 'btn-secondary hover:!transform-none',
         outline: 'border-2 border-pacific-cyan text-turquoise-surf hover:bg-pacific-cyan/10 rounded-lg font-bold'
     };
 
@@ -32,12 +36,15 @@ export default function CTAButton({
     };
 
     return (
-        <Link
+        <MotionLink
             href={href}
             className={`${baseStyles} ${variantStyles[variant]} ${variant !== 'outline' ? '' : sizeStyles[size]} ${className}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
             {children}
             {icon && <span>{icon}</span>}
-        </Link>
+        </MotionLink>
     );
 }

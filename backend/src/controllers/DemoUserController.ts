@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { query } from '../config/db';
 import bcrypt from 'bcrypt';
 import { AuthenticatedRequest } from '../types/auth';

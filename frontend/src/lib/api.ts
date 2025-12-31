@@ -297,6 +297,37 @@ class ApiClient {
         });
     }
 
+    // Program endpoints
+    async getPublicPrograms() {
+        return this.request<any[]>('/programs/public', { method: 'GET' });
+    }
+
+    async getPrograms(includePublic: boolean = true) {
+        return this.request<any[]>(`/programs?include_public=${includePublic}`, { method: 'GET' });
+    }
+
+    async getProgram(id: string) {
+        return this.request<any>(`/programs/${id}`, { method: 'GET' });
+    }
+
+    async createProgram(data: any) {
+        return this.request<any>('/programs', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async assignProgram(data: { client_id: string; program_id: string; start_date?: string; notes?: string }) {
+        return this.request<any>('/programs/assign', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async getMyActiveProgram() {
+        return this.request<any>('/programs/my-active', { method: 'GET' });
+    }
+
     // Workout Session endpoints
     async getWorkoutSessions() {
         return this.request<any>('/workout-sessions', { method: 'GET' });
@@ -364,6 +395,15 @@ class ApiClient {
         return this.request<any[]>(endpoint, { method: 'GET' });
     }
 
+    // Leaderboard endpoints
+    async getVolumeLeaderboard(period: string = 'month') {
+        return this.request<any[]>(`/leaderboard/volume?period=${period}`, { method: 'GET' });
+    }
+
+    async getAttendanceLeaderboard(period: string = 'month') {
+        return this.request<any[]>(`/leaderboard/attendance?period=${period}`, { method: 'GET' });
+    }
+
     // Package endpoints
     async getPackages() {
         return this.request<any>('/packages', { method: 'GET' });
@@ -376,6 +416,10 @@ class ApiClient {
 
     async runMigrations() {
         return this.request<any>('/admin/migrate', { method: 'POST' });
+    }
+
+    async getRevenueReport() {
+        return this.request<any>('/admin/reports/revenue', { method: 'GET' });
     }
 
     // Cart endpoints
@@ -476,6 +520,15 @@ class ApiClient {
 
     async getAllAchievements() {
         return this.request<any>('/achievements', { method: 'GET' });
+    }
+
+    // Notification endpoints
+    async getUnreadNotifications() {
+        return this.request<any[]>('/notifications/unread', { method: 'GET' });
+    }
+
+    async markNotificationRead(id: string) {
+        return this.request<any>(`/notifications/${id}/read`, { method: 'POST' });
     }
 
     // Changelog endpoints

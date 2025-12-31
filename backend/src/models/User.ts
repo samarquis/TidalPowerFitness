@@ -12,6 +12,9 @@ export interface User {
     roles: string[];
     is_active: boolean;
     is_demo_mode_enabled: boolean;
+    current_streak: number;
+    longest_streak: number;
+    last_workout_date?: Date;
     created_at: Date;
     updated_at: Date;
 }

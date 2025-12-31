@@ -1,7 +1,7 @@
-const request = require('supertest');
-const app = require('../../app'); // Import the configured app
-const { query, closePool } = require('../../config/db');
-const { hashPassword } = require('../../utils/password');
+import request from 'supertest';
+import app from '../../app'; // Import the configured app
+import { query, closePool } from '../../config/db';
+import { hashPassword } from '../../utils/password';
 
 // Mock the db module
 jest.mock('../../config/db');
@@ -38,6 +38,7 @@ describe('Auth Endpoints', () => {
 
             const res = await request(app)
                 .post('/api/auth/login')
+                .set('X-TPF-Request', 'true')
                 .send({
                     email: testUser.email,
                     password: 'testpassword123',
@@ -66,6 +67,7 @@ describe('Auth Endpoints', () => {
 
             const res = await request(app)
                 .post('/api/auth/login')
+                .set('X-TPF-Request', 'true')
                 .send({
                     email: testUser.email,
                     password: 'wrongpassword',
@@ -81,6 +83,7 @@ describe('Auth Endpoints', () => {
 
             const res = await request(app)
                 .post('/api/auth/login')
+                .set('X-TPF-Request', 'true')
                 .send({
                     email: 'nonexistent@example.com',
                     password: 'somepassword',
@@ -93,12 +96,13 @@ describe('Auth Endpoints', () => {
         it('should reject login with a missing email', async () => {
             const res = await request(app)
                 .post('/api/auth/login')
+                .set('X-TPF-Request', 'true')
                 .send({
                     password: 'testpassword123',
                 });
             expect(res.statusCode).toEqual(400);
-            expect(res.body).toHaveProperty('error', 'Validation failed');
-            expect(res.body).toHaveProperty('details');
+            expect(res.body).toHaveProperty('errors');
+            expect(res.body.errors[0]).toHaveProperty('email');
         });
     });
 });

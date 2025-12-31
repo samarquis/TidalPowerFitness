@@ -221,6 +221,12 @@ export default function TrainerDashboardPage() {
                     >
                         📋 Assign Workouts
                     </Link>
+                    <Link
+                        href="/trainer/programs"
+                        className="btn-secondary"
+                    >
+                        🗓️ Workout Programs
+                    </Link>
                 </div>
 
                 {/* Today's Sessions */}

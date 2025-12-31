@@ -63,6 +63,7 @@ This is a monorepo with three main components:
 
 ### Authentication & Authorization
 - **JWT-based authentication** using HttpOnly cookies.
+- **CSRF Protection**: All state-changing requests (POST, PUT, DELETE, PATCH) MUST include the header `X-TPF-Request: true`.
 - **CORS Policy**: The backend has a dynamic CORS policy to handle requests from various origins, including localhost, the deployed frontend, and Vercel preview deployments.
 - **Cookie Settings**: Cookies are configured to be secure in production (HTTPS) and lenient in local development (HTTP), allowing for seamless authentication in both environments.
 - Backend middleware: `authenticate()` verifies the JWT from the cookie, and `authorize(...roles)` checks for role-based permissions.
@@ -83,14 +84,15 @@ This is a monorepo with three main components:
   - Web-based migration runner at `/admin/migrations` for Render free tier compatibility
   - Run via backend API: `POST /api/admin/migrate` or `npm run migrate:all`
 
-**Core entities:**
-- `User` - Multi-role user system (client/trainer/admin)
-- `TrainerProfile`, `TrainerAvailability` - Trainer-specific data and scheduling
-- `Class` - Scheduled fitness classes with multi-day support
-- `Package`, `UserCredit` - Membership packages and credit system (replaces Acuity)
-- `Exercise`, `BodyPart` - Exercise library with hierarchical categorization
-- `WorkoutTemplate`, `WorkoutSession` - Workout tracking system
-- `Cart` - Shopping cart for package purchases
+- TrainerProfile, TrainerAvailability - Trainer-specific data and scheduling
+- Class - Scheduled fitness classes with multi-day support
+- Package, UserCredit - Membership packages and credit system (replaces Acuity)
+- Program, ProgramAssignment - Multi-week training routines (Phase 2)
+- Subscription - Recurring memberships via Square (Phase 2)
+- Notification - System alerts and email logging (Phase 2)
+- Exercise, BodyPart - Exercise library with hierarchical categorization
+- WorkoutTemplate, WorkoutSession - Workout tracking system
+- Cart - Shopping cart for package purchases
 
 ### API Design Patterns
 All backend routes follow REST conventions:
@@ -102,10 +104,14 @@ All backend routes follow REST conventions:
 /api/packages      - Membership packages
 /api/cart          - Shopping cart
 /api/exercises     - Exercise library
+/api/programs      - Multi-week training programs (Phase 2)
+/api/notifications - User alerts and emails (Phase 2)
+/api/leaderboard   - Community rankings (Phase 2)
 /api/workout-templates  - Workout templates
 /api/workout-sessions   - Active/completed workouts
 /api/availability  - Trainer availability
 /api/admin/migrate - Database migrations (admin only)
+/api/admin/reports/revenue - Business analytics (Phase 2)
 ```
 
 **Route structure:**

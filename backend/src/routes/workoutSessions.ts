@@ -10,18 +10,17 @@ router.use(authenticate);
 router.get('/client/:clientId/history', workoutSessionController.getClientHistory);
 router.get('/client/:clientId/stats', workoutSessionController.getClientStats);
 
+// Shared routes (authenticated)
+router.put('/:id', workoutSessionController.updateSession);
+
 // Trainer/Admin only routes
 router.use(authorize('trainer', 'admin'));
-
-router.get('/', workoutSessionController.getSessions);
-router.get('/:id', workoutSessionController.getSession);
-router.get('/:id/logs', workoutSessionController.getSessionLogs);
-router.post('/', workoutSessionController.createSession);
-router.put('/:id', workoutSessionController.updateSession);
-router.post('/:id/publish', workoutSessionController.publishSession);
 
 // Exercise logging
 router.post('/log-exercise', workoutSessionController.logExercise);
 router.post('/log-exercises/bulk', workoutSessionController.bulkLogExercises);
+
+// Attendance marking
+router.post('/:sessionId/attendance/:clientId', workoutSessionController.markAttendance);
 
 export default router;

@@ -1,0 +1,16 @@
+{
+  "name": "Tidal Power Fitness",
+  "short_name": "Tidal Power",
+  "description": "Elite personal training and group classes tailored to your goals.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#114b61",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

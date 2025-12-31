@@ -16,6 +16,7 @@ export interface Package {
 
 export default function PackagesPage() {
     const [packages, setPackages] = useState<Package[]>([]);
+    const [view, setView] = useState<'one_time' | 'subscription'>('one_time');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,33 +41,53 @@ export default function PackagesPage() {
         fetchPackages();
     }, []);
 
+    const filteredPackages = packages.filter(pkg => pkg.type === view);
+
     return (
         <div className="min-h-screen bg-black page-container">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        Class <span className="text-gradient">Tokens</span>
+                        Membership & <span className="text-gradient">Tokens</span>
                     </h1>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Choose the token package that works for you. All tokens can be used for any class.
+                        Choose the plan that works for you. Monthly memberships offer the best value.
                     </p>
+                </div>
+
+                {/* View Toggle */}
+                <div className="flex justify-center mb-12">
+                    <div className="bg-white/5 p-1 rounded-2xl border border-white/10 flex">
+                        <button 
+                            onClick={() => setView('subscription')}
+                            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${view === 'subscription' ? 'bg-turquoise-surf text-black shadow-lg shadow-turquoise-surf/20' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            Monthly Subscriptions
+                        </button>
+                        <button 
+                            onClick={() => setView('one_time')}
+                            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${view === 'one_time' ? 'bg-turquoise-surf text-black shadow-lg shadow-turquoise-surf/20' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            One-time Tokens
+                        </button>
+                    </div>
                 </div>
 
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     </div>
                 ) : error ? (
                     <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg text-center max-w-2xl mx-auto">
                         {error}
                     </div>
-                ) : packages.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12">
-                        No packages available at the moment. Please check back later.
+                ) : filteredPackages.length === 0 ? (
+                    <div className="text-center text-gray-400 py-12 glass-card border-dashed">
+                        No {view === 'subscription' ? 'membership plans' : 'token packages'} available at the moment.
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {packages.map((pkg) => (
+                        {filteredPackages.map((pkg) => (
                             <PackageCard key={pkg.id} pkg={pkg} />
                         ))}
                     </div>

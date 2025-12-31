@@ -416,8 +416,9 @@ export default function AdminExercisesPage() {
 
                         {/* Body Part filter */}
                         <select
-                            }}
-                        className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                            value={bodyPartFilter}
+                            onChange={(e) => setBodyPartFilter(e.target.value)}
+                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
                         >
                         <option value="all">All Body Parts</option>
                         {bodyParts.map((part) => (

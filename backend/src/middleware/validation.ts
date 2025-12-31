@@ -82,9 +82,123 @@ export const updateCartItemValidation = [
 ];
 
 // Workout Template Validations
+
 export const createTemplateValidation = [
+
     body('name').notEmpty().withMessage('Template name is required').trim().escape(),
+
     body('exercises').isArray({ min: 1 }).withMessage('At least one exercise is required'),
+
     body('exercises.*.exercise_id').isUUID().withMessage('Invalid exercise ID'),
+
     body('exercises.*.order_in_template').isInt({ min: 1 }).withMessage('Invalid exercise order'),
+
 ];
+
+
+
+// Program Validations
+
+
+
+export const createProgramValidation = [
+
+
+
+    body('name').notEmpty().withMessage('Program name is required').trim().escape(),
+
+
+
+    body('total_weeks').optional().isInt({ min: 1, max: 52 }).withMessage('Duration must be between 1 and 52 weeks'),
+
+
+
+    body('templates').isArray({ min: 1 }).withMessage('At least one workout template is required'),
+
+
+
+    body('templates.*.template_id').isUUID().withMessage('Invalid template ID'),
+
+
+
+    body('templates.*.week_number').isInt({ min: 1 }).withMessage('Invalid week number'),
+
+
+
+    body('templates.*.day_number').isInt({ min: 1, max: 7 }).withMessage('Day number must be between 1 and 7'),
+
+
+
+];
+
+
+
+
+
+
+
+export const assignProgramValidation = [
+
+
+
+    body('client_id').isUUID().withMessage('Invalid client ID'),
+
+
+
+    body('program_id').isUUID().withMessage('Invalid program ID'),
+
+
+
+    body('start_date').optional().isDate().withMessage('Invalid date format (YYYY-MM-DD)'),
+
+
+
+];
+
+
+
+
+
+
+
+// Exercise Validations
+
+
+
+export const createExerciseValidation = [
+
+
+
+    body('name').notEmpty().withMessage('Exercise name is required').trim().escape(),
+
+
+
+    body('workout_type_id').optional().isUUID().withMessage('Invalid workout type ID'),
+
+
+
+    body('primary_muscle_group').optional().isUUID().withMessage('Invalid primary muscle group ID'),
+
+
+
+    body('secondary_muscle_group_ids').optional().isArray().withMessage('Secondary muscle groups must be an array'),
+
+
+
+    body('secondary_muscle_group_ids.*').isUUID().withMessage('Invalid muscle group ID'),
+
+
+
+    body('video_url').optional().isURL().withMessage('Invalid video URL'),
+
+
+
+    body('image_url').optional().isURL().withMessage('Invalid image URL'),
+
+
+
+];
+
+
+
+

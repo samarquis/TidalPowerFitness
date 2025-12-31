@@ -8,7 +8,7 @@ import encBase64 from 'crypto-js/enc-base64';
 
 // Mock SquareClient and its methods
 const mockCreatePaymentLink = jest.fn();
-const mockRetrieveOrder = jest.fn();
+const mockGetOrder = jest.fn();
 
 jest.mock('square', () => {
     return {
@@ -19,7 +19,7 @@ jest.mock('square', () => {
                 },
             },
             orders: {
-                retrieveOrder: mockRetrieveOrder,
+                get: mockGetOrder,
             },
         })),
         SquareEnvironment: {
@@ -230,7 +230,7 @@ describe('PaymentService (Square Provider)', () => {
             (CreditService.assignCreditsForPackage as jest.Mock).mockResolvedValue({ credits_added: MOCK_PACKAGE.credit_count });
             (AchievementModel.checkAndAward as jest.Mock).mockResolvedValue(undefined);
             
-            mockRetrieveOrder.mockResolvedValue({
+            mockGetOrder.mockResolvedValue({
                 result: {
                     order: {
                         metadata: {
@@ -246,7 +246,7 @@ describe('PaymentService (Square Provider)', () => {
         it('should successfully process a COMPLETED payment webhook with valid signature', async () => {
             await paymentService.handleSquareWebhook(MOCK_RAW_BODY, validSignature, MOCK_WEBHOOK_URL);
 
-            expect(mockRetrieveOrder).toHaveBeenCalledWith({ orderId: 'order-xyz' });
+            expect(mockGetOrder).toHaveBeenCalledWith({ orderId: 'order-xyz' });
             expect(PackageModel.getById).toHaveBeenCalledWith(MOCK_PACKAGE_ID);
             expect(CreditService.assignCreditsForPackage).toHaveBeenCalledWith(MOCK_USER_ID, MOCK_PACKAGE_ID);
             expect(AchievementModel.checkAndAward).toHaveBeenCalledWith(MOCK_USER_ID, 'purchased_credits', MOCK_PACKAGE.credit_count);
@@ -267,7 +267,7 @@ describe('PaymentService (Square Provider)', () => {
                     }
                 ]
             };
-            mockRetrieveOrder.mockResolvedValue({
+            mockGetOrder.mockResolvedValue({
                 result: {
                     order: MOCK_CART_ORDER
                 }

@@ -29,6 +29,7 @@ function ActiveWorkoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const templateId = searchParams ? searchParams.get('template') : null;
+    const assignmentId = searchParams ? searchParams.get('assignment') : null;
 
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -74,8 +75,9 @@ function ActiveWorkoutContent() {
     const startWorkout = async () => {
         try {
             const createResponse = await apiClient.createWorkoutSession({
-                trainer_id: user?.id,
+                trainer_id: user?.id, // Note: This might need refinement for clients
                 template_id: templateId,
+                program_assignment_id: assignmentId,
                 session_date: new Date(),
                 start_time: new Date()
             });

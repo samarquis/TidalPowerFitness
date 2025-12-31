@@ -23,6 +23,13 @@ interface ClientInfo {
     email: string;
 }
 
+interface ActiveProgram {
+    id: string;
+    program_name: string;
+    current_week: number;
+    total_weeks: number;
+}
+
 export default function ClientWorkoutsPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
@@ -31,6 +38,7 @@ export default function ClientWorkoutsPage() {
 
     const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
     const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
+    const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -44,6 +52,7 @@ export default function ClientWorkoutsPage() {
 
         if (isAuthenticated && clientId) {
             fetchClientWorkouts();
+            fetchActiveProgram();
         } else if (!isAuthenticated) {
             router.push(`/login?redirect=/trainer/clients/${clientId}`);
         }
@@ -72,6 +81,20 @@ export default function ClientWorkoutsPage() {
             setError('Failed to load client workouts');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchActiveProgram = async () => {
+        try {
+            // Note: We might need a generic getActiveProgram(clientId) endpoint
+            // For now, let's use the current user endpoint if they are looking at themselves
+            // OR we'll implement a new admin/trainer endpoint.
+            const response = await (apiClient as any).request(`/programs/active/${clientId}`);
+            if (response.data) {
+                setActiveProgram(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching client program:', error);
         }
     };
 
@@ -122,7 +145,24 @@ export default function ClientWorkoutsPage() {
                                         {clientInfo.first_name} {clientInfo.last_name}
                                     </h1>
                                     <p className="text-gray-400">{clientInfo.email}</p>
-                                    <p className="text-turquoise-surf mt-1">{workouts.length} workout sessions</p>
+                                    
+                                    <div className="mt-4 flex flex-wrap gap-4 items-center">
+                                        <p className="text-turquoise-surf">{workouts.length} workout sessions</p>
+                                        
+                                        {activeProgram ? (
+                                            <div className="flex items-center gap-3 px-3 py-1 bg-turquoise-surf/10 border border-turquoise-surf/20 rounded-full">
+                                                <span className="text-[10px] font-bold text-turquoise-surf uppercase tracking-widest">Active: {activeProgram.program_name}</span>
+                                                <span className="text-[10px] text-gray-400">Week {activeProgram.current_week}/{activeProgram.total_weeks}</span>
+                                            </div>
+                                        ) : (
+                                            <Link 
+                                                href={`/trainer/programs?client=${clientId}`}
+                                                className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors border border-white/10 px-3 py-1 rounded-full bg-white/5"
+                                            >
+                                                + Assign Program
+                                            </Link>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

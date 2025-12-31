@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface TrainerCardProps {
     trainer: {
@@ -17,7 +18,14 @@ interface TrainerCardProps {
 
 export default function TrainerCard({ trainer }: TrainerCardProps) {
     return (
-        <div className="glass rounded-2xl overflow-hidden hover:bg-white/10 transition-all transform hover:scale-105 group">
+        <motion.div
+            className="glass rounded-2xl overflow-hidden hover:bg-white/10 group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
             {/* Trainer Image */}
             <div className="relative h-80 bg-gradient-to-br from-pacific-cyan to-turquoise-surf overflow-hidden">
                 {trainer.profile_image_url ? (
@@ -114,6 +122,6 @@ export default function TrainerCard({ trainer }: TrainerCardProps) {
                     </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

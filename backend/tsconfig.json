@@ -30,6 +30,7 @@
     }
   },
   "exclude": [
+    "dist",
     "**/__tests__",
     "**/*.test.ts",
     "scripts/**/*"

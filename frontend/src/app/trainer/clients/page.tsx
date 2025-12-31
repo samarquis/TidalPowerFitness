@@ -175,12 +175,21 @@ export default function MyClientsPage() {
                                 </div>
 
                                 {/* View Button */}
-                                <div className="mt-4">
-                                    <div className="px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan text-white text-center rounded-lg font-semibold">
-                                        View Workouts →
-                                    </div>
+                                <div className="mt-4 flex gap-3">
+                                    <Link 
+                                        href={`/trainer/clients/${client.id}`}
+                                        className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-center rounded-lg font-semibold text-xs border border-white/5 transition-all"
+                                    >
+                                        History
+                                    </Link>
+                                    <Link 
+                                        href={`/trainer/programs?client=${client.id}`}
+                                        className="flex-1 px-4 py-2 bg-gradient-to-r from-cerulean to-pacific-cyan text-white text-center rounded-lg font-semibold text-xs transition-all"
+                                    >
+                                        Assign Plan
+                                    </Link>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 )}

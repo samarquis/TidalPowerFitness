@@ -1,15 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { DemoModeProvider } from "@/contexts/DemoModeContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "@/components/Navigation";
+import PwaInstaller from "@/components/PwaInstaller";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  manifest: "/manifest.json",
   title: "Tidal Power Fitness | Elite Personal Training & Group Classes",
   description: "Transform your body and elevate your life with elite personal training and group classes tailored to your goals. Expert coaches, proven results, and a premium fitness community.",
   keywords: ["personal training", "fitness classes", "weight loss", "muscle gain", "HIIT", "yoga", "nutrition coaching"],
@@ -42,6 +45,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#114b61",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,18 +56,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-black text-white logo-watermark`}>
+      <body className={`${inter.className} logo-watermark`}>
         <ErrorBoundary>
-          <AuthProvider>
-            <CartProvider>
-              <DemoModeProvider>
-                <Navigation />
-                <main className="pt-16">
-                  {children}
-                </main>
-              </DemoModeProvider>
-            </CartProvider>
-          </AuthProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <CartProvider>
+                <DemoModeProvider>
+                  <Navigation />
+                  <main className="pt-16">
+                    {children}
+                  </main>
+                  <PwaInstaller />
+                </DemoModeProvider>
+              </CartProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>

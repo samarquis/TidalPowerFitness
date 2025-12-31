@@ -1,14 +1,43 @@
 @import "tailwindcss";
 
-
 :root {
-  /* Brand Colors */
-  --alabaster-grey: #d9d9d9ff;
-  --white: #fefefeff;
+  /* Brand Colors - Shared */
   --pacific-cyan: #478ea0ff;
   --dark-teal: #114b61ff;
   --cerulean: #18809eff;
   --turquoise-surf: #08acd6ff;
+  
+  /* Semantic Colors - Default (Dark Theme) */
+  --background: #000000;
+  --foreground: #fefefe;
+  
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-hover-bg: rgba(255, 255, 255, 0.08);
+  --card-hover-border: rgba(8, 172, 214, 0.3);
+  
+  --watermark-opacity: 0.03;
+  --watermark-gradient: linear-gradient(to bottom, black, #111827, black);
+  
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Mode Overrides */
+.light {
+  --background: #f3f4f6; /* Gray 100 */
+  --foreground: #111827; /* Gray 900 */
+  
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --card-hover-bg: rgba(255, 255, 255, 0.9);
+  --card-hover-border: rgba(8, 172, 214, 0.5);
+  
+  --watermark-opacity: 0.05;
+  --watermark-gradient: linear-gradient(to bottom, #f3f4f6, #e5e7eb, #f3f4f6);
+  
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.1);
 }
 
 @layer utilities {
@@ -20,23 +49,25 @@
   }
 
   .glass {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--foreground);
   }
 
   .glass-card {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--card-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--card-border);
     border-radius: 1rem;
     padding: 1.5rem;
     transition: all 0.3s ease;
+    color: var(--foreground);
   }
 
   .glass-card:hover {
-    border-color: rgba(8, 172, 214, 0.3);
-    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--card-hover-border);
+    background-color: var(--card-hover-bg);
   }
 
   .page-container {
@@ -51,8 +82,11 @@
 
   .logo-watermark {
     position: relative;
-    background-image: linear-gradient(to bottom, black, #111827, black);
+    background-image: var(--watermark-gradient);
     background-attachment: fixed;
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
   }
 
   .logo-watermark::before {
@@ -69,7 +103,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 0.03;
+    opacity: var(--watermark-opacity);
     pointer-events: none;
     z-index: 0;
   }
@@ -77,7 +111,7 @@
   .btn-primary {
     padding: 0.75rem 1.5rem;
     background-image: linear-gradient(to right, var(--turquoise-surf), var(--cerulean));
-    color: var(--white);
+    color: #fefefe; /* Always white text for primary buttons */
     font-weight: 700;
     border-radius: 0.75rem;
     transition: all 0.3s;
@@ -96,10 +130,10 @@
 
   .btn-secondary {
     padding: 0.75rem 1.5rem;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--white);
+    border: 1px solid var(--glass-border);
+    color: var(--foreground);
     font-weight: 700;
     border-radius: 0.75rem;
     transition: all 0.3s;
@@ -109,7 +143,7 @@
   }
 
   .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--card-hover-bg);
     border-color: var(--turquoise-surf);
     transform: scale(1.05);
   }

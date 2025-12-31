@@ -52,6 +52,19 @@ interface PersonalRecord {
     achieved_at: string;
 }
 
+interface ActiveProgram {
+    id: string;
+    program_name: string;
+    current_week: number;
+    current_day: number;
+    total_weeks: number;
+    next_workout?: {
+        workout_template_id: string;
+        workout_name: string;
+        day_number: number;
+    };
+}
+
 export default function UserDashboard() {
     const { user, token } = useAuth();
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -62,6 +75,7 @@ export default function UserDashboard() {
     const [stats, setStats] = useState<WorkoutStats | null>(null);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
+    const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState<Class | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -91,14 +105,16 @@ export default function UserDashboard() {
                 creditsRes,
                 statsRes,
                 achievementsRes,
-                prRes
+                prRes,
+                programRes
             ] = await Promise.all([
                 apiClient.getClasses(),
                 apiClient.getUserBookings(user!.id),
                 apiClient.getUserCredits(user!.id),
                 apiClient.getClientStats(user!.id),
                 apiClient.getUserAchievements(user!.id),
-                apiClient.getPersonalRecords(user!.id)
+                apiClient.getPersonalRecords(user!.id),
+                apiClient.getMyActiveProgram()
             ]);
 
             if (classesRes.data) setClasses(classesRes.data);
@@ -107,6 +123,7 @@ export default function UserDashboard() {
             if (statsRes.data) setStats(statsRes.data);
             if (achievementsRes.data) setAchievements(achievementsRes.data);
             if (prRes.data) setPersonalRecords(prRes.data);
+            if (programRes.data) setActiveProgram(programRes.data);
 
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -226,19 +243,72 @@ export default function UserDashboard() {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Left Column: Calendar & Selected Day Classes */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Active Program Card */}
+                        {activeProgram && (
+                            <div className="bg-gradient-to-br from-cerulean/20 to-dark-teal/20 border border-turquoise-surf/30 rounded-2xl p-8 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                                    <span className="text-8xl">🗓️</span>
+                                </div>
+                                
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <span className="px-3 py-1 bg-turquoise-surf text-black text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                            Current Program
+                                        </span>
+                                        <span className="text-gray-400 text-sm font-medium">
+                                            Week {activeProgram.current_week} of {activeProgram.total_weeks}
+                                        </span>
+                                    </div>
+
+                                    <h2 className="text-3xl font-bold mb-2">{activeProgram.program_name}</h2>
+                                    
+                                    {activeProgram.next_workout ? (
+                                        <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/40 backdrop-blur-sm p-6 rounded-xl border border-white/5">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Next Scheduled Workout</p>
+                                                <h3 className="text-xl font-bold text-white">{activeProgram.next_workout.workout_name}</h3>
+                                                <p className="text-sm text-gray-400">Scheduled for Day {activeProgram.next_workout.day_number}</p>
+                                            </div>
+                                            <Link 
+                                                href={`/workouts/active?template=${activeProgram.next_workout.workout_template_id}&assignment=${activeProgram.id}`}
+                                                className="btn-primary py-3 px-8 text-center"
+                                            >
+                                                Start Workout
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-400 mt-4 italic">No more workouts scheduled for this week. Great job!</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Overall Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="glass-card text-center relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:scale-110 transition-transform">
+                                    <span className="text-4xl">🔥</span>
+                                </div>
+                                <p className="text-gray-400 text-[10px] font-bold uppercase mb-1 tracking-widest">Current Streak</p>
+                                <p className="text-3xl font-bold text-orange-500">{user?.current_streak || 0}</p>
+                                <p className="text-[10px] text-gray-600 font-bold uppercase mt-1">Days</p>
+                            </div>
                             <div className="glass-card text-center">
-                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Total Workouts</p>
+                                <p className="text-gray-400 text-[10px] font-bold uppercase mb-1 tracking-widest">Total Workouts</p>
                                 <p className="text-3xl font-bold text-turquoise-surf">{stats?.total_workouts || 0}</p>
+                                <p className="text-[10px] text-gray-600 font-bold uppercase mt-1">Sessions</p>
                             </div>
                             <div className="glass-card text-center">
-                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Total Sets</p>
+                                <p className="text-gray-400 text-[10px] font-bold uppercase mb-1 tracking-widest">Total Sets</p>
                                 <p className="text-3xl font-bold text-blue-400">{stats?.total_sets || 0}</p>
+                                <p className="text-[10px] text-gray-600 font-bold uppercase mt-1">Completed</p>
                             </div>
                             <div className="glass-card text-center">
-                                <p className="text-gray-400 text-sm font-bold uppercase mb-1">Volume (lbs)</p>
-                                <p className="text-3xl font-bold text-purple-400">{stats?.total_volume_lbs?.toLocaleString() || 0}</p>
+                                <p className="text-gray-400 text-[10px] font-bold uppercase mb-1 tracking-widest">Volume (lbs)</p>
+                                <p className="text-3xl font-bold text-purple-400">
+                                    {stats?.total_volume_lbs ? (stats.total_volume_lbs / 1000).toFixed(1) + 'k' : '0'}
+                                </p>
+                                <p className="text-[10px] text-gray-600 font-bold uppercase mt-1">Lbs Lifted</p>
                             </div>
                         </div>
 
