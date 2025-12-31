@@ -200,7 +200,7 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response): Prom
 
         // Fetch user credits
         const creditsData = await UserCreditModel.getUserCredits(user.id);
-        const totalCredits = creditsData.reduce((sum, c) => sum + c.remaining_credits, 0);
+        const totalCredits = creditsData.reduce((sum, c) => sum + c.credits_remaining, 0);
 
         res.status(200).json({
             user: {

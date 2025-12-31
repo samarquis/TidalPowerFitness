@@ -11,6 +11,7 @@ router.get('/client/:clientId/history', workoutSessionController.getClientHistor
 router.get('/client/:clientId/stats', workoutSessionController.getClientStats);
 
 // Shared routes (authenticated)
+router.get('/', workoutSessionController.getMyHistory);
 router.put('/:id', workoutSessionController.updateSession);
 
 // Trainer/Admin only routes

@@ -7,17 +7,17 @@ const pool = new Pool(
     process.env.DATABASE_URL
         ? { connectionString: process.env.DATABASE_URL }
         : {
-            host: 'localhost',
-            port: 5432,
-            database: 'tidal_power_fitness',
-            user: 'postgres',
-            password: 'changeme',
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '5432'),
+            database: process.env.DB_NAME || 'tidal_power_fitness',
+            user: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASSWORD || 'changeme',
         }
 );
 
 const runMigration = async () => {
     try {
-        const sqlFile = 'migrations/001_add_days_of_week.sql';
+        const sqlFile = process.argv[2] || 'migrations/001_add_days_of_week.sql';
         const filePath = path.join(__dirname, '../../database', sqlFile);
         const sql = fs.readFileSync(filePath, 'utf8');
 

@@ -231,6 +231,22 @@ class WorkoutSessionController {
         }
     }
 
+    // Get own history
+    async getMyHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const clientId = req.user?.id;
+            if (!clientId) {
+                res.status(401).json({ error: 'Unauthorized' });
+                return;
+            }
+            const history = await WorkoutSession.getClientHistory(clientId);
+            res.json(history);
+        } catch (error) {
+            console.error('Error fetching my history:', error);
+            res.status(500).json({ error: 'Failed to fetch history' });
+        }
+    }
+
     // Get workout stats for a client
     async getClientStats(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
