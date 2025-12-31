@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -33,6 +33,17 @@ export default function NewProgramPage() {
     
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Industry Leader Optimization: Use an indexed lookup for rendering days (O(1) vs O(N))
+    const assignedByDay = useMemo(() => {
+        const lookup: Record<string, ProgramDay[]> = {};
+        programDays.forEach(d => {
+            const key = `${d.week}-${d.day}`;
+            if (!lookup[key]) lookup[key] = [];
+            lookup[key].push(d);
+        });
+        return lookup;
+    }, [programDays]);
 
     useEffect(() => {
         if (authLoading) return;
@@ -219,7 +230,7 @@ export default function NewProgramPage() {
                                             {[1, 2, 3, 4, 5, 6, 0].map((dayIndex) => {
                                                 const dayNum = dayIndex === 0 ? 7 : dayIndex; // 1-7
                                                 const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayIndex];
-                                                const assigned = programDays.filter(d => d.week === week && d.day === dayNum);
+                                                const assigned = assignedByDay[`${week}-${dayNum}`] || [];
 
                                                 return (
                                                     <div key={dayNum} className="space-y-3">

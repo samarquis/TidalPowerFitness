@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../types/auth';
 import WorkoutSession from '../models/WorkoutSession';
 import Program from '../models/Program';
+import ProgramService from '../services/ProgramService';
 import { AchievementService } from '../services/AchievementService';
 
 class WorkoutSessionController {
@@ -112,7 +113,7 @@ class WorkoutSessionController {
             // If session is being completed (end_time set) and linked to an assignment
             if (updates.end_time && updatedSession.program_assignment_id) {
                 try {
-                    await Program.advanceProgress(updatedSession.program_assignment_id);
+                    await ProgramService.advanceClientProgress(updatedSession.program_assignment_id);
                 } catch (progError) {
                     console.error('Error advancing program progress:', progError);
                     // Don't fail the whole request, but log the error

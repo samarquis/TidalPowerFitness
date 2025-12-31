@@ -26,6 +26,8 @@ export interface ProgramAssignment {
     client_id: string;
     program_id: string;
     trainer_id: string;
+    program_name?: string;
+    total_weeks?: number;
     start_date: Date;
     current_week: number;
     current_day: number;
@@ -33,6 +35,7 @@ export interface ProgramAssignment {
     notes?: string;
     created_at: Date;
     updated_at: Date;
+    next_workout?: any;
 }
 
 export interface CreateProgramInput {
