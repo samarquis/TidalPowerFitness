@@ -14,6 +14,7 @@ export { default as Cart } from './Cart';
 export { default as Achievement } from './Achievement';
 export { default as Program } from './Program';
 export { default as Subscription } from './Subscription';
+export { default as Challenge } from './Challenge';
 export { default as Progress } from './Progress';
 export { default as BodyPart } from './BodyPart';
 export { default as GlobalSetting } from './GlobalSetting';
@@ -28,3 +29,4 @@ export type { Exercise as ExerciseType, CreateExerciseInput, UpdateExerciseInput
 export type { Package as PackageType, CreatePackageInput } from './Package';
 export type { Program as ProgramType, CreateProgramInput, ProgramAssignment } from './Program';
 export type { UserSubscription } from './Subscription';
+export type { Challenge as ChallengeType, ChallengeParticipant } from './Challenge';

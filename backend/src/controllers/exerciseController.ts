@@ -1,9 +1,21 @@
 import { Request, Response } from 'express';
 import Exercise from '../models/Exercise';
 import BodyPart from '../models/BodyPart';
+import AIService from '../services/AIService';
 import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 class ExerciseController {
+    // Get AI Recommendations
+    async getAIRecommendations(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const recommendations = await AIService.recommendExercises(req.user!.id);
+            res.json(recommendations);
+        } catch (error) {
+            console.error('Error fetching AI recommendations:', error);
+            res.status(500).json({ error: 'Failed to fetch recommendations' });
+        }
+    }
+
     // Get all exercises
     async getExercises(req: Request, res: Response): Promise<void> {
         try {

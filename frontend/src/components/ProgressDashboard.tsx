@@ -31,6 +31,7 @@ interface PersonalRecord {
 export default function ProgressDashboard({ clientId }: { clientId: string }) {
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const [records, setRecords] = useState<PersonalRecord[]>([]);
+    const [volumeTrend, setVolumeTrend] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showLogForm, setShowLogForm] = useState(false);
 
@@ -46,13 +47,15 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
     const fetchProgress = async () => {
         setLoading(true);
         try {
-            const [metricsRes, recordsRes] = await Promise.all([
+            const [metricsRes, recordsRes, volumeRes] = await Promise.all([
                 apiClient.getMetrics(clientId),
-                apiClient.getPersonalRecords(clientId)
+                apiClient.getPersonalRecords(clientId),
+                apiClient.getVolumeTrend(clientId)
             ]);
 
             if (metricsRes.data) setMetrics(metricsRes.data);
             if (recordsRes.data) setRecords(recordsRes.data);
+            if (volumeRes.data) setVolumeTrend(volumeRes.data);
         } catch (error) {
             console.error('Error fetching progress:', error);
         } finally {
@@ -238,6 +241,57 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                         <p className="text-gray-500 italic py-20 text-center text-sm">No body fat data logged yet.</p>
                     )}
                 </div>
+            </div>
+
+            {/* Volume Trend */}
+            <div className="glass-card">
+                <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Workout Volume Trend (lbs)</h3>
+                {volumeTrend.length > 0 ? (
+                    <div className="h-64 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                data={volumeTrend.map(v => ({
+                                    date: new Date(v.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                                    volume: parseFloat(v.volume)
+                                }))}
+                                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <XAxis 
+                                    dataKey="date" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: '#666', fontSize: 10 }}
+                                    minTickGap={20}
+                                />
+                                <YAxis 
+                                    hide={true}
+                                />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                                    itemStyle={{ color: '#a855f7' }}
+                                    formatter={(value: number) => [`${value.toLocaleString()} lbs`, 'Volume']}
+                                />
+                                <Area 
+                                    type="monotone" 
+                                    dataKey="volume" 
+                                    stroke="#a855f7" 
+                                    strokeWidth={3}
+                                    fillOpacity={1} 
+                                    fill="url(#colorVolume)" 
+                                    animationDuration={1500}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                ) : (
+                    <p className="text-gray-500 italic py-20 text-center text-sm">No workout volume data available yet.</p>
+                )}
             </div>
 
             {/* Personal Records */}

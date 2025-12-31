@@ -58,12 +58,20 @@ export default function Navigation() {
                             Classes
                         </Link>
                         {isAuthenticated && (
-                            <Link
-                                href="/leaderboard"
-                                className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
-                            >
-                                Leaderboard
-                            </Link>
+                            <>
+                                <Link
+                                    href="/leaderboard"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                >
+                                    Leaderboard
+                                </Link>
+                                <Link
+                                    href="/challenges"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                >
+                                    Challenges
+                                </Link>
+                            </>
                         )}
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-4">

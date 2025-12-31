@@ -55,6 +55,25 @@ class ProgressController {
             res.status(500).json({ error: 'Failed to fetch personal records' });
         }
     }
+
+    // Get volume trend
+    async getVolumeTrend(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const clientId = req.params.clientId || req.user?.id;
+
+            // Authorization check
+            if (req.user?.id !== clientId && !req.user?.roles?.includes('trainer') && !req.user?.roles?.includes('admin')) {
+                res.status(403).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const trend = await Progress.getVolumeTrend(clientId!);
+            res.json(trend);
+        } catch (error) {
+            console.error('Error fetching volume trend:', error);
+            res.status(500).json({ error: 'Failed to fetch volume trend' });
+        }
+    }
 }
 
 export default new ProgressController();

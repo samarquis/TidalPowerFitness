@@ -81,6 +81,24 @@ class ProgressModel {
         return result.rows;
     }
 
+    // Get workout volume trend
+    async getVolumeTrend(clientId: string): Promise<any[]> {
+        const sql = `
+            SELECT 
+                ws.session_date as date,
+                SUM(el.weight_used_lbs * el.reps_completed) as volume
+            FROM workout_sessions ws
+            JOIN session_exercises se ON ws.id = se.session_id
+            JOIN exercise_logs el ON se.id = el.session_exercise_id
+            WHERE el.client_id = $1
+            GROUP BY ws.session_date
+            ORDER BY ws.session_date ASC
+            LIMIT 30
+        `;
+        const result: QueryResult = await query(sql, [clientId]);
+        return result.rows;
+    }
+
     // Check and update PR for an exercise
     async updatePR(clientId: string, exerciseId: string, recordType: string, value: number, achievedAt: Date, logId: string): Promise<void> {
         await query(

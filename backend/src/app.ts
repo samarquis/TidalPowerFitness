@@ -33,6 +33,7 @@ import leaderboardRoutes from './routes/leaderboard';
 import changelogRoutes from './routes/changelog';
 import adminRoutes from './routes/admin';
 import programRoutes from './routes/programs';
+import challengeRoutes from './routes/challenges';
 
 const app = express();
 
@@ -146,6 +147,9 @@ app.use('/api/admin', adminRoutes);
 
 // Program routes
 app.use('/api/programs', programRoutes);
+
+// Challenge routes
+app.use('/api/challenges', challengeRoutes);
 
 // Import routes (admin only)
 app.use('/api/import', importRoutes);

@@ -903,61 +903,37 @@ So that I can access my schedule and workout logs quickly and reliably.
 
 
 
-<h3>Story 12.4: User Achievement & Gamification System</h3>
-
-
+<h3>[COMPLETED] Story 12.4: User Achievement & Gamification System</h3>
 
 As a user,
-
 I want to earn badges and track my workout streaks,
-
 So that I stay motivated and engaged with my fitness journey.
 
-
-
 **Acceptance Criteria:**
-
 *   **Given** I am performing actions (e.g., attending classes, completing workouts).
-
 *   **When** I hit specific milestones (e.g., "10th Class Attended", "5 Day Streak").
-
 *   **Then** I should be awarded a visual badge or achievement.
-
 *   *And* my current streaks and unlocked achievements should be visible on my dashboard.
-
 *   **And** the backend should track these metrics and trigger achievement events.
 
-
-
-<h3>Story 12.5: Interactive Progress Charts</h3>
-
-
+<h3>[COMPLETED] Story 12.5: Interactive Progress Charts</h3>
 
 As a user,
-
 I want to view my progress through interactive and dynamic charts,
-
 So that I can better understand my fitness trends and performance over time.
 
-
-
 **Acceptance Criteria:**
-
 *   **Given** I am on my progress dashboard.
-
 *   **When** I view my workout or weight data.
-
 *   **Then** I should see interactive charts (e.g., using Recharts or Chart.js).
-
 *   **And** I should be able to hover over data points for details and filter the data by date range.
-
 *   **And** the charts should be responsive and performant on both desktop and mobile.
 
 <h2>Epic 13: Structured Training Programs</h2>
-**Goal:** Enable trainers to create and assign multi-week workout programs to clients, providing a long-term structured approach to fitness.
+**Goal:** Enable trainers to create and assign multi-week workout programs to clients, providing a long-term structured approach to fitness.       
 **FRs covered:** FR14, FR15
 
-<h3>Story 13.1: Create Program Templates</h3>
+<h3>[COMPLETED] Story 13.1: Create Program Templates</h3>
 
 As a trainer,
 I want to create multi-week workout programs by grouping existing workout templates into a schedule,
@@ -970,7 +946,7 @@ So that I can offer structured long-term training to my clients.
 *   **And** for each week, I should be able to assign workout templates to specific days (e.g., Week 1, Day 1: "Upper Body Power").
 *   **And** I should be able to save this program as a reusable template.
 
-<h3>Story 13.2: Assign Program to Client</h3>
+<h3>[COMPLETED] Story 13.2: Assign Program to Client</h3>
 
 As a trainer,
 I want to assign a workout program to a specific client,
@@ -983,7 +959,7 @@ So that they can follow the structured plan I've designed for them.
 *   **And** I should be able to select from my saved programs.
 *   **And** I should be able to set a start date for the program.
 
-<h3>Story 13.3: View and Follow Assigned Program</h3>
+<h3>[COMPLETED] Story 13.3: View and Follow Assigned Program</h3>
 
 As a client,
 I want to view my current assigned program and see which workout I need to perform today,
@@ -1000,7 +976,7 @@ So that I can follow my trainer's plan effectively.
 **Goal:** Enrich the exercise library with instructional videos, detailed descriptions, and muscle group mapping to improve user guidance and safety.
 **FRs covered:** FR16
 
-<h3>Story 14.1: Exercise Video & Image Support</h3>
+<h3>[COMPLETED] Story 14.1: Exercise Video & Image Support</h3>
 
 As a user,
 I want to see video demonstrations or images for each exercise,
@@ -1012,7 +988,7 @@ So that I can ensure I am performing the movements with correct form.
 *   **Then** the media should be displayed clearly within the interface.
 *   **And** video players should be embedded (e.g., YouTube/Vimeo) or use standard HTML5 video.
 
-<h3>Story 14.2: Muscle Group Mapping & Visuals</h3>
+<h3>[COMPLETED] Story 14.2: Muscle Group Mapping & Visuals</h3>
 
 As a user,
 I want to see which muscle groups are targeted by an exercise,
@@ -1027,7 +1003,7 @@ So that I can understand the impact of my workout.
 **Goal:** Implement a robust communication and notification system to keep users engaged and informed about their schedule and progress.
 **FRs covered:** FR17
 
-<h3>Story 15.1: Backend Notification Infrastructure</h3>
+<h3>[COMPLETED] Story 15.1: Backend Notification Infrastructure</h3>
 
 As a developer,
 I want a centralized notification service on the backend,
@@ -1039,7 +1015,7 @@ So that the system can reliably send emails, push notifications, or in-app alert
 *   **And** notification templates should be used for consistent messaging.
 *   **And** user notification preferences should be respected.
 
-<h3>Story 15.2: Email Notifications for Bookings</h3>
+<h3>[COMPLETED] Story 15.2: Email Notifications for Bookings</h3>
 
 As a user,
 I want to receive an email confirmation when I book or cancel a class,
@@ -1054,7 +1030,7 @@ So that I have a record of my schedule outside of the application.
 **Goal:** Transition to a recurring revenue model by supporting monthly memberships with automatic billing and tiered access.
 **FRs covered:** FR18
 
-<h3>Story 16.1: Recurring Membership Integration (Square)</h3>
+<h3>[COMPLETED] Story 16.1: Recurring Membership Integration (Square)</h3>
 
 As an admin,
 I want to offer monthly subscription plans that bill users automatically,
@@ -1071,7 +1047,7 @@ So that the business has predictable recurring revenue.
 **Goal:** Foster a sense of community and healthy competition through leaderboards, social sharing, and collective challenges.
 **FRs covered:** FR19
 
-<h3>Story 17.1: Class & Global Leaderboards</h3>
+<h3>[COMPLETED] Story 17.1: Class & Global Leaderboards</h3>
 
 As a user,
 I want to see how I rank against others in my classes or globally,
@@ -1086,7 +1062,7 @@ So that I am motivated by friendly competition.
 **Goal:** Provide administrators and trainers with deep insights into business performance, client engagement, and operational efficiency.
 **FRs covered:** FR20
 
-<h3>Story 18.1: Admin Revenue Dashboard</h3>
+<h3>[COMPLETED] Story 18.1: Admin Revenue Dashboard</h3>
 
 As an admin,
 I want to view a dashboard showing revenue trends, package popularity, and projected earnings,

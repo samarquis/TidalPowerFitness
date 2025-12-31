@@ -19,7 +19,15 @@ interface Program {
     description: string;
     total_weeks: number;
     trainer_name: string;
+    trainer_id: string;
     templates: ProgramTemplate[];
+    collaborators?: Array<{
+        trainer_id: string;
+        first_name: string;
+        last_name: string;
+        email: string;
+        can_edit: boolean;
+    }>;
 }
 
 export default function ProgramDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,6 +38,12 @@ export default function ProgramDetailsPage({ params }: { params: Promise<{ id: s
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Collaborator state
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [allTrainers, setAllTrainers] = useState<any[]>([]);
+    const [selectedTrainerId, setSelectedTrainerId] = useState('');
+    const [canEdit, setCanEdit] = useState(false);
+
     useEffect(() => {
         if (authLoading) return;
         if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
@@ -37,6 +51,7 @@ export default function ProgramDetailsPage({ params }: { params: Promise<{ id: s
             return;
         }
         fetchProgram();
+        fetchTrainers();
     }, [isAuthenticated, authLoading, id]);
 
     const fetchProgram = async () => {
@@ -52,6 +67,48 @@ export default function ProgramDetailsPage({ params }: { params: Promise<{ id: s
             setError('Failed to load program');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchTrainers = async () => {
+        try {
+            const response = await apiClient.getTrainerUsers();
+            if (response.data) {
+                setAllTrainers(response.data);
+            }
+        } catch (err) {
+            console.error('Error fetching trainers:', err);
+        }
+    };
+
+    const handleAddCollaborator = async () => {
+        if (!selectedTrainerId) return;
+        try {
+            const response = await (apiClient as any).request(`/programs/${id}/collaborators`, {
+                method: 'POST',
+                body: JSON.stringify({ trainer_id: selectedTrainerId, can_edit: canEdit })
+            });
+            if (response.data) {
+                setShowAddModal(false);
+                setSelectedTrainerId('');
+                fetchProgram();
+            }
+        } catch (err) {
+            console.error('Error adding collaborator:', err);
+        }
+    };
+
+    const handleRemoveCollaborator = async (trainerId: string) => {
+        if (!confirm('Are you sure you want to remove this collaborator?')) return;
+        try {
+            const response = await (apiClient as any).request(`/programs/${id}/collaborators/${trainerId}`, {
+                method: 'DELETE'
+            });
+            if (response.data) {
+                fetchProgram();
+            }
+        } catch (err) {
+            console.error('Error removing collaborator:', err);
         }
     };
 
@@ -101,14 +158,53 @@ export default function ProgramDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Left: Description */}
-                    <div className="lg:col-span-1">
-                        <div className="glass-card sticky top-24">
+                    {/* Left: Description & Collaborators */}
+                    <div className="lg:col-span-1 space-y-8">
+                        <div className="glass-card">
                             <h2 className="text-xl font-bold mb-4">About this Program</h2>
                             <p className="text-gray-400 leading-relaxed">
                                 {program.description || 'No description provided.'}
                             </p>
                         </div>
+
+                        {/* Collaborators Section */}
+                        {(program.trainer_id === user?.id || user?.roles?.includes('admin')) && (
+                            <div className="glass-card">
+                                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                                    <span className="text-lg">🤝</span> Collaborators
+                                </h2>
+                                
+                                <div className="space-y-4 mb-6">
+                                    {program.collaborators && program.collaborators.length > 0 ? (
+                                        program.collaborators.map(c => (
+                                            <div key={c.trainer_id} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                                <div>
+                                                    <p className="text-sm font-bold text-white">{c.first_name} {c.last_name}</p>
+                                                    <p className="text-[10px] text-gray-500">{c.can_edit ? 'Full Access' : 'View Only'}</p>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleRemoveCollaborator(c.trainer_id)}
+                                                    className="text-gray-600 hover:text-red-400 transition-colors"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-gray-500 italic">No collaborators assigned yet.</p>
+                                    )}
+                                </div>
+
+                                <div className="pt-4 border-t border-white/5">
+                                    <button 
+                                        onClick={() => setShowAddModal(true)}
+                                        className="w-full py-2 bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-turquoise-surf border border-turquoise-surf/20 rounded-lg transition-all"
+                                    >
+                                        + Add Collaborator
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Schedule */}
@@ -162,6 +258,61 @@ export default function ProgramDetailsPage({ params }: { params: Promise<{ id: s
                     </div>
                 </div>
             </div>
+
+            {/* Add Collaborator Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="glass-card max-w-md w-full border-turquoise-surf/30 shadow-2xl">
+                        <h3 className="text-xl font-bold mb-6">Add Collaborator</h3>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Select Trainer</label>
+                                <select 
+                                    value={selectedTrainerId}
+                                    onChange={(e) => setSelectedTrainerId(e.target.value)}
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-turquoise-surf outline-none"
+                                >
+                                    <option value="" disabled>Choose a trainer...</option>
+                                    {allTrainers
+                                        .filter(t => t.id !== program.trainer_id && !program.collaborators?.some(c => c.trainer_id === t.id))
+                                        .map(t => (
+                                            <option key={t.id} value={t.id}>{t.full_name}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <input 
+                                    type="checkbox" 
+                                    id="canEdit" 
+                                    checked={canEdit}
+                                    onChange={(e) => setCanEdit(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-turquoise-surf focus:ring-turquoise-surf"
+                                />
+                                <label htmlFor="canEdit" className="text-sm text-gray-300">Allow collaborator to edit this program</label>
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <button 
+                                    onClick={() => setShowAddModal(false)}
+                                    className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg font-bold transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleAddCollaborator}
+                                    disabled={!selectedTrainerId}
+                                    className="flex-1 py-2 bg-turquoise-surf text-black rounded-lg font-bold hover:bg-pacific-cyan transition-all disabled:opacity-50"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

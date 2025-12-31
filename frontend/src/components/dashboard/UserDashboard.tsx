@@ -76,6 +76,7 @@ export default function UserDashboard() {
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
     const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
+    const [recommendations, setRecommendations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState<Class | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -106,7 +107,8 @@ export default function UserDashboard() {
                 statsRes,
                 achievementsRes,
                 prRes,
-                programRes
+                programRes,
+                recRes
             ] = await Promise.all([
                 apiClient.getClasses(),
                 apiClient.getUserBookings(user!.id),
@@ -114,7 +116,8 @@ export default function UserDashboard() {
                 apiClient.getClientStats(user!.id),
                 apiClient.getUserAchievements(user!.id),
                 apiClient.getPersonalRecords(user!.id),
-                apiClient.getMyActiveProgram()
+                apiClient.getMyActiveProgram(),
+                apiClient.getAIRecommendations()
             ]);
 
             if (classesRes.data) setClasses(classesRes.data);
@@ -124,6 +127,7 @@ export default function UserDashboard() {
             if (achievementsRes.data) setAchievements(achievementsRes.data);
             if (prRes.data) setPersonalRecords(prRes.data);
             if (programRes.data) setActiveProgram(programRes.data);
+            if (recRes.data) setRecommendations(recRes.data);
 
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -279,6 +283,29 @@ export default function UserDashboard() {
                                     ) : (
                                         <p className="text-gray-400 mt-4 italic">No more workouts scheduled for this week. Great job!</p>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* AI Recommendations */}
+                        {recommendations.length > 0 && (
+                            <div className="glass-card border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="text-xl">🤖</span>
+                                    <h2 className="text-xl font-bold">AI Coaching Insights</h2>
+                                </div>
+                                <p className="text-gray-400 text-sm mb-6">Based on your recent training volume, we recommend adding these exercises to balance your physique:</p>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {recommendations.map(rec => (
+                                        <Link 
+                                            key={rec.id}
+                                            href={`/exercises/${rec.id}`}
+                                            className="p-4 bg-white/5 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all group"
+                                        >
+                                            <p className="text-[10px] font-bold text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
+                                            <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors">{rec.name}</h4>
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
                         )}

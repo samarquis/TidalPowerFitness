@@ -1,5 +1,6 @@
 import pool from '../config/db';
 import AchievementModel from '../models/Achievement';
+import ChallengeService from './ChallengeService';
 
 export class AchievementService {
   /**
@@ -13,20 +14,9 @@ export class AchievementService {
   static async checkAndAwardAchievements(userId: string): Promise<void> {
     try {
       console.log(`Checking achievements for user ${userId}`);
-      // The original AchievementModel.checkAndAward expected a db client, 
-      // but it seems to internally use the query helper which relies on the singleton pool.
-      // This is an architectural smell, but for now we will adapt to the existing pattern.
-      // The original call was: await AchievementModel.checkAndAward(userId, db);
-      // We will need to refactor checkAndAward to not require a 'db' client passed in,
-      // or we pass the pool. For now, let's see if we can call it without.
-      // Let's assume the model handles its own DB connection via the imported query function.
       
-      // The method signature is checkAndAward(userId: string, type: string, value: number)
-      // This service is too generic. It needs to know WHICH stats to check.
-      // Refactoring this to be more specific.
-      
-      // Let's check all stats. This is inefficient but follows the simple goal.
-      // A better implementation would check only stats related to the recent user action.
+      // Update Challenge Progress
+      await ChallengeService.updateUserProgress(userId);
 
       // 1. Get user stats (total workouts, total classes attended)
       const workoutStats = await pool.query(
@@ -41,12 +31,23 @@ export class AchievementService {
       const totalWorkouts = parseInt(workoutStats.rows[0].count);
       const totalAttendance = parseInt(attendanceStats.rows[0].count);
 
-      // 2. Update and Get Streak Stats
+      // 2. Get Max Stats (Weight, Volume)
+      const maxStats = await pool.query(
+        `SELECT MAX(weight_used_lbs) as max_weight, MAX(weight_used_lbs * reps_completed) as max_volume
+         FROM exercise_logs WHERE client_id = $1`,
+        [userId]
+      );
+      const maxWeight = parseFloat(maxStats.rows[0].max_weight || 0);
+      const maxVolume = parseFloat(maxStats.rows[0].max_volume || 0);
+
+      // 3. Update and Get Streak Stats
       const streakInfo = await this.updateUserStreaks(userId);
 
-      // 3. Check achievements for each stat type
+      // 4. Check achievements for each stat type
       await AchievementModel.checkAndAward(userId, 'total_workouts', totalWorkouts);
       await AchievementModel.checkAndAward(userId, 'total_attendance', totalAttendance);
+      await AchievementModel.checkAndAward(userId, 'max_weight', maxWeight);
+      await AchievementModel.checkAndAward(userId, 'max_volume', maxVolume);
       
       if (streakInfo) {
         await AchievementModel.checkAndAward(userId, 'daily_streak', streakInfo.current_streak);

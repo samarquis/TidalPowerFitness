@@ -10,6 +10,10 @@ router.get('/', exerciseController.getExercises);
 router.get('/workout-types', exerciseController.getWorkoutTypes);
 router.get('/body-focus-areas', exerciseController.getBodyFocusAreas);
 router.get('/body-parts', exerciseController.getBodyParts);
+
+// AI Recommendations (authenticated)
+router.get('/recommendations', authenticate, exerciseController.getAIRecommendations);
+
 router.get('/:id', exerciseController.getExercise);
 
 // Trainer/Admin only routes - Exercises

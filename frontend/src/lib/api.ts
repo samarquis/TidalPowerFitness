@@ -254,6 +254,10 @@ class ApiClient {
         return this.request<any>('/exercises', { method: 'GET' });
     }
 
+    async getAIRecommendations() {
+        return this.request<any[]>('/exercises/recommendations', { method: 'GET' });
+    }
+
     async getWorkoutTypes() {
         return this.request<any>('/exercises/workout-types', { method: 'GET' });
     }
@@ -328,6 +332,26 @@ class ApiClient {
         return this.request<any>('/programs/my-active', { method: 'GET' });
     }
 
+    // Challenge endpoints
+    async getChallenges() {
+        return this.request<any[]>('/challenges', { method: 'GET' });
+    }
+
+    async getChallenge(id: string) {
+        return this.request<any>(`/challenges/${id}`, { method: 'GET' });
+    }
+
+    async joinChallenge(id: string) {
+        return this.request<any>(`/challenges/${id}/join`, { method: 'POST' });
+    }
+
+    async createChallenge(data: any) {
+        return this.request<any>('/challenges', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
     // Workout Session endpoints
     async getWorkoutSessions() {
         return this.request<any>('/workout-sessions', { method: 'GET' });
@@ -392,6 +416,11 @@ class ApiClient {
 
     async getPersonalRecords(clientId?: string) {
         const endpoint = clientId ? `/progress/personal-records/${clientId}` : '/progress/personal-records';
+        return this.request<any[]>(endpoint, { method: 'GET' });
+    }
+
+    async getVolumeTrend(clientId?: string) {
+        const endpoint = clientId ? `/progress/volume-trend/${clientId}` : '/progress/volume-trend';
         return this.request<any[]>(endpoint, { method: 'GET' });
     }
 

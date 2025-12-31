@@ -15,5 +15,9 @@ router.get('/metrics/:clientId', progressController.getMetrics);
 router.get('/personal-records', progressController.getPersonalRecords);
 router.get('/personal-records/:clientId', progressController.getPersonalRecords);
 
+// Volume Trend
+router.get('/volume-trend', progressController.getVolumeTrend);
+router.get('/volume-trend/:clientId', progressController.getVolumeTrend);
+
 export default router;
 
