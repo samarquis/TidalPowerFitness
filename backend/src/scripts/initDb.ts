@@ -1,8 +1,11 @@
 import { Pool } from 'pg';
 
+const isProduction = process.env.NODE_ENV === 'production';
+const isNeon = process.env.DATABASE_URL?.includes('neon.tech');
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    ssl: (isProduction || isNeon) ? { rejectUnauthorized: false } : false,
 });
 
 // Inline SQL for table creation (essential tables only)

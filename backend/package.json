@@ -12,6 +12,7 @@
     "db:reset": "ts-node -r dotenv/config src/scripts/migrate.ts reset",
     "migrate:001": "ts-node -r dotenv/config src/scripts/run_migration.ts",
     "migrate:all": "ts-node -r dotenv/config src/scripts/run_all_migrations.ts",
+    "db:test-neon": "ts-node -r dotenv/config src/scripts/test-neon-connection.ts",
     "test": "jest"
   },
   "keywords": [],

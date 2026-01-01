@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Load env vars - will search in CWD first, then we can provide a fallback
+dotenv.config();
 
 import fs from 'fs';
 import pool from '../config/db';
