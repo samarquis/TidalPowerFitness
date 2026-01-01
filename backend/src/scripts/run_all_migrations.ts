@@ -19,8 +19,8 @@ const run = async () => {
             const result = await runAllMigrations();
 
             if (result.failed.length > 0) {
-                console.error('❌ Some migrations failed:', result.failed);
-                process.exit(1);
+                const errorMsg = `Migrations failed: ${result.failed.map(f => f.filename).join(', ')}`;
+                throw new Error(errorMsg);
             }
 
             console.log('✅ Migration process completed successfully');
