@@ -12,12 +12,10 @@ export default function CartPage() {
     const [error, setError] = useState<string | null>(null);
 
     const handleRemove = async (itemId: string) => {
-        console.log('[Cart] Removing item:', itemId);
         setError(null);
         setProcessingItem(itemId);
         try {
             const result = await removeFromCart(itemId);
-            console.log('[Cart] Remove result:', result);
             if (!result.success) {
                 setError(result.error || 'Failed to remove item');
             }
@@ -30,13 +28,11 @@ export default function CartPage() {
     };
 
     const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
-        console.log('[Cart] Updating quantity:', itemId, 'to', newQuantity);
         if (newQuantity < 1) return;
         setError(null);
         setProcessingItem(itemId);
         try {
             const result = await updateQuantity(itemId, newQuantity);
-            console.log('[Cart] Update result:', result);
             if (!result.success) {
                 setError(result.error || 'Failed to update quantity');
             }

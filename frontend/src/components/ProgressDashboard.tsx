@@ -275,7 +275,7 @@ export default function ProgressDashboard({ clientId }: { clientId: string }) {
                                 <Tooltip 
                                     contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                                     itemStyle={{ color: '#a855f7' }}
-                                    formatter={(value: number) => [`${value.toLocaleString()} lbs`, 'Volume']}
+                                    formatter={(value: any) => [`${value.toLocaleString()} lbs`, 'Volume']}
                                 />
                                 <Area 
                                     type="monotone" 

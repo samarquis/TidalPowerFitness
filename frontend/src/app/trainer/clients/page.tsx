@@ -142,10 +142,9 @@ export default function MyClientsPage() {
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredClients.map((client) => (
-                            <Link
+                            <div
                                 key={client.id}
-                                href={`/trainer/clients/${client.id}`}
-                                className="glass rounded-xl p-6 hover:bg-white/10 transition-all transform hover:scale-105 cursor-pointer"
+                                className="glass rounded-xl p-6 hover:bg-white/10 transition-all transform hover:scale-105"
                             >
                                 {/* Avatar */}
                                 <div className="flex items-center mb-4">

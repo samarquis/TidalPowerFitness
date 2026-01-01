@@ -43,7 +43,7 @@ describe('PackageCard Component', () => {
         expect(screen.getByText('Starter Pack')).toBeInTheDocument();
         expect(screen.getByText('$50.00')).toBeInTheDocument();
         expect(screen.getByText('A great way to get started.')).toBeInTheDocument();
-        expect(screen.getByText('5 Credits')).toBeInTheDocument();
+        expect(screen.getByText('5 Tokens')).toBeInTheDocument();
     });
 
     it('renders the "Add to Cart" button', () => {

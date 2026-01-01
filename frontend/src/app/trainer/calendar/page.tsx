@@ -140,7 +140,6 @@ export default function TrainerCalendarPage() {
                         weekStartDate={weekStartDate}
                         onClassClick={(classItem) => {
                             // Potentially navigate to class detail or show attendees
-                            console.log('Class clicked:', classItem);
                         }}
                     />
                 )}

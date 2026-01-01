@@ -22,7 +22,7 @@ class CreditService {
     // Get user's current credit balance
     async getUserBalance(userId: string): Promise<number> {
         const credits = await UserCreditModel.getUserCredits(userId);
-        return credits.reduce((sum, c) => sum + c.remaining_credits, 0);
+        return credits.reduce((sum, c) => sum + c.credits_remaining, 0);
     }
 }
 

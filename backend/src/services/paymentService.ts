@@ -8,6 +8,7 @@ import AchievementModel from '../models/Achievement';
 import SubscriptionModel from '../models/Subscription';
 import CartModel from '../models/Cart';
 import pool from '../config/db';
+import logger from '../utils/logger';
 
 class PaymentService {
     private provider: string;
@@ -28,7 +29,7 @@ class PaymentService {
                 : SquareEnvironment.Sandbox;
 
             if (!accessToken) {
-                console.warn('Square access token missing given PAYMENT_PROVIDER=square');
+                logger.warn('Square access token missing given PAYMENT_PROVIDER=square');
             }
 
             this.squareClient = new SquareClient({
@@ -98,11 +99,11 @@ class PaymentService {
                 if (paymentLink?.url) {
                     return { url: paymentLink.url };
                 } else {
-                    console.error('Square Payment Link Response:', JSON.stringify(result, null, 2));
+                    logger.error('Square Payment Link Response:', JSON.stringify(result, null, 2));
                     throw new Error('Failed to generate Square payment link - URL not found in response');
                 }
             } catch (error) {
-                console.error('Square checkout error:', error);
+                logger.error('Square checkout error:', error);
                 throw new Error('Failed to initialize Square checkout');
             }
         } else {
@@ -172,11 +173,11 @@ class PaymentService {
                 if (paymentLink?.url) {
                     return { url: paymentLink.url };
                 } else {
-                    console.error('Square Cart Checkout Response:', JSON.stringify(result, null, 2));
+                    logger.error('Square Cart Checkout Response:', JSON.stringify(result, null, 2));
                     throw new Error('Failed to generate Square payment link for cart');
                 }
             } catch (error) {
-                console.error('Square cart checkout error:', error);
+                logger.error('Square cart checkout error:', error);
                 throw new Error('Failed to initialize Square cart checkout');
             }
         } else {
@@ -202,7 +203,7 @@ class PaymentService {
             try {
                 await AchievementModel.checkAndAward(userId, 'purchased_credits', pkg.credit_count);
             } catch (e) {
-                console.error('Failed to check achievements', e);
+                logger.error('Failed to check achievements', e);
             }
         }
 
@@ -268,7 +269,7 @@ class PaymentService {
 
     private _isSquareSignatureValid(body: string, signature: string, url: string): boolean {
         if (!this.squareWebhookSecret) {
-            console.warn('Square webhook secret not configured. Skipping signature verification.');
+            logger.warn('Square webhook secret not configured. Skipping signature verification.');
             return true; 
         }
 
@@ -280,7 +281,7 @@ class PaymentService {
     // Handle Square Webhook
     async handleSquareWebhook(body: any, signature: string, url: string): Promise<void> {
         if (!this._isSquareSignatureValid(JSON.stringify(body), signature, url)) {
-            console.warn('Square webhook signature verification failed.');
+            logger.warn('Square webhook signature verification failed.');
             throw new Error('Invalid Square webhook signature');
         }
 
@@ -290,7 +291,7 @@ class PaymentService {
             if (payment.status === 'COMPLETED') {
                 const orderId = payment.order_id;
                 if (!orderId) {
-                    console.error('Square webhook: Missing order_id in payment.updated event');
+                    logger.error('Square webhook: Missing order_id in payment.updated event');
                     return;
                 }
 
@@ -302,7 +303,7 @@ class PaymentService {
                     const order: any = (orderResponse as any).result?.order || (orderResponse as any).order;
 
                     if (!order) {
-                        console.error(`Square webhook: Could not retrieve order ${orderId}`);
+                        logger.error(`Square webhook: Could not retrieve order ${orderId}`);
                         return;
                     }
 
@@ -311,7 +312,7 @@ class PaymentService {
                     const type = metadata.type;
 
                     if (!userId) {
-                        console.error(`Square webhook: Missing userId in order ${orderId} metadata`);
+                        logger.error(`Square webhook: Missing userId in order ${orderId} metadata`);
                         return;
                     }
 
@@ -365,9 +366,9 @@ class PaymentService {
                         await CartModel.clearCart(userId);
                     }
 
-                    console.log(`Square webhook: Successfully processed ${type} for userId: ${userId}, orderId: ${orderId}`);
+                    logger.info(`Square webhook: Successfully processed ${type} for userId: ${userId}, orderId: ${orderId}`);
                 } catch (error) {
-                    console.error(`Square webhook: Error processing order ${orderId}:`, error);
+                    logger.error(`Square webhook: Error processing order ${orderId}:`, error);
                 }
             }
         } else if (eventType === 'subscription.created' || eventType === 'subscription.updated') {
@@ -381,9 +382,9 @@ class PaymentService {
                         current_period_end: subscription.charged_through_date ? new Date(subscription.charged_through_date) : undefined,
                         cancel_at_period_end: subscription.canceled_date !== undefined
                     });
-                    console.log(`Square webhook: Successfully synced subscription ${subscription.id}`);
+                    logger.info(`Square webhook: Successfully synced subscription ${subscription.id}`);
                 } catch (error) {
-                    console.error(`Square webhook: Error syncing subscription ${subscription.id}:`, error);
+                    logger.error(`Square webhook: Error syncing subscription ${subscription.id}:`, error);
                 }
             }
         }
@@ -391,3 +392,4 @@ class PaymentService {
 }
 
 export default new PaymentService();
+

@@ -1,6 +1,7 @@
 import pool from '../config/db';
 import AchievementModel from '../models/Achievement';
 import ChallengeService from './ChallengeService';
+import logger from '../utils/logger';
 
 export class AchievementService {
   /**
@@ -13,7 +14,7 @@ export class AchievementService {
    */
   static async checkAndAwardAchievements(userId: string): Promise<void> {
     try {
-      console.log(`Checking achievements for user ${userId}`);
+      logger.info(`Checking achievements for user ${userId}`);
       
       // Update Challenge Progress
       await ChallengeService.updateUserProgress(userId);
@@ -55,7 +56,7 @@ export class AchievementService {
       }
 
     } catch (error) {
-      console.error(`Error in AchievementService for user ${userId}:`, error);
+      logger.error(`Error in AchievementService for user ${userId}:`, error);
     }
   }
 
@@ -112,7 +113,7 @@ export class AchievementService {
 
       return { current_streak: newStreak, longest_streak: newLongest };
     } catch (error) {
-      console.error(`Error updating streaks for user ${userId}:`, error);
+      logger.error(`Error updating streaks for user ${userId}:`, error);
       return null;
     }
   }

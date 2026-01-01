@@ -116,11 +116,7 @@ class TrainerProfileModel {
         }
 
         values.push(userId);
-        console.log('TrainerProfile.update SQL:', {
-            sql: `UPDATE trainer_profiles SET ${fields.join(', ')} WHERE user_id = $${paramCount} RETURNING *`,
-            values
-        });
-
+        
         const result: QueryResult = await query(
 
             `UPDATE trainer_profiles SET ${fields.join(', ')} WHERE user_id = $${paramCount} RETURNING *`,

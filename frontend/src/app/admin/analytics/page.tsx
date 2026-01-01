@@ -164,7 +164,7 @@ export default function AdminAnalyticsPage() {
                                                 fontSize: '12px'
                                             }}
                                             itemStyle={{ color: '#00f2ff' }}
-                                            formatter={(value: number) => [`$${value.toFixed(2)}`, 'Revenue']}
+                                            formatter={(value: any) => [`$${value.toFixed(2)}`, 'Revenue']}
                                         />
                                         <Area 
                                             type="monotone" 

@@ -178,4 +178,13 @@ app.use('/api/leaderboard', leaderboardRoutes);
 // Changelog routes
 app.use('/api/changelog', changelogRoutes);
 
+// Global error handler
+app.use((err: any, req: any, res: any, next: any) => {
+    logger.error(`Unhandled Error: ${err.message}`, { stack: err.stack });
+    res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
+    });
+});
+
 export default app;

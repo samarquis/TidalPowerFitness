@@ -267,7 +267,7 @@ class UserController {
             }
 
             const credits = await UserCreditModel.getUserCredits(id);
-            const totalCredits = credits.reduce((sum, credit) => sum + credit.remaining_credits, 0);
+            const totalCredits = credits.reduce((sum, credit) => sum + credit.credits_remaining, 0);
 
             res.status(200).json({
                 credits: totalCredits,
