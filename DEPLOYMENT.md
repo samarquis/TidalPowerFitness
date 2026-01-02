@@ -79,3 +79,25 @@ The application includes a built-in backup service that runs daily at 3:00 AM.
 - Backups are stored in the `/backups` directory of the backend service.
 - Ensure your Render disk or persistent storage is configured if you wish to retain these backups across restarts.
 - Render's Managed PostgreSQL also provides automated daily backups with 7-day retention by default.
+
+## Production Recovery (2026-01-02)
+If you encounter a deploy failure or user-facing timeouts in production, follow this recovery checklist:
+
+1. **Verify env vars in Render**
+   - Check that `DATABASE_URL`, `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID`, `SQUARE_WEBHOOK_SECRET`, and `SQUARE_WEBHOOK_SIGNATURE_KEY` are set for the backend service.
+   - If `SQUARE_WEBHOOK_SECRET` is missing, signature verification will be disabled and webhook-related handlers may log warnings — set it to the Signature Key from Square.
+
+2. **Inspect the deploy logs**
+   - In Render, go to the service -> **Deploys** -> select the failed deploy and review the build logs for `tsc`/`next build` errors.
+   - Look for TypeScript property name mismatches or JS/TSX parse errors and identify the failing commit.
+
+3. **Fast restore option (Rollback)**
+   - Use Render UI: Service -> Deploys -> pick last successful deploy -> click **Rollback** to restore availability quickly.
+   - After rollback, open a PR for the fix branch and validate locally before re-deploying a corrected build.
+
+4. **Redeploy after merging fix**
+   - Merge the fix branch (e.g., `fix/remaining-credits-field`) into `main`, then trigger a deploy.
+   - Perform smoke tests: GET `/health`, GET `/api/auth/profile`, and a sample booking flow in sandbox.
+
+5. **Postmortem**
+   - Add a short release note under `docs/RELEASE_NOTES/` containing root cause, fix branch and commit, tests run, and deploy time for traceability.
