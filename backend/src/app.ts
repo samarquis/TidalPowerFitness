@@ -37,16 +37,6 @@ import challengeRoutes from './routes/challenges';
 
 const app = express();
 
-// Middleware
-import { apiLimiter, authLimiter } from './middleware/rateLimit';
-import { csrfCheck } from './middleware/csrf';
-
-// Apply global rate limiter to all API routes
-app.use('/api', apiLimiter);
-
-// Apply CSRF protection to all state-changing API routes
-app.use('/api', csrfCheck);
-
 const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -79,6 +69,16 @@ const corsOptions: cors.CorsOptions = {
 
 app.set('trust proxy', 1); // Trust first proxy
 app.use(cors(corsOptions));
+
+// Middleware
+import { apiLimiter, authLimiter } from './middleware/rateLimit';
+import { csrfCheck } from './middleware/csrf';
+
+// Apply global rate limiter to all API routes
+app.use('/api', apiLimiter);
+
+// Apply CSRF protection to all state-changing API routes
+app.use('/api', csrfCheck);
 app.use(cookieParser());
 
 // Request logging middleware
