@@ -5,9 +5,9 @@ export interface UserCredit {
     id: string;
     user_id: string;
     package_id?: string;
-    credits_total: number;
-    credits_remaining: number;
-    purchased_at: Date;
+    total_credits: number;
+    remaining_credits: number;
+    purchase_date: Date;
     expires_at?: Date;
     created_at: Date;
     updated_at: Date;
@@ -19,7 +19,7 @@ class UserCreditModel {
         const result: QueryResult = await query(
             `SELECT * FROM user_credits 
              WHERE user_id = $1 
-             AND credits_remaining > 0 
+             AND remaining_credits > 0 
              AND (expires_at IS NULL OR expires_at > NOW())
              ORDER BY expires_at ASC`, // Use expiring credits first
             [userId]
@@ -38,7 +38,7 @@ class UserCreditModel {
 
         const result: QueryResult = await query(
             `INSERT INTO user_credits (
-                user_id, package_id, credits_total, credits_remaining, expires_at
+                user_id, package_id, total_credits, remaining_credits, expires_at
             ) VALUES ($1, $2, $3, $3, $4)
             RETURNING *`,
             [userId, packageId, credits, expiresAt]
@@ -52,7 +52,7 @@ class UserCreditModel {
         // 1. Get available credits ordered by expiration
         const credits = await this.getUserCredits(userId);
 
-        if (credits.reduce((sum, c) => sum + c.credits_remaining, 0) < amount) {
+        if (credits.reduce((sum, c) => sum + c.remaining_credits, 0) < amount) {
             return false; // Insufficient funds
         }
 
@@ -61,10 +61,10 @@ class UserCreditModel {
         for (const credit of credits) {
             if (remainingToDeduct <= 0) break;
 
-            const deductAmount = Math.min(credit.credits_remaining, remainingToDeduct);
+            const deductAmount = Math.min(credit.remaining_credits, remainingToDeduct);
 
             await query(
-                'UPDATE user_credits SET credits_remaining = credits_remaining - $1 WHERE id = $2',
+                'UPDATE user_credits SET remaining_credits = remaining_credits - $1 WHERE id = $2',
                 [deductAmount, credit.id]
             );
 

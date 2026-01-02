@@ -31,7 +31,7 @@ class BookingController {
 
             // 1. Check if user has sufficient credits
             const credits = await UserCreditModel.getUserCredits(userId);
-            const totalCredits = credits.reduce((sum, c) => sum + c.credits_remaining, 0);
+            const totalCredits = credits.reduce((sum, c) => sum + c.remaining_credits, 0);
 
             if (totalCredits < attendee_count) {
                 return res.status(400).json({

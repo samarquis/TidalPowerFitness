@@ -125,10 +125,10 @@ CREATE TABLE user_credits (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     package_id UUID REFERENCES packages(id) ON DELETE SET NULL,
-    credits_remaining INTEGER NOT NULL DEFAULT 0,
-    credits_total INTEGER NOT NULL,
+    remaining_credits INTEGER NOT NULL DEFAULT 0,
+    total_credits INTEGER NOT NULL,
     expires_at TIMESTAMP,
-    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

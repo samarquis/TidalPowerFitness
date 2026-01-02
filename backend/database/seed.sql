@@ -5,18 +5,21 @@
 -- Scott Marquis - Primary Admin (password: admin123 - hashed with bcrypt)
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
 ('samarquis4@gmail.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Scott', 'Marquis', 'admin', ARRAY['admin'], '555-0001'),
-('admin@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100');
+('admin@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100')
+ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample trainers
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
 ('john.smith@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'John', 'Smith', 'trainer', ARRAY['trainer'], '555-0101'),
 ('sarah.johnson@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Sarah', 'Johnson', 'trainer', ARRAY['trainer'], '555-0102'),
-('mike.williams@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Mike', 'Williams', 'trainer', ARRAY['trainer'], '555-0103');
+('mike.williams@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Mike', 'Williams', 'trainer', ARRAY['trainer'], '555-0103')
+ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample clients
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
 ('client1@example.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Jane', 'Doe', 'client', ARRAY['client'], '555-0201'),
-('client2@example.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Bob', 'Anderson', 'client', ARRAY['client'], '555-0202');
+('client2@example.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Bob', 'Anderson', 'client', ARRAY['client'], '555-0202')
+ON CONFLICT (email) DO NOTHING;
 
 -- Create trainer profiles
 INSERT INTO trainer_profiles (user_id, bio, specialties, certifications, years_experience, is_accepting_clients)

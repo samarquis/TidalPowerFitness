@@ -25,19 +25,19 @@
 
 /* Light Mode Overrides */
 .light {
-  --background: #f3f4f6; /* Gray 100 */
-  --foreground: #111827; /* Gray 900 */
+  --background: #f8fafc; /* Slate 50 - Cleaner, more premium white */
+  --foreground: #0f172a; /* Slate 900 - Better readability */
   
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(0, 0, 0, 0.1);
-  --card-hover-bg: rgba(255, 255, 255, 0.9);
-  --card-hover-border: rgba(8, 172, 214, 0.5);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(15, 23, 42, 0.08);
+  --card-hover-bg: #ffffff;
+  --card-hover-border: rgba(8, 172, 214, 0.4);
   
-  --watermark-opacity: 0.05;
-  --watermark-gradient: linear-gradient(to bottom, #f3f4f6, #e5e7eb, #f3f4f6);
+  --watermark-opacity: 0.04;
+  --watermark-gradient: linear-gradient(to bottom, #f1f5f9, #f8fafc, #f1f5f9);
   
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.1);
 }
 
 @layer utilities {
