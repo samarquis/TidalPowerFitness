@@ -35,11 +35,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS cart_updated_at_trigger ON cart;
 CREATE TRIGGER cart_updated_at_trigger
     BEFORE UPDATE ON cart
     FOR EACH ROW
     EXECUTE FUNCTION update_cart_updated_at();
 
+DROP TRIGGER IF EXISTS cart_items_updated_at_trigger ON cart_items;
 CREATE TRIGGER cart_items_updated_at_trigger
     BEFORE UPDATE ON cart_items
     FOR EACH ROW
