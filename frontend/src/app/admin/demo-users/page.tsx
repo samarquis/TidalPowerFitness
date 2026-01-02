@@ -61,6 +61,7 @@ export default function DemoUsersPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-TPF-Request': 'true',
         },
         credentials: 'include',
         body: JSON.stringify({ count })
@@ -95,6 +96,9 @@ export default function DemoUsersPage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/demo-users`, {
         method: 'DELETE',
+        headers: {
+          'X-TPF-Request': 'true',
+        },
         credentials: 'include'
       });
 
