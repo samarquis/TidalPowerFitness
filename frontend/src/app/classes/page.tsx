@@ -134,13 +134,13 @@ export default function ClassesPage() {
 
     const getDayBadge = (dayIndex: number) => {
         const colors = [
-            'bg-red-500/20 text-red-400 border-red-500/20', // Sun
-            'bg-blue-500/20 text-blue-400 border-blue-500/20', // Mon
-            'bg-green-500/20 text-green-400 border-green-500/20', // Tue
-            'bg-purple-500/20 text-purple-400 border-purple-500/20', // Wed
-            'bg-yellow-500/20 text-yellow-400 border-yellow-500/20', // Thu
-            'bg-pink-500/20 text-pink-400 border-pink-500/20', // Fri
-            'bg-orange-500/20 text-orange-400 border-orange-500/20', // Sat
+            'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/20', // Sun
+            'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/20', // Mon
+            'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/20', // Tue
+            'bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-500/20', // Wed
+            'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/20', // Thu
+            'bg-pink-500/20 text-pink-600 dark:text-pink-400 border-pink-500/20', // Fri
+            'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/20', // Sat
         ];
         return (
             <span key={dayIndex} className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${colors[dayIndex]}`}>
@@ -151,20 +151,20 @@ export default function ClassesPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black page-container">
+        <div className="logo-watermark page-container">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         Class <span className="text-gradient">Schedule</span>
                     </h1>
-                    <p className="text-gray-400 text-lg">Find your next workout. Filter by day or browse all.</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-lg">Find your next workout. Filter by day or browse all.</p>
                 </div>
 
                 {/* Credits Display */}
@@ -172,11 +172,11 @@ export default function ClassesPage() {
                     <div className="glass-card mb-12 flex flex-wrap items-center justify-between gap-6 border-turquoise-surf/20 bg-gradient-to-r from-turquoise-surf/5 to-transparent">
                         <div className="flex items-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turquoise-surf to-pacific-cyan flex items-center justify-center shadow-lg shadow-turquoise-surf/20">
-                                <span className="text-3xl font-bold text-black">{user?.credits || 0}</span>
+                                <span className="text-3xl font-bold text-white">{user?.credits || 0}</span>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-white uppercase tracking-tight">Available Tokens</h2>
-                                <p className="text-gray-400 text-sm">Ready to book your next session</p>
+                                <h2 className="text-xl font-bold text-foreground uppercase tracking-tight">Available Tokens</h2>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm">Ready to book your next session</p>
                             </div>
                         </div>
                         <Link href="/packages" className="btn-primary py-3 px-8">
@@ -191,7 +191,7 @@ export default function ClassesPage() {
                         onClick={() => setSelectedDay(-1)}
                         className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === -1
                             ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
-                            : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20 hover:text-gray-300'
+                            : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
                             }`}
                     >
                         All
@@ -202,7 +202,7 @@ export default function ClassesPage() {
                             onClick={() => setSelectedDay(index)}
                             className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === index
                                 ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
-                                : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20 hover:text-gray-300'
+                                : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
                                 }`}
                         >
                             {day.substring(0, 3)}
@@ -225,7 +225,7 @@ export default function ClassesPage() {
                 {/* Classes List */}
                 <div className="space-y-4 pb-20">
                     {filteredClasses.length === 0 ? (
-                        <div className="bg-white/5 rounded-2xl p-20 text-center border border-dashed border-white/10">
+                        <div className="bg-gray-100 dark:bg-white/5 rounded-2xl p-20 text-center border border-dashed border-gray-300 dark:border-white/10">
                             <div className="text-5xl mb-4 opacity-20">📅</div>
                             <p className="text-gray-500 text-xl font-medium">No classes found for this day.</p>
                             <button onClick={() => setSelectedDay(-1)} className="mt-4 text-turquoise-surf hover:underline font-bold uppercase tracking-widest text-xs">
@@ -243,7 +243,7 @@ export default function ClassesPage() {
                                     >
                                         {/* Time & Day Column */}
                                         <div className="flex-shrink-0 lg:w-48">
-                                            <div className="text-3xl font-bold text-white mb-2 tabular-nums">
+                                            <div className="text-3xl font-bold text-foreground mb-2 tabular-nums">
                                                 {formatTime12Hour(classItem.start_time)}
                                             </div>
                                             <div className="flex flex-wrap gap-1.5">
@@ -254,17 +254,17 @@ export default function ClassesPage() {
                                         {/* Content Column */}
                                         <div className="flex-grow">
                                             <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                <h3 className="text-2xl font-bold text-white group-hover:text-turquoise-surf transition-colors">
+                                                <h3 className="text-2xl font-bold text-foreground group-hover:text-turquoise-surf transition-colors">
                                                     {classItem.name}
                                                 </h3>
-                                                <span className="px-2 py-0.5 bg-white/5 text-gray-400 text-[10px] font-bold uppercase tracking-widest rounded border border-white/5">
+                                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest rounded border border-gray-200 dark:border-white/5">
                                                     {classItem.category}
                                                 </span>
                                             </div>
-                                            <p className="text-gray-400 text-sm line-clamp-2 max-w-2xl">
+                                            <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 max-w-2xl">
                                                 {classItem.description}
                                             </p>
-                                            <div className="mt-4 flex items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            <div className="mt-4 flex items-center gap-4 text-xs font-bold text-gray-600 dark:text-gray-500 uppercase tracking-widest">
                                                 <span className="flex items-center gap-1.5 text-turquoise-surf/80">
                                                     👤 {classItem.instructor_name}
                                                 </span>
@@ -279,19 +279,19 @@ export default function ClassesPage() {
 
                                         {/* Action Column */}
                                         <div className="flex-shrink-0 lg:w-64 space-y-4">
-                                            <div className="flex items-center justify-between bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+                                            <div className="flex items-center justify-between bg-gray-100 dark:bg-black/40 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/5">
                                                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Spots</span>
                                                 <div className="flex items-center gap-3">
                                                     <button 
                                                         onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
-                                                        className="text-gray-400 hover:text-white transition-colors text-xl font-bold"
+                                                        className="text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors text-xl font-bold"
                                                     >
                                                         -
                                                     </button>
-                                                    <span className="text-lg font-bold text-white w-4 text-center">{attendeeCount}</span>
+                                                    <span className="text-lg font-bold text-foreground w-4 text-center">{attendeeCount}</span>
                                                     <button 
                                                         onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
-                                                        className="text-gray-400 hover:text-white transition-colors text-xl font-bold"
+                                                        className="text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors text-xl font-bold"
                                                     >
                                                         +
                                                     </button>
@@ -304,7 +304,7 @@ export default function ClassesPage() {
                                                 className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest transition-all ${
                                                     isAuthenticated 
                                                         ? 'bg-turquoise-surf text-black hover:bg-pacific-cyan hover:scale-[1.02] shadow-lg shadow-turquoise-surf/10'
-                                                        : 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5'
+                                                        : 'bg-gray-200 dark:bg-white/5 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-white/5 hover:border-turquoise-surf/30 hover:text-turquoise-surf'
                                                 }`}
                                             >
                                                 {bookingClass === classItem.id 
