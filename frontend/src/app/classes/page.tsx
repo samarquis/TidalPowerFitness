@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
+import Link from 'next/link';
 
 interface Class {
     id: string;
@@ -18,35 +19,42 @@ interface Class {
     price_cents: number;
 }
 
-interface UserCredits {
-    total: number;
-    details: Array<{
-        id: string;
-        remaining_credits: number;
-        expires_at: string | null;
-    }>;
-}
-
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+// Helper functions for time conversion
+function convertTo12Hour(time24: string): { hour: string, minute: string, period: 'am' | 'pm' } {
+    const [hourStr, minuteStr] = time24.split(':');
+    let hour = parseInt(hourStr);
+    const period: 'am' | 'pm' = hour >= 12 ? 'pm' : 'am';
+
+    if (hour === 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+
+    return {
+        hour: hour.toString(),
+        minute: minuteStr || '00',
+        period
+    };
+}
+
+function formatTime12Hour(time24: string): string {
+    const { hour, minute, period } = convertTo12Hour(time24);
+    return hour + ':' + minute + ' ' + period;
+}
+
 export default function ClassesPage() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, refreshUser } = useAuth();
     const [classes, setClasses] = useState<Class[]>([]);
-    const [credits, setCredits] = useState<UserCredits | null>(null);
     const [loading, setLoading] = useState(true);
     const [bookingClass, setBookingClass] = useState<string | null>(null);
     const [attendeeCount, setAttendeeCount] = useState<number>(1);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
     const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
 
     useEffect(() => {
         fetchClasses();
-        if (isAuthenticated && user) {
-            fetchUserCredits();
-        }
-    }, [isAuthenticated, user]);
+    }, []);
 
     const fetchClasses = async () => {
         try {
@@ -63,45 +71,14 @@ export default function ClassesPage() {
         }
     };
 
-    const fetchUserCredits = async () => {
-        if (!user) return;
-
-        try {
-            const { data, error } = await apiClient.getUserCredits(user.id);
-
-            if (error) {
-                console.error('Error fetching credits:', error);
-                return;
-            }
-
-            if (data) {
-                // Handle new standardized response { credits: number, details: UserCredit[] }
-                if (data.details && Array.isArray(data.details)) {
-                    setCredits({ total: data.credits || 0, details: data.details });
-                }
-                // Fallback for legacy array response (just in case)
-                else if (Array.isArray(data)) {
-                    const total = data.reduce((sum: number, c: any) => sum + c.remaining_credits, 0);
-                    setCredits({ total, details: data });
-                }
-                // Handle new response with just total if details missing
-                else if (data.credits !== undefined) {
-                    setCredits({ total: data.credits, details: [] });
-                }
-            }
-        } catch (error) {
-            console.error('Error calculating credits:', error);
-        }
-    };
-
     const handleBookClass = async (classId: string) => {
         if (!isAuthenticated) {
             window.location.href = `/login?redirect=/classes`;
             return;
         }
 
-        if (!credits || credits.total < attendeeCount) {
-            setError(`You need at least ${attendeeCount} credits to book this class. Please purchase more packages.`);
+        if (!user || user.credits < attendeeCount) {
+            setError(`You need at least ${attendeeCount} tokens to book this class.`);
             return;
         }
 
@@ -109,17 +86,7 @@ export default function ClassesPage() {
         setError('');
         setSuccess('');
 
-        // Optimistic update for credits
-        const previousCredits = credits ? { ...credits } : null;
-        if (credits) {
-            setCredits({
-                ...credits,
-                total: credits.total - attendeeCount
-            });
-        }
-
         try {
-            // Calculate target date (next upcoming instance of this class)
             const classItem = classes.find(c => c.id === classId);
             let targetDateStr = undefined;
 
@@ -149,36 +116,43 @@ export default function ClassesPage() {
                 throw new Error(response.error);
             }
 
-            setSuccess(`Class booked successfully for ${attendeeCount} people! ${attendeeCount} ${attendeeCount === 1 ? 'credit has' : 'credits have'} been deducted.`);
-            fetchUserCredits(); // Refresh credits from server to be sure
-            setAttendeeCount(1); // Reset for next time
+            setSuccess(`Class booked successfully for ${attendeeCount} ${attendeeCount === 1 ? 'person' : 'people'}!`);
+            await refreshUser();
+            setAttendeeCount(1);
         } catch (error: any) {
-            // Revert credits on error
-            setCredits(previousCredits);
             setError(error.message || 'Failed to book class');
         } finally {
             setBookingClass(null);
         }
     };
 
-    // Group classes by day
-    const filteredDays = DAYS.map((day, index) => ({ day, index })).filter(({ index }) => selectedDay === -1 || index === selectedDay);
+    const filteredClasses = classes.filter(c => {
+        if (selectedDay === -1) return true;
+        const days = c.days_of_week && c.days_of_week.length > 0 ? c.days_of_week : [c.day_of_week];
+        return days.includes(selectedDay);
+    }).sort((a, b) => a.start_time.localeCompare(b.start_time));
 
-    const classesByDay = filteredDays.map(({ day, index }) => ({
-        day,
-        classes: classes.filter(c => {
-            // Check if class is scheduled for this day (supporting both legacy and new array format)
-            if (c.days_of_week && c.days_of_week.length > 0) {
-                return c.days_of_week.includes(index);
-            }
-            return c.day_of_week === index;
-        })
-    }));
+    const getDayBadge = (dayIndex: number) => {
+        const colors = [
+            'bg-red-500/20 text-red-400 border-red-500/20', // Sun
+            'bg-blue-500/20 text-blue-400 border-blue-500/20', // Mon
+            'bg-green-500/20 text-green-400 border-green-500/20', // Tue
+            'bg-purple-500/20 text-purple-400 border-purple-500/20', // Wed
+            'bg-yellow-500/20 text-yellow-400 border-yellow-500/20', // Thu
+            'bg-pink-500/20 text-pink-400 border-pink-500/20', // Fri
+            'bg-orange-500/20 text-orange-400 border-orange-500/20', // Sat
+        ];
+        return (
+            <span key={dayIndex} className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${colors[dayIndex]}`}>
+                {DAYS[dayIndex].substring(0, 3)}
+            </span>
+        );
+    };
 
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-black">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
             </div>
         );
     }
@@ -187,36 +161,54 @@ export default function ClassesPage() {
         <div className="min-h-screen bg-black page-container">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         Class <span className="text-gradient">Schedule</span>
                     </h1>
-                    <p className="text-gray-400 text-lg">Browse and book classes using your credits</p>
+                    <p className="text-gray-400 text-lg">Find your next workout. Filter by day or browse all.</p>
                 </div>
 
                 {/* Credits Display */}
                 {isAuthenticated && (
-                    <div className="glass-card mb-12">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="text-center md:text-left">
-                                <h2 className="text-xl font-semibold text-white mb-2">Available Tokens</h2>
-                                <div className="text-5xl font-bold text-teal-400">
-                                    {credits?.total || 0}
-                                    <span className="text-lg text-gray-500 ml-2 font-normal">
-                                        {credits?.total === 1 ? 'Token' : 'Tokens'}
-                                    </span>
-                                </div>
+                    <div className="glass-card mb-12 flex flex-wrap items-center justify-between gap-6 border-turquoise-surf/20 bg-gradient-to-r from-turquoise-surf/5 to-transparent">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turquoise-surf to-pacific-cyan flex items-center justify-center shadow-lg shadow-turquoise-surf/20">
+                                <span className="text-3xl font-bold text-black">{user?.credits || 0}</span>
                             </div>
-                            <div className="w-full md:w-auto">
-                                <a
-                                    href="/packages"
-                                    className="block text-center btn-primary w-full md:w-auto"
-                                >
-                                    Purchase Tokens
-                                </a>
+                            <div>
+                                <h2 className="text-xl font-bold text-white uppercase tracking-tight">Available Tokens</h2>
+                                <p className="text-gray-400 text-sm">Ready to book your next session</p>
                             </div>
                         </div>
+                        <Link href="/packages" className="btn-primary py-3 px-8">
+                            Get More Tokens
+                        </Link>
                     </div>
                 )}
+
+                {/* Day Selection Grid */}
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-12">
+                    <button
+                        onClick={() => setSelectedDay(-1)}
+                        className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === -1
+                            ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
+                            : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20 hover:text-gray-300'
+                            }`}
+                    >
+                        All
+                    </button>
+                    {DAYS.map((day, index) => (
+                        <button
+                            key={day}
+                            onClick={() => setSelectedDay(index)}
+                            className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === index
+                                ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
+                                : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20 hover:text-gray-300'
+                                }`}
+                        >
+                            {day.substring(0, 3)}
+                        </button>
+                    ))}
+                </div>
 
                 {/* Error/Success Messages */}
                 {error && (
@@ -230,103 +222,76 @@ export default function ClassesPage() {
                     </div>
                 )}
 
-                {/* Day Selection Tabs - Sticky on Mobile */}
-                <div className="sticky top-20 z-10 bg-black/80 backdrop-blur-md py-4 mb-8 -mx-4 px-4 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:backdrop-blur-none md:border-none md:px-0">
-                    <div className="flex overflow-x-auto gap-2 no-scrollbar">
-                        <button
-                            onClick={() => setSelectedDay(-1)}
-                            className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all text-sm md:text-base ${selectedDay === -1
-                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                                : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                                }`}
-                        >
-                            All Days
-                        </button>
-                        {DAYS.map((day, index) => (
-                            <button
-                                key={day}
-                                onClick={() => setSelectedDay(index)}
-                                className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all text-sm md:text-base ${selectedDay === index
-                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                                    }`}
-                            >
-                                {day}
+                {/* Classes List */}
+                <div className="space-y-4 pb-20">
+                    {filteredClasses.length === 0 ? (
+                        <div className="bg-white/5 rounded-2xl p-20 text-center border border-dashed border-white/10">
+                            <div className="text-5xl mb-4 opacity-20">📅</div>
+                            <p className="text-gray-500 text-xl font-medium">No classes found for this day.</p>
+                            <button onClick={() => setSelectedDay(-1)} className="mt-4 text-turquoise-surf hover:underline font-bold uppercase tracking-widest text-xs">
+                                View all days
                             </button>
-                        ))}
-                    </div>
-                </div>
+                        </div>
+                    ) : (
+                        <div className="grid gap-6">
+                            {filteredClasses.map((classItem) => {
+                                const days = classItem.days_of_week && classItem.days_of_week.length > 0 ? classItem.days_of_week : [classItem.day_of_week];
+                                return (
+                                    <div
+                                        key={classItem.id}
+                                        className="glass-card group hover:border-turquoise-surf/30 transition-all duration-300 flex flex-col lg:flex-row gap-6 p-6 lg:items-center"
+                                    >
+                                        {/* Time & Day Column */}
+                                        <div className="flex-shrink-0 lg:w-48">
+                                            <div className="text-3xl font-bold text-white mb-2 tabular-nums">
+                                                {formatTime12Hour(classItem.start_time)}
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {days.map(d => getDayBadge(d))}
+                                            </div>
+                                        </div>
 
-                {/* Classes by Day */}
-                <div className="space-y-12 md:space-y-16">
-                    {classesByDay.map(({ day, classes: dayClasses }) => (
-                        <div key={day} className="scroll-mt-36 md:scroll-mt-24">
-                            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8 border-b border-white/10 pb-4 inline-block pr-12">
-                                {day}
-                            </h2>
-                            {dayClasses.length === 0 ? (
-                                <div className="bg-white/5 rounded-xl p-8 text-center text-gray-500 border border-dashed border-white/10">
-                                    No classes scheduled for {day}
-                                </div>
-                            ) : (
-                                <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                    {dayClasses.map((classItem) => (
-                                        <div
-                                            key={classItem.id}
-                                            className="glass-card group overflow-hidden relative"
-                                        >
-                                            <div className="absolute top-0 right-0 p-3 md:p-4">
-                                                <span className="bg-teal-500/10 text-teal-400 text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full border border-teal-500/20">
-                                                    {classItem.category || 'Fitness'}
+                                        {/* Content Column */}
+                                        <div className="flex-grow">
+                                            <div className="flex flex-wrap items-center gap-3 mb-2">
+                                                <h3 className="text-2xl font-bold text-white group-hover:text-turquoise-surf transition-colors">
+                                                    {classItem.name}
+                                                </h3>
+                                                <span className="px-2 py-0.5 bg-white/5 text-gray-400 text-[10px] font-bold uppercase tracking-widest rounded border border-white/5">
+                                                    {classItem.category}
                                                 </span>
                                             </div>
-
-                                            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 md:mb-3 pt-4">
-                                                {classItem.name}
-                                            </h3>
-                                            <p className="text-gray-400 text-xs md:text-sm mb-4 md:mb-6 line-clamp-2 min-h-[2.5rem]">
+                                            <p className="text-gray-400 text-sm line-clamp-2 max-w-2xl">
                                                 {classItem.description}
                                             </p>
-
-                                            <div className="grid grid-cols-2 gap-3 md:block md:space-y-4 mb-6 md:mb-8">
-                                                <div className="flex items-center text-gray-300">
-                                                    <div className="hidden md:flex w-10 h-10 rounded-lg bg-white/5 items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
-                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] text-gray-500 uppercase font-bold md:mb-0.5">Time</div>
-                                                        <div className="text-xs md:text-sm">{classItem.start_time.slice(0, 5)} <span className="text-gray-500">•</span> {classItem.duration_minutes}m</div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center text-gray-300">
-                                                    <div className="hidden md:flex w-10 h-10 rounded-lg bg-white/5 items-center justify-center mr-3 group-hover:bg-teal-500/10 transition-colors">
-                                                        <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] text-gray-500 uppercase font-bold md:mb-0.5">Instructor</div>
-                                                        <div className="text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{classItem.instructor_name}</div>
-                                                    </div>
-                                                </div>
+                                            <div className="mt-4 flex items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                                <span className="flex items-center gap-1.5 text-turquoise-surf/80">
+                                                    👤 {classItem.instructor_name}
+                                                </span>
+                                                <span className="flex items-center gap-1.5">
+                                                    ⏱️ {classItem.duration_minutes}m
+                                                </span>
+                                                <span className="flex items-center gap-1.5 text-green-500/80">
+                                                    ⚡ 1 Token
+                                                </span>
                                             </div>
+                                        </div>
 
-                                            <div className="mb-4 flex items-center justify-between bg-white/5 p-2 md:p-3 rounded-lg border border-white/5">
-                                                <span className="text-xs md:text-sm font-semibold text-gray-300">Attendees</span>
-                                                <div className="flex items-center gap-2 md:gap-3">
+                                        {/* Action Column */}
+                                        <div className="flex-shrink-0 lg:w-64 space-y-4">
+                                            <div className="flex items-center justify-between bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+                                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Spots</span>
+                                                <div className="flex items-center gap-3">
                                                     <button 
-                                                        onClick={(e) => { e.stopPropagation(); setAttendeeCount(Math.max(1, attendeeCount - 1)) }}
-                                                        className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                                        onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
+                                                        className="text-gray-400 hover:text-white transition-colors text-xl font-bold"
                                                     >
                                                         -
                                                     </button>
-                                                    <span className="text-base md:text-lg font-bold text-teal-400 w-4 text-center">{attendeeCount}</span>
+                                                    <span className="text-lg font-bold text-white w-4 text-center">{attendeeCount}</span>
                                                     <button 
-                                                        onClick={(e) => { e.stopPropagation(); setAttendeeCount(Math.min(5, attendeeCount + 1)) }}
-                                                        className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                                                        onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
+                                                        className="text-gray-400 hover:text-white transition-colors text-xl font-bold"
                                                     >
                                                         +
                                                     </button>
@@ -335,30 +300,25 @@ export default function ClassesPage() {
 
                                             <button
                                                 onClick={() => handleBookClass(classItem.id)}
-                                                disabled={bookingClass === classItem.id || !isAuthenticated}
-                                                className={`w-full ${isAuthenticated
-                                                    ? 'btn-primary'
-                                                    : 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed py-3 rounded-xl'
-                                                    }`}
+                                                disabled={bookingClass === classItem.id || (isAuthenticated && (!user || user.credits < attendeeCount))}
+                                                className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest transition-all ${
+                                                    isAuthenticated 
+                                                        ? 'bg-turquoise-surf text-black hover:bg-pacific-cyan hover:scale-[1.02] shadow-lg shadow-turquoise-surf/10'
+                                                        : 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5'
+                                                }`}
                                             >
-                                                {bookingClass === classItem.id ? (
-                                                    <>
-                                                        <svg className="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                        </svg>
-                                                        Processing...
-                                                    </>
-                                                ) : (
-                                                    isAuthenticated ? `Book for ${attendeeCount}` : 'Login to Book'
-                                                )}
+                                                {bookingClass === classItem.id 
+                                                    ? 'Processing...' 
+                                                    : isAuthenticated 
+                                                        ? (user && user.credits < attendeeCount ? 'Insufficient Tokens' : `Book for ${attendeeCount}`) 
+                                                        : 'Login to Book'}
                                             </button>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </div>
