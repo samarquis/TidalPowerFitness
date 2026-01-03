@@ -6,6 +6,7 @@ export type ChangelogCategory = 'feature' | 'fix' | 'improvement' | 'security' |
 export interface ChangelogEntry {
     id: string;
     version: string;
+    tracking_number?: string;
     title: string;
     content: string;
     category: ChangelogCategory;
@@ -18,6 +19,7 @@ export interface ChangelogEntry {
 
 export interface CreateChangelogInput {
     version: string;
+    tracking_number?: string;
     title: string;
     content: string;
     category: ChangelogCategory;
@@ -33,13 +35,13 @@ class ChangelogModel {
     }
 
     async create(input: CreateChangelogInput): Promise<ChangelogEntry> {
-        const { version, title, content, category, is_published = false, published_at, created_by } = input;
+        const { version, tracking_number, title, content, category, is_published = false, published_at, created_by } = input;
 
         const result: QueryResult = await query(
-            `INSERT INTO changelogs (version, title, content, category, is_published, published_at, created_by)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
+            `INSERT INTO changelogs (version, tracking_number, title, content, category, is_published, published_at, created_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
-            [version, title, content, category, is_published, is_published ? (published_at || new Date()) : null, created_by]
+            [version, tracking_number, title, content, category, is_published, is_published ? (published_at || new Date()) : null, created_by]
         );
 
         return this.mapRowToEntry(result.rows[0])!;

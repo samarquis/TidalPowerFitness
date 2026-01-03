@@ -9,6 +9,7 @@ import Link from 'next/link';
 interface ChangelogEntry {
     id: string;
     version: string;
+    tracking_number?: string;
     title: string;
     content: string;
     category: 'feature' | 'fix' | 'improvement' | 'security' | 'chore';
@@ -28,6 +29,7 @@ export default function AdminChangelogPage() {
     // Form state
     const [formData, setFormData] = useState({
         version: '',
+        tracking_number: '',
         title: '',
         content: '',
         category: 'feature',
@@ -62,7 +64,7 @@ export default function AdminChangelogPage() {
         const response = await apiClient.createChangelog(formData);
         if (response.data) {
             setShowForm(false);
-            setFormData({ version: '', title: '', content: '', category: 'feature', is_published: true });
+            setFormData({ version: '', tracking_number: '', title: '', content: '', category: 'feature', is_published: true });
             fetchChangelogs();
         } else {
             setError(response.error || 'Failed to create changelog');
@@ -122,7 +124,7 @@ export default function AdminChangelogPage() {
                     <section className="bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-300">
                         <h2 className="text-xl font-bold mb-6">Create New Release Note</h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Version</label>
                                     <input
@@ -132,6 +134,16 @@ export default function AdminChangelogPage() {
                                         value={formData.version}
                                         onChange={e => setFormData({ ...formData, version: e.target.value })}
                                         required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Tracking #</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. ISSUE-123"
+                                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-white/30 transition-colors"
+                                        value={formData.tracking_number}
+                                        onChange={e => setFormData({ ...formData, tracking_number: e.target.value })}
                                     />
                                 </div>
                                 <div>
@@ -206,6 +218,11 @@ export default function AdminChangelogPage() {
                                     <div className={`w-full sm:w-[45%] flex flex-col ${index % 2 === 0 ? 'sm:items-end sm:text-right' : 'sm:order-last sm:items-start sm:text-left'} pl-10 sm:pl-0`}>
                                         <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-1">
                                             <span className="text-xl font-bold font-mono text-turquoise-surf">v{entry.version}</span>
+                                            {entry.tracking_number && (
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-white/10 text-white border border-white/10">
+                                                    #{entry.tracking_number}
+                                                </span>
+                                            )}
                                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getCategoryStyles(entry.category)}`}>
                                                 {entry.category}
                                             </span>

@@ -15,7 +15,7 @@ export const getChangelogs = async (req: AuthenticatedRequest, res: Response) =>
 
 export const createChangelog = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { version, title, content, category, is_published } = req.body;
+        const { version, tracking_number, title, content, category, is_published } = req.body;
 
         if (!version || !title || !content || !category) {
             res.status(400).json({ error: 'Missing required fields' });
@@ -24,6 +24,7 @@ export const createChangelog = async (req: AuthenticatedRequest, res: Response) 
 
         const entry = await Changelog.create({
             version,
+            tracking_number,
             title,
             content,
             category,
