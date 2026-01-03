@@ -11,10 +11,11 @@
 - **Immediate next steps:** Verify and set critical env vars in Render (`DATABASE_URL`, `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID`, `SQUARE_WEBHOOK_SECRET`, `SQUARE_WEBHOOK_SIGNATURE_KEY`), open a PR, run CI, then merge and deploy; or perform a rollback to the last successful deploy if immediate restoration is preferred.
 
 ## 🧹 Remediation Phase: Site Review Fixes (2026-01-03)
-- [x] **Review Plan**: See `docs/planning/SITE_REVIEW_REMEDIATION_2026-01-03.md`
+- [ ] **Review Plan V2**: See `docs/planning/SITE_REVIEW_REMEDIATION_V2_2026-01-03.md` (Supersedes V1)
 - [x] **Epic 1**: UI/UX Consistency (Nav Bar, Buttons, Dropdowns, Classes Redesign)
-- [x] **Epic 2**: Data Integrity (Token Sync, Redirects, Filters, Package Verification)
-- [x] **Epic 3**: User Guidance (Empty States, Changelog Tracking #s)
+- [ ] **Epic 2**: Exercise Library Enhancements (Global Filters)
+- [ ] **Epic 3**: Trainer Workflow & Workout Wizard (Comprehensive Session Builder)
+- [ ] **Epic 4**: Data Integrity (Weight Formatting, Package Audit)
 
 ## �🚀 Active Session: Phase 2 Finalization & Quality Review
 - [x] Finalize workout streak logic in `AchievementService`.
