@@ -40,81 +40,94 @@ export default function Navigation() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-3">
+                    <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
                         <img
                             src="/logo.jpg"
                             alt="Tidal Power Fitness Logo"
-                            className="h-12 w-auto object-contain"
+                            className="h-10 w-auto object-contain"
                         />
-                        <span className="text-foreground font-bold text-lg hidden sm:block">Tidal Power Fitness</span>
+                        <span className="text-foreground font-bold text-base lg:text-lg hidden lg:block">Tidal Power Fitness</span>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-6">
+                    <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
                         <Link
                             href="/classes"
-                            className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                            className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                            title="Classes"
                         >
-                            Classes
+                            <span className="text-lg">🗓️</span>
+                            <span className="hidden xl:inline">Classes</span>
                         </Link>
                         {isAuthenticated && (
                             <>
                                 <Link
                                     href="/leaderboard"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                                    title="Leaderboard"
                                 >
-                                    Leaderboard
+                                    <span className="text-lg">🏆</span>
+                                    <span className="hidden xl:inline">Leaderboard</span>
                                 </Link>
                                 <Link
                                     href="/challenges"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                                    title="Challenges"
                                 >
-                                    Challenges
+                                    <span className="text-lg">🎯</span>
+                                    <span className="hidden xl:inline">Challenges</span>
                                 </Link>
                             </>
                         )}
                         {isAuthenticated ? (
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-1 lg:space-x-3">
                                 {/* My Program */}
                                 <Link
                                     href="/programs/my-program"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                                    title="My Program"
                                 >
-                                    My Program
+                                    <span className="text-lg">📋</span>
+                                    <span className="hidden xl:inline">My Program</span>
                                 </Link>
 
                                 {/* My Bookings */}
                                 <Link
                                     href="/bookings"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                                    title="My Bookings"
                                 >
-                                    My Bookings
+                                    <span className="text-lg">🎟️</span>
+                                    <span className="hidden xl:inline">My Bookings</span>
                                 </Link>
                                 
                                 {/* Workout History */}
                                 <Link
                                     href="/workouts/history"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-xs lg:text-sm transition-colors font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5"
+                                    title="Workouts"
                                 >
-                                    Workouts
+                                    <span className="text-lg">💪</span>
+                                    <span className="hidden xl:inline">Workouts</span>
                                 </Link>
 
                                 {isTrainerOrAdmin && (
                                     <div className="relative" ref={dropdownRef}>
                                         <button
                                             onClick={() => setManagementOpen(!managementOpen)}
-                                            className="flex items-center space-x-1 text-gray-500 dark:text-gray-300 hover:text-foreground transition-colors font-semibold focus:outline-none"
+                                            className="flex items-center space-x-1 text-gray-500 dark:text-gray-300 hover:text-foreground transition-colors font-semibold focus:outline-none px-2 py-1 rounded-md hover:bg-white/5 text-xs lg:text-sm"
                                         >
-                                            <span>Management</span>
+                                            <span className="text-lg">⚙️</span>
+                                            <span className="hidden lg:inline">Management</span>
                                             <svg className={`w-4 h-4 transition-transform ${managementOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </button>
 
                                         {managementOpen && (
-                                            <div className="absolute right-0 mt-2 w-56 bg-card border border-card-border rounded-lg shadow-xl py-2 z-50 text-foreground">
+                                            <div className="absolute right-0 mt-2 w-56 bg-card dark:bg-[#1a1a1a] border border-card-border rounded-lg shadow-2xl py-2 z-50 text-foreground ring-1 ring-black/10">
 
-                                                <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-white/5 mb-1">
                                                     Training
                                                 </div>
                                                 <Link href="/admin/exercises" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground" onClick={() => setManagementOpen(false)}>Manage Exercises</Link>
@@ -134,7 +147,7 @@ export default function Navigation() {
 
                                                 {isAdmin && (
                                                     <>
-                                                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2 border-t border-card-border pt-2">
+                                                        <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-2 border-t border-card-border pt-2 bg-gray-50 dark:bg-white/5 mb-1">
                                                             Admin
                                                         </div>
                                                         <Link href="/admin/analytics" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground" onClick={() => setManagementOpen(false)}>Business Analytics</Link>
@@ -166,11 +179,11 @@ export default function Navigation() {
 
                                 <Link
                                     href="/packages"
-                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium flex items-center gap-1"
+                                    className="text-gray-500 dark:text-gray-300 hover:text-foreground text-sm transition-colors font-medium flex items-center gap-1 group/tokens"
                                 >
                                     Packages
                                     {user?.credits !== undefined && (
-                                        <span className="bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] px-1.5 py-0.5 rounded-full border border-teal-500/30">
+                                        <span className="bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] px-1.5 py-0.5 rounded-full border border-teal-500/30 group-hover/tokens:bg-teal-500 group-hover/tokens:text-white transition-all">
                                             {user.credits} Tokens
                                         </span>
                                     )}

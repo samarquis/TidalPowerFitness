@@ -82,6 +82,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 last_name: user.last_name,
                 phone: user.phone,
                 roles: user.roles,
+                credits: 0,
             },
             token
         });
@@ -144,6 +145,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             path: '/',
         });
 
+        // Fetch user credits
+        const creditsData = await UserCreditModel.getUserCredits(user.id);
+        const totalCredits = creditsData.reduce((sum, c) => sum + c.remaining_credits, 0);
+
         // Return user data (with token for test compatibility)
         res.status(200).json({
             message: 'Login successful',
@@ -154,6 +159,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 last_name: user.last_name,
                 phone: user.phone,
                 roles: user.roles,
+                credits: totalCredits,
             },
             token
         });

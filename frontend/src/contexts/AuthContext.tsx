@@ -9,7 +9,7 @@ interface User {
     first_name: string;
     last_name: string;
     roles: string[];
-    credits?: number;
+    credits: number;
     current_streak: number;
     longest_streak: number;
     last_workout_date?: string;

@@ -23,6 +23,7 @@ class ExerciseController {
                 workout_type_id: req.query.workout_type_id as string,
                 muscle_group: req.query.muscle_group as string,
                 difficulty: req.query.difficulty as string,
+                movement_pattern: req.query.movement_pattern as string,
                 search: req.query.search as string
             };
 

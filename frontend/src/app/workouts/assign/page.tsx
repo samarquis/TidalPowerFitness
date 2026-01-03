@@ -63,7 +63,8 @@ function AssignWorkoutContent() {
     const [notes, setNotes] = useState('');
 
     useEffect(() => {
-        if (!user || !user.roles.includes('trainer')) {
+        const isTrainerOrAdmin = user?.roles.includes('trainer') || user?.roles.includes('admin');
+        if (!user || !isTrainerOrAdmin) {
             router.push('/');
         }
     }, [user, router]);
@@ -235,7 +236,9 @@ function AssignWorkoutContent() {
         );
     };
 
-    if (!user || !user.roles.includes('trainer')) {
+    const isTrainerOrAdmin = user?.roles.includes('trainer') || user?.roles.includes('admin');
+
+    if (!user || !isTrainerOrAdmin) {
         return null;
     }
 

@@ -21,6 +21,7 @@ interface Exercise {
     equipment_required?: string;
     primary_muscle_group?: string;
     muscle_group_name?: string;
+    movement_pattern?: string;
 }
 
 export default function ExerciseLibraryPage() {
@@ -30,6 +31,7 @@ export default function ExerciseLibraryPage() {
     const [loading, setLoading] = useState(true);
     const [selectedBodyPart, setSelectedBodyPart] = useState<string>('all');
     const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null);
+    const [selectedPattern, setSelectedPattern] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
@@ -62,9 +64,10 @@ export default function ExerciseLibraryPage() {
 
     const filteredExercises = exercises.filter(ex => {
         const matchesMuscle = !selectedMuscle || ex.primary_muscle_group === selectedMuscle;
+        const matchesPattern = selectedPattern === 'all' || ex.movement_pattern === selectedPattern;
         const matchesSearch = !searchTerm ||
             ex.name.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesMuscle && matchesSearch;
+        return matchesMuscle && matchesSearch && matchesPattern;
     });
 
     const getMuscleExerciseCount = (muscleId: string) => {
@@ -172,12 +175,29 @@ export default function ExerciseLibraryPage() {
                             <h2 className="text-2xl font-bold">
                                 {muscles.find(m => m.id === selectedMuscle)?.name} Exercises
                             </h2>
-                            <button
-                                onClick={() => setSelectedMuscle(null)}
-                                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
-                            >
-                                ← Back to Muscle Groups
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <div className="flex bg-white/5 p-1 rounded-lg border border-white/10">
+                                    {['all', 'Push', 'Pull', 'Legs'].map((pattern) => (
+                                        <button
+                                            key={pattern}
+                                            onClick={() => setSelectedPattern(pattern)}
+                                            className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
+                                                selectedPattern === pattern
+                                                    ? 'bg-turquoise-surf text-black'
+                                                    : 'text-gray-400 hover:text-white'
+                                            }`}
+                                        >
+                                            {pattern}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={() => setSelectedMuscle(null)}
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all text-sm font-semibold"
+                                >
+                                    ← Back
+                                </button>
+                            </div>
                         </div>
 
                         {filteredExercises.length === 0 ? (
@@ -196,16 +216,21 @@ export default function ExerciseLibraryPage() {
                                             {exercise.name}
                                         </h3>
                                         <div className="space-y-2">
-                                            {exercise.difficulty_level && (
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {exercise.difficulty_level && (
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
                                                         exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
                                                             'bg-red-500/20 text-red-400'
                                                         }`}>
                                                         {exercise.difficulty_level}
                                                     </span>
-                                                </div>
-                                            )}
+                                                )}
+                                                {exercise.movement_pattern && (
+                                                    <span className="px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded text-[10px] font-bold uppercase tracking-widest border border-turquoise-surf/20">
+                                                        {exercise.movement_pattern}
+                                                    </span>
+                                                )}
+                                            </div>
                                             {exercise.equipment_required && (
                                                 <p className="text-sm text-gray-400">
                                                     Equipment: {exercise.equipment_required}

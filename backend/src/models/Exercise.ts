@@ -7,6 +7,7 @@ export interface Exercise {
     description?: string;
     workout_type_id?: string;
     primary_muscle_group?: string;
+    movement_pattern?: 'Push' | 'Pull' | 'Legs' | 'Static' | 'None';
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
@@ -24,6 +25,7 @@ export interface CreateExerciseInput {
     description?: string;
     workout_type_id?: string;
     primary_muscle_group?: string;
+    movement_pattern?: string;
     secondary_muscle_group_ids?: string[];
     equipment_required?: string;
     difficulty_level?: string;
@@ -38,6 +40,7 @@ export interface UpdateExerciseInput {
     description?: string;
     workout_type_id?: string;
     primary_muscle_group?: string;
+    movement_pattern?: string;
     secondary_muscle_group_ids?: string[];
     equipment_required?: string;
     difficulty_level?: string;
@@ -53,6 +56,7 @@ class ExerciseModel {
         workout_type_id?: string;
         muscle_group?: string;
         difficulty?: string;
+        movement_pattern?: string;
         is_active?: boolean;
         search?: string;
     }): Promise<Exercise[]> {
@@ -83,6 +87,12 @@ class ExerciseModel {
         if (filters?.difficulty) {
             sql += ` AND e.difficulty_level = $${paramCount}`;
             params.push(filters.difficulty);
+            paramCount++;
+        }
+
+        if (filters?.movement_pattern) {
+            sql += ` AND e.movement_pattern = $${paramCount}`;
+            params.push(filters.movement_pattern);
             paramCount++;
         }
 
@@ -156,11 +166,11 @@ class ExerciseModel {
         try {
             const result: QueryResult = await query(
                 `INSERT INTO exercises (
-                    name, description, workout_type_id, primary_muscle_group,
+                    name, description, workout_type_id, primary_muscle_group, movement_pattern,
                     equipment_required, difficulty_level, video_url, image_url, instructions, created_by
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING *`,
-                [name, description, workout_type_id, primary_muscle_group,
+                [name, description, workout_type_id, primary_muscle_group, exerciseData.movement_pattern,
                     equipment_required, difficulty_level, video_url, image_url, instructions, created_by]
             );
 

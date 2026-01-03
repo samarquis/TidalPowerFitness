@@ -66,12 +66,11 @@ interface ActiveProgram {
 }
 
 export default function UserDashboard() {
-    const { user, token } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [classes, setClasses] = useState<Class[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [credits, setCredits] = useState<UserCredits>({ total: 0 });
     const [stats, setStats] = useState<WorkoutStats | null>(null);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
@@ -83,10 +82,10 @@ export default function UserDashboard() {
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
-        if (user && token) {
+        if (user) {
             fetchData();
         }
-    }, [user, token]);
+    }, [user]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -103,7 +102,6 @@ export default function UserDashboard() {
             const [
                 classesRes,
                 bookingsRes,
-                creditsRes,
                 statsRes,
                 achievementsRes,
                 prRes,
@@ -112,7 +110,6 @@ export default function UserDashboard() {
             ] = await Promise.all([
                 apiClient.getClasses(),
                 apiClient.getUserBookings(user!.id),
-                apiClient.getUserCredits(user!.id),
                 apiClient.getClientStats(user!.id),
                 apiClient.getUserAchievements(user!.id),
                 apiClient.getPersonalRecords(user!.id),
@@ -122,7 +119,6 @@ export default function UserDashboard() {
 
             if (classesRes.data) setClasses(classesRes.data);
             if (bookingsRes.data) setBookings(bookingsRes.data.filter((b: Booking) => b.status === 'confirmed'));
-            if (creditsRes.data) setCredits({ total: creditsRes.data.credits || 0 });
             if (statsRes.data) setStats(statsRes.data);
             if (achievementsRes.data) setAchievements(achievementsRes.data);
             if (prRes.data) setPersonalRecords(prRes.data);
@@ -151,7 +147,10 @@ export default function UserDashboard() {
             }
 
             // Refresh data after booking
-            await fetchData();
+            await Promise.all([
+                fetchData(),
+                refreshUser()
+            ]);
             setSuccessMessage(`Class booked successfully for ${attendeeCount} ${attendeeCount === 1 ? 'person' : 'people'}! ${attendeeCount} ${attendeeCount === 1 ? 'credit has' : 'credits have'} been deducted.`);
             setTimeout(() => setSuccessMessage(''), 5000);
         } catch (error: any) {
@@ -232,7 +231,7 @@ export default function UserDashboard() {
                 <div className="glass-card mb-12 flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center">
-                            <span className="text-2xl font-bold">{credits.total}</span>
+                            <span className="text-2xl font-bold">{user?.credits || 0}</span>
                         </div>
                         <div>
                             <p className="text-sm text-gray-400 uppercase font-bold">Available Tokens</p>
@@ -405,7 +404,13 @@ export default function UserDashboard() {
                                 </div>
                             ) : selectedDayClasses.length === 0 ? (
                                 <div className="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10">
-                                    <p className="text-gray-500 text-lg">No classes scheduled for this day.</p>
+                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                                        📅
+                                    </div>
+                                    <p className="text-gray-500 text-lg mb-6">No classes scheduled for this day.</p>
+                                    <Link href="/classes" className="btn-secondary inline-block py-2 px-6">
+                                        Browse All Classes
+                                    </Link>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
@@ -554,7 +559,7 @@ export default function UserDashboard() {
                         ...selectedClass,
                         date: selectedDate
                     }}
-                    userCredits={credits.total}
+                    userCredits={user?.credits || 0}
                     isOpen={showModal}
                     onClose={() => {
                         setShowModal(false);

@@ -12,6 +12,7 @@ interface Exercise {
     workout_type_name?: string;
     primary_muscle_group?: string;
     muscle_group_name?: string;
+    movement_pattern?: string;
     equipment_required?: string;
     difficulty_level?: string;
     video_url?: string;
@@ -40,12 +41,15 @@ interface BodyPart {
     description?: string;
 }
 
+const PATTERNS = ['Push', 'Pull', 'Legs', 'Static', 'None'];
+
 interface ExerciseFormData {
     name: string;
     description: string;
     workout_type_id: string;
     body_part_id: string;
     primary_muscle_group: string;
+    movement_pattern: string;
     equipment_required: string;
     difficulty_level: string;
     video_url: string;
@@ -78,6 +82,7 @@ export default function AdminExercisesPage() {
         workout_type_id: '',
         body_part_id: '',
         primary_muscle_group: '',
+        movement_pattern: '',
         equipment_required: '',
         difficulty_level: '',
         video_url: '',
@@ -217,6 +222,7 @@ export default function AdminExercisesPage() {
             workout_type_id: '',
             body_part_id: '',
             primary_muscle_group: '',
+            movement_pattern: '',
             equipment_required: '',
             difficulty_level: '',
             video_url: '',
@@ -235,6 +241,7 @@ export default function AdminExercisesPage() {
             workout_type_id: exercise.workout_type_id || '',
             body_part_id: bodyFocusAreas.find(b => b.id === exercise.primary_muscle_group)?.body_part_id || '',
             primary_muscle_group: exercise.primary_muscle_group || '',
+            movement_pattern: exercise.movement_pattern || '',
             equipment_required: exercise.equipment_required || '',
             difficulty_level: exercise.difficulty_level || '',
             video_url: exercise.video_url || '',
@@ -457,7 +464,7 @@ export default function AdminExercisesPage() {
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Exercise Name</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Workout Type</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Muscle Group</th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Equipment</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Pattern</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Difficulty</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
@@ -474,7 +481,13 @@ export default function AdminExercisesPage() {
                                         </td>
                                         <td className="px-6 py-4 text-gray-400">{exercise.workout_type_name || '-'}</td>
                                         <td className="px-6 py-4 text-gray-400">{exercise.muscle_group_name || '-'}</td>
-                                        <td className="px-6 py-4 text-gray-400">{exercise.equipment_required || 'None'}</td>
+                                        <td className="px-6 py-4">
+                                            {exercise.movement_pattern ? (
+                                                <span className="px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded text-[10px] font-bold uppercase border border-turquoise-surf/20">
+                                                    {exercise.movement_pattern}
+                                                </span>
+                                            ) : '-'}
+                                        </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/20 text-green-400' :
                                                 exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -496,18 +509,30 @@ export default function AdminExercisesPage() {
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => openEditModal(exercise)}
-                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-semibold transition-all"
+                                                    className="p-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20"
+                                                    title="Edit Exercise"
                                                 >
-                                                    Edit
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
                                                 </button>
                                                 <button
                                                     onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
-                                                    className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${exercise.is_active
-                                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                                    className={`p-2 rounded-lg transition-all border ${exercise.is_active
+                                                        ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
+                                                        : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
                                                         }`}
+                                                    title={exercise.is_active ? 'Deactivate' : 'Activate'}
                                                 >
-                                                    {exercise.is_active ? 'Deactivate' : 'Activate'}
+                                                    {exercise.is_active ? (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    )}
                                                 </button>
                                             </div>
                                         </td>
@@ -665,6 +690,20 @@ export default function AdminExercisesPage() {
                                             ))}
                                     </select>
                                     {errors.primary_muscle_group && <p className="text-red-400 text-sm mt-1">{errors.primary_muscle_group}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Movement Pattern</label>
+                                    <select
+                                        value={formData.movement_pattern}
+                                        onChange={(e) => setFormData({ ...formData, movement_pattern: e.target.value })}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                    >
+                                        <option value="">Select pattern</option>
+                                        {PATTERNS.map((pattern) => (
+                                            <option key={pattern} value={pattern}>{pattern}</option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
