@@ -115,6 +115,14 @@ class ApiClient {
         });
     }
 
+    async post<T>(endpoint: string, body: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+        return this.request<T>(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            ...options,
+        });
+    }
+
     async getAllUsers() {
         return this.request<any>('/users', { method: 'GET' });
     }
