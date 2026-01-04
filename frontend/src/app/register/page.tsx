@@ -62,7 +62,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 logo-watermark">
             <div className="max-w-md w-full">
                 <div className="glass rounded-2xl p-8">
                     {/* Header */}
@@ -76,14 +76,14 @@ export default function RegisterPage() {
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && (
-                            <div className="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm">
+                            <div className="bg-red-600/20 border border-red-600 text-red-500 px-4 py-3 rounded-lg text-sm">
                                 {error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="first_name" className="block text-sm font-semibold mb-2">
+                                <label htmlFor="first_name" className="block text-sm font-semibold mb-2 text-gray-400">
                                     First Name
                                 </label>
                                 <input
@@ -93,12 +93,12 @@ export default function RegisterPage() {
                                     required
                                     value={formData.first_name}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                    className="input-field"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="last_name" className="block text-sm font-semibold mb-2">
+                                <label htmlFor="last_name" className="block text-sm font-semibold mb-2 text-gray-400">
                                     Last Name
                                 </label>
                                 <input
@@ -108,13 +108,13 @@ export default function RegisterPage() {
                                     required
                                     value={formData.last_name}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                    className="input-field"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="email" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Email
                             </label>
                             <input
@@ -124,13 +124,13 @@ export default function RegisterPage() {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="you@example.com"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="phone" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="phone" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Phone (Optional)
                             </label>
                             <input
@@ -139,13 +139,13 @@ export default function RegisterPage() {
                                 type="tel"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="(555) 123-4567"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="password" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Password
                             </label>
                             <input
@@ -155,14 +155,14 @@ export default function RegisterPage() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="••••••••"
                             />
                             <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
                         </div>
 
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Confirm Password
                             </label>
                             <input
@@ -172,7 +172,7 @@ export default function RegisterPage() {
                                 required
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -189,7 +189,7 @@ export default function RegisterPage() {
                     {/* Footer */}
                     <div className="mt-6 text-center text-sm text-gray-400">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-red-600 hover:text-red-500 font-semibold">
+                        <Link href="/login" className="text-turquoise-surf hover:text-pacific-cyan font-semibold">
                             Sign in
                         </Link>
                     </div>

@@ -77,56 +77,62 @@ export default function ClassSignupModal({
         : classInfo.day_of_week !== undefined ? DAYS[classInfo.day_of_week] : 'TBD';
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-white/10 overflow-hidden">
+        <div className="modal-overlay backdrop-blur-sm">
+            <div className="glass rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden relative">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-cerulean to-pacific-cyan px-6 py-4">
-                    <h2 className="text-xl font-bold text-white">Confirm Class Booking</h2>
+                    <h2 className="text-xl font-bold text-white uppercase tracking-wider">Confirm Booking</h2>
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="p-8">
                     {/* Class Details */}
-                    <div className="mb-6">
-                        <h3 className="text-2xl font-bold text-white mb-2">{classInfo.name}</h3>
-                        <p className="text-gray-400 text-sm mb-4">{classInfo.description}</p>
+                    <div className="mb-8">
+                        <h3 className="text-2xl font-bold mb-2">{classInfo.name}</h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{classInfo.description}</p>
 
-                        <div className="space-y-2 text-sm">
-                            <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                        <div className="space-y-3">
+                            <div className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                                <span className="w-8 h-8 rounded-lg bg-turquoise-surf/10 flex items-center justify-center mr-3">
+                                    <svg className="w-4 h-4 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </span>
                                 {formattedDate}
                             </div>
-                            <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                            <div className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                                <span className="w-8 h-8 rounded-lg bg-turquoise-surf/10 flex items-center justify-center mr-3">
+                                    <svg className="w-4 h-4 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
                                 {formatTime(classInfo.start_time)} • {classInfo.duration_minutes} min
                             </div>
-                            <div className="flex items-center text-gray-300">
-                                <svg className="w-4 h-4 mr-3 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                Instructor: {classInfo.instructor_name}
+                            <div className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                                <span className="w-8 h-8 rounded-lg bg-turquoise-surf/10 flex items-center justify-center mr-3">
+                                    <svg className="w-4 h-4 text-turquoise-surf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </span>
+                                Instructor: <span className="text-foreground font-bold ml-1">{classInfo.instructor_name}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Attendee Selection */}
-                    <div className="mb-6 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/5">
-                        <span className="font-semibold text-gray-300">Number of Attendees</span>
+                    <div className="mb-8 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span className="font-bold text-xs uppercase tracking-widest text-gray-500">Attendees</span>
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
-                                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
+                                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold text-foreground"
                             >
                                 -
                             </button>
-                            <span className="text-2xl font-bold text-teal-400 w-6 text-center">{attendeeCount}</span>
+                            <span className="text-2xl font-bold text-turquoise-surf w-6 text-center">{attendeeCount}</span>
                             <button
                                 onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
-                                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold"
+                                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors text-xl font-bold text-foreground"
                             >
                                 +
                             </button>
@@ -134,21 +140,21 @@ export default function ClassSignupModal({
                     </div>
 
                     {/* Credit Info */}
-                    <div className="bg-white/5 rounded-xl p-4 mb-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-gray-400">Total Cost</span>
-                            <span className="font-bold text-white">{totalCost} {totalCost === 1 ? 'Credit' : 'Credits'}</span>
+                    <div className="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Total Cost</span>
+                            <span className="font-bold text-lg">{totalCost} {totalCost === 1 ? 'Credit' : 'Credits'}</span>
                         </div>
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-gray-400">Your Balance</span>
-                            <span className={`font-bold ${hasEnoughCredits ? 'text-turquoise-surf' : 'text-red-400'}`}>
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Your Balance</span>
+                            <span className={`font-bold ${hasEnoughCredits ? 'text-turquoise-surf' : 'text-red-500'}`}>
                                 {userCredits} Credits
                             </span>
                         </div>
-                        <div className="border-t border-white/10 pt-2 mt-2">
+                        <div className="border-t border-white/10 pt-3 mt-3">
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-400">After Booking</span>
-                                <span className="font-bold text-white">
+                                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">After Booking</span>
+                                <span className="font-bold">
                                     {hasEnoughCredits ? userCredits - totalCost : 0} Credits
                                 </span>
                             </div>
@@ -157,25 +163,25 @@ export default function ClassSignupModal({
 
                     {/* Error Message */}
                     {error && (
-                        <div className="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg mb-4">
+                        <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm font-medium">
                             {error}
                         </div>
                     )}
 
                     {/* Insufficient Credits Warning */}
                     {!hasEnoughCredits && (
-                        <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg mb-4">
-                            <p className="font-semibold mb-1">Insufficient Credits</p>
-                            <p className="text-sm">You need at least {totalCost} credits to book for {attendeeCount} people. Please purchase more credits.</p>
+                        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 px-4 py-3 rounded-lg mb-6">
+                            <p className="font-bold text-sm uppercase tracking-wide mb-1">Insufficient Credits</p>
+                            <p className="text-xs opacity-80">You need {totalCost} credits but only have {userCredits}.</p>
                         </div>
                     )}
                 </div>
 
                 {/* Actions */}
-                <div className="px-6 pb-6 flex gap-3">
+                <div className="px-8 pb-8 flex gap-4">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold transition-colors"
+                        className="btn-secondary flex-1"
                     >
                         Cancel
                     </button>
@@ -183,27 +189,24 @@ export default function ClassSignupModal({
                         <button
                             onClick={handleConfirm}
                             disabled={isLoading}
-                            className="flex-1 py-3 px-4 bg-cerulean hover:bg-dark-teal disabled:bg-gray-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center"
+                            className="btn-primary flex-1 min-w-[140px]"
                         >
                             {isLoading ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Booking...
-                                </>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
                             ) : (
-                                `Book for ${attendeeCount}`
+                                `Confirm`
                             )}
                         </button>
                     ) : (
-                        <a
+                        <Link
                             href="/packages"
-                            className="flex-1 py-3 px-4 bg-cerulean hover:bg-dark-teal text-white rounded-lg font-semibold transition-colors text-center"
+                            className="btn-primary flex-1 text-center"
                         >
-                            Buy Credits
-                        </a>
+                            Get Credits
+                        </Link>
                     )}
                 </div>
             </div>

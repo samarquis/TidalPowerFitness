@@ -275,11 +275,11 @@ export default function UserDashboard() {
                                     <h2 className="text-3xl font-bold mb-2">{activeProgram.program_name}</h2>
                                     
                                     {activeProgram.next_workout ? (
-                                        <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/40 backdrop-blur-sm p-6 rounded-xl border border-white/5">
+                                        <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-pacific-cyan/10 backdrop-blur-sm p-6 rounded-xl border border-pacific-cyan/20">
                                             <div>
                                                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Next Scheduled Workout</p>
                                                 <h3 className="text-xl font-bold text-foreground">{activeProgram.next_workout.workout_name}</h3>
-                                                <p className="text-sm text-gray-400">Scheduled for Day {activeProgram.next_workout.day_number}</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">Scheduled for Day {activeProgram.next_workout.day_number}</p>
                                             </div>
                                             <Link 
                                                 href={`/workouts/active?template=${activeProgram.next_workout.workout_template_id}&assignment=${activeProgram.id}`}
@@ -289,7 +289,7 @@ export default function UserDashboard() {
                                             </Link>
                                         </div>
                                     ) : (
-                                        <p className="text-gray-400 mt-4 italic">No more workouts scheduled for this week. Great job!</p>
+                                        <p className="text-gray-500 dark:text-gray-400 mt-4 italic">No more workouts scheduled for this week. Great job!</p>
                                     )}
                                 </div>
                             </div>
@@ -302,7 +302,7 @@ export default function UserDashboard() {
                                     <span className="text-xl">🤖</span>
                                     <h2 className="text-xl font-bold">AI Coaching Insights</h2>
                                 </div>
-                                <p className="text-gray-400 text-sm mb-6">Based on your recent training volume, we recommend adding these exercises to balance your physique:</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Based on your recent training volume, we recommend adding these exercises to balance your physique:</p>
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {recommendations.map(rec => (
                                         <Link 
@@ -310,8 +310,8 @@ export default function UserDashboard() {
                                             href={`/exercises/${rec.id}`}
                                             className="p-4 bg-white/5 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all group"
                                         >
-                                            <p className="text-[10px] font-bold text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
-                                            <h4 className="font-bold text-foreground group-hover:text-purple-300 transition-colors">{rec.name}</h4>
+                                            <p className="text-[10px] font-bold text-purple-500 dark:text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
+                                            <h4 className="font-bold text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">{rec.name}</h4>
                                         </Link>
                                     ))}
                                 </div>
@@ -383,16 +383,16 @@ export default function UserDashboard() {
                                             onClick={() => setSelectedDate(dateObj)}
                                             className={`
                                                 aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
-                                                ${isSelected ? 'bg-gradient-to-br from-cerulean to-pacific-cyan text-white ring-2 ring-turquoise-surf shadow-lg' : 'bg-white/5 hover:bg-white/10 border border-white/5'}
+                                                ${isSelected ? 'bg-gradient-to-br from-cerulean to-pacific-cyan text-white ring-2 ring-turquoise-surf shadow-lg shadow-turquoise-surf/20' : 'bg-white/5 hover:bg-white/10 border border-white/5'}
                                                 ${isToday && !isSelected ? 'border-2 border-turquoise-surf' : ''}
                                             `}
                                         >
-                                            <span className="text-sm font-bold">{day}</span>
+                                            <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-foreground'}`}>{day}</span>
                                             {hasClasses && (
                                                 <div className="flex gap-1 mt-1">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400' : 'bg-turquoise-surf'}`}></div>
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-500' : 'bg-turquoise-surf'}`}></div>
                                                     {dayClasses.length > 1 && (
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-400 shadow-sm' : 'bg-turquoise-surf'}`}></div>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-500 shadow-sm' : 'bg-turquoise-surf'}`}></div>
                                                     )}
                                                 </div>
                                             )}
@@ -430,9 +430,49 @@ export default function UserDashboard() {
                                             <div
                                                 key={classItem.id}
                                                 className={`p-5 rounded-2xl border transition-all ${booked
+                                    {selectedDayClasses.map((classItem) => {
+                                        const booked = isClassBooked(classItem.id, selectedDate);
+                                        return (
+                                            <div
+                                                key={classItem.id}
+                                                className={`p-5 rounded-2xl border transition-all ${booked
                                                     ? 'bg-green-500/10 border-green-500/30'
-                                                    : 'bg-white/5 border-white/10 hover:border-turquoise-surf/30 hover:bg-white/10 cursor-pointer group'
+                                                    : 'bg-white/5 border border-white/10 hover:border-turquoise-surf/30 hover:bg-white/10 cursor-pointer group'
                                                     }`}
+                                                onClick={() => !booked && handleClassClick(classItem)}
+                                            >
+                                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                                    <div>
+                                                        <h3 className="font-bold text-xl flex items-center gap-3 group-hover:text-turquoise-surf transition-colors">
+                                                            {classItem.name}
+                                                            {booked && (
+                                                                <span className="px-3 py-1 text-[10px] font-bold bg-green-500/20 text-green-600 dark:text-green-400 rounded-full border border-green-500/20 uppercase tracking-wider">
+                                                                    ✓ Booked
+                                                                </span>
+                                                            )}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-1">{classItem.description}</p>
+                                                        <div className="flex flex-wrap gap-4 mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">
+                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {classItem.start_time.slice(0, 5)} <span className="text-gray-300 dark:text-gray-600">•</span> {classItem.duration_minutes}m</span>
+                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">👤</span> {classItem.instructor_name}</span>
+                                                            <span className="flex items-center gap-1.5 px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded-md">⚡ 1 Credit</span>
+                                                        </div>
+                                                    </div>
+                                                    {!booked && (
+                                                        <button
+                                                            className="btn-primary w-full sm:w-auto py-2 px-6"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleClassClick(classItem);
+                                                            }}
+                                                        >
+                                                            Book Now
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}`}
                                                 onClick={() => !booked && handleClassClick(classItem)}
                                             >
                                                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4">

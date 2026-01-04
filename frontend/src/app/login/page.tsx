@@ -31,7 +31,7 @@ function LoginContent() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 logo-watermark">
             <div className="max-w-md w-full">
                 <div className="glass rounded-2xl p-8">
                     {/* Header */}
@@ -45,13 +45,13 @@ function LoginContent() {
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
-                            <div className="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm">
+                            <div className="bg-red-600/20 border border-red-600 text-red-500 px-4 py-3 rounded-lg text-sm">
                                 {error}
                             </div>
                         )}
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="email" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Email
                             </label>
                             <input
@@ -60,13 +60,13 @@ function LoginContent() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="you@example.com"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-semibold mb-2">
+                            <label htmlFor="password" className="block text-sm font-semibold mb-2 text-gray-400">
                                 Password
                             </label>
                             <input
@@ -75,7 +75,7 @@ function LoginContent() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
+                                className="input-field"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -92,7 +92,7 @@ function LoginContent() {
                     {/* Footer */}
                     <div className="mt-6 text-center text-sm text-gray-400">
                         Don't have an account?{' '}
-                        <Link href="/register" className="text-red-600 hover:text-red-500 font-semibold">
+                        <Link href="/register" className="text-turquoise-surf hover:text-pacific-cyan font-semibold">
                             Sign up
                         </Link>
                     </div>

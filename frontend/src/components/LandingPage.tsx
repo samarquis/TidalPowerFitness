@@ -49,15 +49,7 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
-            <section className="relative h-screen flex items-center justify-center overflow-hidden">
-                {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black">
-                    <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pacific-cyan rounded-full filter blur-3xl animate-pulse"></div>
-                        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pacific-cyan rounded-full filter blur-3xl animate-pulse delay-1000"></div>
-                    </div>
-                </div>
-
+            <section className="relative h-screen flex items-center justify-center overflow-hidden logo-watermark">
                 {/* Content */}
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 md:pt-0">
                     <FadeIn direction="up">
@@ -68,7 +60,7 @@ export default function LandingPage() {
                         </h1>
                     </FadeIn>
                     <FadeIn direction="up" delay={0.2}>
-                        <p className="text-lg md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                        <p className="text-lg md:text-2xl text-gray-400 mb-10 max-w-3xl mx-auto">
                             Elite personal training tailored to your goals. Expert coaches, proven results, unstoppable you.
                         </p>
                     </FadeIn>
@@ -95,7 +87,7 @@ export default function LandingPage() {
 
                     {/* Social proof badges */}
                     <FadeIn direction="up" delay={0.6}>
-                        <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-sm text-gray-400">
+                        <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-sm text-gray-500">
                             <div className="flex items-center">✓ No Long-term Commitments</div>
                             <div className="flex items-center">✓ Elite Coaching</div>
                             <div className="flex items-center">✓ Certified Trainers</div>
@@ -105,7 +97,7 @@ export default function LandingPage() {
 
                 {/* Scroll indicator */}
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                    <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-turquoise-surf opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
                 </div>
@@ -115,7 +107,7 @@ export default function LandingPage() {
             <ClassScheduleSection />
 
             {/* Features Section */}
-            <section className="py-24 bg-black">
+            <section className="py-24">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <FadeIn direction="up">
                         <h2 className="text-4xl md:text-6xl font-bold text-center mb-16">
@@ -131,8 +123,8 @@ export default function LandingPage() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Expert Trainers</h3>
-                                <p className="text-gray-400 leading-relaxed">
+                                <h3 className="text-2xl font-bold mb-4">Expert Trainers</h3>
+                                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
                                     Certified professionals with years of experience in strength training, conditioning, and nutrition.
                                 </p>
                             </div>
@@ -146,8 +138,8 @@ export default function LandingPage() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Personalized Programs</h3>
-                                <p className="text-gray-400 leading-relaxed">
+                                <h3 className="text-2xl font-bold mb-4">Personalized Programs</h3>
+                                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
                                     Custom workout and nutrition plans designed specifically for your goals and fitness level.
                                 </p>
                             </div>
@@ -161,8 +153,8 @@ export default function LandingPage() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Flexible Scheduling</h3>
-                                <p className="text-gray-400 leading-relaxed">
+                                <h3 className="text-2xl font-bold mb-4">Flexible Scheduling</h3>
+                                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
                                     Book sessions that fit your schedule with our easy online booking system.
                                 </p>
                             </div>
@@ -175,13 +167,13 @@ export default function LandingPage() {
             <TrainerBiosSection />
 
             {/* Pricing Teaser Section */}
-            <section className="py-24 bg-gradient-to-b from-black via-gray-900 to-black">
+            <section className="py-24 bg-gradient-to-b from-background via-pacific-cyan/5 to-background">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <FadeIn direction="up">
                         <h2 className="text-4xl md:text-6xl font-bold text-center mb-6">
                             Class <span className="text-gradient">Packages</span>
                         </h2>
-                        <p className="text-center text-gray-400 mb-20 max-w-2xl mx-auto text-lg">
+                        <p className="text-center text-gray-500 dark:text-gray-400 mb-20 max-w-2xl mx-auto text-lg">
                             Choose the package that works for you. Buy tokens and use them for any class.
                         </p>
                     </FadeIn>
@@ -211,20 +203,20 @@ export default function LandingPage() {
                                                 )}
                                                 <div className="text-xs font-bold text-turquoise-surf uppercase tracking-widest mb-4">{pkg.name}</div>
                                                                                             <div className="flex items-baseline gap-1 mb-6">
-                                                                                                <span className="text-5xl font-bold text-white">${(pkg.price_cents / 100).toFixed(0)}</span>
+                                                                                                <span className="text-5xl font-bold">${(pkg.price_cents / 100).toFixed(0)}</span>
                                                                                                 <span className="text-gray-500 font-medium">/{pkg.validity_days} days</span>
                                                                                             </div>
-                                                                                            <p className="text-gray-400 mb-8 line-clamp-2 min-h-[3rem] text-sm">{pkg.description || 'Flexible class package for all fitness levels.'}</p>
+                                                                                            <p className="text-gray-500 dark:text-gray-400 mb-8 line-clamp-2 min-h-[3rem] text-sm">{pkg.description || 'Flexible class package for all fitness levels.'}</p>
                                                                                             
                                                                                             <ul className="space-y-4 mb-10 flex-1">
-                                                                                                <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                                                                <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
                                                                                                     <span className="w-5 h-5 rounded-full bg-turquoise-surf/10 flex items-center justify-center shrink-0">
                                                                                                         <svg className="w-3 h-3 text-turquoise-surf" fill="currentColor" viewBox="0 0 20 20">
                                                                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                                                                         </svg>
                                                                                                     </span>
-                                                                                                    <span className="font-bold text-white">{pkg.credits}</span> Class Tokens
-                                                                                                </li>                                                    <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                                                                    <span className="font-bold text-foreground">{pkg.credits}</span> Class Tokens
+                                                                                                </li>                                                    <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
                                                         <span className="w-5 h-5 rounded-full bg-turquoise-surf/10 flex items-center justify-center shrink-0">
                                                             <svg className="w-3 h-3 text-turquoise-surf" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -232,7 +224,7 @@ export default function LandingPage() {
                                                         </span>
                                                         Group Class Access
                                                     </li>
-                                                    <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                    <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
                                                         <span className="w-5 h-5 rounded-full bg-turquoise-surf/10 flex items-center justify-center shrink-0">
                                                             <svg className="w-3 h-3 text-turquoise-surf" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -246,7 +238,7 @@ export default function LandingPage() {
                                                                                                 href="/packages"
                                                                                                 className={`w-full text-center py-4 px-6 rounded-xl font-bold transition-all ${isFeatured
                                                                                                     ? 'bg-gradient-to-r from-cerulean to-pacific-cyan text-white shadow-lg shadow-turquoise-surf/30 hover:scale-105'
-                                                                                                    : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                                                                                                    : 'btn-secondary border border-white/10'
                                                                                                     }`}
                                                                                             >
                                                                                                 {isFeatured ? 'Get Started Now' : 'Select Package'}
@@ -264,7 +256,7 @@ export default function LandingPage() {
                                                                         </FadeIn>                        </>
                     ) : (
                         <div className="text-center py-12">
-                            <p className="text-gray-400 mb-8">No packages available at the moment.</p>
+                            <p className="text-gray-500 mb-8">No packages available at the moment.</p>
                             <Link href="/packages" className="btn-primary">
                                 View All Options
                             </Link>
@@ -274,13 +266,13 @@ export default function LandingPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-24 bg-black">
+            <section className="py-24 bg-background">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <FadeIn direction="up">
                         <h2 className="text-4xl md:text-6xl font-bold text-center mb-6">
                             Frequently Asked <span className="text-gradient">Questions</span>
                         </h2>
-                        <p className="text-center text-gray-400 mb-20 text-lg">
+                        <p className="text-center text-gray-500 mb-20 text-lg">
                             Everything you need to know about getting started
                         </p>
                     </FadeIn>
@@ -290,12 +282,12 @@ export default function LandingPage() {
                         <FadeIn direction="up" delay={0.1}>
                             <details className="glass-card group p-0">
                                 <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
-                                    <span className="text-lg font-bold text-white group-hover:text-turquoise-surf transition-colors">Do I need any experience to join?</span>
+                                    <span className="text-lg font-bold group-hover:text-turquoise-surf transition-colors">Do I need any experience to join?</span>
                                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </summary>
-                                <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                <div className="px-6 pb-6 text-gray-500 dark:text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                     Not at all! We work with people of all fitness levels, from complete beginners to experienced athletes. Our trainers will customize your program to match your current abilities and goals.
                                 </div>
                             </details>
@@ -305,12 +297,12 @@ export default function LandingPage() {
                         <FadeIn direction="up" delay={0.2}>
                             <details className="glass-card group p-0">
                                 <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
-                                    <span className="text-lg font-bold text-white group-hover:text-turquoise-surf transition-colors">How do class tokens work?</span>
+                                    <span className="text-lg font-bold group-hover:text-turquoise-surf transition-colors">How do class tokens work?</span>
                                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </summary>
-                                <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                <div className="px-6 pb-6 text-gray-500 dark:text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                     Simply purchase a token package that fits your schedule. Each token can be used to book any group class or personal training session. Tokens have a validity period based on the package you choose.
                                 </div>
                             </details>
@@ -320,12 +312,12 @@ export default function LandingPage() {
                         <FadeIn direction="up" delay={0.3}>
                             <details className="glass-card group p-0">
                                 <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
-                                    <span className="text-lg font-bold text-white group-hover:text-turquoise-surf transition-colors">How do I book classes?</span>
+                                    <span className="text-lg font-bold group-hover:text-turquoise-surf transition-colors">How do I book classes?</span>
                                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </summary>
-                                <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                <div className="px-6 pb-6 text-gray-500 dark:text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                     Once you're a member, you can book classes through our online platform 24/7. Browse the schedule, pick your preferred time, and reserve your spot with just a few clicks.
                                 </div>
                             </details>
@@ -335,12 +327,12 @@ export default function LandingPage() {
                         <FadeIn direction="up" delay={0.4}>
                             <details className="glass-card group p-0">
                                 <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
-                                    <span className="text-lg font-bold text-white group-hover:text-turquoise-surf transition-colors">What equipment do I need?</span>
+                                    <span className="text-lg font-bold group-hover:text-turquoise-surf transition-colors">What equipment do I need?</span>
                                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </summary>
-                                <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                <div className="px-6 pb-6 text-gray-500 dark:text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                     We provide all the equipment you need. Just bring yourself, a water bottle, and comfortable workout clothes. For personal training sessions, your trainer will have everything ready for you.
                                 </div>
                             </details>
@@ -350,12 +342,12 @@ export default function LandingPage() {
                         <FadeIn direction="up" delay={0.5}>
                             <details className="glass-card group p-0">
                                 <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
-                                    <span className="text-lg font-bold text-white group-hover:text-turquoise-surf transition-colors">Can I try before I commit?</span>
+                                    <span className="text-lg font-bold group-hover:text-turquoise-surf transition-colors">Can I try before I commit?</span>
                                     <svg className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </summary>
-                                <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                <div className="px-6 pb-6 text-gray-500 dark:text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                     Absolutely! Schedule a free consultation with one of our trainers. You'll get a facility tour, discuss your goals, and even try a complimentary session to see if we're the right fit for you.
                                 </div>
                             </details>
@@ -374,9 +366,9 @@ export default function LandingPage() {
             </section>
 
             {/* Trust Badges Section */}
-            <section className="py-16 bg-gradient-to-b from-black to-gray-900">
+            <section className="py-16 bg-gradient-to-b from-background to-pacific-cyan/5">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h3 className="text-center text-gray-400 mb-8">Trusted & Certified</h3>
+                    <h3 className="text-center text-gray-500 mb-8 uppercase tracking-widest text-sm font-bold">Trusted & Certified</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <TrustBadge type="certification" name="NASM Certified" year="Since 2010" />
                         <TrustBadge type="certification" name="ACE Certified" year="Since 2012" />
@@ -389,7 +381,7 @@ export default function LandingPage() {
             {/* CTA Section */}
             <section className="py-20 bg-gradient-to-r from-pacific-cyan to-turquoise-surf">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-4xl font-bold mb-6">Ready to Start Your Transformation?</h2>
+                    <h2 className="text-4xl font-bold mb-6 text-white">Ready to Start Your Transformation?</h2>
                     <p className="text-xl mb-8 text-white/90">
                         Join hundreds of clients who have achieved their fitness goals with Tidal Power.
                     </p>
@@ -412,6 +404,8 @@ export default function LandingPage() {
                     </p>
                 </div>
             </section>
+        </div>
+    );
         </div>
     );
 }

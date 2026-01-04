@@ -165,23 +165,23 @@ export default function TrainerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background page-container">
+        <div className="min-h-screen page-container logo-watermark">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         Trainer <span className="text-gradient">Dashboard</span>
                     </h1>
-                    <p className="text-xl text-gray-400">
+                    <p className="text-xl text-gray-500 dark:text-gray-400">
                         Manage your classes and log workouts
                     </p>
                 </div>
 
                 {/* Program Builder CTA */}
                 <div className="mb-12 grid md:grid-cols-2 gap-6">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 p-8 text-white shadow-lg group">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 p-8 shadow-lg group">
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-2">Assign Workout</h2>
+                            <h2 className="text-3xl font-bold mb-2 text-white">Assign Workout</h2>
                             <p className="text-blue-100 mb-6 max-w-md">
                                 Design a workout session and assign it to a class or specific client. This is where you set the program for the day.
                             </p>
@@ -197,9 +197,9 @@ export default function TrainerDashboardPage() {
                         </div>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-600 to-orange-600 p-8 text-white shadow-lg group">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-600 to-orange-600 p-8 shadow-lg group">
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-2">Workout Library</h2>
+                            <h2 className="text-3xl font-bold mb-2 text-white">Workout Library</h2>
                             <p className="text-orange-100 mb-6 max-w-md">
                                 Create and manage reusable workout templates and exercises. Build your database of programming.
                             </p>
@@ -300,10 +300,10 @@ export default function TrainerDashboardPage() {
                         </div>
                     ) : todaysSessions.length === 0 ? (
                         <div className="text-center py-8">
-                            <p className="text-gray-400 mb-4">No sessions scheduled for today.</p>
+                            <p className="text-gray-500 mb-4">No sessions scheduled for today.</p>
                             <Link
                                 href="/workouts/assign"
-                                className="text-turquoise-surf hover:underline"
+                                className="text-turquoise-surf hover:underline font-bold"
                             >
                                 Create a new session →
                             </Link>
@@ -313,29 +313,29 @@ export default function TrainerDashboardPage() {
                             {todaysSessions.map((session) => (
                                 <div
                                     key={session.id}
-                                    className="bg-gradient-to-br from-dark-teal/30 to-dark-teal/20 border border-pacific-cyan/30 rounded-lg p-4"
+                                    className="bg-gradient-to-br from-dark-teal/20 to-pacific-cyan/10 border border-pacific-cyan/20 rounded-lg p-4"
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div>
                                             <h4 className="font-bold text-lg">{session.class_name || 'Workout Session'}</h4>
-                                            <p className="text-sm text-gray-400">{session.workout_type_name}</p>
+                                            <p className="text-sm text-gray-500">{session.workout_type_name}</p>
                                         </div>
                                         {session.start_time && (
-                                            <span className="text-sm text-turquoise-surf">
+                                            <span className="text-sm text-turquoise-surf font-bold">
                                                 {formatTime(session.start_time)}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs text-gray-400">
+                                        <span className="text-xs text-gray-500">
                                             {session.participant_count || 0} participants
                                         </span>
                                         <Link
                                             href={`/trainer/class/${session.id}/log`}
-                                            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-semibold transition-colors"
+                                            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-bold text-white transition-colors"
                                         >
-                                            📝 Start Logging
+                                            📝 Log
                                         </Link>
                                     </div>
                                 </div>
@@ -346,22 +346,22 @@ export default function TrainerDashboardPage() {
                     {/* Recent Sessions */}
                     {recentSessions.length > 0 && todaysSessions.length === 0 && (
                         <div className="mt-6 pt-6 border-t border-white/10">
-                            <h3 className="font-semibold text-gray-400 mb-4">Recent Sessions</h3>
+                            <h3 className="font-bold text-gray-500 uppercase text-xs tracking-widest mb-4">Recent Sessions</h3>
                             <div className="space-y-2">
                                 {recentSessions.map((session) => (
                                     <div
                                         key={session.id}
-                                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-all"
                                     >
                                         <div>
-                                            <span className="font-medium">{session.class_name || 'Session'}</span>
-                                            <span className="text-gray-400 text-sm ml-2">
+                                            <span className="font-bold">{session.class_name || 'Session'}</span>
+                                            <span className="text-gray-500 text-sm ml-2">
                                                 {new Date(session.session_date).toLocaleDateString()}
                                             </span>
                                         </div>
                                         <Link
                                             href={`/trainer/class/${session.id}/log`}
-                                            className="text-turquoise-surf hover:underline text-sm"
+                                            className="text-turquoise-surf hover:underline font-bold text-sm"
                                         >
                                             View/Edit
                                         </Link>
@@ -405,7 +405,7 @@ export default function TrainerDashboardPage() {
                         <div className="space-y-10">
                             {classesByDay.filter(d => d.classes.length > 0).map(({ day, classes: dayClasses }) => (
                                 <div key={day}>
-                                    <h3 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2 inline-block pr-8 uppercase tracking-wider">{day}</h3>
+                                    <h3 className="text-lg font-bold mb-4 border-b border-white/10 pb-2 inline-block pr-8 uppercase tracking-wider">{day}</h3>
                                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {dayClasses.map((classItem) => (
                                             <div
@@ -414,7 +414,7 @@ export default function TrainerDashboardPage() {
                                             >
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div>
-                                                        <h4 className="font-bold text-xl text-white group-hover:text-turquoise-surf transition-colors">{classItem.name}</h4>
+                                                        <h4 className="font-bold text-xl group-hover:text-turquoise-surf transition-colors">{classItem.name}</h4>
                                                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{classItem.category}</p>
                                                     </div>
                                                     <span className="text-sm font-bold text-turquoise-surf bg-turquoise-surf/10 px-2 py-1 rounded-md">
@@ -422,12 +422,12 @@ export default function TrainerDashboardPage() {
                                                     </span>
                                                 </div>
 
-                                                <p className="text-sm text-gray-400 mb-6 line-clamp-2">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2">
                                                     {classItem.description}
                                                 </p>
 
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-medium text-gray-500">
+                                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-tight">
                                                         {classItem.duration_minutes}m • Max {classItem.max_capacity}
                                                     </span>
                                                     <button
@@ -448,20 +448,20 @@ export default function TrainerDashboardPage() {
 
                 {/* Attendees Modal */}
                 {selectedClass && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full border border-white/10 overflow-hidden max-h-[80vh] flex flex-col">
+                    <div className="modal-overlay">
+                        <div className="glass rounded-2xl shadow-2xl max-w-2xl w-full border border-white/10 overflow-hidden max-h-[80vh] flex flex-col relative">
                             {/* Modal Header */}
-                            <div className="bg-gradient-to-r from-cerulean to-pacific-cyan px-6 py-4">
+                            <div className="bg-gradient-to-r from-cerulean to-pacific-cyan px-6 py-6">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h2 className="text-xl font-bold text-white">{selectedClass.name}</h2>
-                                        <p className="text-white/80 text-sm">
+                                        <h2 className="text-2xl font-bold text-white">{selectedClass.name}</h2>
+                                        <p className="text-white/80 text-sm font-medium uppercase tracking-wider mt-1">
                                             {formatTime(selectedClass.start_time)} • {selectedClass.duration_minutes} min
                                         </p>
                                     </div>
                                     <button
                                         onClick={closeModal}
-                                        className="text-white/80 hover:text-white text-2xl"
+                                        className="text-white/80 hover:text-white text-3xl leading-none"
                                     >
                                         ×
                                     </button>
@@ -469,53 +469,63 @@ export default function TrainerDashboardPage() {
                             </div>
 
                             {/* Modal Content */}
-                            <div className="p-6 overflow-y-auto flex-1">
+                            <div className="p-8 overflow-y-auto flex-1">
                                 {loadingAttendees ? (
-                                    <div className="flex justify-center py-8">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-turquoise-surf"></div>
+                                    <div className="flex justify-center py-12">
+                                        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-turquoise-surf"></div>
                                     </div>
                                 ) : (
                                     <>
                                         {/* Attendee Count */}
-                                        <div className="mb-6 p-4 bg-white/5 rounded-lg">
-                                            <div className="text-3xl font-bold text-turquoise-surf">
-                                                {selectedClass.attendee_count || 0}
+                                        <div className="mb-8 p-6 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between">
+                                            <div>
+                                                <div className="text-4xl font-bold text-turquoise-surf">
+                                                    {selectedClass.attendee_count || 0}
+                                                </div>
+                                                <div className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">
+                                                    Spots Filled
+                                                </div>
                                             </div>
-                                            <div className="text-gray-400 text-sm">
-                                                / {selectedClass.max_capacity} spots filled
+                                            <div className="text-right">
+                                                <div className="text-2xl font-bold text-gray-400">
+                                                    {selectedClass.max_capacity}
+                                                </div>
+                                                <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1">
+                                                    Capacity
+                                                </div>
                                             </div>
                                         </div>
 
                                         {/* Attendee List */}
-                                        <h3 className="font-bold mb-4">Registered Attendees</h3>
+                                        <h3 className="font-bold text-lg mb-4 uppercase tracking-tight">Registered Attendees</h3>
 
                                         {!selectedClass.attendees || selectedClass.attendees.length === 0 ? (
-                                            <p className="text-gray-400 text-center py-6">
-                                                No one has signed up for this class yet.
-                                            </p>
+                                            <div className="text-center py-12 bg-white/5 rounded-xl border border-dashed border-white/10">
+                                                <p className="text-gray-500">No one has signed up for this class yet.</p>
+                                            </div>
                                         ) : (
                                             <div className="space-y-3">
                                                 {selectedClass.attendees.map((attendee) => (
                                                     <div
                                                         key={attendee.booking_id}
-                                                        className="flex items-center justify-between p-4 bg-white/5 rounded-lg"
+                                                        className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all"
                                                     >
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center text-white font-bold">
+                                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center text-white font-bold shadow-lg shadow-pacific-cyan/20">
                                                                 {attendee.first_name?.[0]}{attendee.last_name?.[0]}
                                                             </div>
                                                             <div>
-                                                                <p className="font-semibold">
+                                                                <p className="font-bold text-foreground">
                                                                     {attendee.first_name} {attendee.last_name}
                                                                 </p>
-                                                                <p className="text-sm text-gray-400">
+                                                                <p className="text-xs text-gray-500 font-medium">
                                                                     {attendee.email}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right text-sm text-gray-400">
+                                                        <div className="text-right text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                                                             <p>Booked</p>
-                                                            <p>{new Date(attendee.booking_date).toLocaleDateString()}</p>
+                                                            <p className="text-foreground mt-0.5">{new Date(attendee.booking_date).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -526,10 +536,10 @@ export default function TrainerDashboardPage() {
                             </div>
 
                             {/* Modal Footer */}
-                            <div className="px-6 py-4 border-t border-white/10">
+                            <div className="px-8 py-6 border-t border-white/10 bg-white/5">
                                 <button
                                     onClick={closeModal}
-                                    className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"
+                                    className="btn-secondary w-full py-4"
                                 >
                                     Close
                                 </button>
@@ -537,6 +547,9 @@ export default function TrainerDashboardPage() {
                         </div>
                     </div>
                 )}
+            </div>
+        </div>
+    );
             </div>
         </div>
     );

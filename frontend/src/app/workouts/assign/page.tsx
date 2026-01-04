@@ -60,7 +60,7 @@ interface SelectedExercise {
 function AssignWorkoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { user, token } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -267,7 +267,7 @@ function AssignWorkoutContent() {
     };
 
     const handleSubmit = async () => {
-        if (!token) return;
+        if (!isAuthenticated) return;
 
         setLoading(true);
         setError('');
@@ -389,26 +389,26 @@ function AssignWorkoutContent() {
                     {step === 1 && (
                         <div className="max-w-xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">
+                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
                                     Session Date *
                                 </label>
                                 <input
                                     type="date"
                                     value={sessionDate}
                                     onChange={(e) => setSessionDate(e.target.value)}
-                                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all text-lg"
+                                    className="input-field text-lg py-4"
                                     min={new Date().toISOString().split('T')[0]}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">
+                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
                                     Start Time (Optional)
                                 </label>
                                 <input
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all text-lg"
+                                    className="input-field text-lg py-4"
                                 />
                             </div>
                         </div>
@@ -419,13 +419,13 @@ function AssignWorkoutContent() {
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                             
                             {/* Mode Selection */}
-                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto">
+                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto border border-white/10">
                                 <button
                                     onClick={() => setWorkoutMode('template')}
                                     className={`px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
                                         workoutMode === 'template' 
-                                            ? 'bg-pacific-cyan text-black shadow-lg shadow-pacific-cyan/20' 
-                                            : 'text-gray-400 hover:text-white'
+                                            ? 'bg-pacific-cyan text-white shadow-lg shadow-pacific-cyan/20' 
+                                            : 'text-gray-400 hover:text-foreground'
                                     }`}
                                 >
                                     Use Template
@@ -434,8 +434,8 @@ function AssignWorkoutContent() {
                                     onClick={() => setWorkoutMode('custom')}
                                     className={`px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
                                         workoutMode === 'custom' 
-                                            ? 'bg-pacific-cyan text-black shadow-lg shadow-pacific-cyan/20' 
-                                            : 'text-gray-400 hover:text-white'
+                                            ? 'bg-pacific-cyan text-white shadow-lg shadow-pacific-cyan/20' 
+                                            : 'text-gray-400 hover:text-foreground'
                                     }`}
                                 >
                                     Custom Builder
@@ -444,12 +444,12 @@ function AssignWorkoutContent() {
 
                             {workoutMode === 'template' ? (
                                 <div className="max-w-2xl mx-auto space-y-4">
-                                    <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-2">
+                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
                                         Select Template *
                                     </label>
                                     {templates.length === 0 ? (
-                                        <div className="p-8 text-center bg-yellow-500/5 border border-yellow-500/20 rounded-xl">
-                                            <p className="text-yellow-200/80 mb-4">No templates found.</p>
+                                        <div className="p-8 text-center bg-yellow-500/5 border border-yellow-500/20 rounded-xl text-foreground">
+                                            <p className="text-yellow-600 dark:text-yellow-200/80 mb-4">No templates found.</p>
                                             <Link href="/workouts/templates/new" className="text-pacific-cyan font-bold hover:underline">
                                                 Create your first template
                                             </Link>
@@ -463,25 +463,25 @@ function AssignWorkoutContent() {
                                                     className={`p-5 rounded-xl border transition-all cursor-pointer group ${
                                                         selectedTemplate === template.id
                                                             ? 'bg-pacific-cyan/10 border-pacific-cyan shadow-lg shadow-pacific-cyan/5'
-                                                            : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'
+                                                            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
                                                     }`}
                                                 >
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className={`font-bold text-lg ${selectedTemplate === template.id ? 'text-pacific-cyan' : 'text-white'}`}>
+                                                        <h4 className={`font-bold text-lg ${selectedTemplate === template.id ? 'text-pacific-cyan' : 'text-foreground'}`}>
                                                             {template.name}
                                                         </h4>
                                                         {selectedTemplate === template.id && (
-                                                            <div className="bg-pacific-cyan text-black rounded-full p-1">
+                                                            <div className="bg-pacific-cyan text-white rounded-full p-1">
                                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <p className="text-sm text-gray-400 line-clamp-2 mb-3">{template.description || 'No description'}</p>
+                                                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{template.description || 'No description'}</p>
                                                     <div className="flex gap-3">
-                                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/5 px-2 py-1 rounded text-gray-400 border border-white/5">
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/5 px-2 py-1 rounded text-gray-400 border border-white/10">
                                                             {template.workout_type_name}
                                                         </span>
-                                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/5 px-2 py-1 rounded text-gray-400 border border-white/5">
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/5 px-2 py-1 rounded text-gray-400 border border-white/10">
                                                             {template.exercise_count} Exercises
                                                         </span>
                                                     </div>
@@ -494,9 +494,9 @@ function AssignWorkoutContent() {
                                 /* CUSTOM BUILDER UI */
                                 <div className="grid lg:grid-cols-2 gap-8 h-[700px]">
                                     {/* Left: Exercise Library */}
-                                    <div className="flex flex-col h-full bg-black/20 rounded-xl border border-white/5 overflow-hidden">
-                                        <div className="p-4 border-b border-white/5 space-y-3 bg-white/5">
-                                            <h3 className="font-bold text-white flex items-center gap-2">
+                                    <div className="flex flex-col h-full bg-black/5 dark:bg-black/20 rounded-xl border border-white/10 overflow-hidden">
+                                        <div className="p-4 border-b border-white/10 space-y-3 bg-white/5">
+                                            <h3 className="font-bold text-foreground flex items-center gap-2">
                                                 <svg className="w-5 h-5 text-pacific-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                                 Library
                                             </h3>
@@ -509,7 +509,7 @@ function AssignWorkoutContent() {
                                                     placeholder="Search exercises..."
                                                     value={searchTerm}
                                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                                    className="w-full bg-black/40 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-pacific-cyan placeholder-gray-600"
+                                                    className="input-field py-2 pl-9 text-sm"
                                                 />
                                             </div>
 
@@ -518,36 +518,36 @@ function AssignWorkoutContent() {
                                                 <select 
                                                     value={filterBodyPart}
                                                     onChange={(e) => setFilterBodyPart(e.target.value)}
-                                                    className="bg-black/40 border border-white/10 rounded-lg py-1.5 px-2 text-xs text-gray-300 focus:outline-none flex-1"
+                                                    className="input-field py-1.5 px-2 text-xs flex-1"
                                                 >
-                                                    <option value="">All Body Parts</option>
-                                                    {bodyParts.map(bp => <option key={bp} value={bp}>{bp}</option>)}
+                                                    <option value="" className="bg-background">All Body Parts</option>
+                                                    {bodyParts.map(bp => <option key={bp} value={bp} className="bg-background">{bp}</option>)}
                                                 </select>
                                                 <select 
                                                     value={filterMovement}
                                                     onChange={(e) => setFilterMovement(e.target.value)}
-                                                    className="bg-black/40 border border-white/10 rounded-lg py-1.5 px-2 text-xs text-gray-300 focus:outline-none flex-1"
+                                                    className="input-field py-1.5 px-2 text-xs flex-1"
                                                 >
-                                                    <option value="">All Movements</option>
-                                                    <option value="Push">Push</option>
-                                                    <option value="Pull">Pull</option>
-                                                    <option value="Legs">Legs</option>
+                                                    <option value="" className="bg-background">All Movements</option>
+                                                    <option value="Push" className="bg-background">Push</option>
+                                                    <option value="Pull" className="bg-background">Pull</option>
+                                                    <option value="Legs" className="bg-background">Legs</option>
                                                 </select>
                                             </div>
                                         </div>
 
                                         <div className="flex-1 overflow-y-auto p-2 custom-scrollbar space-y-1">
                                             {getFilteredExercises().map(ex => (
-                                                <div key={ex.id} className="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+                                                <div key={ex.id} className="group flex items-center justify-between p-3 rounded-lg hover:bg-white/10 transition-colors border border-transparent hover:border-white/10">
                                                     <div>
-                                                        <div className="font-medium text-gray-200 text-sm">{ex.name}</div>
+                                                        <div className="font-medium text-foreground text-sm">{ex.name}</div>
                                                         <div className="text-[10px] text-gray-500 uppercase tracking-wide">
                                                             {ex.muscle_group_name} • {ex.workout_type_name}
                                                         </div>
                                                     </div>
                                                     <button 
                                                         onClick={() => addExercise(ex)}
-                                                        className="p-1.5 bg-pacific-cyan/10 text-pacific-cyan rounded-md hover:bg-pacific-cyan hover:text-black transition-colors"
+                                                        className="p-1.5 bg-pacific-cyan/10 text-pacific-cyan rounded-md hover:bg-pacific-cyan hover:text-white transition-colors"
                                                         title="Add to session"
                                                     >
                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -561,10 +561,10 @@ function AssignWorkoutContent() {
                                     </div>
 
                                     {/* Right: Session Plan */}
-                                    <div className="flex flex-col h-full bg-black/20 rounded-xl border border-white/5 overflow-hidden">
-                                        <div className="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                                            <h3 className="font-bold text-white flex items-center gap-2">
-                                                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                    <div className="flex flex-col h-full bg-black/5 dark:bg-black/20 rounded-xl border border-white/10 overflow-hidden">
+                                        <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                                            <h3 className="font-bold text-foreground flex items-center gap-2">
+                                                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                                                 Session Plan <span className="text-gray-500 text-sm font-normal">({selectedCustomExercises.length})</span>
                                             </h3>
                                         </div>
@@ -578,18 +578,18 @@ function AssignWorkoutContent() {
                                                 </div>
                                             ) : (
                                                 selectedCustomExercises.map((ex, idx) => (
-                                                    <div key={ex.unique_id} className="bg-gray-900/50 border border-white/10 rounded-xl p-4 group">
+                                                    <div key={ex.unique_id} className="bg-white/5 border border-white/10 rounded-xl p-4 group">
                                                         <div className="flex justify-between items-start mb-3">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 text-xs text-gray-400 font-mono">
+                                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 text-xs text-gray-500 dark:text-gray-400 font-mono">
                                                                     {idx + 1}
                                                                 </span>
-                                                                <h4 className="font-bold text-white">{ex.name}</h4>
+                                                                <h4 className="font-bold text-foreground">{ex.name}</h4>
                                                             </div>
                                                             <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
-                                                                <button onClick={() => moveExercise(idx, 'up')} disabled={idx === 0} className="p-1 hover:text-white disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg></button>
-                                                                <button onClick={() => moveExercise(idx, 'down')} disabled={idx === selectedCustomExercises.length - 1} className="p-1 hover:text-white disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></button>
-                                                                <button onClick={() => removeExercise(ex.unique_id)} className="p-1 text-red-400 hover:text-red-300 ml-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                                                                <button onClick={() => moveExercise(idx, 'up')} disabled={idx === 0} className="p-1 hover:text-foreground disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg></button>
+                                                                <button onClick={() => moveExercise(idx, 'down')} disabled={idx === selectedCustomExercises.length - 1} className="p-1 hover:text-foreground disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg></button>
+                                                                <button onClick={() => removeExercise(ex.unique_id)} className="p-1 text-red-500 hover:text-red-400 ml-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                                                             </div>
                                                         </div>
 
@@ -597,19 +597,19 @@ function AssignWorkoutContent() {
                                                         <div className="grid grid-cols-4 gap-3 mb-3">
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Sets</label>
-                                                                <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-sm text-white focus:border-pacific-cyan outline-none" />
+                                                                <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Reps</label>
-                                                                <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-sm text-white focus:border-pacific-cyan outline-none" />
+                                                                <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Lbs</label>
-                                                                <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-sm text-white focus:border-pacific-cyan outline-none" />
+                                                                <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="input-field py-1 text-sm" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Rest (s)</label>
-                                                                <input type="number" min="0" value={ex.rest_seconds} onChange={(e) => updateExercise(ex.unique_id, { rest_seconds: parseInt(e.target.value) || 0 })} className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-sm text-white focus:border-pacific-cyan outline-none" />
+                                                                <input type="number" min="0" value={ex.rest_seconds} onChange={(e) => updateExercise(ex.unique_id, { rest_seconds: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
                                                             </div>
                                                         </div>
 
@@ -617,18 +617,18 @@ function AssignWorkoutContent() {
                                                         <div className="flex items-center gap-4">
                                                             <label className="flex items-center gap-2 cursor-pointer">
                                                                 <input type="checkbox" checked={ex.is_warmup} onChange={(e) => updateExercise(ex.unique_id, { is_warmup: e.target.checked })} className="rounded bg-white/10 border-white/20 text-orange-500 focus:ring-0" />
-                                                                <span className={`text-xs font-bold uppercase ${ex.is_warmup ? 'text-orange-400' : 'text-gray-500'}`}>Warmup</span>
+                                                                <span className={`text-xs font-bold uppercase ${ex.is_warmup ? 'text-orange-500' : 'text-gray-500'}`}>Warmup</span>
                                                             </label>
                                                             <label className="flex items-center gap-2 cursor-pointer">
                                                                 <input type="checkbox" checked={ex.is_cooldown} onChange={(e) => updateExercise(ex.unique_id, { is_cooldown: e.target.checked })} className="rounded bg-white/10 border-white/20 text-blue-500 focus:ring-0" />
-                                                                <span className={`text-xs font-bold uppercase ${ex.is_cooldown ? 'text-blue-400' : 'text-gray-500'}`}>Cooldown</span>
+                                                                <span className={`text-xs font-bold uppercase ${ex.is_cooldown ? 'text-blue-500' : 'text-gray-500'}`}>Cooldown</span>
                                                             </label>
                                                             <input 
                                                                 type="text" 
                                                                 placeholder="Notes..." 
                                                                 value={ex.notes} 
                                                                 onChange={(e) => updateExercise(ex.unique_id, { notes: e.target.value })}
-                                                                className="flex-1 bg-transparent border-b border-white/10 text-xs text-gray-300 focus:border-pacific-cyan outline-none py-1 ml-2"
+                                                                className="flex-1 bg-transparent border-b border-white/10 text-xs text-foreground focus:border-pacific-cyan outline-none py-1 ml-2"
                                                             />
                                                         </div>
                                                     </div>
@@ -644,12 +644,12 @@ function AssignWorkoutContent() {
                     {/* Step 3: Recipient Selection */}
                     {step === 3 && (
                         <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto">
+                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto border border-white/10">
                                 <label className={`flex items-center gap-3 px-6 py-3 rounded-lg cursor-pointer transition-all ${recipientMode === 'class' ? 'bg-pacific-cyan/10 border border-pacific-cyan shadow-lg shadow-pacific-cyan/5' : 'hover:bg-white/5 border border-transparent'}`}>
                                     <input type="radio" name="recipientMode" value="class" checked={recipientMode === 'class'} onChange={() => setRecipientMode('class')} className="hidden" />
                                     <div className="text-2xl">🏫</div>
                                     <div>
-                                        <div className={`font-bold ${recipientMode === 'class' ? 'text-pacific-cyan' : 'text-white'}`}>Class</div>
+                                        <div className={`font-bold ${recipientMode === 'class' ? 'text-pacific-cyan' : 'text-foreground'}`}>Class</div>
                                         <div className="text-xs text-gray-500">Assign to all attendees</div>
                                     </div>
                                 </label>
@@ -657,7 +657,7 @@ function AssignWorkoutContent() {
                                     <input type="radio" name="recipientMode" value="clients" checked={recipientMode === 'clients'} onChange={() => setRecipientMode('clients')} className="hidden" />
                                     <div className="text-2xl">👤</div>
                                     <div>
-                                        <div className={`font-bold ${recipientMode === 'clients' ? 'text-pacific-cyan' : 'text-white'}`}>Individual</div>
+                                        <div className={`font-bold ${recipientMode === 'clients' ? 'text-pacific-cyan' : 'text-foreground'}`}>Individual</div>
                                         <div className="text-xs text-gray-500">Select specific clients</div>
                                     </div>
                                 </label>
@@ -665,11 +665,11 @@ function AssignWorkoutContent() {
 
                             {recipientMode === 'class' && (
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-2">
+                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
                                         Select Class *
                                     </label>
                                     {classes.length === 0 ? (
-                                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-200/80 text-sm flex gap-3 items-center">
+                                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-700 dark:text-yellow-200/80 text-sm flex gap-3 items-center">
                                             <span className="text-xl">⚠️</span>
                                             No classes found for {new Date(sessionDate).toLocaleDateString()}.
                                         </div>
@@ -677,11 +677,11 @@ function AssignWorkoutContent() {
                                         <select
                                             value={selectedClass}
                                             onChange={(e) => setSelectedClass(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
+                                            className="input-field"
                                         >
-                                            <option value="" className="bg-gray-900">-- Select a class --</option>
+                                            <option value="" className="bg-background">-- Select a class --</option>
                                             {classes.map((cls) => (
-                                                <option key={cls.id} value={cls.id} className="bg-gray-900">
+                                                <option key={cls.id} value={cls.id} className="bg-background">
                                                     {cls.name} - {cls.start_time}
                                                 </option>
                                             ))}
@@ -692,7 +692,7 @@ function AssignWorkoutContent() {
 
                             {recipientMode === 'clients' && (
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-2">
+                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
                                         Select Clients * ({selectedClients.length})
                                     </label>
                                     <div className="bg-white/5 border border-white/10 rounded-xl max-h-80 overflow-y-auto custom-scrollbar p-2">
@@ -707,7 +707,7 @@ function AssignWorkoutContent() {
                                                     onChange={() => toggleClient(client.id)}
                                                     className="mr-4 w-5 h-5 text-pacific-cyan rounded border-white/20 bg-white/5 focus:ring-offset-0 focus:ring-pacific-cyan"
                                                 />
-                                                <span className="text-white font-medium">{client.full_name}</span>
+                                                <span className="text-foreground font-medium">{client.full_name}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -719,18 +719,18 @@ function AssignWorkoutContent() {
                     {/* Step 4: Review & Notes */}
                     {step === 4 && (
                         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="bg-white/5 border border-white/10 p-8 rounded-2xl space-y-6">
+                            <div className="glass-card p-8 rounded-2xl space-y-6">
                                 <h3 className="font-bold text-xl mb-6 text-turquoise-surf uppercase tracking-widest border-b border-white/10 pb-4">
                                     Summary
                                 </h3>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div>
                                         <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Date & Time</p>
-                                        <p className="text-white font-medium text-lg">{new Date(sessionDate).toLocaleDateString()} {startTime && `@ ${startTime}`}</p>
+                                        <p className="text-foreground font-medium text-lg">{new Date(sessionDate).toLocaleDateString()} {startTime && `@ ${startTime}`}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Assigned To</p>
-                                        <p className="text-white font-medium text-lg">
+                                        <p className="text-foreground font-medium text-lg">
                                             {recipientMode === 'class'
                                                 ? classes.find(c => c.id === selectedClass)?.name || 'Unknown Class'
                                                 : `${selectedClients.length} Individual Client(s)`}
@@ -738,7 +738,7 @@ function AssignWorkoutContent() {
                                     </div>
                                     <div className="col-span-2">
                                         <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Workout</p>
-                                        <div className="text-white font-medium">
+                                        <div className="text-foreground font-medium">
                                             {workoutMode === 'template' ? (
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-pacific-cyan">Template:</span> 
@@ -747,7 +747,7 @@ function AssignWorkoutContent() {
                                             ) : (
                                                 <div>
                                                     <div className="mb-2 text-pacific-cyan">Custom Session ({selectedCustomExercises.length} Exercises)</div>
-                                                    <div className="text-sm text-gray-400 space-y-1 pl-4 border-l-2 border-white/10">
+                                                    <div className="text-sm text-gray-500 space-y-1 pl-4 border-l-2 border-white/10">
                                                         {selectedCustomExercises.map((ex, i) => (
                                                             <div key={ex.unique_id} className="flex justify-between">
                                                                 <span>{i+1}. {ex.name}</span>
@@ -763,14 +763,14 @@ function AssignWorkoutContent() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">
+                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
                                     Notes (Optional)
                                 </label>
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={4}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pacific-cyan focus:border-transparent transition-all"
+                                    className="input-field"
                                     placeholder="Add specific instructions for this session..."
                                 />
                             </div>
@@ -778,29 +778,29 @@ function AssignWorkoutContent() {
                     )}
 
                     {/* Navigation Buttons */}
-                    <div className="flex justify-between mt-12 pt-6 border-t border-white/5">
+                    <div className="flex justify-between mt-12 pt-6 border-t border-white/10">
                         <button
                             onClick={handleBack}
                             disabled={step === 1}
-                            className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+                            className="btn-secondary disabled:opacity-30 disabled:cursor-not-allowed"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                             Back
                         </button>
 
                         {step < 4 ? (
                             <button
                                 onClick={handleNext}
-                                className="px-10 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-pacific-cyan/20 flex items-center gap-2 group"
+                                className="btn-primary"
                             >
                                 Next
-                                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                             </button>
                         ) : (
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="px-10 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold uppercase tracking-wider rounded-xl disabled:opacity-50 transition-all shadow-lg shadow-green-500/20 flex items-center gap-2"
+                                className="btn-primary min-w-[200px]"
                             >
                                 {loading ? (
                                     <>
@@ -810,7 +810,7 @@ function AssignWorkoutContent() {
                                 ) : (
                                     <>
                                         Confirm Assignment
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                     </>
                                 )}
                             </button>

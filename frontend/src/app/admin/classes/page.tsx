@@ -425,29 +425,29 @@ function AdminClassesContent() {
                             placeholder="Search classes or instructors..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf"
+                            className="input-field"
                         />
 
                         {/* Status filter */}
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                            className="input-field"
                         >
-                            <option value="all">All Status</option>
-                            <option value="active">Active Only</option>
-                            <option value="inactive">Inactive Only</option>
+                            <option value="all" className="bg-background">All Status</option>
+                            <option value="active" className="bg-background">Active Only</option>
+                            <option value="inactive" className="bg-background">Inactive Only</option>
                         </select>
 
                         {/* Day filter */}
                         <select
                             value={dayFilter === null ? 'all' : dayFilter}
                             onChange={(e) => setDayFilter(e.target.value === 'all' ? null : parseInt(e.target.value))}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                            className="input-field"
                         >
-                            <option value="all">All Days</option>
+                            <option value="all" className="bg-background">All Days</option>
                             {DAYS.map((day, index) => (
-                                <option key={index} value={index}>{day}</option>
+                                <option key={index} value={index} className="bg-background">{day}</option>
                             ))}
                         </select>
 
@@ -455,11 +455,11 @@ function AdminClassesContent() {
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                            className="input-field"
                         >
-                            <option value="all">All Categories</option>
+                            <option value="all" className="bg-background">All Categories</option>
                             {CATEGORIES.map((cat) => (
-                                <option key={cat} value={cat}>{cat}</option>
+                                <option key={cat} value={cat} className="bg-background">{cat}</option>
                             ))}
                         </select>
                     </div>
@@ -564,8 +564,8 @@ function AdminClassesContent() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="glass rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="modal-overlay">
+                    <div className="glass rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
                         <div className="p-8">
                             {/* Modal Header */}
                             <div className="flex justify-between items-center mb-6">
@@ -574,7 +574,7 @@ function AdminClassesContent() {
                                 </h2>
                                 <button
                                     onClick={closeModal}
-                                    className="text-gray-400 hover:text-white text-2xl"
+                                    className="text-gray-400 hover:text-foreground text-2xl"
                                 >
                                     ×
                                 </button>
@@ -584,7 +584,7 @@ function AdminClassesContent() {
                             <div className="flex justify-between mb-8">
                                 {[1, 2, 3, 4].map((step) => (
                                     <div key={step} className="flex items-center">
-                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400")}>
+                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white shadow-lg shadow-turquoise-surf/20" : "bg-white/10 text-gray-400")}>
                                             {step}
                                         </div>
                                         {step < 4 && (
@@ -600,23 +600,23 @@ function AdminClassesContent() {
                                     <h3 className="text-xl font-bold mb-4">Basic Information</h3>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Class Name *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Class Name *</label>
                                         <input
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             placeholder="e.g., Power Yoga"
                                         />
                                         {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Description *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Description *</label>
                                         <textarea
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             rows={4}
                                             placeholder="Describe the class..."
                                         />
@@ -624,15 +624,15 @@ function AdminClassesContent() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Category *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                         >
-                                            <option value="">Select a category</option>
+                                            <option value="" className="bg-background">Select a category</option>
                                             {CATEGORIES.map((cat) => (
-                                                <option key={cat} value={cat}>{cat}</option>
+                                                <option key={cat} value={cat} className="bg-background">{cat}</option>
                                             ))}
                                         </select>
                                         {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
@@ -666,7 +666,7 @@ function AdminClassesContent() {
                                                     }
                                                 }
                                             }}
-                                            className="w-full px-4 py-3 bg-black/50 border border-turquoise-surf/30 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field border-turquoise-surf/30"
                                             min={new Date().toISOString().split('T')[0]}
                                         />
                                         <p className="text-[10px] text-gray-500 mt-2 italic">
@@ -675,7 +675,7 @@ function AdminClassesContent() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Days of Week *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Days of Week *</label>
                                         <div className="flex flex-wrap gap-2">
                                             {DAYS.map((day, index) => (
                                                 <button
@@ -688,7 +688,7 @@ function AdminClassesContent() {
                                                             : [...currentDays, index];
                                                         setFormData({ ...formData, days_of_week: newDays.sort() });
                                                     }}
-                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white shadow-lg shadow-turquoise-surf/20" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
@@ -698,16 +698,16 @@ function AdminClassesContent() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Start Time *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Start Time *</label>
                                         <div className="flex gap-2">
                                             {/* Hour dropdown */}
                                             <select
                                                 value={timeHour}
                                                 onChange={(e) => setTimeHour(e.target.value)}
-                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                                className="input-field flex-1"
                                             >
                                                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(h => (
-                                                    <option key={h} value={h.toString()}>{h}</option>
+                                                    <option key={h} value={h.toString()} className="bg-background">{h}</option>
                                                 ))}
                                             </select>
 
@@ -715,10 +715,10 @@ function AdminClassesContent() {
                                             <select
                                                 value={timeMinute}
                                                 onChange={(e) => setTimeMinute(e.target.value)}
-                                                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                                className="input-field flex-1"
                                             >
                                                 {['00', '15', '30', '45'].map(m => (
-                                                    <option key={m} value={m}>{m}</option>
+                                                    <option key={m} value={m} className="bg-background">{m}</option>
                                                 ))}
                                             </select>
 
@@ -727,14 +727,14 @@ function AdminClassesContent() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('am')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     AM
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimePeriod('pm')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-black" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
                                                 >
                                                     PM
                                                 </button>
@@ -744,14 +744,14 @@ function AdminClassesContent() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Duration (minutes) *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Duration (minutes) *</label>
                                         <input
                                             type="text"
                                             inputMode="numeric"
                                             pattern="[0-9]*"
                                             value={formData.duration_minutes}
                                             onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             placeholder="60"
                                         />
                                         {errors.duration_minutes && <p className="text-red-400 text-sm mt-1">{errors.duration_minutes}</p>}
@@ -765,15 +765,15 @@ function AdminClassesContent() {
                                     <h3 className="text-xl font-bold mb-4">Class Details</h3>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Instructor *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Instructor *</label>
                                         <select
                                             value={formData.instructor_id}
                                             onChange={(e) => handleTrainerChange(e.target.value)}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                         >
-                                            <option value="">Select an instructor</option>
+                                            <option value="" className="bg-background">Select an instructor</option>
                                             {trainers.map((trainer) => (
-                                                <option key={trainer.id} value={trainer.id}>
+                                                <option key={trainer.id} value={trainer.id} className="bg-background">
                                                     {trainer.full_name}
                                                 </option>
                                             ))}
@@ -782,39 +782,39 @@ function AdminClassesContent() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Max Capacity *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Max Capacity *</label>
                                         <input
                                             type="text"
                                             inputMode="numeric"
                                             pattern="[0-9]*"
                                             value={formData.max_capacity}
                                             onChange={(e) => setFormData({ ...formData, max_capacity: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             placeholder="20"
                                         />
                                         {errors.max_capacity && <p className="text-red-400 text-sm mt-1">{errors.max_capacity}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Price (USD) *</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Price (USD) *</label>
                                         <input
                                             type="text"
                                             inputMode="decimal"
                                             value={(formData.price_cents / 100).toString()}
                                             onChange={(e) => setFormData({ ...formData, price_cents: Math.round(parseFloat(e.target.value || '0') * 100) })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             placeholder="20.00"
                                         />
                                         {errors.price_cents && <p className="text-red-400 text-sm mt-1">{errors.price_cents}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Acuity Appointment Type ID</label>
+                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Acuity Appointment Type ID</label>
                                         <input
                                             type="text"
                                             value={formData.acuity_appointment_type_id}
                                             onChange={(e) => setFormData({ ...formData, acuity_appointment_type_id: e.target.value })}
-                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            className="input-field"
                                             placeholder="Optional (e.g., 12345678)"
                                         />
                                         <p className="text-xs text-gray-500 mt-1">ID from Acuity Scheduling for direct booking integration.</p>
@@ -827,56 +827,56 @@ function AdminClassesContent() {
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold mb-4">Review & Confirm</h3>
 
-                                    <div className="glass rounded-lg p-6 space-y-3">
+                                    <div className="glass-card space-y-3">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Class Name:</span>
-                                            <span className="text-white font-semibold">{formData.name}</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Class Name</span>
+                                            <span className="font-bold">{formData.name}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Category:</span>
-                                            <span className="text-white">{formData.category}</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Category</span>
+                                            <span className="font-semibold">{formData.category}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Instructor:</span>
-                                            <span className="text-white">{formData.instructor_name}</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Instructor</span>
+                                            <span className="font-semibold">{formData.instructor_name}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Schedule:</span>
-                                            <span className="text-white">
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Schedule</span>
+                                            <span className="font-semibold">
                                                 {formData.days_of_week?.map(d => DAYS[d].substring(0, 3)).join(', ')} at {timeHour}:{timeMinute} {timePeriod}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Duration:</span>
-                                            <span className="text-white">{formData.duration_minutes} minutes</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Duration</span>
+                                            <span className="font-semibold">{formData.duration_minutes} minutes</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Max Capacity:</span>
-                                            <span className="text-white">{formData.max_capacity} people</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Max Capacity</span>
+                                            <span className="font-semibold">{formData.max_capacity} people</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-400">Price:</span>
-                                            <span className="text-white">${(formData.price_cents / 100).toFixed(2)}</span>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Price</span>
+                                            <span className="font-semibold text-turquoise-surf">${(formData.price_cents / 100).toFixed(2)}</span>
                                         </div>
                                         {formData.acuity_appointment_type_id && (
                                             <div className="flex justify-between">
-                                                <span className="text-gray-400">Acuity ID:</span>
-                                                <span className="text-white">{formData.acuity_appointment_type_id}</span>
+                                                <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Acuity ID</span>
+                                                <span className="font-mono text-sm">{formData.acuity_appointment_type_id}</span>
                                             </div>
                                         )}
                                         <div className="pt-3 border-t border-white/10">
-                                            <span className="text-gray-400">Description:</span>
-                                            <p className="text-white mt-2">{formData.description}</p>
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-2 block">Description</span>
+                                            <p className="text-sm">{formData.description}</p>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
                             {/* Modal Actions */}
-                            <div className="flex justify-between mt-8">
+                            <div className="flex justify-between mt-8 pt-6 border-t border-white/10">
                                 <button
                                     onClick={currentStep === 1 ? closeModal : prevStep}
-                                    className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
+                                    className="btn-secondary"
                                 >
                                     {currentStep === 1 ? 'Cancel' : 'Back'}
                                 </button>
@@ -884,14 +884,14 @@ function AdminClassesContent() {
                                 {currentStep < 4 ? (
                                     <button
                                         onClick={nextStep}
-                                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                        className="btn-primary"
                                     >
                                         Next
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleSubmit}
-                                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                        className="btn-primary"
                                     >
                                         {editingClass ? 'Update Class' : 'Create Class'}
                                     </button>
