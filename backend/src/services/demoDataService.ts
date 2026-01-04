@@ -64,7 +64,6 @@ export class DemoDataService {
         // --- Gym Workout Generation ---
         if (Math.random() > workoutFrequency) continue;
 
-        const sessionDate = new Date();
         sessionDate.setDate(sessionDate.getDate() - i);
 
         // Randomize session data
