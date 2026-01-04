@@ -29,12 +29,20 @@
         const BACKEND_URL = 'https://tidal-power-backend.onrender.com';
         const SECRET = 'TidalPower2024Setup';
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Set default query after DOM is loaded
+            const queryInputElem = document.getElementById('queryInput');
+            if (queryInputElem) {
+                queryInputElem.value = 'SELECT id, email, first_name, last_name, roles FROM users WHERE email ILIKE \'%scott.marquis%\';';
+            }
+        });
+
         async function runQuery() {
             const queryInput = document.getElementById('queryInput').value;
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = 'Running query...';
 
-            console.log("Query being sent:", queryInput); // Debugging line
+            alert("Query being sent: " + queryInput); // Blocking debug alert
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/setup/run-query`, {
