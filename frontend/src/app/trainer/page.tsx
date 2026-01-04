@@ -550,7 +550,4 @@ export default function TrainerDashboardPage() {
             </div>
         </div>
     );
-            </div>
-        </div>
-    );
 }

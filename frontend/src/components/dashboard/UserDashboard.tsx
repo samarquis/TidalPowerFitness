@@ -430,12 +430,6 @@ export default function UserDashboard() {
                                             <div
                                                 key={classItem.id}
                                                 className={`p-5 rounded-2xl border transition-all ${booked
-                                    {selectedDayClasses.map((classItem) => {
-                                        const booked = isClassBooked(classItem.id, selectedDate);
-                                        return (
-                                            <div
-                                                key={classItem.id}
-                                                className={`p-5 rounded-2xl border transition-all ${booked
                                                     ? 'bg-green-500/10 border-green-500/30'
                                                     : 'bg-white/5 border border-white/10 hover:border-turquoise-surf/30 hover:bg-white/10 cursor-pointer group'
                                                     }`}
@@ -454,40 +448,6 @@ export default function UserDashboard() {
                                                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-1">{classItem.description}</p>
                                                         <div className="flex flex-wrap gap-4 mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">
                                                             <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {classItem.start_time.slice(0, 5)} <span className="text-gray-300 dark:text-gray-600">•</span> {classItem.duration_minutes}m</span>
-                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">👤</span> {classItem.instructor_name}</span>
-                                                            <span className="flex items-center gap-1.5 px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded-md">⚡ 1 Credit</span>
-                                                        </div>
-                                                    </div>
-                                                    {!booked && (
-                                                        <button
-                                                            className="btn-primary w-full sm:w-auto py-2 px-6"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleClassClick(classItem);
-                                                            }}
-                                                        >
-                                                            Book Now
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}`}
-                                                onClick={() => !booked && handleClassClick(classItem)}
-                                            >
-                                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                                                    <div>
-                                                        <h3 className="font-bold text-xl flex items-center gap-3 group-hover:text-turquoise-surf transition-colors">
-                                                            {classItem.name}
-                                                            {booked && (
-                                                                <span className="px-3 py-1 text-[10px] font-bold bg-green-500/20 text-green-400 rounded-full border border-green-500/20 uppercase tracking-wider">
-                                                                    ✓ Booked
-                                                                </span>
-                                                            )}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-400 mt-2 line-clamp-1">{classItem.description}</p>
-                                                        <div className="flex flex-wrap gap-4 mt-4 text-xs font-medium text-gray-300">
-                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {classItem.start_time.slice(0, 5)} <span className="text-gray-600">•</span> {classItem.duration_minutes}m</span>
                                                             <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">👤</span> {classItem.instructor_name}</span>
                                                             <span className="flex items-center gap-1.5 px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded-md">⚡ 1 Credit</span>
                                                         </div>
