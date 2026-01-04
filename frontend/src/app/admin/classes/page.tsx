@@ -642,8 +642,37 @@ function AdminClassesContent() {
 
                             {/* Step 2: Schedule */}
                             {currentStep === 2 && (
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <h3 className="text-xl font-bold mb-4">Schedule</h3>
+
+                                    {/* Quick Date Picker */}
+                                    <div className="p-4 bg-turquoise-surf/5 border border-turquoise-surf/20 rounded-xl mb-6">
+                                        <label className="block text-sm font-bold text-turquoise-surf uppercase tracking-wider mb-2">
+                                            Pick from Calendar (Auto-selects Day)
+                                        </label>
+                                        <input
+                                            type="date"
+                                            onChange={(e) => {
+                                                if (e.target.value) {
+                                                    const date = new Date(e.target.value + 'T00:00:00');
+                                                    const dayIndex = date.getDay();
+                                                    const currentDays = formData.days_of_week || [];
+                                                    if (!currentDays.includes(dayIndex)) {
+                                                        setFormData({ 
+                                                            ...formData, 
+                                                            days_of_week: [...currentDays, dayIndex].sort(),
+                                                            day_of_week: dayIndex 
+                                                        });
+                                                    }
+                                                }
+                                            }}
+                                            className="w-full px-4 py-3 bg-black/50 border border-turquoise-surf/30 rounded-lg text-white focus:outline-none focus:border-turquoise-surf"
+                                            min={new Date().toISOString().split('T')[0]}
+                                        />
+                                        <p className="text-[10px] text-gray-500 mt-2 italic">
+                                            Selecting a date above will automatically toggle the correct day of the week below.
+                                        </p>
+                                    </div>
 
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-300 mb-2">Days of Week *</label>
