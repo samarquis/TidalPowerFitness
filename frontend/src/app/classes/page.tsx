@@ -51,6 +51,7 @@ export default function ClassesPage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [selectedDay, setSelectedDay] = useState<number>(-1);
+    const [targetDate, setTargetDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
         fetchClasses();
@@ -87,27 +88,11 @@ export default function ClassesPage() {
         setSuccess('');
 
         try {
-            const classItem = classes.find(c => c.id === classId);
-            let targetDateStr = undefined;
-
-            if (classItem) {
-                const today = new Date();
-                const currentDay = today.getDay();
-                const classDay = classItem.day_of_week;
-
-                let daysUntil = classDay - currentDay;
-                if (daysUntil < 0) daysUntil += 7; 
-
-                const targetDate = new Date(today);
-                targetDate.setDate(today.getDate() + daysUntil);
-                targetDateStr = targetDate.toISOString().split('T')[0];
-            }
-
             const response = await (apiClient as any).request('/bookings', {
                 method: 'POST',
                 body: JSON.stringify({
                     class_id: classId,
-                    target_date: targetDateStr,
+                    target_date: targetDate,
                     attendee_count: attendeeCount
                 })
             });
@@ -116,7 +101,7 @@ export default function ClassesPage() {
                 throw new Error(response.error);
             }
 
-            setSuccess(`Class booked successfully for ${attendeeCount} ${attendeeCount === 1 ? 'person' : 'people'}!`);
+            setSuccess(`Class booked successfully for ${targetDate} (${attendeeCount} ${attendeeCount === 1 ? 'person' : 'people'})!`);
             await refreshUser();
             setAttendeeCount(1);
         } catch (error: any) {
@@ -185,29 +170,52 @@ export default function ClassesPage() {
                     </div>
                 )}
 
-                {/* Day Selection Grid */}
-                <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-12">
-                    <button
-                        onClick={() => setSelectedDay(-1)}
-                        className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === -1
-                            ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
-                            : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
-                            }`}
-                    >
-                        All
-                    </button>
-                    {DAYS.map((day, index) => (
-                        <button
-                            key={day}
-                            onClick={() => setSelectedDay(index)}
-                            className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === index
-                                ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
-                                : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
-                                }`}
-                        >
-                            {day.substring(0, 3)}
-                        </button>
-                    ))}
+                {/* Day & Date Selection Grid */}
+                <div className="flex flex-col lg:flex-row gap-6 mb-12">
+                    <div className="flex-1">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Filter by Day</label>
+                        <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                            <button
+                                onClick={() => setSelectedDay(-1)}
+                                className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === -1
+                                    ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
+                                    : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
+                                    }`}
+                            >
+                                All
+                            </button>
+                            {DAYS.map((day, index) => (
+                                <button
+                                    key={day}
+                                    onClick={() => setSelectedDay(index)}
+                                    className={`py-3 rounded-xl font-bold transition-all text-xs uppercase tracking-widest border ${selectedDay === index
+                                        ? 'bg-turquoise-surf text-black border-turquoise-surf shadow-lg shadow-turquoise-surf/20'
+                                        : 'bg-gray-100 dark:bg-white/5 text-gray-500 border-gray-200 dark:border-white/5 hover:border-turquoise-surf/50 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-300'
+                                        }`}
+                                >
+                                    {day.substring(0, 3)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="lg:w-72">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Pick Booking Date</label>
+                        <input 
+                            type="date"
+                            value={targetDate}
+                            onChange={(e) => {
+                                const newDate = e.target.value;
+                                setTargetDate(newDate);
+                                if (newDate) {
+                                    const dateObj = new Date(newDate + 'T00:00:00');
+                                    setSelectedDay(dateObj.getDay());
+                                }
+                            }}
+                            min={new Date().toISOString().split('T')[0]}
+                            className="input-field py-3 font-bold text-turquoise-surf"
+                        />
+                    </div>
                 </div>
 
                 {/* Error/Success Messages */}

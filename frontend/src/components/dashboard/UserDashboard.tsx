@@ -134,10 +134,12 @@ export default function UserDashboard() {
 
     const handleBookClass = async (classId: string, attendeeCount: number = 1) => {
         try {
+            const targetDateStr = selectedDate.toISOString().split('T')[0];
             const response = await (apiClient as any).request('/bookings', {
                 method: 'POST',
                 body: JSON.stringify({
                     class_id: classId,
+                    target_date: targetDateStr,
                     attendee_count: attendeeCount
                 })
             });
