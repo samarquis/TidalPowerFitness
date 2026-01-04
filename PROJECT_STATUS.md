@@ -11,10 +11,10 @@
 - **Immediate next steps:** Verify and set critical env vars in Render (`DATABASE_URL`, `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID`, `SQUARE_WEBHOOK_SECRET`, `SQUARE_WEBHOOK_SIGNATURE_KEY`), open a PR, run CI, then merge and deploy; or perform a rollback to the last successful deploy if immediate restoration is preferred.
 
 ## 🧹 Remediation Phase: Site Review Fixes (2026-01-03)
-- [ ] **Review Plan V2**: See `docs/planning/SITE_REVIEW_REMEDIATION_V2_2026-01-03.md` (Supersedes V1)
+- [x] **Review Plan V2**: See `docs/planning/SITE_REVIEW_REMEDIATION_V2_2026-01-03.md` (Supersedes V1)
 - [x] **Epic 1**: UI/UX Consistency (Nav Bar, Buttons, Dropdowns, Classes Redesign)
-- [ ] **Epic 2**: Exercise Library Enhancements (Global Filters)
-- [ ] **Epic 3**: Trainer Workflow & Workout Wizard (Comprehensive Session Builder)
+- [x] **Epic 2**: Exercise Library Enhancements (Global Filters & Faceted Search)
+- [x] **Epic 3**: Trainer Workflow & Workout Wizard (Comprehensive Session Builder, Warmup/Cooldown)
 - [ ] **Epic 4**: Data Integrity (Weight Formatting, Package Audit)
 
 ## �🚀 Active Session: Phase 2 Finalization & Quality Review
@@ -25,6 +25,7 @@
 - [x] Added polished Program Assignment UI with pre-filled client flows.
 - [x] Implemented client-facing "Programs" listing and details pages.
 - [x] Implement Square Subscription webhook handler for recurring billing events (e.g., `subscription.updated`).
+- [x] **Migration 026**: Added `is_warmup` and `is_cooldown` to `session_exercises`.
 
 ## 🗺️ Roadmap
 

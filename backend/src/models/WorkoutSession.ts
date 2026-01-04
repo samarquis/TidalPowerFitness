@@ -39,6 +39,8 @@ export interface CreateSessionInput {
         planned_weight_lbs?: number;
         rest_seconds?: number;
         notes?: string;
+        is_warmup?: boolean;
+        is_cooldown?: boolean;
     }>;
 }
 
@@ -278,8 +280,8 @@ class WorkoutSessionModel {
                         `INSERT INTO session_exercises (
                             session_id, exercise_id, order_in_session,
                             planned_sets, planned_reps, planned_weight_lbs,
-                            rest_seconds, notes
-                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                            rest_seconds, notes, is_warmup, is_cooldown
+                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
                         [
                             session.id,
                             exercise.exercise_id,
@@ -288,7 +290,9 @@ class WorkoutSessionModel {
                             exercise.planned_reps,
                             exercise.planned_weight_lbs,
                             exercise.rest_seconds,
-                            exercise.notes
+                            exercise.notes,
+                            exercise.is_warmup || false,
+                            exercise.is_cooldown || false
                         ]
                     );
                 }
