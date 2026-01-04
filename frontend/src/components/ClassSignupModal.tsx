@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
+import { apiClient } from '@/lib/api';
 
 interface ClassInfo {
     id: string;
