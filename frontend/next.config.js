@@ -12,7 +12,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-eval'; # WARNING: 'unsafe-eval' is used for development/testing due to Webpack/Next.js HMR. REMOVE FOR PRODUCTION!
+              script-src 'self' 'unsafe-eval';
               style-src 'self' 'unsafe-inline';
               img-src 'self' blob: data:;
               font-src 'self';
@@ -22,8 +22,8 @@ const nextConfig = {
               frame-ancestors 'none';
               block-all-mixed-content;
               upgrade-insecure-requests;
-              connect-src 'self' https://tidal-power-backend.onrender.com; # Allow connection to deployed backend
-            `.replace(/\n/g, ''),
+              connect-src 'self' https://tidal-power-backend.onrender.com;
+            `.replace(/\n/g, '').replace(/#.*$/, ''),
           },
         ],
       },
