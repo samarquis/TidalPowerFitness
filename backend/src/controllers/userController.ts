@@ -278,6 +278,90 @@ class UserController {
             res.status(500).json({ error: 'Failed to get user credits' });
         }
     }
+
+    // Get current user's full profile
+    async getSelf(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const user = await User.findById(req.user!.id);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+            res.status(200).json(user);
+        } catch (error) {
+            console.error('Get self error:', error);
+            res.status(500).json({ error: 'Failed to get user profile' });
+        }
+    }
+    
+    // Spoof user role (super admin only)
+    async spoofRole(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const SUPER_ADMINS = ['samarquis4@gmail.com', 'scott.marquis@tidalpower.com', 'lisa.baumgard@tidalpower.com'];
+        
+        try {
+            const adminId = req.user!.id;
+            const adminEmail = req.user!.email;
+            const { newRole } = req.body;
+
+            if (!SUPER_ADMINS.includes(adminEmail)) {
+                res.status(403).json({ error: 'Forbidden: You do not have permission to spoof roles.' });
+                return;
+            }
+
+            if (!newRole || !['admin', 'trainer', 'client', 'real'].includes(newRole)) {
+                res.status(400).json({ error: 'Invalid role specified. Must be admin, trainer, client, or real.' });
+                return;
+            }
+
+            const user = await User.findById(adminId);
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            let spoofedRoles: string[];
+
+            if (newRole === 'real') {
+                spoofedRoles = user.roles;
+            } else {
+                spoofedRoles = [newRole];
+            }
+
+            // Generate impersonation token
+            const token = generateToken({
+                id: user.id,
+                userId: user.id,
+                email: user.email,
+                roles: spoofedRoles,
+                is_demo_mode_enabled: req.user!.is_demo_mode_enabled,
+                impersonatedBy: `role-spoofing-${adminId}`
+            });
+            
+            const isProduction = process.env.NODE_ENV === 'production';
+            const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: isProduction && !isLocalhost,
+                sameSite: (isProduction && !isLocalhost) ? 'none' : 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+                path: '/',
+            });
+
+            res.status(200).json({
+                message: `Successfully switched role to ${newRole}`,
+                token,
+                user: {
+                    ...user,
+                    roles: spoofedRoles,
+                }
+            });
+
+        } catch (error) {
+            console.error('Role spoofing error:', error);
+            res.status(500).json({ error: 'Failed to spoof role' });
+        }
+    }
 }
 
 export default new UserController();

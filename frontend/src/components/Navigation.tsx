@@ -160,6 +160,19 @@ export default function Navigation() {
                                                         <Link href="/admin/demo-users" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground" onClick={() => setManagementOpen(false)}>Demo Users</Link>
                                                         <Link href="/admin/changelog" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground" onClick={() => setManagementOpen(false)}>Changelog</Link>
                                                         {isScottMarquis && (
+                                                            <>
+                                                            <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-2 border-t border-card-border pt-2 bg-gray-50 dark:bg-white/5 mb-1">
+                                                                Dev Tools
+                                                            </div>
+                                                            <div className="px-4 py-2">
+                                                                <div className="text-xs text-gray-400 mb-1">Current Role: <span className="font-bold text-foreground">{user?.roles?.[0]}</span></div>
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    <button onClick={() => { spoofRole('admin'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-purple-600/20 hover:bg-purple-600/40">Admin</button>
+                                                                    <button onClick={() => { spoofRole('trainer'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-blue-600/20 hover:bg-blue-600/40">Trainer</button>
+                                                                    <button onClick={() => { spoofRole('client'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-green-600/20 hover:bg-green-600/40">Client</button>
+                                                                    <button onClick={() => { spoofRole('real'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-gray-600/20 hover:bg-gray-600/40">Real</button>
+                                                                </div>
+                                                            </div>
                                                             <button
                                                                 onClick={() => {
                                                                     toggleDemoMode();
@@ -169,6 +182,7 @@ export default function Navigation() {
                                                             >
                                                                 {isDemoModeEnabled ? 'Demo Mode: ON' : 'Demo Mode: OFF'}
                                                             </button>
+                                                            </>
                                                         )}
                                                     </>
                                                 )}

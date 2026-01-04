@@ -4,6 +4,12 @@ import userController from '../controllers/userController';
 
 const router = express.Router();
 
+// Get current user profile
+router.get('/self', authenticate, userController.getSelf);
+
+// Spoof user role (super admin only)
+router.post('/spoof-role', authenticate, userController.spoofRole);
+
 // Get all users (admin only)
 router.get('/', authenticate, authorize('admin'), userController.getAllUsers);
 

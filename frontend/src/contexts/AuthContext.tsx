@@ -24,6 +24,7 @@ interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     refreshUser: () => Promise<void>;
+    spoofRole: (newRole: 'admin' | 'trainer' | 'client' | 'real') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,6 +62,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await checkAuth();
     }
 
+    const spoofRole = async (newRole: 'admin' | 'trainer' | 'client' | 'real') => {
+        try {
+            await apiClient.post('/users/spoof-role', { newRole });
+            // Easiest way to re-evaluate all auth is to just reload
+            window.location.reload();
+        } catch (error) {
+            console.error(`Failed to spoof role to ${newRole}:`, error);
+            // Optionally, show a toast or notification to the user
+        }
+    };
+
     const login = async (email: string, password: string) => {
         const response = await apiClient.login(email, password);
         if (response.data) {
@@ -92,6 +104,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Always clear local state
             setUser(null);
             setToken(null);
+            // Reload to clear all state
+            window.location.href = '/login';
         }
     };
 
@@ -106,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 logout,
                 isAuthenticated: !!user,
                 refreshUser,
+                spoofRole,
             }}
         >
             {children}
