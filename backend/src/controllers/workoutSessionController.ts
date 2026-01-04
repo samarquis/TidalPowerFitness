@@ -9,10 +9,11 @@ class WorkoutSessionController {
     // Get all sessions for trainer (or all for admin)
     async getSessions(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const trainerId = req.user?.id;
+            const userId = req.user?.id;
             const isAdmin = req.user?.roles?.includes('admin');
+            const isTrainer = req.user?.roles?.includes('trainer');
 
-            if (!trainerId && !isAdmin) {
+            if (!userId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
@@ -26,8 +27,11 @@ class WorkoutSessionController {
             let sessions;
             if (isAdmin) {
                 sessions = await WorkoutSession.getAll(filters);
+            } else if (isTrainer) {
+                sessions = await WorkoutSession.getByTrainer(userId, filters);
             } else {
-                sessions = await WorkoutSession.getByTrainer(trainerId!, filters);
+                // For clients, return their own history
+                sessions = await WorkoutSession.getClientHistory(userId);
             }
 
             res.json(sessions);
