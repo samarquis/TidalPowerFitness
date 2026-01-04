@@ -34,6 +34,8 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = 'Running query...';
 
+            console.log("Query being sent:", queryInput); // Debugging line
+
             try {
                 const response = await fetch(`${BACKEND_URL}/api/setup/run-query`, {
                     method: 'POST',
