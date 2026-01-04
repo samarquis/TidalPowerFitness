@@ -38,11 +38,14 @@
                 const response = await fetch(`${BACKEND_URL}/api/setup/run-query`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        secret: SECRET,
-                        query: queryInput
-                    })
-                });
+                                    body: JSON.stringify({ 
+                                            secret: SECRET,
+                                            query: queryInput
+                                        }),
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-TPF-Request': 'true' // Add this header for CSRF protection
+                                        }                });
 
                 const data = await response.json();
 
