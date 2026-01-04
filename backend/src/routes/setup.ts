@@ -215,4 +215,39 @@ router.post('/migrate-roles', async (req: Request, res: Response): Promise<void>
     }
 });
 
+// Endpoint to run a read-only query
+router.post('/run-query', async (req: Request, res: Response) => {
+    try {
+        const { secret, query: sqlQuery } = req.body;
+
+        if (secret !== SETUP_SECRET) {
+            return res.status(403).json({ error: 'Invalid secret' });
+        }
+
+        if (!sqlQuery || typeof sqlQuery !== 'string') {
+            return res.status(400).json({ error: 'Query must be a non-empty string.' });
+        }
+        
+        // Basic validation to prevent anything other than SELECT statements
+        if (!sqlQuery.trim().toLowerCase().startsWith('select')) {
+            return res.status(400).json({ error: 'Only SELECT queries are allowed.' });
+        }
+
+        const result = await query(sqlQuery);
+
+        res.status(200).json({
+            message: 'Query executed successfully',
+            rowCount: result.rowCount,
+            rows: result.rows
+        });
+
+    } catch (error: any) {
+        console.error('Error executing query:', error);
+        res.status(500).json({
+            error: 'Failed to execute query',
+            details: error.message
+        });
+    }
+});
+
 export default router;
