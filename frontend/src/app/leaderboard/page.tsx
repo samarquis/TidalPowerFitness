@@ -40,7 +40,7 @@ export default function LeaderboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black page-container">
+        <div className="min-h-screen bg-background page-container">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-12">
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">
@@ -126,7 +126,7 @@ export default function LeaderboardPage() {
                                         <td className="px-6 py-6 text-right">
                                             <span className="text-xl font-bold text-white tabular-nums">
                                                 {view === 'volume' 
-                                                    ? entry.total_volume?.toLocaleString() 
+                                                    ? Number(entry.total_volume).toLocaleString() 
                                                     : entry.classes_attended}
                                             </span>
                                         </td>

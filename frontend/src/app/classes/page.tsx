@@ -50,7 +50,7 @@ export default function ClassesPage() {
     const [attendeeCount, setAttendeeCount] = useState<number>(1);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
+    const [selectedDay, setSelectedDay] = useState<number>(-1);
 
     useEffect(() => {
         fetchClasses();

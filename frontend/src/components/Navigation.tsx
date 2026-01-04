@@ -32,7 +32,7 @@ export default function Navigation() {
     const isTrainerOrAdmin = user?.roles?.includes('trainer') || user?.roles?.includes('admin');
     const isAdmin = user?.roles?.includes('admin');
     const isTrainer = user?.roles?.includes('trainer');
-    const isScottMarquis = user?.email === 'samarquis4@gmail.com';
+    const isScottMarquis = user?.email === 'samarquis4@gmail.com' || user?.email === 'lisa.baumgard@tidalpower.com';
     const { isDemoModeEnabled, toggleDemoMode } = useDemoMode();
 
     return (
@@ -183,8 +183,10 @@ export default function Navigation() {
                                 >
                                     Packages
                                     {user?.credits !== undefined && (
-                                        <span className="bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] px-1.5 py-0.5 rounded-full border border-teal-500/30 group-hover/tokens:bg-teal-500 group-hover/tokens:text-white transition-all">
-                                            {user.credits} Tokens
+                                        <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full group-hover/tokens:border-turquoise-surf/50 transition-all ml-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-turquoise-surf animate-pulse"></span>
+                                            <span className="text-xs font-bold text-foreground">{user.credits}</span>
+                                            <span className="text-[10px] text-gray-500 uppercase tracking-widest">Credits</span>
                                         </span>
                                     )}
                                 </Link>

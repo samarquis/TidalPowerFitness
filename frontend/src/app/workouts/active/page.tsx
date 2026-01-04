@@ -390,21 +390,29 @@ function ActiveWorkoutContent() {
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4">
                     <button
-                        onClick={() => router.push('/workouts/templates')}
-                        className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-all"
+                        onClick={completeWorkout}
+                        className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all shadow-lg shadow-green-900/20"
                     >
-                        Cancel
+                        Finish Workout
                     </button>
-                    {currentExerciseIndex < exercises.length - 1 && (
+                    <div className="flex gap-4">
                         <button
-                            onClick={nextExercise}
-                            className="flex-1 px-6 py-3 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 font-bold rounded-lg transition-all"
+                            onClick={() => router.push('/workouts/templates')}
+                            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-all"
                         >
-                            Skip Exercise
+                            Cancel
                         </button>
-                    )}
+                        {currentExerciseIndex < exercises.length - 1 && (
+                            <button
+                                onClick={nextExercise}
+                                className="flex-1 px-6 py-3 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 font-bold rounded-lg transition-all"
+                            >
+                                Skip Exercise
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

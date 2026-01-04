@@ -165,7 +165,7 @@ export default function TrainerDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black page-container">
+        <div className="min-h-screen bg-background page-container">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
@@ -175,6 +175,47 @@ export default function TrainerDashboardPage() {
                     <p className="text-xl text-gray-400">
                         Manage your classes and log workouts
                     </p>
+                </div>
+
+                {/* Program Builder CTA */}
+                <div className="mb-12 grid md:grid-cols-2 gap-6">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 p-8 text-white shadow-lg group">
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold mb-2">Assign Workout</h2>
+                            <p className="text-blue-100 mb-6 max-w-md">
+                                Design a workout session and assign it to a class or specific client. This is where you set the program for the day.
+                            </p>
+                            <Link
+                                href="/workouts/assign"
+                                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-blue-600 transition-transform hover:scale-105"
+                            >
+                                🚀 Launch Wizard
+                            </Link>
+                        </div>
+                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-500">
+                            📋
+                        </div>
+                    </div>
+
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-600 to-orange-600 p-8 text-white shadow-lg group">
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold mb-2">Workout Library</h2>
+                            <p className="text-orange-100 mb-6 max-w-md">
+                                Create and manage reusable workout templates and exercises. Build your database of programming.
+                            </p>
+                            <div className="flex gap-4">
+                                <Link
+                                    href="/workouts/templates"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-orange-600 transition-transform hover:scale-105"
+                                >
+                                    Manage Templates
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-500">
+                            💪
+                        </div>
+                    </div>
                 </div>
 
                 {/* Quick Actions */}

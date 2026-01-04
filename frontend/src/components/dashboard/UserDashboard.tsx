@@ -183,8 +183,17 @@ export default function UserDashboard() {
         });
     };
 
-    const isClassBooked = (classId: string) => {
-        return bookings.some(b => b.class_id === classId);
+    const isClassBooked = (classId: string, date: Date) => {
+        return bookings.some(b => 
+            b.class_id === classId && 
+            new Date(b.booking_date).toDateString() === date.toDateString()
+        );
+    };
+
+    const handleUpcomingClassClick = (dateStr: string) => {
+        const date = new Date(dateStr);
+        setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1)); // Switch to that month
+        setSelectedDate(date);
     };
 
     const { days, firstDay } = getDaysInMonth(currentDate);
@@ -202,7 +211,7 @@ export default function UserDashboard() {
     const selectedDayClasses = getClassesForDate(selectedDate.getDate());
 
     return (
-        <div className="min-h-screen bg-black page-container">
+        <div className="min-h-screen bg-background page-container">
             <div className="max-w-7xl mx-auto">
                 {/* Welcome Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
@@ -235,7 +244,7 @@ export default function UserDashboard() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-400 uppercase font-bold">Available Tokens</p>
-                            <p className="font-semibold text-white">Ready to book classes</p>
+                            <p className="font-semibold text-foreground">Ready to book classes</p>
                         </div>
                     </div>
                     <Link href="/packages" className="btn-primary">
@@ -269,7 +278,7 @@ export default function UserDashboard() {
                                         <div className="mt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/40 backdrop-blur-sm p-6 rounded-xl border border-white/5">
                                             <div>
                                                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Next Scheduled Workout</p>
-                                                <h3 className="text-xl font-bold text-white">{activeProgram.next_workout.workout_name}</h3>
+                                                <h3 className="text-xl font-bold text-foreground">{activeProgram.next_workout.workout_name}</h3>
                                                 <p className="text-sm text-gray-400">Scheduled for Day {activeProgram.next_workout.day_number}</p>
                                             </div>
                                             <Link 
@@ -302,7 +311,7 @@ export default function UserDashboard() {
                                             className="p-4 bg-white/5 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all group"
                                         >
                                             <p className="text-[10px] font-bold text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
-                                            <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors">{rec.name}</h4>
+                                            <h4 className="font-bold text-foreground group-hover:text-purple-300 transition-colors">{rec.name}</h4>
                                         </Link>
                                     ))}
                                 </div>
@@ -361,16 +370,17 @@ export default function UserDashboard() {
                                 ))}
                                 {Array.from({ length: days }).map((_, i) => {
                                     const day = i + 1;
-                                    const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+                                    const dateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                                    const isToday = new Date().toDateString() === dateObj.toDateString();
                                     const isSelected = selectedDate.getDate() === day && selectedDate.getMonth() === currentDate.getMonth() && selectedDate.getFullYear() === currentDate.getFullYear();
                                     const dayClasses = getClassesForDate(day);
                                     const hasClasses = dayClasses.length > 0;
-                                    const hasBookedClass = dayClasses.some(c => isClassBooked(c.id));
+                                    const hasBookedClass = dayClasses.some(c => isClassBooked(c.id, dateObj));
 
                                     return (
                                         <div
                                             key={day}
-                                            onClick={() => setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
+                                            onClick={() => setSelectedDate(dateObj)}
                                             className={`
                                                 aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
                                                 ${isSelected ? 'bg-gradient-to-br from-cerulean to-pacific-cyan text-white ring-2 ring-turquoise-surf shadow-lg' : 'bg-white/5 hover:bg-white/10 border border-white/5'}
@@ -415,7 +425,7 @@ export default function UserDashboard() {
                             ) : (
                                 <div className="space-y-4">
                                     {selectedDayClasses.map((classItem) => {
-                                        const booked = isClassBooked(classItem.id);
+                                        const booked = isClassBooked(classItem.id, selectedDate);
                                         return (
                                             <div
                                                 key={classItem.id}
@@ -479,7 +489,7 @@ export default function UserDashboard() {
                                         <div key={pr.id} className="bg-white/5 p-4 rounded-xl border border-white/5">
                                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{pr.exercise_name}</p>
                                             <div className="flex justify-between items-baseline">
-                                                <p className="font-bold text-white text-lg">
+                                                <p className="font-bold text-foreground text-lg">
                                                     {pr.value} <span className="text-xs text-gray-500 font-normal">{pr.record_type === 'max_weight' ? 'lbs' : pr.record_type === 'max_reps' ? 'reps' : ''}</span>
                                                 </p>
                                                 <p className="text-[10px] text-gray-600">{new Date(pr.achieved_at).toLocaleDateString()}</p>
@@ -520,14 +530,18 @@ export default function UserDashboard() {
                             ) : (
                                 <div className="space-y-3">
                                     {bookings.slice(0, 3).map((booking) => (
-                                        <div key={booking.id} className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
+                                        <div 
+                                            key={booking.id} 
+                                            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5 hover:border-turquoise-surf/30 cursor-pointer transition-all"
+                                            onClick={() => handleUpcomingClassClick(booking.booking_date)}
+                                        >
                                             <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 text-xs border border-green-500/20">
                                                 ✓
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-bold text-sm text-white truncate">{booking.class_name}</p>
+                                                <p className="font-bold text-sm text-foreground truncate">{booking.class_name}</p>
                                                 <p className="text-[10px] font-bold text-gray-500 uppercase">
-                                                    {new Date(booking.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                    {new Date(booking.booking_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                                 </p>
                                             </div>
                                         </div>

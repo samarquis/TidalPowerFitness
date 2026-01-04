@@ -14,7 +14,7 @@ export class DemoDataService {
       const trainerIds = trainersResult.rows.map(r => r.id);
       const primaryTrainerId = trainerIds[0] || userId; // fallback to user themselves
 
-      // 2. Get available exercises
+      // 2. Get available exercises and classes
       const exercisesResult = await query(`
         SELECT e.id, e.name, wt.name as workout_type, bfa.name as focus_area
         FROM exercises e
@@ -23,16 +23,45 @@ export class DemoDataService {
       `);
       const exercises = exercisesResult.rows;
 
+      const classesResult = await query("SELECT id, day_of_week FROM classes");
+      const classes = classesResult.rows;
+
       if (exercises.length === 0) {
         logger.warn('No exercises found in database. Skipping history generation.');
         return;
       }
 
-      // 3. Generate 2-4 workouts per week
+      // 3. Generate 2-4 workouts per week AND class attendance
       const totalDays = months * 30;
       const workoutFrequency = 0.4; // 40% chance of workout on any given day
+      const classFrequency = 0.3; // 30% chance of class attendance on valid days
       
       for (let i = totalDays; i >= 0; i--) {
+        const sessionDate = new Date();
+        sessionDate.setDate(sessionDate.getDate() - i);
+        const dayOfWeek = sessionDate.getDay(); // 0 = Sunday
+
+        // --- Class Attendance Generation ---
+        const validClasses = classes.filter(c => c.day_of_week === dayOfWeek);
+        if (validClasses.length > 0 && Math.random() < classFrequency) {
+            const randomClass = validClasses[Math.floor(Math.random() * validClasses.length)];
+            
+            // Check if already booked (simple check)
+            const existingBooking = await query(
+                "SELECT id FROM class_participants WHERE class_id = $1 AND user_id = $2 AND target_date = $3",
+                [randomClass.id, userId, sessionDate]
+            );
+
+            if (existingBooking.rows.length === 0) {
+                await query(
+                    `INSERT INTO class_participants (class_id, user_id, credits_used, attendee_count, target_date, status, checked_in)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [randomClass.id, userId, 1, 1, sessionDate, 'attended', true]
+                );
+            }
+        }
+
+        // --- Gym Workout Generation ---
         if (Math.random() > workoutFrequency) continue;
 
         const sessionDate = new Date();

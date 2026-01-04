@@ -5,6 +5,7 @@
 -- Scott Marquis - Primary Admin (password: admin123 - hashed with bcrypt)
 INSERT INTO users (email, password_hash, first_name, last_name, role, roles, phone) VALUES
 ('samarquis4@gmail.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Scott', 'Marquis', 'admin', ARRAY['admin'], '555-0001'),
+('lisa.baumgard@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Lisa', 'Baumgard', 'admin', ARRAY['admin', 'trainer'], '555-0002'),
 ('admin@tidalpower.com', '$2b$10$7kVTKDYfw5fvqxm7lbPETOVlK9j9BhEQC6b8rD9E1wbcbwlIRd5Y6', 'Admin', 'User', 'admin', ARRAY['admin'], '555-0100')
 ON CONFLICT (email) DO NOTHING;
 
