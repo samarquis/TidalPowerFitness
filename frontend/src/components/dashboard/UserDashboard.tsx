@@ -192,10 +192,20 @@ export default function UserDashboard() {
         );
     };
 
-    const handleUpcomingClassClick = (dateStr: string) => {
-        const date = new Date(dateStr);
-        setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1)); // Switch to that month
-        setSelectedDate(date);
+    const handleUpcomingClassClick = (booking: Booking) => {
+        const date = new Date(booking.booking_date);
+        // Correct for timezone offset to ensure we select the right date
+        const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+        
+        setCurrentDate(new Date(localDate.getFullYear(), localDate.getMonth(), 1));
+        setSelectedDate(localDate);
+        
+        // Find the class details and open the modal
+        const classItem = classes.find(c => c.id === booking.class_id);
+        if (classItem) {
+            setSelectedClass(classItem);
+            setShowModal(true);
+        }
     };
 
     const { days, firstDay } = getDaysInMonth(currentDate);
@@ -535,7 +545,7 @@ export default function UserDashboard() {
                                         <div 
                                             key={booking.id} 
                                             className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5 hover:border-turquoise-surf/30 cursor-pointer transition-all"
-                                            onClick={() => handleUpcomingClassClick(booking.booking_date)}
+                                            onClick={() => handleUpcomingClassClick(booking)}
                                         >
                                             <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 text-xs border border-green-500/20">
                                                 ✓
@@ -575,6 +585,7 @@ export default function UserDashboard() {
                         ...selectedClass,
                         date: selectedDate
                     }}
+                    isBooked={isClassBooked(selectedClass.id, selectedDate)}
                     userCredits={user?.credits || 0}
                     isOpen={showModal}
                     onClose={() => {
