@@ -311,7 +311,7 @@ export default function ClassesPage() {
                                                 disabled={bookingClass === classItem.id || (isAuthenticated && (!user || user.credits < attendeeCount))}
                                                 className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest transition-all ${
                                                     isAuthenticated 
-                                                        ? 'bg-turquoise-surf text-black hover:bg-pacific-cyan hover:scale-[1.02] shadow-lg shadow-turquoise-surf/10'
+                                                        ? 'btn-primary shadow-lg shadow-turquoise-surf/10'
                                                         : 'bg-gray-200 dark:bg-white/5 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-white/5 hover:border-turquoise-surf/30 hover:text-turquoise-surf'
                                                 }`}
                                             >
