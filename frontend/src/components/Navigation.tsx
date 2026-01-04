@@ -10,7 +10,7 @@ import NotificationBell from './NotificationBell';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, logout, isAuthenticated, spoofRole } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [managementOpen, setManagementOpen] = useState(false);
