@@ -391,6 +391,10 @@ class ApiClient {
         return this.request<any[]>(`/workout-sessions/client/${clientId}/history`, { method: 'GET' });
     }
 
+    async getExerciseHistory(clientId: string, exerciseId: string) {
+        return this.request<any[]>(`/workout-sessions/client/${clientId}/history/${exerciseId}`, { method: 'GET' });
+    }
+
     async logExercise(data: any) {
         return this.request<any>('/workout-sessions/log-exercise', {
             method: 'POST',

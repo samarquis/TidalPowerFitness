@@ -8,6 +8,7 @@ router.use(authenticate);
 
 // specific client routes (authenticated, self-access check in controller)
 router.get('/client/:clientId/history', workoutSessionController.getClientHistory);
+router.get('/client/:clientId/history/:exerciseId', workoutSessionController.getExerciseHistory);
 router.get('/client/:clientId/stats', workoutSessionController.getClientStats);
 router.get('/client/:clientId/logs', workoutSessionController.getSessionLogs);
 

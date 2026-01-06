@@ -58,6 +58,7 @@ export default function WorkoutLogPage() {
     const [restTimer, setRestTimer] = useState<number | null>(null);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
+    const [history, setHistory] = useState<any[]>([]);
 
     useEffect(() => {
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
@@ -69,6 +70,27 @@ export default function WorkoutLogPage() {
             fetchSession();
         }
     }, [isAuthenticated, user, sessionId, router]);
+
+    // Fetch history when client or exercise changes
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (!selectedClient || !currentExercise) {
+                setHistory([]);
+                return;
+            }
+
+            try {
+                const response = await apiClient.getExerciseHistory(selectedClient.client_id, currentExercise.exercise_id);
+                if (response.data) {
+                    setHistory(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching history:', error);
+            }
+        };
+
+        fetchHistory();
+    }, [selectedClient, currentExercise]);
 
     const fetchSession = async () => {
         try {
@@ -343,6 +365,18 @@ export default function WorkoutLogPage() {
                                         </p>
                                         {currentExercise.notes && (
                                             <p className="text-sm text-gray-500 mt-1">{currentExercise.notes}</p>
+                                        )}
+                                        
+                                        {/* History Display */}
+                                        {history.length > 0 && (
+                                            <div className="mt-3 p-2 bg-white/5 rounded-lg border border-white/10 text-xs text-gray-400">
+                                                <span className="font-bold text-teal-500 uppercase tracking-wider mr-2">Last Session:</span>
+                                                {new Date(history[0].session_date).toLocaleDateString()} — 
+                                                <span className="text-foreground font-mono ml-1">
+                                                    {history[0].weight_used_lbs}lbs × {history[0].reps_completed}
+                                                </span>
+                                                {history[0].notes && <span className="italic ml-2 opacity-70">"{history[0].notes}"</span>}
+                                            </div>
                                         )}
                                     </div>
 

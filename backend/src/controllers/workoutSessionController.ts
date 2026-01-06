@@ -251,6 +251,27 @@ class WorkoutSessionController {
         }
     }
 
+    // Get specific exercise history for a client
+    async getExerciseHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const { clientId, exerciseId } = req.params;
+
+            // Authorization check
+            if (req.user?.id !== clientId &&
+                !req.user?.roles?.includes('trainer') &&
+                !req.user?.roles?.includes('admin')) {
+                res.status(403).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const history = await WorkoutSession.getExerciseHistory(clientId, exerciseId);
+            res.json(history);
+        } catch (error) {
+            console.error('Error fetching exercise history:', error);
+            res.status(500).json({ error: 'Failed to fetch exercise history' });
+        }
+    }
+
     // Get workout stats for a client
     async getClientStats(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {

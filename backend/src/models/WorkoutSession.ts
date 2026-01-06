@@ -447,6 +447,27 @@ class WorkoutSessionModel {
         return result.rows;
     }
 
+    // Get exercise history for a client (specific exercise)
+    async getExerciseHistory(clientId: string, exerciseId: string, limit: number = 5): Promise<any[]> {
+        const sql = `
+            SELECT 
+                ws.session_date,
+                el.set_number,
+                el.reps_completed,
+                el.weight_used_lbs,
+                el.rpe,
+                el.notes
+            FROM exercise_logs el
+            JOIN session_exercises se ON el.session_exercise_id = se.id
+            JOIN workout_sessions ws ON se.session_id = ws.id
+            WHERE el.client_id = $1 AND se.exercise_id = $2
+            ORDER BY ws.session_date DESC, el.set_number ASC
+            LIMIT $3
+        `;
+        const result: QueryResult = await query(sql, [clientId, exerciseId, limit * 10]); // Fetch more rows to group by session later
+        return result.rows;
+    }
+
     // Get workout stats for a client
     async getClientStats(clientId: string): Promise<any> {
         const sql = `
