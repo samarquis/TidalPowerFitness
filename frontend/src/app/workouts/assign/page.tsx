@@ -102,7 +102,168 @@ function AssignWorkoutContent() {
         }
     }, [user, router]);
 
-    // ... (existing effects) ...
+    // Handle URL parameters for pre-filling
+    useEffect(() => {
+        if (!searchParams) return;
+        const dateParam = searchParams.get('date');
+        const classIdParam = searchParams.get('class_id');
+
+        if (dateParam) {
+            setSessionDate(dateParam);
+        }
+
+        if (classIdParam) {
+            setRecipientMode('class');
+            setSelectedClass(classIdParam);
+        }
+    }, [searchParams]);
+
+    // Fetch templates and available exercises
+    useEffect(() => {
+        const fetchTemplatesAndExercises = async () => {
+            try {
+                const [templatesRes, exercisesRes] = await Promise.all([
+                    apiClient.getWorkoutTemplates(),
+                    apiClient.getExercises()
+                ]);
+
+                if (templatesRes.data) setTemplates(templatesRes.data);
+                if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        if (user) {
+            fetchTemplatesAndExercises();
+        }
+    }, [user]);
+
+    // Fetch classes when date is selected
+    useEffect(() => {
+        const fetchClasses = async () => {
+            if (!sessionDate) return;
+
+            try {
+                const date = new Date(sessionDate);
+                const dayOfWeek = date.getDay();
+
+                const response = await apiClient.getClassesByDay(dayOfWeek);
+                if (response.data) {
+                    setClasses(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+            }
+        };
+
+        fetchClasses();
+    }, [sessionDate]);
+
+    // Fetch clients
+    useEffect(() => {
+        const fetchClients = async () => {
+            try {
+                const response = await apiClient.getMyClients();
+                if (response.data) {
+                    setClients(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching clients:', error);
+            }
+        };
+
+        if (user) {
+            fetchClients();
+        }
+    }, [user]);
+
+    // --- Helper Functions for Custom Workout Builder ---
+
+    const getFilteredExercises = () => {
+        return availableExercises.filter(ex => {
+            const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesBodyPart = filterBodyPart ? ex.muscle_group_name === filterBodyPart : true;
+            const matchesMovement = filterMovement ? ex.movement_pattern === filterMovement : true;
+            
+            return matchesSearch && matchesBodyPart && matchesMovement;
+        });
+    };
+
+    const addExercise = (exercise: AvailableExercise) => {
+        const newExercise: SelectedExercise = {
+            unique_id: Math.random().toString(36).substr(2, 9),
+            exercise_id: exercise.id,
+            name: exercise.name,
+            workout_type_name: exercise.workout_type_name,
+            muscle_group_name: exercise.muscle_group_name,
+            planned_sets: 3,
+            planned_reps: 10,
+            planned_weight_lbs: 0,
+            rest_seconds: 60,
+            notes: '',
+            is_warmup: false,
+            is_cooldown: false
+        };
+        setSelectedCustomExercises([...selectedCustomExercises, newExercise]);
+    };
+
+    const removeExercise = (uniqueId: string) => {
+        setSelectedCustomExercises(prev => prev.filter(ex => ex.unique_id !== uniqueId));
+    };
+
+    const updateExercise = (uniqueId: string, updates: Partial<SelectedExercise>) => {
+        setSelectedCustomExercises(prev => prev.map(ex => 
+            ex.unique_id === uniqueId ? { ...ex, ...updates } : ex
+        ));
+    };
+
+    const moveExercise = (index: number, direction: 'up' | 'down') => {
+        if (direction === 'up' && index === 0) return;
+        if (direction === 'down' && index === selectedCustomExercises.length - 1) return;
+
+        const newArr = [...selectedCustomExercises];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        [newArr[index], newArr[targetIndex]] = [newArr[targetIndex], newArr[index]];
+        setSelectedCustomExercises(newArr);
+    };
+
+    // --- Navigation & Submission ---
+
+    const handleNext = () => {
+        if (step === 1 && !sessionDate) {
+            setError('Please select a date');
+            return;
+        }
+        if (step === 2) {
+            if (workoutMode === 'template' && !selectedTemplate) {
+                setError('Please select a template');
+                return;
+            }
+            if (workoutMode === 'custom' && selectedCustomExercises.length === 0) {
+                setError('Please select at least one exercise for your custom workout');
+                return;
+            }
+        }
+        if (step === 3) {
+            if (recipientMode === 'class' && !selectedClass) {
+                setError('Please select a class');
+                return;
+            }
+            if (recipientMode === 'clients' && selectedClients.length === 0) {
+                setError('Please select at least one client');
+                return;
+            }
+        }
+
+        setError('');
+        setStep(step + 1);
+    };
+
+    const handleBack = () => {
+        setError('');
+        setStep(step - 1);
+    };
 
     const handleSubmit = async () => {
         if (!isAuthenticated) return;
@@ -151,10 +312,10 @@ function AssignWorkoutContent() {
 
             if (workoutMode === 'template' || (workoutMode === 'custom' && saveAsTemplate)) {
                 payload.template_id = finalTemplateId;
-            } 
-            
+            }
+
             // Always include exercises if it was custom mode (even if we just made a template),
-            // to preserve specific tweaks made for this session that might differ slightly 
+            // to preserve specific tweaks made for this session that might differ slightly
             // or just to be safe. If we made a template, we pass BOTH template_id and exercises.
             if (workoutMode === 'custom') {
                  payload.exercises = selectedCustomExercises.map((ex, index) => ({
@@ -177,7 +338,24 @@ function AssignWorkoutContent() {
             }
 
             const response = await apiClient.createWorkoutSession(payload);
-            // ... (rest of function) ...
+
+            if (response.error) {
+                throw new Error(response.error || 'Failed to assign workout');
+            }
+
+            // Success Redirect
+            if (recipientMode === 'class' && selectedClass) {
+                 router.push('/admin/classes'); 
+            } else {
+                router.push('/admin/calendar');
+            }
+            
+        } catch (error: any) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const toggleClient = (clientId: string) => {
         setSelectedClients(prev =>
@@ -621,23 +799,23 @@ function AssignWorkoutContent() {
                             {workoutMode === 'custom' && (
                                 <div className="glass-card p-6 rounded-2xl border border-dashed border-white/20 bg-white/5">
                                     <label className="flex items-center gap-3 cursor-pointer">
-                                        <input 
-                                            type="checkbox" 
-                                            checked={saveAsTemplate} 
+                                        <input
+                                            type="checkbox"
+                                            checked={saveAsTemplate}
                                             onChange={(e) => setSaveAsTemplate(e.target.checked)}
                                             className="w-5 h-5 rounded border-white/20 bg-black/20 text-pacific-cyan focus:ring-offset-0 focus:ring-pacific-cyan"
                                         />
                                         <span className="font-bold text-foreground">Save this workout as a reusable Template?</span>
                                     </label>
-                                    
+
                                     {saveAsTemplate && (
                                         <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-200">
                                             <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
                                                 Template Name *
                                             </label>
-                                            <input 
-                                                type="text" 
-                                                value={newTemplateName} 
+                                            <input
+                                                type="text"
+                                                value={newTemplateName}
                                                 onChange={(e) => setNewTemplateName(e.target.value)}
                                                 className="input-field"
                                                 placeholder="e.g. Full Body Strength A"

@@ -60,6 +60,8 @@ export default function WorkoutLogPage() {
     const [saveMessage, setSaveMessage] = useState('');
     const [history, setHistory] = useState<any[]>([]);
 
+    const currentExercise = session?.exercises?.[currentExerciseIndex];
+
     useEffect(() => {
         if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
             router.push('/');
@@ -111,7 +113,7 @@ export default function WorkoutLogPage() {
         }
     };
 
-    const currentExercise = session?.exercises?.[currentExerciseIndex];
+
 
     const getClientLogs = useCallback((exerciseId: string, clientId: string): SetLog[] => {
         return exerciseLogs[exerciseId]?.[clientId] || [];

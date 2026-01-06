@@ -472,10 +472,96 @@ function AdminClassesContent() {
                         <p className="mt-4 text-gray-400">Loading classes...</p>
                     </div>
                 ) : (
-                    <div className="glass rounded-xl overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-white/5">
+                                    <>
+                                        {/* Mobile Card View */}
+                                        <div className="md:hidden space-y-4 mb-8">
+                                            {filteredClasses.map((classItem) => (
+                                                <div key={classItem.id} className="glass rounded-xl p-6 space-y-4">
+                                                    <div className="flex justify-between items-start">
+                                                        <div>
+                                                            <h3 className="text-lg font-bold text-white">{classItem.name}</h3>
+                                                            <span className="text-sm text-turquoise-surf font-semibold">{classItem.category}</span>
+                                                        </div>
+                                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${classItem.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                                                            }`}>
+                                                            {classItem.is_active ? 'Published' : 'Draft'}
+                                                        </span>
+                                                    </div>
+                    
+                                                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+                                                        <div>
+                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Instructor</span>
+                                                            <span className="text-gray-300">{classItem.instructor_name}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Price</span>
+                                                            <span className="text-gray-300">${(classItem.price_cents / 100).toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="col-span-2">
+                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Schedule</span>
+                                                            <span className="text-gray-300">
+                                                                {classItem.days_of_week && classItem.days_of_week.length > 0
+                                                                    ? classItem.days_of_week.map(d => DAYS[d].substring(0, 3)).join(', ')
+                                                                    : DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                    
+                                                    <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+                                                        <button
+                                                            onClick={() => openEditModal(classItem)}
+                                                            className="flex-1 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20 flex items-center justify-center gap-2"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
+                                                            className={`flex-1 py-2 rounded-lg transition-all border flex items-center justify-center gap-2 ${classItem.is_active
+                                                                ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border-amber-500/20'
+                                                                : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
+                                                                }`}
+                                                        >
+                                                            {classItem.is_active ? (
+                                                                <>
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                                    </svg>
+                                                                    Unpublish
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                    </svg>
+                                                                    Publish
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteClass(classItem.id)}
+                                                            className="p-2 bg-red-600/10 text-red-400 hover:bg-red-600/20 rounded-lg transition-all border border-red-600/20"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                    
+                                            {filteredClasses.length === 0 && (
+                                                <div className="text-center py-12 text-gray-400 glass rounded-xl">
+                                                    No classes found matching your criteria.
+                                                </div>
+                                            )}
+                                        </div>
+                    
+                                        <div className="hidden md:block glass rounded-xl overflow-hidden">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full">                                <thead className="bg-white/5">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Class Name</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
@@ -559,6 +645,7 @@ function AdminClassesContent() {
                             </div>
                         )}
                     </div>
+                </>
                 )}
             </div>
 

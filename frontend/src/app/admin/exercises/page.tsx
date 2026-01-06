@@ -456,10 +456,95 @@ export default function AdminExercisesPage() {
                     <p className="mt-4 text-gray-400">Loading exercises...</p>
                 </div>
             ) : (
-                <div className="glass rounded-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-white/5">
+                                <>
+                                    {/* Mobile Card View */}
+                                    <div className="md:hidden space-y-4 mb-8">
+                                        {filteredExercises.map((exercise) => (
+                                            <div key={exercise.id} className="glass rounded-xl p-6 space-y-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="text-lg font-bold text-white">{exercise.name}</h3>
+                                                        {exercise.description && (
+                                                            <p className="text-sm text-gray-400 mt-1 line-clamp-2">{exercise.description}</p>
+                                                        )}
+                                                    </div>
+                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${exercise.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                                                        }`}>
+                                                        {exercise.is_active ? 'Active' : 'Inactive'}
+                                                    </span>
+                                                </div>
+                
+                                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                                    <div>
+                                                        <span className="text-gray-500 block text-xs uppercase tracking-wider">Type</span>
+                                                        <span className="text-gray-300">{exercise.workout_type_name || '-'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 block text-xs uppercase tracking-wider">Muscle</span>
+                                                        <span className="text-gray-300">{exercise.muscle_group_name || '-'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 block text-xs uppercase tracking-wider">Pattern</span>
+                                                        <span className="text-gray-300">{exercise.movement_pattern || '-'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 block text-xs uppercase tracking-wider">Difficulty</span>
+                                                        <span className={`font-semibold ${exercise.difficulty_level === 'Beginner' ? 'text-green-400' :
+                                                            exercise.difficulty_level === 'Intermediate' ? 'text-yellow-400' :
+                                                                exercise.difficulty_level === 'Advanced' ? 'text-red-400' : 'text-gray-400'
+                                                            }`}>
+                                                            {exercise.difficulty_level || '-'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                
+                                                <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+                                                    <button
+                                                        onClick={() => openEditModal(exercise)}
+                                                        className="flex-1 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20 flex items-center justify-center gap-2"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
+                                                        className={`flex-1 py-2 rounded-lg transition-all border flex items-center justify-center gap-2 ${exercise.is_active
+                                                            ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
+                                                            : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
+                                                            }`}
+                                                    >
+                                                        {exercise.is_active ? (
+                                                            <>
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                                </svg>
+                                                                Deactivate
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                                Activate
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                
+                                        {filteredExercises.length === 0 && (
+                                            <div className="text-center py-12 text-gray-400 glass rounded-xl">
+                                                No exercises found matching your criteria.
+                                            </div>
+                                        )}
+                                    </div>
+                
+                                    <div className="hidden md:block glass rounded-xl overflow-hidden">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full">                            <thead className="bg-white/5">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Exercise Name</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Workout Type</th>
@@ -542,14 +627,14 @@ export default function AdminExercisesPage() {
                         </table>
                     </div>
 
-                    {filteredExercises.length === 0 && (
-                        <div className="text-center py-12 text-gray-400">
-                            No exercises found matching your criteria.
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+                                        {filteredExercises.length === 0 && (
+                                            <div className="text-center py-12 text-gray-400">
+                                                No exercises found matching your criteria.  
+                                            </div>
+                                        )}
+                                    </div>
+                                    </>
+                                )}        </div>
 
             {/* Modal */ }
     {
