@@ -58,42 +58,45 @@ export default function WorkoutLogPage() {
     const [restTimer, setRestTimer] = useState<number | null>(null);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
-    const [history, setHistory] = useState<any[]>([]);
-
-    const currentExercise = session?.exercises?.[currentExerciseIndex];
-
-    useEffect(() => {
-        if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
-            router.push('/');
-            return;
-        }
-
-        if (isAuthenticated && sessionId) {
-            fetchSession();
-        }
-    }, [isAuthenticated, user, sessionId, router]);
-
-    // Fetch history when client or exercise changes
-    useEffect(() => {
-        const fetchHistory = async () => {
-            if (!selectedClient || !currentExercise) {
-                setHistory([]);
+        const [history, setHistory] = useState<any[]>([]);
+        const [historyLoading, setHistoryLoading] = useState(false);
+    
+        const currentExercise = session?.exercises?.[currentExerciseIndex];
+    
+        useEffect(() => {
+            if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
+                router.push('/');
                 return;
             }
-
-            try {
-                const response = await apiClient.getExerciseHistory(selectedClient.client_id, currentExercise.exercise_id);
-                if (response.data) {
-                    setHistory(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching history:', error);
+    
+            if (isAuthenticated && sessionId) {
+                fetchSession();
             }
-        };
-
-        fetchHistory();
-    }, [selectedClient, currentExercise]);
-
+        }, [isAuthenticated, user, sessionId, router]);
+    
+        // Fetch history when client or exercise changes
+        useEffect(() => {
+            const fetchHistory = async () => {
+                if (!selectedClient || !currentExercise) {
+                    setHistory([]);
+                    return;
+                }
+    
+                setHistoryLoading(true);
+                try {
+                    const response = await apiClient.getExerciseHistory(selectedClient.client_id, currentExercise.exercise_id);
+                    if (response.data) {
+                        setHistory(response.data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching history:', error);
+                } finally {
+                    setHistoryLoading(false);
+                }
+            };
+    
+            fetchHistory();
+        }, [selectedClient, currentExercise]);
     const fetchSession = async () => {
         try {
             const response = await apiClient.getWorkoutSession(sessionId);
@@ -369,17 +372,62 @@ export default function WorkoutLogPage() {
                                             <p className="text-sm text-gray-500 mt-1">{currentExercise.notes}</p>
                                         )}
                                         
-                                        {/* History Display */}
-                                        {history.length > 0 && (
-                                            <div className="mt-3 p-2 bg-white/5 rounded-lg border border-white/10 text-xs text-gray-400">
-                                                <span className="font-bold text-teal-500 uppercase tracking-wider mr-2">Last Session:</span>
-                                                {new Date(history[0].session_date).toLocaleDateString()} — 
-                                                <span className="text-foreground font-mono ml-1">
-                                                    {history[0].weight_used_lbs}lbs × {history[0].reps_completed}
-                                                </span>
-                                                {history[0].notes && <span className="italic ml-2 opacity-70">"{history[0].notes}"</span>}
-                                            </div>
-                                        )}
+                                        {/* History / Insights Display */}
+                                        <div className="mt-4 min-h-[60px]">
+                                            {historyLoading ? (
+                                                <div className="animate-pulse flex space-x-4 p-3 bg-white/5 rounded-lg border border-white/10">
+                                                    <div className="flex-1 space-y-2 py-1">
+                                                        <div className="h-2 bg-white/10 rounded w-3/4"></div>
+                                                        <div className="h-2 bg-white/10 rounded"></div>
+                                                    </div>
+                                                </div>
+                                            ) : history.length > 0 ? (
+                                                <div className="p-3 bg-white/5 rounded-lg border border-white/10 relative overflow-hidden group">
+                                                    {/* Overload Badge */}
+                                                    {currentExercise && history[0].weight_used_lbs < currentExercise.planned_weight_lbs && (
+                                                        <div className="absolute top-0 right-0 bg-green-500 text-[10px] font-bold text-black px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter animate-bounce-subtle">
+                                                            ⚡ Overload
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[10px] font-bold text-turquoise-surf uppercase tracking-widest">Previous Best</span>
+                                                        <span className="text-[10px] text-gray-500">{new Date(history[0].session_date).toLocaleDateString()}</span>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-baseline gap-3">
+                                                        <div className="text-lg font-mono font-bold text-white">
+                                                            {history[0].weight_used_lbs}<span className="text-xs text-gray-500 ml-0.5">lbs</span>
+                                                            <span className="mx-2 text-gray-600">×</span>
+                                                            {history[0].reps_completed}<span className="text-xs text-gray-500 ml-0.5">reps</span>
+                                                        </div>
+                                                        
+                                                        {currentExercise && (
+                                                            <div className={`text-xs flex items-center gap-1 ${
+                                                                currentExercise.planned_weight_lbs > history[0].weight_used_lbs 
+                                                                    ? 'text-green-400' 
+                                                                    : currentExercise.planned_weight_lbs < history[0].weight_used_lbs 
+                                                                        ? 'text-amber-400' 
+                                                                        : 'text-gray-400'
+                                                            }`}>
+                                                                {currentExercise.planned_weight_lbs > history[0].weight_used_lbs ? '▲' : currentExercise.planned_weight_lbs < history[0].weight_used_lbs ? '▼' : '◆'}
+                                                                {Math.abs(currentExercise.planned_weight_lbs - history[0].weight_used_lbs)} lbs
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {history[0].notes && (
+                                                        <p className="text-xs text-gray-500 italic mt-1 line-clamp-1 group-hover:line-clamp-none transition-all">
+                                                            "{history[0].notes}"
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="p-3 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-gray-500 italic">
+                                                    No previous history for this exercise. Establish a baseline today!
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Rest Timer */}

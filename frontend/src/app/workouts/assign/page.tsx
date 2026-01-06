@@ -64,6 +64,7 @@ function AssignWorkoutContent() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
 
     // Step 1: Date & Time
     const [sessionDate, setSessionDate] = useState('');
@@ -72,6 +73,7 @@ function AssignWorkoutContent() {
     // Step 2: Workout Selection
     const [workoutMode, setWorkoutMode] = useState<'template' | 'custom'>('template');
     const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
+    const [templatesLoading, setTemplatesLoading] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState('');
     
     // Custom Workout State
@@ -131,6 +133,7 @@ function AssignWorkoutContent() {
                 if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
+                console.error('Error fetching data:', error);
             }
         };
 
@@ -153,6 +156,7 @@ function AssignWorkoutContent() {
                     setClasses(response.data);
                 }
             } catch (error) {
+                console.error('Error fetching data:', error);
                 console.error('Error fetching classes:', error);
             }
         };
@@ -169,6 +173,7 @@ function AssignWorkoutContent() {
                     setClients(response.data);
                 }
             } catch (error) {
+                console.error('Error fetching data:', error);
                 console.error('Error fetching clients:', error);
             }
         };
@@ -268,7 +273,7 @@ function AssignWorkoutContent() {
     const handleSubmit = async () => {
         if (!isAuthenticated) return;
 
-        setLoading(true);
+        setTemplatesLoading(true);
         setError('');
 
         try {
@@ -353,7 +358,7 @@ function AssignWorkoutContent() {
         } catch (error: any) {
             setError(error.message);
         } finally {
-            setLoading(false);
+            setTemplatesLoading(false);
         }
     };
 
@@ -391,7 +396,27 @@ function AssignWorkoutContent() {
                 </div>
 
                 <div className="glass rounded-2xl p-8 shadow-2xl border border-white/5">
-                    {/* Progress Bar */}
+                                        {isSuccess ? (
+                        <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
+                            <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50">
+                                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <h2 className="text-4xl font-bold mb-4">Mission Accomplished</h2>
+                            <p className="text-xl text-gray-400 mb-10 max-w-md mx-auto">
+                                The workout has been successfully assigned and is now live on the client dashboards.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link href="/trainer" className="btn-primary">
+                                    Return to Dashboard
+                                </Link>
+                                <button onClick={() => window.location.reload()} className="btn-secondary">
+                                    Assign Another
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                        {/* Progress Bar */}
                     <div className="mb-10">
                         <div className="flex justify-between mb-3 px-2">
                             {['Date & Time', 'Session Builder', 'Recipients', 'Review'].map((label, index) => (
@@ -880,6 +905,8 @@ function AssignWorkoutContent() {
                             </button>
                         )}
                     </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
