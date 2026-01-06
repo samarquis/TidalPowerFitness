@@ -118,7 +118,16 @@ export default function UserDashboard() {
             ]);
 
             if (classesRes.data) setClasses(classesRes.data);
-            if (bookingsRes.data) setBookings(bookingsRes.data.filter((b: Booking) => b.status === 'confirmed'));
+            if (bookingsRes.data) {
+                // Filter for confirmed bookings AND only show upcoming classes (today or future)
+                const now = new Date();
+                now.setHours(0, 0, 0, 0); // Start of today
+                
+                setBookings(bookingsRes.data.filter((b: Booking) => {
+                    const bookingDate = new Date(b.booking_date);
+                    return b.status === 'confirmed' && bookingDate >= now;
+                }));
+            }
             if (statsRes.data) setStats(statsRes.data);
             if (achievementsRes.data) setAchievements(achievementsRes.data);
             if (prRes.data) setPersonalRecords(prRes.data);

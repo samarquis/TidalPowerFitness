@@ -164,13 +164,13 @@ export default function Navigation() {
                                                             <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-2 border-t border-card-border pt-2 bg-gray-50 dark:bg-white/5 mb-1">
                                                                 Dev Tools
                                                             </div>
-                                                            <div className="px-4 py-2">
-                                                                <div className="text-xs text-gray-400 mb-1">Current Role: <span className="font-bold text-foreground">{user?.roles?.[0]}</span></div>
-                                                                <div className="flex flex-wrap gap-1">
-                                                                    <button onClick={() => { spoofRole('admin'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-purple-600/20 hover:bg-purple-600/40">Admin</button>
-                                                                    <button onClick={() => { spoofRole('trainer'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-blue-600/20 hover:bg-blue-600/40">Trainer</button>
-                                                                    <button onClick={() => { spoofRole('client'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-green-600/20 hover:bg-green-600/40">Client</button>
-                                                                    <button onClick={() => { spoofRole('real'); setManagementOpen(false); }} className="text-xs px-2 py-1 rounded bg-gray-600/20 hover:bg-gray-600/40">Real</button>
+                                                            <div className="px-4 py-2 bg-pacific-cyan/5 mx-2 rounded-lg border border-pacific-cyan/20 my-1">
+                                                                <div className="text-[10px] text-gray-400 mb-2 uppercase font-bold">Role Simulator</div>
+                                                                <div className="grid grid-cols-2 gap-1">
+                                                                    <button onClick={() => { spoofRole('admin'); setManagementOpen(false); }} className={`text-[10px] px-2 py-1.5 rounded font-bold uppercase tracking-tighter transition-all ${user?.roles?.[0] === 'admin' ? 'bg-purple-600 text-white' : 'bg-purple-600/10 text-purple-400 hover:bg-purple-600/30'}`}>Admin</button>
+                                                                    <button onClick={() => { spoofRole('trainer'); setManagementOpen(false); }} className={`text-[10px] px-2 py-1.5 rounded font-bold uppercase tracking-tighter transition-all ${user?.roles?.[0] === 'trainer' ? 'bg-blue-600 text-white' : 'bg-blue-600/10 text-blue-400 hover:bg-blue-600/30'}`}>Trainer</button>
+                                                                    <button onClick={() => { spoofRole('client'); setManagementOpen(false); }} className={`text-[10px] px-2 py-1.5 rounded font-bold uppercase tracking-tighter transition-all ${user?.roles?.[0] === 'client' ? 'bg-green-600 text-white' : 'bg-green-600/10 text-green-400 hover:bg-green-600/30'}`}>Client</button>
+                                                                    <button onClick={() => { spoofRole('real'); setManagementOpen(false); }} className={`text-[10px] px-2 py-1.5 rounded font-bold uppercase tracking-tighter transition-all ${!['admin', 'trainer', 'client'].includes(user?.roles?.[0] || '') ? 'bg-gray-600 text-white' : 'bg-gray-600/10 text-gray-400 hover:bg-gray-600/30'}`}>Reset</button>
                                                                 </div>
                                                             </div>
                                                             <button
@@ -178,7 +178,7 @@ export default function Navigation() {
                                                                     toggleDemoMode();
                                                                     setManagementOpen(false);
                                                                 }}
-                                                                className={`block w-full text-left px-4 py-2 text-sm font-semibold transition-colors ${isDemoModeEnabled ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground'}`}
+                                                                className={`block w-full text-left px-4 py-2 text-sm font-semibold transition-colors mt-1 ${isDemoModeEnabled ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-500 dark:text-gray-300 hover:bg-white/10 hover:text-foreground'}`}
                                                             >
                                                                 {isDemoModeEnabled ? 'Demo Mode: ON' : 'Demo Mode: OFF'}
                                                             </button>

@@ -37,7 +37,7 @@ interface AvailableExercise {
     description?: string;
     workout_type_name?: string;
     muscle_group_name?: string; // Corrected from primary_muscle_group_name
-    movement_pattern_name?: string; // e.g. Push, Pull
+    movement_pattern?: string; // e.g. Push, Pull, Legs
 }
 
 interface SelectedExercise {
@@ -182,10 +182,7 @@ function AssignWorkoutContent() {
         return availableExercises.filter(ex => {
             const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesBodyPart = filterBodyPart ? ex.muscle_group_name === filterBodyPart : true;
-            // Note: Assuming 'workout_type_name' or a new field matches movement. 
-            // If movement_pattern_name is not yet on the API, this might need adjustment.
-            // For now, checking workout_type_name or name as fallback.
-            const matchesMovement = filterMovement ? (ex.workout_type_name === filterMovement || ex.name.includes(filterMovement)) : true;
+            const matchesMovement = filterMovement ? ex.movement_pattern === filterMovement : true;
             
             return matchesSearch && matchesBodyPart && matchesMovement;
         });
@@ -516,22 +513,21 @@ function AssignWorkoutContent() {
                                             {/* Filters */}
                                             <div className="flex gap-2">
                                                 <select 
-                                                    value={filterBodyPart}
-                                                    onChange={(e) => setFilterBodyPart(e.target.value)}
-                                                    className="input-field py-1.5 px-2 text-xs flex-1"
-                                                >
-                                                    <option value="" className="bg-background">All Body Parts</option>
-                                                    {bodyParts.map(bp => <option key={bp} value={bp} className="bg-background">{bp}</option>)}
-                                                </select>
-                                                <select 
                                                     value={filterMovement}
                                                     onChange={(e) => setFilterMovement(e.target.value)}
-                                                    className="input-field py-1.5 px-2 text-xs flex-1"
+                                                    className="input-field py-1.5 px-2 text-xs flex-1 text-foreground bg-background"
                                                 >
-                                                    <option value="" className="bg-background">All Movements</option>
-                                                    <option value="Push" className="bg-background">Push</option>
-                                                    <option value="Pull" className="bg-background">Pull</option>
-                                                    <option value="Legs" className="bg-background">Legs</option>
+                                                    <option value="" className="bg-card text-foreground">All Movements</option>
+                                                    <option value="Push" className="bg-card text-foreground">Push</option>
+                                                    <option value="Pull" className="bg-card text-foreground">Pull</option>
+                                                </select>
+                                                <select 
+                                                    value={filterBodyPart}
+                                                    onChange={(e) => setFilterBodyPart(e.target.value)}
+                                                    className="input-field py-1.5 px-2 text-xs flex-1 text-foreground bg-background"
+                                                >
+                                                    <option value="" className="bg-card text-foreground">All Body Parts</option>
+                                                    {bodyParts.map(bp => <option key={bp} value={bp} className="bg-card text-foreground">{bp}</option>)}
                                                 </select>
                                             </div>
                                         </div>
