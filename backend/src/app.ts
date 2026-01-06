@@ -181,6 +181,14 @@ app.use('/api/changelog', changelogRoutes);
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
+    // Handle URI Malformed errors specifically (avoids server crashes on bad encoded URLs)
+    if (err instanceof URIError) {
+        return res.status(400).json({
+            error: 'Bad Request',
+            message: 'Malformed URI'
+        });
+    }
+
     logger.error(`Unhandled Error: ${err.message}`, { stack: err.stack });
     res.status(500).json({
         error: 'Internal Server Error',

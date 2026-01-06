@@ -60,6 +60,7 @@ export default function WorkoutLogPage() {
     const [saveMessage, setSaveMessage] = useState('');
         const [history, setHistory] = useState<any[]>([]);
         const [historyLoading, setHistoryLoading] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     
         const currentExercise = session?.exercises?.[currentExerciseIndex];
     
@@ -136,6 +137,7 @@ export default function WorkoutLogPage() {
             notes: ''
         };
 
+        setHasUnsavedChanges(true);
         setExerciseLogs(prev => ({
             ...prev,
             [currentExercise.id]: {
@@ -148,6 +150,7 @@ export default function WorkoutLogPage() {
     const updateSet = (setIndex: number, field: keyof SetLog, value: number | string) => {
         if (!currentExercise || !selectedClient) return;
 
+        setHasUnsavedChanges(true);
         setExerciseLogs(prev => {
             const clientLogs = [...(prev[currentExercise.id]?.[selectedClient.client_id] || [])];
             clientLogs[setIndex] = { ...clientLogs[setIndex], [field]: value };
@@ -164,6 +167,7 @@ export default function WorkoutLogPage() {
     const removeSet = (setIndex: number) => {
         if (!currentExercise || !selectedClient) return;
 
+        setHasUnsavedChanges(true);
         setExerciseLogs(prev => {
             const clientLogs = [...(prev[currentExercise.id]?.[selectedClient.client_id] || [])];
             clientLogs.splice(setIndex, 1);
@@ -243,6 +247,7 @@ export default function WorkoutLogPage() {
 
             if (response.data) {
                 setSaveMessage(`✓ Saved ${logs.length} sets successfully!`);
+                setHasUnsavedChanges(false);
             } else {
                 setSaveMessage(`Error: ${response.error || 'Failed to save'}`);
             }
