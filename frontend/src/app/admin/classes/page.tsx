@@ -378,21 +378,21 @@ function AdminClassesContent() {
     }, {} as Record<string, number>);
 
     return (
-        <div className="min-h-screen pt-24 pb-16">
+        <div className="min-h-screen pt-32 pb-16 bg-background/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                     <div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                            Class <span className="text-gradient">Management</span>
+                        <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter">
+                            CLASS <span className="text-gradient uppercase">CONTROL</span>
                         </h1>
-                        <p className="text-gray-400">Manage fitness classes, schedules, and instructors</p>
+                        <p className="text-gray-500 font-medium">Create and schedule upcoming training sessions</p>
                     </div>
                     <button
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all transform hover:scale-105"
+                        className="w-full md:w-auto px-8 py-4 bg-turquoise-surf text-black font-black rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(8,172,214,0.4)] flex items-center justify-center gap-2 uppercase tracking-widest"
                     >
-                        + Add New Class
+                        <span className="text-2xl">+</span> Add New Class
                     </button>
                 </div>
 
