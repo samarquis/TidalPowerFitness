@@ -18,15 +18,15 @@ router.get('/', workoutSessionController.getSessions);
 router.get('/:id', workoutSessionController.getSession);
 router.put('/:id', workoutSessionController.updateSession);
 
-// Trainer/Admin only routes
-router.use(authorize('trainer', 'admin'));
-
-// Create sessions with professional validation
+// Create sessions - Allow Clients to start their own workouts
 router.post('/', createSessionValidation, validate, workoutSessionController.createSession);
 
-// Exercise logging
+// Exercise logging - Allow Clients to log for themselves
 router.post('/log-exercise', workoutSessionController.logExercise);     
 router.post('/log-exercises/bulk', bulkLogValidation, validate, workoutSessionController.bulkLogExercises);
+
+// Trainer/Admin only routes
+router.use(authorize('trainer', 'admin'));
 
 // Attendance marking
 router.post('/:sessionId/attendance/:clientId', workoutSessionController.markAttendance);
