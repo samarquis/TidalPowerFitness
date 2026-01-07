@@ -170,7 +170,7 @@ export default function UserManagementPage() {
                 // Token is now set in HttpOnly cookie by backend
                 // Refresh user state to reflect the new identity
                 await refreshUser();
-                router.push('/dashboard');
+                router.push('/admin');
             } else {
                 console.error('Impersonation failed:', error);
                 alert(`Failed to impersonate user: ${error}`);

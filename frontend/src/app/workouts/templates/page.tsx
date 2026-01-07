@@ -110,7 +110,7 @@ export default function WorkoutTemplatesPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link href="/dashboard" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
+                    <Link href="/" className="text-teal-400 hover:text-teal-300 mb-4 inline-block">
                         &larr; Back to Dashboard
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
