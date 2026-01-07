@@ -246,7 +246,7 @@ class WorkoutSessionModel {
                     sessionData.program_assignment_id,
                     sessionData.workout_type_id,
                     sessionData.session_date,
-                    sessionData.start_time,
+                    sessionData.start_time ? new Date(sessionData.start_time) : null,
                     sessionData.notes
                 ]
             );

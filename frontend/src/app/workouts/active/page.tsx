@@ -75,11 +75,11 @@ function ActiveWorkoutContent() {
     const startWorkout = async () => {
         try {
             const createResponse = await apiClient.createWorkoutSession({
-                trainer_id: user?.id, // Note: This might need refinement for clients
+                trainer_id: user?.id,
                 template_id: templateId,
                 program_assignment_id: assignmentId,
-                session_date: new Date(),
-                start_time: new Date()
+                session_date: new Date().toISOString().split('T')[0],
+                start_time: new Date().toISOString()
             });
 
             if (createResponse.error) throw new Error(createResponse.error);

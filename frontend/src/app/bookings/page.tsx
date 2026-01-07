@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
+import { formatTime12Hour } from "@/lib/utils";
 import Link from 'next/link';
 
 interface Booking {
@@ -130,7 +131,7 @@ export default function MyBookingsPage() {
                                             <div>
                                                 <h3 className="text-xl font-bold text-white mb-1">{booking.class_name}</h3>
                                                 <p className="text-gray-400 text-sm">
-                                                    {booking.instructor_name} • {booking.start_time.slice(0, 5)}
+                                                    {booking.instructor_name} • {formatTime12Hour(booking.start_time)}
                                                 </p>
                                                 <div className="flex gap-2 mt-2">
                                                     <span className="bg-white/5 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border border-white/10">
@@ -178,7 +179,7 @@ export default function MyBookingsPage() {
                                             <div>
                                                 <h3 className="text-xl font-bold text-white mb-1">{booking.class_name}</h3>
                                                 <p className="text-gray-400 text-sm">
-                                                    {booking.instructor_name} • {booking.start_time.slice(0, 5)}
+                                                    {booking.instructor_name} • {formatTime12Hour(booking.start_time)}
                                                 </p>
                                                 <div className="flex gap-2 mt-2">
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${

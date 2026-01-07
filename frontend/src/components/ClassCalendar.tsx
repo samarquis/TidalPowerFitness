@@ -1,3 +1,4 @@
+import { formatTime12Hour } from "@/lib/utils";
 import React from 'react';
 
 interface Class {
@@ -119,7 +120,7 @@ export default function ClassCalendar({ classes, sessions = [], weekStartDate, o
                                         >
                                             <div className="font-bold text-sm mb-1">{classItem.name}</div>
                                             <div className="text-xs opacity-80 mb-1">
-                                                {formatTime(classItem.start_time)} ({classItem.duration_minutes}m)
+                                                {formatTime12Hour(classItem.start_time)} ({classItem.duration_minutes}m)
                                             </div>
                                             <div className="text-xs opacity-80 mb-2">
                                                 {classItem.instructor_name}

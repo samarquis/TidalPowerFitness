@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import AdminMonthCalendar from '@/components/AdminMonthCalendar';
 import Link from 'next/link';
+import { formatTime12Hour } from "@/lib/utils";
 
 interface Class {
     id: string;
@@ -258,7 +259,7 @@ export default function AdminCalendarPage() {
                         <div className="space-y-4 mb-8">
                             <div className="flex justify-between border-b border-white/10 pb-2">
                                 <span className="text-gray-400 text-sm md:text-base">Time</span>
-                                <span className="text-white font-medium text-sm md:text-base text-right">{selectedClassInstance.classItem.start_time} ({selectedClassInstance.classItem.duration_minutes}m)</span>
+                                <span className="text-white font-medium text-sm md:text-base text-right">{formatTime12Hour(selectedClassInstance.classItem.start_time)} ({selectedClassInstance.classItem.duration_minutes}m)</span>
                             </div>
                             <div className="flex justify-between border-b border-white/10 pb-2">
                                 <span className="text-gray-400 text-sm md:text-base">Instructor</span>

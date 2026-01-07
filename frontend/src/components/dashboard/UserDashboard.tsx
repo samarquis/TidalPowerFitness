@@ -1,5 +1,8 @@
 'use client';
 
+import { formatTime12Hour } from "@/lib/utils";
+
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
@@ -468,7 +471,7 @@ export default function UserDashboard() {
                                                         </h3>
                                                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-1">{classItem.description}</p>
                                                         <div className="flex flex-wrap gap-4 mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {classItem.start_time.slice(0, 5)} <span className="text-gray-300 dark:text-gray-600">•</span> {classItem.duration_minutes}m</span>
+                                                            <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">🕐</span> {formatTime12Hour(classItem.start_time)} <span className="text-gray-300 dark:text-gray-600">•</span> {classItem.duration_minutes}m</span>
                                                             <span className="flex items-center gap-1.5"><span className="text-turquoise-surf">👤</span> {classItem.instructor_name}</span>
                                                             <span className="flex items-center gap-1.5 px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded-md">⚡ 1 Credit</span>
                                                         </div>

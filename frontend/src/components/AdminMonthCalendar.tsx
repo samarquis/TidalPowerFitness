@@ -1,5 +1,8 @@
 'use client';
 
+import { formatTime12Hour } from "@/lib/utils";
+
+
 import React from 'react';
 import Link from 'next/link';
 
@@ -164,7 +167,7 @@ export default function AdminMonthCalendar({ classes, sessions = [], currentDate
                                         >
                                             <div className="font-bold truncate">{classItem.name}</div>
                                             <div className="flex justify-between opacity-80">
-                                                <span className="truncate">{formatTime(classItem.start_time)}</span>
+                                                <span className="truncate">{formatTime12Hour(classItem.start_time)}</span>
                                                 {session && <span className="text-green-400 ml-1">✓</span>}
                                             </div>
                                         </div>

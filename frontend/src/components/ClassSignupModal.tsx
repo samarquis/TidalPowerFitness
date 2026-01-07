@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import { apiClient } from '@/lib/api';
+import { formatTime12Hour } from "@/lib/utils";
 
 interface ClassInfo {
     id: string;
@@ -152,7 +153,7 @@ export default function ClassSignupModal({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </span>
-                                {formatTime(classInfo.start_time)}
+                                {formatTime12Hour(classInfo.start_time)}
                             </div>
                         </div>
                     </div>

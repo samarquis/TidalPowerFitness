@@ -1,5 +1,8 @@
 'use client';
 
+import { formatTime12Hour } from "@/lib/utils";
+
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -110,7 +113,7 @@ export default function ClassScheduleSection() {
                                                 >
                                                     <div className="font-bold">{classItem.name}</div>
                                                     <div className="text-xs opacity-90 mt-1">
-                                                        {classItem.start_time} • {classItem.duration_minutes}min
+                                                        {formatTime12Hour(classItem.start_time)} • {classItem.duration_minutes}min
                                                     </div>
                                                     <div className="text-xs opacity-80">{classItem.instructor_name}</div>
                                                 </div>

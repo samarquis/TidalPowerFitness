@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
+import { formatTime12Hour } from "@/lib/utils";
 
 interface AttendanceRecord {
     class_id: string;
@@ -148,7 +149,7 @@ export default function TrainerReportsPage() {
                                             {row.class_name}
                                         </td>
                                         <td className="px-6 py-4 text-gray-400">
-                                            {row.start_time.slice(0, 5)}
+                                            {formatTime12Hour(row.start_time)}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-sm font-bold">
