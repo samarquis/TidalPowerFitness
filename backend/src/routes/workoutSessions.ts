@@ -1,6 +1,7 @@
 import express from 'express';
 import workoutSessionController from '../controllers/workoutSessionController';
 import { authenticate, authorize } from '../middleware/auth';
+import { validate, createSessionValidation, bulkLogValidation } from '../middleware/validation';
 
 const router = express.Router();
 
@@ -20,12 +21,12 @@ router.put('/:id', workoutSessionController.updateSession);
 // Trainer/Admin only routes
 router.use(authorize('trainer', 'admin'));
 
-// Create sessions
-router.post('/', workoutSessionController.createSession);
+// Create sessions with professional validation
+router.post('/', createSessionValidation, validate, workoutSessionController.createSession);
 
 // Exercise logging
-router.post('/log-exercise', workoutSessionController.logExercise);
-router.post('/log-exercises/bulk', workoutSessionController.bulkLogExercises);
+router.post('/log-exercise', workoutSessionController.logExercise);     
+router.post('/log-exercises/bulk', bulkLogValidation, validate, workoutSessionController.bulkLogExercises);
 
 // Attendance marking
 router.post('/:sessionId/attendance/:clientId', workoutSessionController.markAttendance);

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import logger from './utils/logger';
 
@@ -70,6 +71,7 @@ const corsOptions: cors.CorsOptions = {
 
 app.set('trust proxy', 1); // Trust first proxy
 app.use(cors(corsOptions));
+app.use(helmet());
 
 // Middleware
 import { apiLimiter, authLimiter } from './middleware/rateLimit';
@@ -189,10 +191,15 @@ app.use((err: any, req: any, res: any, next: any) => {
         });
     }
 
-    logger.error(`Unhandled Error: ${err.message}`, { stack: err.stack });
+    logger.error(`${req.method} ${req.url} - Unhandled Error: ${err.message}`, { 
+        stack: err.stack,
+        ip: req.ip,
+        user: req.user?.id
+    });
     res.status(500).json({
         error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
+        message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
+        requestId: req.id // Future: add request correlation ID
     });
 });
 

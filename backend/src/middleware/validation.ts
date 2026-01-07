@@ -202,3 +202,24 @@ export const createExerciseValidation = [
 
 
 
+
+// Workout Session Validations
+export const createSessionValidation = [
+    body('session_date').isDate().withMessage('Valid session date is required (YYYY-MM-DD)'),
+    body('trainer_id').isUUID().withMessage('Invalid trainer ID'),
+    body('workout_type_id').optional().isUUID().withMessage('Invalid workout type ID'),
+    body('class_id').optional().isUUID().withMessage('Invalid class ID'),
+    body('participant_ids').optional().isArray().withMessage('Participant IDs must be an array'),
+    body('exercises').optional().isArray().withMessage('Exercises must be an array'),
+    body('exercises.*.exercise_id').isUUID().withMessage('Invalid exercise ID in session'),
+];
+
+export const bulkLogValidation = [
+    body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array of logs'),
+    body('*.session_exercise_id').isUUID().withMessage('Invalid session exercise ID'),
+    body('*.client_id').isUUID().withMessage('Invalid client ID'),
+    body('*.set_number').isInt({ min: 1 }).withMessage('Set number must be at least 1'),
+    body('*.reps_completed').isInt({ min: 0 }).withMessage('Reps must be a non-negative integer'),
+    body('*.weight_used_lbs').isFloat({ min: 0 }).withMessage('Weight must be a non-negative number'),
+    body('*.rpe').optional({ checkFalsy: true }).isInt({ min: 1, max: 10 }).withMessage('RPE must be between 1 and 10'),
+];
