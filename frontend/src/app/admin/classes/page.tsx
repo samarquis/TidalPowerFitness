@@ -661,7 +661,7 @@ function AdminClassesContent() {
                                 </h2>
                                 <button
                                     onClick={closeModal}
-                                    className="text-gray-400 hover:text-foreground text-2xl"
+                                    className="btn-ghost text-2xl"
                                 >
                                     ×
                                 </button>
@@ -971,14 +971,14 @@ function AdminClassesContent() {
                                 {currentStep < 4 ? (
                                     <button
                                         onClick={nextStep}
-                                        className="btn-primary"
+                                        className="btn-primary uppercase tracking-widest text-black font-black"
                                     >
                                         Next
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleSubmit}
-                                        className="btn-primary"
+                                        className="btn-primary uppercase tracking-widest text-black font-black"
                                     >
                                         {editingClass ? 'Update Class' : 'Create Class'}
                                     </button>

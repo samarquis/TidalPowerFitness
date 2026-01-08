@@ -1,4 +1,4 @@
-# Tidal Power Fitness - Project Status
+# Tidal Power Fitness - Project Status (BMAD Methodology)
 
 ## 🚨 Incident (2026-01-02) — Production deploy outage
 - **Summary:** Production requests were timing out due to a failed deploy (build errors), causing user-facing timeouts and degraded availability.

@@ -299,25 +299,25 @@ function ActiveWorkoutContent() {
                             <div className="flex justify-center gap-3">
                                 <button
                                     onClick={() => setRestTimer(Math.max(0, restTimer - 15))}
-                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
+                                    className="btn-secondary text-[10px] py-2 px-4 shadow-none hover:shadow-md"
                                 >
                                     -15s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(Math.max(0, restTimer - 5))}
-                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
+                                    className="btn-secondary text-[10px] py-2 px-4 shadow-none hover:shadow-md"
                                 >
                                     -5s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(restTimer + 5)}
-                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
+                                    className="btn-secondary text-[10px] py-2 px-4 shadow-none hover:shadow-md"
                                 >
                                     +5s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(restTimer + 15)}
-                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
+                                    className="btn-secondary text-[10px] py-2 px-4 shadow-none hover:shadow-md"
                                 >
                                     +15s
                                 </button>
