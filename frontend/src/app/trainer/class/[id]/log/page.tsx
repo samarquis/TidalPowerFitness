@@ -611,7 +611,7 @@ export default function WorkoutLogPage() {
                                         {/* Add Set Button */}
                                         <button
                                             onClick={addSet}
-                                            className="mt-4 w-full py-3 border-2 border-dashed border-white/20 hover:border-teal-500 rounded-lg text-gray-400 hover:text-teal-400 transition-colors"
+                                            className="mt-6 w-full py-4 bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-turquoise-surf rounded-2xl text-gray-500 hover:text-turquoise-surf font-black uppercase tracking-widest text-xs transition-all duration-300"
                                         >
                                             + Add Set
                                         </button>
@@ -621,14 +621,14 @@ export default function WorkoutLogPage() {
                                             <button
                                                 onClick={() => setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1))}
                                                 disabled={currentExerciseIndex === 0}
-                                                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="btn-secondary text-xs uppercase tracking-widest py-3 px-8 opacity-50 hover:opacity-100"
                                             >
                                                 ← Previous
                                             </button>
                                             <button
                                                 onClick={() => setCurrentExerciseIndex(Math.min((session.exercises?.length || 1) - 1, currentExerciseIndex + 1))}
                                                 disabled={currentExerciseIndex === (session.exercises?.length || 1) - 1}
-                                                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="btn-primary text-xs uppercase tracking-widest py-3 px-8 shadow-none hover:shadow-lg"
                                             >
                                                 Next →
                                             </button>

@@ -274,7 +274,7 @@ function ActiveWorkoutContent() {
                     </div>
                     <div className="w-full bg-gray-800 rounded-full h-2">
                         <div
-                            className="bg-gradient-to-r from-cerulean to-pacific-cyan h-2 rounded-full transition-all"
+                            className="bg-turquoise-surf h-2 rounded-full transition-all shadow-[0_0_10px_rgba(8,172,214,0.5)]"
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
@@ -282,7 +282,7 @@ function ActiveWorkoutContent() {
 
                 {/* Current Exercise */}
                 <div className="glass rounded-xl p-6 mb-6">
-                    <h1 className="text-3xl font-bold mb-2">{currentExercise.exercise_name}</h1>
+                    <h1 className="text-4xl font-black mb-2 tracking-tighter uppercase">{currentExercise.exercise_name}</h1>
                     <p className="text-gray-400">
                         Set {currentSet} of {currentExercise.planned_sets || 3}
                     </p>
@@ -299,25 +299,25 @@ function ActiveWorkoutContent() {
                             <div className="flex justify-center gap-3">
                                 <button
                                     onClick={() => setRestTimer(Math.max(0, restTimer - 15))}
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
                                 >
                                     -15s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(Math.max(0, restTimer - 5))}
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
                                 >
                                     -5s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(restTimer + 5)}
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
                                 >
                                     +5s
                                 </button>
                                 <button
                                     onClick={() => setRestTimer(restTimer + 15)}
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all"
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/5"
                                 >
                                     +15s
                                 </button>
@@ -327,7 +327,7 @@ function ActiveWorkoutContent() {
                                     setRestTimer(0);
                                     setIsResting(false);
                                 }}
-                                className="w-full px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all"
+                                className="w-full px-6 py-4 bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl text-lg transition-all border border-white/10 uppercase tracking-widest"
                             >
                                 Skip Rest
                             </button>
@@ -345,7 +345,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={reps}
                                     onChange={(e) => setReps(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
                                 />
                             </div>
                             <div>
@@ -354,7 +354,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={weight}
                                     onChange={(e) => setWeight(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-2xl font-bold text-center focus:outline-none focus:border-turquoise-surf"
+                                    className="w-full px-4 py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
                                 />
                             </div>
                         </div>
@@ -372,7 +372,7 @@ function ActiveWorkoutContent() {
 
                         <button
                             onClick={batchMode ? completeBatchWorkout : completeSet}
-                            className="w-full px-6 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all"
+                            className="w-full px-6 py-5 bg-turquoise-surf text-black font-black rounded-2xl text-xl transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(8,172,214,0.4)] uppercase tracking-widest"
                         >
                             Complete Set
                         </button>
@@ -424,7 +424,7 @@ function ActiveWorkoutContent() {
                 <div className="flex flex-col gap-4">
                     <button
                         onClick={completeWorkout}
-                        className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all shadow-lg shadow-green-900/20"
+                        className="w-full px-6 py-4 bg-green-500 hover:bg-green-400 text-black font-black rounded-2xl transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] uppercase tracking-widest"
                     >
                         Finish Workout
                     </button>
