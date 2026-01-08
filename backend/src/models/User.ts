@@ -1,3 +1,4 @@
+import { encrypt, decrypt } from "../utils/crypto";
 import { query } from '../config/db';
 import { QueryResult } from 'pg';
 
@@ -45,6 +46,7 @@ class UserModel {
         if (!row) return null;
         return {
             ...row,
+            phone: row.phone ? decrypt(row.phone) : row.phone,
             roles: row.roles || (row.role ? [row.role] : ['client'])
         };
     }
@@ -60,7 +62,7 @@ class UserModel {
             `INSERT INTO users (email, password_hash, first_name, last_name, phone, role, roles, is_demo_mode_enabled)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-            [email, password_hash, first_name, last_name, phone, primaryRole, roles, is_demo_mode_enabled]
+            [email, password_hash, first_name, last_name, phone ? encrypt(phone) : phone, primaryRole, roles, is_demo_mode_enabled]
         );
 
         const newUser = userResult.rows[0];
@@ -119,6 +121,10 @@ class UserModel {
 
         Object.entries(userData).forEach(([key, value]) => {
             if (value !== undefined) {
+                // Encrypt PII if present
+                if (key === 'phone' && typeof value === 'string') {
+                    value = encrypt(value);
+                }
                 if (key === 'roles') {
                     fields.push(`${key} = $${paramCount}::TEXT[]`);
                     values.push(value);
