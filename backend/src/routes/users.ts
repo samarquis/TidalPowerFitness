@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { validate, resetPasswordValidation, addUserRoleValidation } from '../middleware/validation';
 import userController from '../controllers/userController';
 
 const router = express.Router();
@@ -14,7 +15,7 @@ router.post('/spoof-role', authenticate, userController.spoofRole);
 router.get('/', authenticate, authorize('admin'), userController.getAllUsers);
 
 // Add role to user (admin only)
-router.post('/:id/roles', authenticate, authorize('admin'), userController.addUserRole);
+router.post('/:id/roles', authenticate, authorize('admin'), addUserRoleValidation, validate, userController.addUserRole);
 
 // Remove role from user (admin only)
 router.delete('/:id/roles/:role', authenticate, authorize('admin'), userController.removeUserRole);
@@ -26,7 +27,7 @@ router.patch('/:id/activate', authenticate, authorize('admin'), userController.t
 router.delete('/:id', authenticate, authorize('admin'), userController.deactivateUser);
 
 // Reset user password (admin only)
-router.post('/:id/reset-password', authenticate, authorize('admin'), userController.resetUserPassword);
+router.post('/:id/reset-password', authenticate, authorize('admin'), resetPasswordValidation, validate, userController.resetUserPassword);
 
 // Impersonate user (admin only)
 router.post('/:id/impersonate', authenticate, authorize('admin'), userController.impersonateUser);

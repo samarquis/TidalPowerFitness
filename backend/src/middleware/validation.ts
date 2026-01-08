@@ -223,3 +223,16 @@ export const bulkLogValidation = [
     body('*.weight_used_lbs').isFloat({ min: 0 }).withMessage('Weight must be a non-negative number'),
     body('*.rpe').optional({ checkFalsy: true }).isInt({ min: 1, max: 10 }).withMessage('RPE must be between 1 and 10'),
 ];
+
+// Admin User Management Validations
+export const resetPasswordValidation = [
+    body('newPassword')
+        .isLength({ min: 8 })
+        .withMessage('Password must be at least 8 characters long')
+        .matches(/\d/)
+        .withMessage('Password must contain a number'),
+];
+
+export const addUserRoleValidation = [
+    body('role').isIn(['admin', 'trainer', 'client']).withMessage('Invalid role type'),
+];
