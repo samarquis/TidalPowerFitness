@@ -176,4 +176,24 @@
     border-color: var(--turquoise-surf);
     transform: scale(1.05);
   }
+
+  /* Professional Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--pacific-cyan);
+    border-radius: 10px;
+    opacity: 0.5;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--turquoise-surf);
+  }
 }

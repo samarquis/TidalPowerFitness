@@ -125,7 +125,7 @@ export default function Navigation() {
                                         </button>
 
                                         {managementOpen && (
-                                            <div className="absolute right-0 mt-2 w-56 bg-card dark:bg-[#1a1a1a] border border-card-border rounded-lg shadow-2xl py-2 z-50 text-foreground ring-1 ring-black/10">
+                                            <div className="absolute right-0 mt-2 w-56 bg-card dark:bg-[#1a1a1a] border border-card-border rounded-lg shadow-2xl py-2 z-50 text-foreground ring-1 ring-black/10 max-h-[85vh] overflow-y-auto custom-scrollbar">
 
                                                 <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-white/5 mb-1">
                                                     Training
@@ -297,7 +297,7 @@ export default function Navigation() {
 
             {/* Mobile menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden bg-background/95 border-t border-card-border max-h-[80vh] overflow-y-auto">
+                <div className="md:hidden bg-background/95 border-t border-card-border max-h-[80vh] overflow-y-auto custom-scrollbar">
                     <div className="px-4 py-4 space-y-3">
                         <Link
                             href="/"
