@@ -577,12 +577,26 @@ export default function UserDashboard() {
                         {/* Quick Actions */}
                         <div className="glass-card bg-gradient-to-br from-dark-teal/20 to-black border-teal-500/20">
                             <h2 className="text-xl font-bold mb-6">Quick Actions</h2>
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 gap-3">
                                 <Link href="/classes" className="btn-primary w-full text-sm">
                                     Browse Classes
                                 </Link>
-                                <Link href="/workouts/templates" className="btn-secondary w-full text-sm">
-                                    My Templates
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Link href="/workouts/templates" className="btn-secondary w-full text-[10px] uppercase font-bold">
+                                        Templates
+                                    </Link>
+                                    <Link href="/workouts/history" className="btn-secondary w-full text-[10px] uppercase font-bold">
+                                        History
+                                    </Link>
+                                    <Link href="/leaderboard" className="btn-secondary w-full text-[10px] uppercase font-bold">
+                                        Leaderboard
+                                    </Link>
+                                    <Link href="/challenges" className="btn-secondary w-full text-[10px] uppercase font-bold">
+                                        Challenges
+                                    </Link>
+                                </div>
+                                <Link href="/programs/my-program" className="btn-secondary w-full text-sm">
+                                    My Full Program
                                 </Link>
                             </div>
                         </div>

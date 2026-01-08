@@ -19,10 +19,12 @@
 - [x] **SR-004 Fixes**: Upcoming Classes filter, Role Simulator, Workout Assignment UI, Push/Pull Standardization (Migration 027).
 
 ## ðŸš€ Active Session: Quality & Stability
-- [x] Trainer Workflow Audit: Deep dive into "Active Logging" features.
-- [x] Feature: Implemented "Last Time" history lookup in active logger.
-- [x] **Stability**: Fixed critical build errors in frontend (Assignment Wizard and Log Page).
-- [ ] **Deployment**: Deploy SR-004 fixes and Trainer Audit features to production.
+- [x] **SR-005 Implementation**:
+    - [x] Navigation Pivot: Centralize links in Dashboards; strip Top Nav to essentials.
+    - [x] Workout Logger: Add mandatory Reps/Weight fields; fix mobile overflow.
+    - [x] Fix Workout History & Template visibility issues.
+    - [x] UI: Refine Light Mode & improve "Create Template" button.
+- [ ] **Deployment**: Deploy SR-004 & SR-005 fixes to production.
 
 ## 🗺️ Roadmap
 
@@ -51,10 +53,11 @@
 - [x] AI-Powered Exercise Recommendations (Service & UI)
 
 ## 🐛 Known Bugs & Technical Debt
-- **Square Provider**: Webhook signature verification is currently disabled in some environments due to missing secret configuration.
-- **Mobile UI**: Some tables in the admin section need a second pass for extreme-narrow screen responsiveness.
+- **Square Provider**: Webhook signature verification hardened with rawBody; pending production verification of secrets.
+- **Mobile UI**: Ongoing monitoring of complex tables on extreme-narrow screens.
 
 ## 📝 Session History (Last 3)
+- **2026-01-08**: Established a robust BMAD-driven session lifecycle management system, including automated context refresh and session conclusion tools.
 - **2026-01-06**: Completed **Site Review 004** remediation (UI fixes, Role Simulator, Exercise Patterns) and performed **Trainer Workflow Audit** (implemented historical performance lookup). See `docs/RELEASE_NOTES/2026-01-06-SR004-and-Trainer-Audit.md`.
 - **2026-01-02**: Production deploy failed due to build errors causing site timeouts; fix branch `fix/remaining-credits-field` created and pushed, pending PR/CI and redeploy. See `docs/RELEASE_NOTES/2026-01-02-incident.md` for details.
 - **2025-12-31**: Finalized Phase 3 (Challenges, AI recommendations, Multi-trainer UI), reached 100% completion of all documented epics and stories.

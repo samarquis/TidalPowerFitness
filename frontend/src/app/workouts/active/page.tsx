@@ -81,7 +81,8 @@ function ActiveWorkoutContent() {
                 template_id: templateId,
                 program_assignment_id: assignmentId,
                 session_date: new Date().toISOString().split('T')[0],
-                start_time: new Date().toISOString()
+                start_time: new Date().toISOString(),
+                participant_ids: [user?.id]
             });
 
             if (createResponse.error) throw new Error(createResponse.error);
@@ -292,7 +293,7 @@ function ActiveWorkoutContent() {
                 {isResting && (
                     <div className="glass rounded-xl p-8 mb-6">
                         <p className="text-gray-400 mb-4 text-center">Rest Time</p>
-                        <p className="text-6xl font-bold text-turquoise-surf text-center mb-6">{restTimer}s</p>
+                        <p className="text-5xl md:text-6xl font-bold text-turquoise-surf text-center mb-6">{restTimer}s</p>
 
                         {/* Timer Controls */}
                         <div className="flex flex-col gap-3">
@@ -345,7 +346,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={reps}
                                     onChange={(e) => setReps(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
+                                    className="w-full px-2 py-3 md:px-4 md:py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-3xl md:text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
                                 />
                             </div>
                             <div>
@@ -354,7 +355,7 @@ function ActiveWorkoutContent() {
                                     type="number"
                                     value={weight}
                                     onChange={(e) => setWeight(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
+                                    className="w-full px-2 py-3 md:px-4 md:py-5 bg-black/40 border border-white/5 rounded-2xl text-turquoise-surf text-3xl md:text-4xl font-black text-center focus:outline-none focus:border-turquoise-surf/50 focus:bg-black/60 transition-all"
                                 />
                             </div>
                         </div>
@@ -410,7 +411,7 @@ function ActiveWorkoutContent() {
                                             </div>
                                         </div>
                                         {log.notes && (
-                                            <div className="text-gray-400 text-xs italic bg-black/30 px-2 py-1 rounded">
+                                            <div className="text-gray-400 text-xs italic bg-black/30 px-2 py-1 rounded break-words max-w-full">
                                                 {log.notes}
                                             </div>
                                         )}

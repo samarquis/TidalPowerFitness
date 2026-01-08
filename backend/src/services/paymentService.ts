@@ -267,20 +267,20 @@ class PaymentService {
         }
     }
 
-    private _isSquareSignatureValid(body: string, signature: string, url: string): boolean {
+    private _isSquareSignatureValid(rawBody: string, signature: string, url: string): boolean {
         if (!this.squareWebhookSecret) {
             logger.warn('Square webhook secret not configured. Skipping signature verification.');
             return true; 
         }
 
-        const hmac = HmacSHA256(url + body, this.squareWebhookSecret);
+        const hmac = HmacSHA256(url + rawBody, this.squareWebhookSecret);
         const digest = encBase64.stringify(hmac);
         return digest === signature;
     }
 
     // Handle Square Webhook
-    async handleSquareWebhook(body: any, signature: string, url: string): Promise<void> {
-        if (!this._isSquareSignatureValid(JSON.stringify(body), signature, url)) {
+    async handleSquareWebhook(body: any, signature: string, url: string, rawBody?: string): Promise<void> {
+        if (!this._isSquareSignatureValid(rawBody || JSON.stringify(body), signature, url)) {
             logger.warn('Square webhook signature verification failed.');
             throw new Error('Invalid Square webhook signature');
         }

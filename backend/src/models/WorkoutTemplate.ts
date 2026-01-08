@@ -69,6 +69,22 @@ class WorkoutTemplateModel {
         return result.rows;
     }
 
+    // Get ALL templates (for admin)
+    async getAll(): Promise<WorkoutTemplate[]> {
+        const sql = `
+            SELECT wt.*, 
+                   workout_types.name as workout_type_name,
+                   COUNT(DISTINCT te.id) as exercise_count
+            FROM workout_templates wt
+            LEFT JOIN workout_types ON wt.workout_type_id = workout_types.id
+            LEFT JOIN template_exercises te ON wt.id = te.template_id
+            GROUP BY wt.id, workout_types.name 
+            ORDER BY wt.created_at DESC
+        `;
+        const result: QueryResult = await query(sql);
+        return result.rows;
+    }
+
     // Get template by ID with exercises
     async getById(id: string): Promise<any | null> {
         const templateResult: QueryResult = await query(

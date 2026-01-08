@@ -7,13 +7,21 @@ class WorkoutTemplateController {
     async getTemplates(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const trainerId = req.user?.id;
+            const isAdmin = req.user?.roles?.includes('admin');
+            
             if (!trainerId) {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
 
-            const includePublic = req.query.include_public !== 'false';
-            const templates = await WorkoutTemplate.getByTrainer(trainerId, includePublic);
+            let templates;
+            if (isAdmin) {
+                templates = await WorkoutTemplate.getAll();
+            } else {
+                const includePublic = req.query.include_public !== 'false';
+                templates = await WorkoutTemplate.getByTrainer(trainerId, includePublic);
+            }
+            
             res.json(templates);
         } catch (error) {
             console.error('Error fetching templates:', error);

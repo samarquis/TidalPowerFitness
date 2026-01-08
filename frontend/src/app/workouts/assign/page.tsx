@@ -79,6 +79,8 @@ function AssignWorkoutContent() {
     // Custom Workout State
     const [availableExercises, setAvailableExercises] = useState<AvailableExercise[]>([]);
     const [selectedCustomExercises, setSelectedCustomExercises] = useState<SelectedExercise[]>([]);
+    const [bodyPartsList, setBodyPartsList] = useState<any[]>([]);
+    const [musclesList, setMusclesList] = useState<any[]>([]);
     
     // Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -124,16 +126,19 @@ function AssignWorkoutContent() {
     useEffect(() => {
         const fetchTemplatesAndExercises = async () => {
             try {
-                const [templatesRes, exercisesRes] = await Promise.all([
+                const [templatesRes, exercisesRes, bodyPartsRes, musclesRes] = await Promise.all([
                     apiClient.getWorkoutTemplates(),
-                    apiClient.getExercises()
+                    apiClient.getExercises(),
+                    fetch('/api/exercises/body-parts').then(res => res.json()),
+                    fetch('/api/exercises/body-focus-areas').then(res => res.json())
                 ]);
 
                 if (templatesRes.data) setTemplates(templatesRes.data);
                 if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
+                if (Array.isArray(bodyPartsRes)) setBodyPartsList(bodyPartsRes);
+                if (Array.isArray(musclesRes)) setMusclesList(musclesRes);
             } catch (error) {
-                console.error('Error fetching data:', error);
-                console.error('Error fetching data:', error);
+                console.error('Error fetching metadata:', error);
             }
         };
 
@@ -188,7 +193,20 @@ function AssignWorkoutContent() {
     const getFilteredExercises = () => {
         return availableExercises.filter(ex => {
             const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesBodyPart = filterBodyPart ? ex.muscle_group_name === filterBodyPart : true;
+            
+            // Filter by Body Part Hierarchy
+            let matchesBodyPart = true;
+            if (filterBodyPart) {
+                // Check if the exercise's muscle group belongs to this body part
+                const muscle = musclesList.find(m => m.name === ex.muscle_group_name);
+                const bodyPart = bodyPartsList.find(bp => bp.id === muscle?.body_part_id);
+                
+                // Direct match on muscle group name (fallback) OR match on Body Part ID/Name
+                matchesBodyPart = (ex.muscle_group_name === filterBodyPart) || 
+                                 (bodyPart?.id === filterBodyPart) || 
+                                 (bodyPart?.name === filterBodyPart);
+            }
+
             const matchesMovement = filterMovement ? ex.movement_pattern === filterMovement : true;
             
             return matchesSearch && matchesBodyPart && matchesMovement;
@@ -589,29 +607,50 @@ function AssignWorkoutContent() {
                                                     className="input-field py-1.5 px-2 text-xs flex-1 text-foreground bg-background"
                                                 >
                                                     <option value="" className="bg-card text-foreground">All Body Parts</option>
-                                                    {bodyParts.map(bp => <option key={bp} value={bp} className="bg-card text-foreground">{bp}</option>)}
+                                                    {bodyPartsList.map(bp => <option key={bp.id} value={bp.id} className="bg-card text-foreground">{bp.name}</option>)}
+                                                    {/* Fallback for legacy muscle groups not mapped to body parts */}
+                                                    {availableExercises
+                                                        .map(e => e.muscle_group_name)
+                                                        .filter(name => name && !musclesList.some(m => m.name === name))
+                                                        .filter((v, i, a) => a.indexOf(v) === i)
+                                                        .map(name => <option key={name} value={name!} className="bg-card text-foreground italic">{name}</option>)
+                                                    }
                                                 </select>
                                             </div>
                                         </div>
 
                                         <div className="flex-1 overflow-y-auto p-2 custom-scrollbar space-y-1">
-                                            {getFilteredExercises().map(ex => (
-                                                <div key={ex.id} className="group flex items-center justify-between p-3 rounded-lg hover:bg-white/10 transition-colors border border-transparent hover:border-white/10">
-                                                    <div>
-                                                        <div className="font-medium text-foreground text-sm">{ex.name}</div>
-                                                        <div className="text-[10px] text-gray-500 uppercase tracking-wide">
-                                                            {ex.muscle_group_name} • {ex.workout_type_name}
+                                            {getFilteredExercises().map(ex => {
+                                                const count = selectedCustomExercises.filter(se => se.exercise_id === ex.id).length;
+                                                return (
+                                                    <div key={ex.id} className={`group flex items-center justify-between p-3 rounded-lg transition-all border ${count > 0 ? 'bg-pacific-cyan/10 border-pacific-cyan/30' : 'hover:bg-white/10 border-transparent hover:border-white/10'}`}>
+                                                        <div className="min-w-0">
+                                                            <div className="font-medium text-foreground text-sm truncate">{ex.name}</div>
+                                                            <div className="text-[10px] text-gray-500 uppercase tracking-wide truncate">
+                                                                {ex.muscle_group_name} • {ex.workout_type_name}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            {count > 0 && (
+                                                                <span className="text-[10px] font-bold bg-pacific-cyan text-white px-1.5 py-0.5 rounded-full animate-in zoom-in duration-300">
+                                                                    {count}
+                                                                </span>
+                                                            )}
+                                                            <button 
+                                                                onClick={() => addExercise(ex)}
+                                                                className={`p-1.5 rounded-md transition-all ${count > 0 ? 'bg-pacific-cyan text-white' : 'bg-pacific-cyan/10 text-pacific-cyan hover:bg-pacific-cyan hover:text-white'}`}
+                                                                title="Add to session"
+                                                            >
+                                                                {count > 0 ? (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                                                ) : (
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                                                                )}
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                    <button 
-                                                        onClick={() => addExercise(ex)}
-                                                        className="p-1.5 bg-pacific-cyan/10 text-pacific-cyan rounded-md hover:bg-pacific-cyan hover:text-white transition-colors"
-                                                        title="Add to session"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                                                    </button>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                             {getFilteredExercises().length === 0 && (
                                                 <div className="text-center py-10 text-gray-500 text-sm">No exercises found.</div>
                                             )}

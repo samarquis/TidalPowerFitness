@@ -64,7 +64,7 @@ router.post('/webhook', async (req: any, res) => {
         const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
         const webhookUrl = `${backendUrl}/api/payments/webhook`;
 
-        await paymentService.handleSquareWebhook(req.body, signature, webhookUrl);
+        await paymentService.handleSquareWebhook(req.body, signature, webhookUrl, (req as any).rawBody);
         res.status(200).send('OK');
     } catch (error: any) {
         console.error('Webhook processing error:', error);

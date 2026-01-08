@@ -40,7 +40,8 @@ export default function PackagesPage() {
         fetchPackages();
     }, []);
 
-    const filteredPackages = packages.filter(pkg => pkg.type === 'one_time');
+    const oneTimePackages = packages.filter(pkg => pkg.type === 'one_time');
+    const subscriptions = packages.filter(pkg => pkg.type === 'subscription');
 
     return (
         <div className="min-h-screen bg-background page-container">
@@ -50,7 +51,7 @@ export default function PackagesPage() {
                         Membership & <span className="text-gradient">Tokens</span>
                     </h1>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Purchase tokens to book your classes.
+                        Choose the plan that fits your lifestyle.
                     </p>
                 </div>
 
@@ -62,15 +63,43 @@ export default function PackagesPage() {
                     <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg text-center max-w-2xl mx-auto">
                         {error}
                     </div>
-                ) : filteredPackages.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12 glass-card border-dashed">
-                        No token packages available at the moment.
-                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredPackages.map((pkg) => (
-                            <PackageCard key={pkg.id} pkg={pkg} />
-                        ))}
+                    <div className="space-y-16">
+                        {/* Subscriptions Section */}
+                        {subscriptions.length > 0 && (
+                            <div>
+                                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                                    <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                                    Monthly Memberships
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {subscriptions.map((pkg) => (
+                                        <PackageCard key={pkg.id} pkg={pkg} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* One-time Section */}
+                        {oneTimePackages.length > 0 && (
+                            <div>
+                                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                                    <span className="w-2 h-2 rounded-full bg-turquoise-surf"></span>
+                                    Token Packs
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {oneTimePackages.map((pkg) => (
+                                        <PackageCard key={pkg.id} pkg={pkg} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {packages.length === 0 && (
+                            <div className="text-center text-gray-400 py-12 glass-card border-dashed">
+                                No packages available at the moment.
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

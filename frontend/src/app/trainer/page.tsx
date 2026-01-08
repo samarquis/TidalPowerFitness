@@ -316,12 +316,12 @@ export default function TrainerDashboardPage() {
                                     className="bg-gradient-to-br from-dark-teal/20 to-pacific-cyan/10 border border-pacific-cyan/20 rounded-lg p-4"
                                 >
                                     <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h4 className="font-bold text-lg">{session.class_name || 'Workout Session'}</h4>
-                                            <p className="text-sm text-gray-500">{session.workout_type_name}</p>
+                                        <div className="min-w-0">
+                                            <h4 className="font-bold text-lg truncate">{session.class_name || 'Workout Session'}</h4>
+                                            <p className="text-sm text-gray-500 truncate">{session.workout_type_name}</p>
                                         </div>
                                         {session.start_time && (
-                                            <span className="text-sm text-turquoise-surf font-bold">
+                                            <span className="text-sm text-turquoise-surf font-bold shrink-0 ml-2">
                                                 {formatTime(session.start_time)}
                                             </span>
                                         )}
@@ -353,15 +353,15 @@ export default function TrainerDashboardPage() {
                                         key={session.id}
                                         className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-all"
                                     >
-                                        <div>
-                                            <span className="font-bold">{session.class_name || 'Session'}</span>
+                                        <div className="min-w-0">
+                                            <span className="font-bold truncate inline-block max-w-[150px] md:max-w-none">{session.class_name || 'Session'}</span>
                                             <span className="text-gray-500 text-sm ml-2">
                                                 {new Date(session.session_date).toLocaleDateString()}
                                             </span>
                                         </div>
                                         <Link
                                             href={`/trainer/class/${session.id}/log`}
-                                            className="text-turquoise-surf hover:underline font-bold text-sm"
+                                            className="text-turquoise-surf hover:underline font-bold text-sm shrink-0 ml-4"
                                         >
                                             View/Edit
                                         </Link>
@@ -406,18 +406,18 @@ export default function TrainerDashboardPage() {
                             {classesByDay.filter(d => d.classes.length > 0).map(({ day, classes: dayClasses }) => (
                                 <div key={day}>
                                     <h3 className="text-lg font-bold mb-4 border-b border-white/10 pb-2 inline-block pr-8 uppercase tracking-wider">{day}</h3>
-                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6">
                                         {dayClasses.map((classItem) => (
                                             <div
                                                 key={`${classItem.id}-${day}`}
-                                                className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-turquoise-surf/30 transition-all group"
+                                                className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 hover:border-turquoise-surf/30 transition-all group"
                                             >
                                                 <div className="flex justify-between items-start mb-4">
-                                                    <div>
-                                                        <h4 className="font-bold text-xl group-hover:text-turquoise-surf transition-colors">{classItem.name}</h4>
-                                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{classItem.category}</p>
+                                                    <div className="min-w-0">
+                                                        <h4 className="font-bold text-lg md:text-xl truncate group-hover:text-turquoise-surf transition-colors">{classItem.name}</h4>
+                                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1 truncate">{classItem.category}</p>
                                                     </div>
-                                                    <span className="text-sm font-bold text-turquoise-surf bg-turquoise-surf/10 px-2 py-1 rounded-md">
+                                                    <span className="text-xs md:text-sm font-bold text-turquoise-surf bg-turquoise-surf/10 px-2 py-1 rounded-md shrink-0 ml-2">
                                                         {formatTime(classItem.start_time)}
                                                     </span>
                                                 </div>
@@ -427,12 +427,12 @@ export default function TrainerDashboardPage() {
                                                 </p>
 
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-tight">
+                                                    <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-tight">
                                                         {classItem.duration_minutes}m • Max {classItem.max_capacity}
                                                     </span>
                                                     <button
                                                         onClick={() => handleViewAttendees(classItem)}
-                                                        className="btn-primary py-2 px-4 text-xs"
+                                                        className="btn-primary py-1.5 px-3 md:py-2 md:px-4 text-[10px] md:text-xs"
                                                     >
                                                         Attendees
                                                     </button>

@@ -63,10 +63,13 @@ class ExerciseModel {
         let sql = `
             SELECT e.*, 
                    wt.name as workout_type_name,
-                   bf.name as muscle_group_name
+                   bf.name as muscle_group_name,
+                   bf.body_part_id,
+                   bp.name as body_part_name
             FROM exercises e
             LEFT JOIN workout_types wt ON e.workout_type_id = wt.id
             LEFT JOIN body_focus_areas bf ON e.primary_muscle_group = bf.id
+            LEFT JOIN body_parts bp ON bf.body_part_id = bp.id
             WHERE 1=1
         `;
         const params: any[] = [];
@@ -119,10 +122,13 @@ class ExerciseModel {
         const result: QueryResult = await query(
             `SELECT e.*, 
                     wt.name as workout_type_name,
-                    bf.name as muscle_group_name
+                    bf.name as muscle_group_name,
+                    bf.body_part_id,
+                    bp.name as body_part_name
              FROM exercises e
              LEFT JOIN workout_types wt ON e.workout_type_id = wt.id
              LEFT JOIN body_focus_areas bf ON e.primary_muscle_group = bf.id
+             LEFT JOIN body_parts bp ON bf.body_part_id = bp.id
              WHERE e.id = $1`,
             [id]
         );
