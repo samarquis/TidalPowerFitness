@@ -30,8 +30,8 @@ class WorkoutSessionController {
             } else if (isTrainer) {
                 sessions = await WorkoutSession.getByTrainer(userId, filters);
             } else {
-                // For clients, return their own history
-                sessions = await WorkoutSession.getClientHistory(userId);
+                // For clients, return their own history summaries (with exercise counts)
+                sessions = await WorkoutSession.getClientSessionSummaries(userId);
             }
 
             res.json(sessions);

@@ -13,6 +13,7 @@ interface WorkoutSession {
     workout_type_name?: string;
     class_name?: string;
     participant_count?: number;
+    exercise_count?: number;
 }
 
 export default function HistoryPage() {
@@ -151,6 +152,11 @@ export default function HistoryPage() {
                                         <div className="text-2xl font-bold text-turquoise-surf">
                                             {session.duration_minutes || 0} min
                                         </div>
+                                        {session.exercise_count !== undefined && (
+                                            <div className="text-sm text-turquoise-surf font-bold">
+                                                {session.exercise_count} {session.exercise_count === 1 ? 'Exercise' : 'Exercises'}
+                                            </div>
+                                        )}
                                         {session.participant_count !== undefined && session.participant_count > 0 && (
                                             <div className="text-sm text-gray-400">
                                                 {session.participant_count} Participants
