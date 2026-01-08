@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -18,8 +18,7 @@ interface Program {
     name: string;
 }
 
-export default function AssignProgramPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+function AssignProgramContent({ id }: { id: string }) {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -187,5 +186,19 @@ export default function AssignProgramPage({ params }: { params: Promise<{ id: st
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function AssignProgramPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
+            </div>
+        }>
+            <AssignProgramContent id={id} />
+        </Suspense>
     );
 }
