@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
 const adminLinks = [
+    { title: 'Trainer Dashboard', href: '/trainer', icon: '🏋️‍♂️', description: 'View the platform as a trainer.' },
+    { title: 'User Dashboard', href: '/?bypassRedirect=true', icon: '👤', description: 'View the platform as a client/user.' },
     { title: 'Business Analytics', href: '/admin/analytics', icon: '📊', description: 'Revenue, attendance, and growth metrics.' },
     { title: 'Class Management', href: '/admin/classes', icon: '🗓️', description: 'Schedule and manage classes.' },
     { title: 'Trainer Management', href: '/admin/trainers', icon: '💪', description: 'Manage trainer profiles and availability.' },

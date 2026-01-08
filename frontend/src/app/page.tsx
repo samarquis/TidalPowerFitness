@@ -4,23 +4,27 @@ import { useAuth } from '@/contexts/AuthContext';
 import LandingPage from '@/components/LandingPage';
 import UserDashboard from '@/components/dashboard/UserDashboard';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HomePage() {
   const { isAuthenticated, loading, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    const bypass = searchParams.get('bypassRedirect');
+    
     // Intelligent Redirect: Send Admins and Trainers to their control centers automatically
-    if (isAuthenticated && !loading && user) {
+    // Skip if bypassRedirect is present
+    if (isAuthenticated && !loading && user && !bypass) {
       if (user.roles?.includes('admin')) {
         router.push('/admin');
       } else if (user.roles?.includes('trainer')) {
         router.push('/trainer');
       }
     }
-  }, [isAuthenticated, loading, user, router]);
+  }, [isAuthenticated, loading, user, router, searchParams]);
 
   if (loading) {
     return (
