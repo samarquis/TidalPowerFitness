@@ -245,6 +245,35 @@ export default function WorkoutLogPage() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+        const saveSingleSet = async (setIndex: number) => {
+        if (!currentExercise || !selectedClient) return;
+        
+        const set = exerciseLogs[currentExercise.id][selectedClient.client_id][setIndex];
+        setSaving(true);
+        
+        try {
+            const response = await apiClient.logExercise({
+                session_exercise_id: currentExercise.id,
+                client_id: selectedClient.client_id,
+                set_number: set.set_number,
+                reps_completed: set.reps_completed,
+                weight_used_lbs: set.weight_used_lbs,
+                rpe: set.rpe,
+                notes: set.notes
+            });
+            
+            if (response.data) {
+                setSaveMessage(`✓ Set ${set.set_number} saved`);
+                setTimeout(() => setSaveMessage(""), 3000);
+            }
+        } catch (error) {
+            console.error("Error saving set:", error);
+            setSaveMessage("Error saving set");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const saveAllLogs = async () => {
         if (!session) return;
 
