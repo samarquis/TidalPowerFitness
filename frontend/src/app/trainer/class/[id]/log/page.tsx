@@ -60,9 +60,21 @@ export default function WorkoutLogPage() {
     const [saveMessage, setSaveMessage] = useState('');
         const [history, setHistory] = useState<any[]>([]);
         const [historyLoading, setHistoryLoading] = useState(false);
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+        const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [batchSets, setBatchSets] = useState(3);
+    const [batchReps, setBatchReps] = useState(12);
+    const [batchWeight, setBatchWeight] = useState(0);
     
         const currentExercise = session?.exercises?.[currentExerciseIndex];
+
+    // Preload Batch Entry with designed targets
+    useEffect(() => {
+        if (currentExercise) {
+            setBatchSets(currentExercise.planned_sets || 3);
+            setBatchReps(currentExercise.planned_reps || 12);
+            setBatchWeight(currentExercise.planned_weight_lbs || 0);
+        }
+    }, [currentExercise]);
     
         useEffect(() => {
             if (isAuthenticated && !user?.roles?.includes('trainer') && !user?.roles?.includes('admin')) {
@@ -118,6 +130,29 @@ export default function WorkoutLogPage() {
     };
 
 
+
+        const addBatchLog = () => {
+        if (!currentExercise || !selectedClient) return;
+        
+        const newSets: SetLog[] = [];
+        for (let i = 1; i <= batchSets; i++) {
+            newSets.push({
+                set_number: i,
+                reps_completed: batchReps,
+                weight_used_lbs: batchWeight,
+                notes: ""
+            });
+        }
+
+        setHasUnsavedChanges(true);
+        setExerciseLogs(prev => ({
+            ...prev,
+            [currentExercise.id]: {
+                ...prev[currentExercise.id],
+                [selectedClient.client_id]: newSets
+            }
+        }));
+    };
 
     const getClientLogs = useCallback((exerciseId: string, clientId: string): SetLog[] => {
         return exerciseLogs[exerciseId]?.[clientId] || [];

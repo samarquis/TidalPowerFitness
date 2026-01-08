@@ -43,7 +43,9 @@ function ActiveWorkoutContent() {
     const [isResting, setIsResting] = useState(false);
     const [startTime, setStartTime] = useState<Date>(new Date());
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+        const [saving, setSaving] = useState(false);
+    const [batchMode, setBatchMode] = useState(false);
+    const [batchSets, setBatchSets] = useState(3);
 
     useEffect(() => {
         if (!user) {
@@ -125,6 +127,7 @@ function ActiveWorkoutContent() {
             const targetEx = details.exercises[currentExerciseIndex] || details.exercises[0];
             if (targetEx) {
                 setReps(targetEx.planned_reps || 0);
+                setBatchSets(targetEx.planned_sets || 3);
                 setWeight(targetEx.planned_weight_lbs || 0);
             }
         } catch (error) {
@@ -182,6 +185,34 @@ function ActiveWorkoutContent() {
         } catch (error) {
             console.error('Error saving set:', error);
             alert('Failed to save set. Please check your connection.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+        const completeBatchWorkout = async () => {
+        if (saving) return;
+        setSaving(true);
+        try {
+            const currentExercise = exercises[currentExerciseIndex];
+            const logs = [];
+            for (let i = 1; i <= batchSets; i++) {
+                logs.push({
+                    session_exercise_id: currentExercise.id,
+                    client_id: user?.id,
+                    set_number: i,
+                    reps_completed: reps,
+                    weight_used_lbs: weight,
+                    notes: notes
+                });
+            }
+            const response = await apiClient.bulkLogExercises(logs);
+            if (response.error) throw new Error(response.error);
+            nextExercise();
+            setBatchMode(false);
+        } catch (error) {
+            console.error('Error saving batch:', error);
+            alert('Failed to save workout data');
         } finally {
             setSaving(false);
         }
@@ -340,7 +371,7 @@ function ActiveWorkoutContent() {
                         </div>
 
                         <button
-                            onClick={completeSet}
+                            onClick={batchMode ? completeBatchWorkout : completeSet}
                             className="w-full px-6 py-4 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg text-lg transition-all"
                         >
                             Complete Set
