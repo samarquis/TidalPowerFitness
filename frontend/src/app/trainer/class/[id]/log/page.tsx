@@ -537,103 +537,106 @@ export default function WorkoutLogPage() {
                                             </span>
                                         </div>
 
-                                        {/* Sets Table */}
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead>
-                                                    <tr className="text-left text-gray-400 text-sm">
-                                                        <th className="p-2">Set</th>
-                                                        <th className="p-2">Reps</th>
-                                                        <th className="p-2">Weight (lbs)</th>
-                                                        <th className="p-2">RPE</th>
-                                                        <th className="p-2">Notes</th>
-                                                        <th className="p-2"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {clientLogs.map((set, index) => (
-                                                        <tr key={index} className="border-t border-white/10">
-                                                            <td className="p-2 font-bold text-teal-400">
+                                        {/* Sets List (Card Layout) */}
+                                        <div className="space-y-3">
+                                            {clientLogs.map((set, index) => (
+                                                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 transition-all hover:border-white/20">
+                                                    
+                                                    {/* Top Row: Set, Reps, Weight */}
+                                                    <div className="flex flex-wrap md:flex-nowrap items-start gap-4 mb-4">
+                                                        
+                                                        {/* Set Number */}
+                                                        <div className="flex-none w-16">
+                                                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Set</label>
+                                                            <div className="h-10 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 font-bold text-teal-400">
                                                                 {set.set_number}
-                                                            </td>
-                                                            <td className="p-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    <button 
-                                                                        onClick={() => updateSet(index, 'reps_completed', Math.max(0, set.reps_completed - 1))}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={set.reps_completed}
-                                                                        onChange={(e) => updateSet(index, 'reps_completed', parseInt(e.target.value) || 0)}
-                                                                        className="w-12 px-1 py-1 bg-black/50 border border-white/20 rounded text-center text-sm"
-                                                                    />
-                                                                    <button 
-                                                                        onClick={() => updateSet(index, 'reps_completed', set.reps_completed + 1)}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    <button 
-                                                                        onClick={() => updateSet(index, 'weight_used_lbs', Math.max(0, set.weight_used_lbs - 5))}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input
-                                                                        type="number"
-                                                                        value={set.weight_used_lbs}
-                                                                        onChange={(e) => updateSet(index, 'weight_used_lbs', parseFloat(e.target.value) || 0)}
-                                                                        className="w-16 px-1 py-1 bg-black/50 border border-white/20 rounded text-center text-sm"
-                                                                    />
-                                                                    <button 
-                                                                        onClick={() => updateSet(index, 'weight_used_lbs', set.weight_used_lbs + 5)}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-2">
-                                                                <select
-                                                                    value={set.rpe || ''}
-                                                                    onChange={(e) => updateSet(index, 'rpe', parseInt(e.target.value) || 0)}
-                                                                    className="w-16 px-2 py-1 bg-black/50 border border-white/20 rounded"
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Reps Control */}
+                                                        <div className="flex-1 min-w-[140px]">
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Reps</label>
+                                                            <div className="flex items-center gap-1">
+                                                                <button 
+                                                                    onClick={() => updateSet(index, 'reps_completed', Math.max(0, set.reps_completed - 1))}
+                                                                    className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
                                                                 >
-                                                                    <option value="">-</option>
-                                                                    {[...Array(10)].map((_, i) => (
-                                                                        <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </td>
-                                                            <td className="p-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={set.notes || ''}
-                                                                    onChange={(e) => updateSet(index, 'notes', e.target.value)}
-                                                                    placeholder="Notes..."
-                                                                    className="w-full px-2 py-1 bg-black/50 border border-white/20 rounded"
-                                                                />
-                                                            </td>
-                                                            <td className="p-2">
-                                                                <button
-                                                                    onClick={() => removeSet(index)}
-                                                                    className="text-red-400 hover:text-red-300"
-                                                                    title="Remove set"
-                                                                >
-                                                                    ✕
+                                                                    -
                                                                 </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                                <input
+                                                                    type="number"
+                                                                    value={set.reps_completed}
+                                                                    onChange={(e) => updateSet(index, 'reps_completed', parseInt(e.target.value) || 0)}
+                                                                    className="w-full h-10 bg-black/40 border border-white/10 rounded-lg text-center font-bold text-lg focus:border-teal-500/50 outline-none transition-all"
+                                                                />
+                                                                <button 
+                                                                    onClick={() => updateSet(index, 'reps_completed', set.reps_completed + 1)}
+                                                                    className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Weight Control */}
+                                                        <div className="flex-1 min-w-[140px]">
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Lbs</label>
+                                                            <div className="flex items-center gap-1">
+                                                                <button 
+                                                                    onClick={() => updateSet(index, 'weight_used_lbs', Math.max(0, set.weight_used_lbs - 5))}
+                                                                    className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                                                >
+                                                                    -
+                                                                </button>
+                                                                <input
+                                                                    type="number"
+                                                                    value={set.weight_used_lbs}
+                                                                    onChange={(e) => updateSet(index, 'weight_used_lbs', parseFloat(e.target.value) || 0)}
+                                                                    className="w-full h-10 bg-black/40 border border-white/10 rounded-lg text-center font-bold text-lg focus:border-teal-500/50 outline-none transition-all"
+                                                                />
+                                                                <button 
+                                                                    onClick={() => updateSet(index, 'weight_used_lbs', set.weight_used_lbs + 5)}
+                                                                    className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Bottom Row: RPE, Notes, Delete */}
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-20">
+                                                            <select
+                                                                value={set.rpe || ''}
+                                                                onChange={(e) => updateSet(index, 'rpe', parseInt(e.target.value) || 0)}
+                                                                className="w-full h-9 px-2 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-300 focus:border-teal-500/50 outline-none"
+                                                            >
+                                                                <option value="">RPE</option>
+                                                                {[...Array(10)].map((_, i) => (
+                                                                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <input
+                                                                type="text"
+                                                                value={set.notes || ''}
+                                                                onChange={(e) => updateSet(index, 'notes', e.target.value)}
+                                                                placeholder="Add notes..."
+                                                                className="w-full h-9 px-3 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-300 placeholder:text-gray-600 focus:border-teal-500/50 outline-none"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            onClick={() => removeSet(index)}
+                                                            className="w-9 h-9 flex items-center justify-center text-red-400/50 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                                            title="Remove set"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
 
                                         {/* Add Set Button */}
