@@ -98,8 +98,40 @@ export default function WorkoutLogPage() {
                 setHistoryLoading(true);
                 try {
                     const response = await apiClient.getExerciseHistory(selectedClient.client_id, currentExercise.exercise_id);
-                    if (response.data) {
-                        setHistory(response.data);
+                    const responseData = response.data;
+                    if (responseData) {
+                        setHistory(responseData);
+
+                        // Pre-load logic: If no logs exist for this client/exercise, use last session's data
+                        // We check inside setExerciseLogs to ensure we have the latest state
+                        setExerciseLogs(prev => {
+                            const currentClientLogs = prev[currentExercise.id]?.[selectedClient.client_id] || [];
+                            
+                            if (currentClientLogs.length === 0 && responseData.length > 0) {
+                                const lastDate = responseData[0].session_date;
+                                const lastSessionLogs = responseData.filter((l: any) => l.session_date === lastDate);
+                                
+                                // Sort by set_number to be safe
+                                lastSessionLogs.sort((a: any, b: any) => a.set_number - b.set_number);
+
+                                const newLogs: SetLog[] = lastSessionLogs.map((h: any, i: number) => ({
+                                    set_number: i + 1,
+                                    reps_completed: h.reps_completed,
+                                    weight_used_lbs: h.weight_used_lbs,
+                                    rpe: undefined,
+                                    notes: ''
+                                }));
+
+                                return {
+                                    ...prev,
+                                    [currentExercise.id]: {
+                                        ...prev[currentExercise.id],
+                                        [selectedClient.client_id]: newLogs
+                                    }
+                                };
+                            }
+                            return prev;
+                        });
                     }
                 } catch (error) {
                     console.error('Error fetching history:', error);
@@ -459,37 +491,23 @@ export default function WorkoutLogPage() {
                                                         </div>
                                                     )}
                                                     
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] font-bold text-turquoise-surf uppercase tracking-widest">Previous Best</span>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-[10px] font-bold text-turquoise-surf uppercase tracking-widest">Last Session</span>
                                                         <span className="text-[10px] text-gray-500">{new Date(history[0].session_date).toLocaleDateString()}</span>
                                                     </div>
                                                     
-                                                    <div className="flex items-baseline gap-3">
-                                                        <div className="text-lg font-mono font-bold text-white">
-                                                            {history[0].weight_used_lbs}<span className="text-xs text-gray-500 ml-0.5">lbs</span>
-                                                            <span className="mx-2 text-gray-600">×</span>
-                                                            {history[0].reps_completed}<span className="text-xs text-gray-500 ml-0.5">reps</span>
-                                                        </div>
-                                                        
-                                                        {currentExercise && (
-                                                            <div className={`text-xs flex items-center gap-1 ${
-                                                                currentExercise.planned_weight_lbs > history[0].weight_used_lbs 
-                                                                    ? 'text-green-400' 
-                                                                    : currentExercise.planned_weight_lbs < history[0].weight_used_lbs 
-                                                                        ? 'text-amber-400' 
-                                                                        : 'text-gray-400'
-                                                            }`}>
-                                                                {currentExercise.planned_weight_lbs > history[0].weight_used_lbs ? '▲' : currentExercise.planned_weight_lbs < history[0].weight_used_lbs ? '▼' : '◆'}
-                                                                {Math.abs(currentExercise.planned_weight_lbs - history[0].weight_used_lbs)} lbs
+                                                    <div className="space-y-1 max-h-32 overflow-y-auto custom-scrollbar pr-1">
+                                                        {history.filter((h: any) => h.session_date === history[0].session_date).map((h: any, i: number) => (
+                                                            <div key={i} className="flex items-center justify-between text-sm py-0.5 border-b border-white/5 last:border-0">
+                                                                <span className="text-gray-500 font-mono text-[10px] w-8">Set {h.set_number}</span>
+                                                                <div className="flex items-baseline gap-2">
+                                                                    <span className="font-mono font-bold text-white">{h.weight_used_lbs}<span className="text-[10px] text-gray-500 ml-0.5">lbs</span></span>
+                                                                    <span className="text-gray-600 text-[10px]">×</span>
+                                                                    <span className="font-mono font-bold text-white">{h.reps_completed}<span className="text-[10px] text-gray-500 ml-0.5">reps</span></span>
+                                                                </div>
                                                             </div>
-                                                        )}
+                                                        ))}
                                                     </div>
-                                                    
-                                                    {history[0].notes && (
-                                                        <p className="text-xs text-gray-500 italic mt-1 line-clamp-1 group-hover:line-clamp-none transition-all">
-                                                            "{history[0].notes}"
-                                                        </p>
-                                                    )}
                                                 </div>
                                             ) : (
                                                 <div className="p-3 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-gray-500 italic">
