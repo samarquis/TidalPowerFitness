@@ -83,8 +83,8 @@ export default function StyleGuidePage() {
                         <div className="space-y-6">
                             <h4 className="uppercase tracking-widest text-xs text-gray-500 font-bold">Action Buttons</h4>
                             <div className="flex flex-wrap gap-4">
-                                <CTAButton variant="primary">Primary Action</CTAButton>
-                                <CTAButton variant="secondary">Secondary Action</CTAButton>
+                                <CTAButton variant="primary" href="#">Primary Action</CTAButton>
+                                <CTAButton variant="secondary" href="#">Secondary Action</CTAButton>
                             </div>
                             <div className="p-6 rounded-2xl bg-white/5 border border-dashed border-white/10">
                                 <p className="text-xs text-gray-500 italic">Buttons implement automatic scale-up on hover and Tsunami gradients.</p>
