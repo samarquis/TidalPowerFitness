@@ -100,7 +100,7 @@ const BatchEntryMatrix = ({
                                             type="number"
                                             value={set.set_number}
                                             readOnly
-                                            className="w-full bg-white/5 border border-white/5 rounded-lg py-2 text-center text-sm font-bold text-gray-400 outline-none"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 text-center text-xl font-black text-gray-500 outline-none cursor-default"
                                         />
                                     </div>
 
