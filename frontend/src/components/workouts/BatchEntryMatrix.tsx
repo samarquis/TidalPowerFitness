@@ -75,14 +75,6 @@ const BatchEntryMatrix = ({
 
     return (
         <div className="space-y-4">
-            {/* Header Labels */}
-            <div className="grid grid-cols-12 gap-4 px-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                <div className="col-span-2 text-center">Set</div>
-                <div className="col-span-4 text-center">Reps</div>
-                <div className="col-span-4 text-center">Lbs</div>
-                <div className="col-span-2"></div>
-            </div>
-
             <AnimatePresence mode='popLayout'>
                 {sets.map((set, index) => {
                     const isActive = index === activeSetIndex;
@@ -97,71 +89,83 @@ const BatchEntryMatrix = ({
                             transition={{ duration: 0.2 }}
                         >
                             <BlackGlassCard 
-                                className="p-3 md:p-4 transition-all duration-300"
+                                className="p-4 md:p-5 transition-all duration-300"
                                 hoverable={isActive}
                             >
-                                <div className="grid grid-cols-12 gap-2 md:gap-4 items-center">
-                                    {/* Set Number */}
-                                    <div className="col-span-2 flex justify-center">
-                                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm">
-                                            {set.set_number}
-                                        </div>
+                                <div className="flex flex-wrap md:flex-nowrap items-center gap-4">
+                                    {/* Set Input */}
+                                    <div className="flex-1 min-w-[60px] md:flex-none md:w-20">
+                                        <label className="block text-[9px] font-black text-gray-500 uppercase tracking-tighter mb-1 ml-1">Set</label>
+                                        <input
+                                            type="number"
+                                            value={set.set_number}
+                                            readOnly
+                                            className="w-full bg-white/5 border border-white/5 rounded-lg py-2 text-center text-sm font-bold text-gray-400 outline-none"
+                                        />
                                     </div>
 
                                     {/* Reps Input */}
-                                    <div className="col-span-4 flex items-center gap-1">
-                                        <button 
-                                            onClick={() => onUpdateSet(index, { reps_completed: Math.max(0, (set.reps_completed ?? 0) - 1) })}
-                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            -
-                                        </button>
-                                        <input
-                                            type="number"
-                                            inputMode="numeric"
-                                            value={set.reps_completed ?? ''}
-                                            placeholder={plannedReps.toString()}
-                                            onChange={(e) => onUpdateSet(index, { reps_completed: parseInt(e.target.value) || 0 })}
-                                            className="w-full bg-black/40 border border-white/5 rounded-xl py-3 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
-                                        />
-                                        <button 
-                                            onClick={() => onUpdateSet(index, { reps_completed: (set.reps_completed ?? 0) + 1 })}
-                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            +
-                                        </button>
+                                    <div className="flex-[2] min-w-[120px]">
+                                        <label className="block text-[9px] font-black text-turquoise-surf uppercase tracking-tighter mb-1 ml-1">Reps</label>
+                                        <div className="flex items-center gap-1">
+                                            <button 
+                                                onClick={() => onUpdateSet(index, { reps_completed: Math.max(0, (set.reps_completed ?? 0) - 1) })}
+                                                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                            >
+                                                -
+                                            </button>
+                                            <input
+                                                type="number"
+                                                inputMode="numeric"
+                                                value={set.reps_completed ?? ''}
+                                                placeholder={plannedReps.toString()}
+                                                onChange={(e) => onUpdateSet(index, { reps_completed: parseInt(e.target.value) || 0 })}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
+                                            />
+                                            <button 
+                                                onClick={() => onUpdateSet(index, { reps_completed: (set.reps_completed ?? 0) + 1 })}
+                                                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Weight Input */}
-                                    <div className="col-span-4 flex items-center gap-1">
-                                        <button 
-                                            onClick={() => onUpdateSet(index, { weight_used_lbs: Math.max(0, (set.weight_used_lbs ?? 0) - 5) })}
-                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            -
-                                        </button>
-                                        <input
-                                            type="number"
-                                            inputMode="numeric"
-                                            value={set.weight_used_lbs ?? ''}
-                                            placeholder={plannedWeight.toString()}
-                                            onChange={(e) => onUpdateSet(index, { weight_used_lbs: parseInt(e.target.value) || 0 })}
-                                            className="w-full bg-black/40 border border-white/5 rounded-xl py-3 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
-                                        />
-                                        <button 
-                                            onClick={() => onUpdateSet(index, { weight_used_lbs: (set.weight_used_lbs ?? 0) + 5 })}
-                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            +
-                                        </button>
+                                    <div className="flex-[2] min-w-[120px]">
+                                        <label className="block text-[9px] font-black text-turquoise-surf uppercase tracking-tighter mb-1 ml-1">Lbs</label>
+                                        <div className="flex items-center gap-1">
+                                            <button 
+                                                onClick={() => onUpdateSet(index, { weight_used_lbs: Math.max(0, (set.weight_used_lbs ?? 0) - 5) })}
+                                                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                            >
+                                                -
+                                            </button>
+                                            <input
+                                                type="number"
+                                                inputMode="numeric"
+                                                value={set.weight_used_lbs ?? ''}
+                                                placeholder={plannedWeight.toString()}
+                                                onChange={(e) => onUpdateSet(index, { weight_used_lbs: parseInt(e.target.value) || 0 })}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
+                                            />
+                                            <button 
+                                                onClick={() => onUpdateSet(index, { weight_used_lbs: (set.weight_used_lbs ?? 0) + 5 })}
+                                                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    {/* Status Indicator / Pulse */}
-                                    <div className="col-span-2 flex justify-center">
+                                    {/* Status Indicator */}
+                                    <div className="flex-none w-10 flex justify-center pt-4 md:pt-0">
                                         {pulseType !== 'none' ? (
                                             <PulseIndicator type={pulseType} />
                                         ) : set.reps_completed !== undefined && set.weight_used_lbs !== undefined ? (
-                                            <span className="text-green-500 font-bold">✓</span>
+                                            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center border border-green-500/30">
+                                                <span className="text-green-500 font-black text-xs">✓</span>
+                                            </div>
                                         ) : (
                                             <div className="w-2 h-2 rounded-full bg-white/10 animate-pulse"></div>
                                         )}
