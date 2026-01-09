@@ -206,8 +206,9 @@ class ApiClient {
         return this.request<any>('/trainers/my-classes', { method: 'GET' });
     }
 
-    async getClassAttendees(classId: string) {
-        return this.request<any>(`/classes/${classId}/attendees`, { method: 'GET' });
+    async getClassAttendees(classId: string, date?: string) {
+        const query = date ? `?date=${date}` : '';
+        return this.request<any>(`/classes/${classId}/attendees${query}`, { method: 'GET' });
     }
 
     async getMyClients() {
@@ -344,6 +345,10 @@ class ApiClient {
         return this.request<any>('/programs/my-active', { method: 'GET' });
     }
 
+    async getClientActiveProgram(clientId: string) {
+        return this.request<any>(`/programs/active/${clientId}`, { method: 'GET' });
+    }
+
     // Challenge endpoints
     async getChallenges() {
         return this.request<any[]>('/challenges', { method: 'GET' });
@@ -371,6 +376,10 @@ class ApiClient {
 
     async getWorkoutSession(id: string) {
         return this.request<any>(`/workout-sessions/${id}`, { method: 'GET' });
+    }
+
+    async getSessionSummary(id: string) {
+        return this.request<any>(`/workout-sessions/${id}/summary`, { method: 'GET' });
     }
 
     async createWorkoutSession(data: any) {
@@ -433,6 +442,11 @@ class ApiClient {
     async getPersonalRecords(clientId?: string) {
         const endpoint = clientId ? `/progress/personal-records/${clientId}` : '/progress/personal-records';
         return this.request<any[]>(endpoint, { method: 'GET' });
+    }
+
+    async getExerciseBest(exerciseId: string, clientId?: string) {
+        const query = clientId ? `?clientId=${clientId}` : '';
+        return this.request<any>(`/progress/exercise-best/${exerciseId}${query}`, { method: 'GET' });
     }
 
     async getVolumeTrend(clientId?: string) {

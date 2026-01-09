@@ -16,6 +16,7 @@ router.get('/client/:clientId/logs', workoutSessionController.getSessionLogs);
 // Shared routes (authenticated)
 router.get('/', workoutSessionController.getSessions);
 router.get('/:id', workoutSessionController.getSession);
+router.get('/:id/summary', workoutSessionController.getSessionSummary);
 router.put('/:id', workoutSessionController.updateSession);
 
 // Create sessions - Allow Clients to start their own workouts

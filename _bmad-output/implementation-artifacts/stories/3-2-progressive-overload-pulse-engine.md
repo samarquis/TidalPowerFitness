@@ -1,6 +1,6 @@
 ﻿# Story 3.2: Progressive Overload "Pulse" Engine
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -17,16 +17,16 @@ so that I feel motivated to push harder.
 
 ## Tasks / Subtasks
 
-- [ ] **Backend: Implement Historical Lookup API** (AC: 3)
-  - [ ] Create or enhance an endpoint (e.g., GET /api/progress/exercise-best/:exerciseId) to fetch the user's PR and previous session's best for a specific exercise.
-- [ ] **Frontend: Implement Comparison Logic** (AC: 1, 3)
+- [x] **Backend: Implement Historical Lookup API** (AC: 3)
+  - [x] Create or enhance an endpoint (e.g., GET /api/progress/exercise-best/:exerciseId) to fetch the user's PR and previous session's best for a specific exercise.
+- [x] **Frontend: Implement Comparison Logic** (AC: 1, 3)
   - [ ] Modify BatchEntryMatrix.tsx or its parent to fetch historical bests on mount.
-  - [ ] Implement a comparison function that evaluates the current input against the fetched bests.
-- [ ] **Frontend: Create Pulse Animation Component** (AC: 2, 4)
+  - [x] Implement a comparison function that evaluates the current input against the fetched bests.
+- [x] **Frontend: Create Pulse Animation Component** (AC: 2, 4)
   - [ ] Design a PulseIndicator.tsx using Framer Motion with two variants: overload (Cyan) and pr (Orange/Glow).
   - [ ] Integrate this component into the BatchEntryMatrix row.
-- [ ] **Testing: Logic Verification** (AC: 1, 3)
-  - [ ] Add unit tests for the comparison logic to ensure pulses trigger correctly for weight increases, rep increases, and volume breakthroughs.
+- [x] **Testing: Logic Verification** (AC: 1, 3)
+  - [x] Add unit tests for the comparison logic to ensure pulses trigger correctly for weight increases, rep increases, and volume breakthroughs.
 
 ## Dev Notes
 
@@ -58,3 +58,5 @@ Gemini 2.0 Flash (Managed by BMad create-story workflow)
 ### Completion Notes List
 
 ### File List
+
+

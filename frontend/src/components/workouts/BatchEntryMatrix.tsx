@@ -1,8 +1,9 @@
-'use client';
+﻿'use client';
 
-import React from 'react';
-import { BlackGlassCard } from '@/components/ui';
+import React, { useEffect, useState } from 'react';
+import { BlackGlassCard, PulseIndicator } from '@/components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiClient } from '@/lib/api';
 
 interface SetLog {
     set_number: number;
@@ -12,6 +13,7 @@ interface SetLog {
 }
 
 interface BatchEntryMatrixProps {
+    exerciseId: string;
     sets: SetLog[];
     onUpdateSet: (index: number, updates: Partial<SetLog>) => void;
     plannedReps?: number;
@@ -19,17 +21,58 @@ interface BatchEntryMatrixProps {
     activeSetIndex: number;
 }
 
+interface ExerciseBest {
+    personal_records: { value: number; record_type: string }[];
+    previous_best: { prev_max_weight: number; prev_max_reps: number } | null;
+}
+
 /**
  * BatchEntryMatrix - A high-density grid for rapid workout logging.
  * Optimized for touch with large numerical targets and predictive pre-filling.
+ * Integrated with the Progressive Overload Pulse Engine.
  */
 const BatchEntryMatrix = ({
+    exerciseId,
     sets,
     onUpdateSet,
     plannedReps = 0,
     plannedWeight = 0,
     activeSetIndex
 }: BatchEntryMatrixProps) => {
+    const [bestData, setBestBestData] = useState<ExerciseBest | null>(null);
+
+    useEffect(() => {
+        const fetchBest = async () => {
+            try {
+                const response = await apiClient.getExerciseBest(exerciseId);
+                if (response.data) {
+                    setBestBestData(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching best data:', error);
+            }
+        };
+        fetchBest();
+    }, [exerciseId]);
+
+    const getPulseType = (reps: number | undefined, weight: number | undefined): 'overload' | 'pr' | 'none' => {
+        if (!bestData || reps === undefined || weight === undefined) return 'none';
+
+        // 1. Check for All-Time PR
+        const prWeight = bestData.personal_records.find(r => r.record_type === 'max_weight')?.value || 0;
+        if (weight > prWeight) return 'pr';
+
+        // 2. Check for Overload (beating last session)
+        const prevWeight = bestData.previous_best?.prev_max_weight || 0;
+        const prevReps = bestData.previous_best?.prev_max_reps || 0;
+
+        if (weight > prevWeight || (weight === prevWeight && reps > prevReps)) {
+            return 'overload';
+        }
+
+        return 'none';
+    };
+
     return (
         <div className="space-y-4">
             {/* Header Labels */}
@@ -43,6 +86,7 @@ const BatchEntryMatrix = ({
             <AnimatePresence mode='popLayout'>
                 {sets.map((set, index) => {
                     const isActive = index === activeSetIndex;
+                    const pulseType = getPulseType(set.reps_completed, set.weight_used_lbs);
                     
                     return (
                         <motion.div
@@ -53,19 +97,13 @@ const BatchEntryMatrix = ({
                             transition={{ duration: 0.2 }}
                         >
                             <BlackGlassCard 
-                                className={`p-3 md:p-4 transition-all duration-300 ${
-                                    isActive 
-                                        ? 'border-turquoise-surf/50 bg-turquoise-surf/5 shadow-[0_0_20px_rgba(8,172,214,0.1)]' 
-                                        : 'opacity-60 grayscale-[0.5]'
-                                }`}
+                                className={p-3 md:p-4 transition-all duration-300 \}
                                 hoverable={isActive}
                             >
                                 <div className="grid grid-cols-12 gap-2 md:gap-4 items-center">
                                     {/* Set Number */}
                                     <div className="col-span-2 flex justify-center">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${
-                                            isActive ? 'bg-turquoise-surf text-black' : 'bg-white/10 text-gray-400'
-                                        }`}>
+                                        <div className={w-8 h-8 rounded-full flex items-center justify-center font-black text-sm \}>
                                             {set.set_number}
                                         </div>
                                     </div>
@@ -94,9 +132,11 @@ const BatchEntryMatrix = ({
                                         />
                                     </div>
 
-                                    {/* Status Indicator / Pulse Placeholder */}
+                                    {/* Status Indicator / Pulse */}
                                     <div className="col-span-2 flex justify-center">
-                                        {set.reps_completed !== undefined && set.weight_used_lbs !== undefined ? (
+                                        {pulseType !== 'none' ? (
+                                            <PulseIndicator type={pulseType} />
+                                        ) : set.reps_completed !== undefined && set.weight_used_lbs !== undefined ? (
                                             <span className="text-green-500 font-bold">✓</span>
                                         ) : (
                                             <div className="w-2 h-2 rounded-full bg-white/10 animate-pulse"></div>

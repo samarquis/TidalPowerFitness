@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+﻿import { Request, Response } from 'express';
 import Progress from '../models/Progress';
-import { AuthenticatedRequest } from '../types/auth'; // Added import
+import { AuthenticatedRequest } from '../types/auth';
 
 class ProgressController {
     // Log body metric
@@ -72,6 +72,31 @@ class ProgressController {
         } catch (error) {
             console.error('Error fetching volume trend:', error);
             res.status(500).json({ error: 'Failed to fetch volume trend' });
+        }
+    }
+
+    // Get exercise best (PR + previous session)
+    async getExerciseBest(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const { exerciseId } = req.params;
+            const clientId = req.query.clientId as string || req.user?.id;
+
+            if (!exerciseId) {
+                res.status(400).json({ error: 'Exercise ID is required' });
+                return;
+            }
+
+            // Authorization check
+            if (req.user?.id !== clientId && !req.user?.roles?.includes('trainer') && !req.user?.roles?.includes('admin')) {
+                res.status(403).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const data = await Progress.getExerciseBest(clientId!, exerciseId);
+            res.json(data);
+        } catch (error) {
+            console.error('Error fetching exercise best:', error);
+            res.status(500).json({ error: 'Failed to fetch exercise best data' });
         }
     }
 }

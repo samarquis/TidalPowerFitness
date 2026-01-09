@@ -126,12 +126,14 @@ export const getClassAttendees = async (req: AuthenticatedRequest, res: Response
             return res.status(403).json({ error: 'Not authorized to view attendees' });
         }
 
-        const result = await pool.query(`
+        const { date } = req.query;
+        let queryStr = `
             SELECT 
                 cp.id as booking_id,
                 cp.user_id,
                 cp.status,
                 cp.booking_date,
+                cp.target_date,
                 cp.credits_used,
                 u.first_name,
                 u.last_name,
@@ -140,11 +142,21 @@ export const getClassAttendees = async (req: AuthenticatedRequest, res: Response
             FROM class_participants cp
             JOIN users u ON cp.user_id = u.id
             WHERE cp.class_id = $1 AND cp.status = 'confirmed'
-            ORDER BY cp.booking_date DESC
-        `, [id]);
+        `;
+        const queryParams: any[] = [id];
+
+        if (date) {
+            queryStr += ` AND cp.target_date = $2`;
+            queryParams.push(date);
+        }
+
+        queryStr += ` ORDER BY u.last_name, u.first_name`;
+
+        const result = await pool.query(queryStr, queryParams);
 
         res.json({
             class_id: id,
+            target_date: date || null,
             attendee_count: result.rows.length,
             attendees: result.rows
         });

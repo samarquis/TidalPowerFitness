@@ -86,10 +86,7 @@ export default function ClientWorkoutsPage() {
 
     const fetchActiveProgram = async () => {
         try {
-            // Note: We might need a generic getActiveProgram(clientId) endpoint
-            // For now, let's use the current user endpoint if they are looking at themselves
-            // OR we'll implement a new admin/trainer endpoint.
-            const response = await (apiClient as any).request(`/programs/active/${clientId}`);
+            const response = await apiClient.getClientActiveProgram(clientId);
             if (response.data) {
                 setActiveProgram(response.data);
             }

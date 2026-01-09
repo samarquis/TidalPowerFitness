@@ -111,10 +111,10 @@ export default function TrainerDashboardPage() {
         }
     };
 
-    const fetchAttendees = async (classId: string) => {
+    const fetchAttendees = async (classId: string, date?: string) => {
         setLoadingAttendees(true);
         try {
-            const response = await apiClient.getClassAttendees(classId);
+            const response = await apiClient.getClassAttendees(classId, date);
             if (response.data) {
                 setSelectedClass(prev => {
                     const classData = classes.find(c => c.id === classId);
@@ -128,9 +128,17 @@ export default function TrainerDashboardPage() {
         }
     };
 
-    const handleViewAttendees = (classItem: Class) => {
+    const handleViewAttendees = (classItem: Class, dayIndex: number) => {
+        // Calculate the date for the specified day in the current week
+        const now = new Date();
+        const currentDay = now.getDay();
+        const diff = dayIndex - currentDay;
+        const targetDate = new Date(now);
+        targetDate.setDate(now.getDate() + diff);
+        const dateStr = targetDate.toISOString().split('T')[0];
+
         setSelectedClass({ ...classItem, attendees: undefined });
-        fetchAttendees(classItem.id);
+        fetchAttendees(classItem.id, dateStr);
     };
 
     const closeModal = () => {
@@ -431,7 +439,7 @@ export default function TrainerDashboardPage() {
                                                         {classItem.duration_minutes}m • {classItem.attendee_count || 0}/{classItem.max_capacity} Booked
                                                     </span>
                                                     <button
-                                                        onClick={() => handleViewAttendees(classItem)}
+                                                        onClick={() => handleViewAttendees(classItem, dayIndex)}
                                                         className="btn-primary py-1.5 px-3 md:py-2 md:px-4 text-[10px] md:text-xs"
                                                     >
                                                         Attendees

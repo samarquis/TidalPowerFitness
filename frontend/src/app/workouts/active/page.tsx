@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -132,12 +132,12 @@ function ActiveWorkoutContent() {
                 ...log,
                 client_id: user?.id
             })));
-            
+
             if (response.error) throw new Error(response.error);
-            
+
             // Add current logs to all logs
             setAllLogs(prev => [...prev, ...currentSetLogs]);
-            
+
             // Start rest timer if needed or move to next
             nextExercise();
         } catch (error) {
@@ -153,7 +153,7 @@ function ActiveWorkoutContent() {
             const nextIndex = currentExerciseIndex + 1;
             const nextEx = exercises[nextIndex];
             setCurrentExerciseIndex(nextIndex);
-            
+
             // Prepare next exercise logs
             const nextSets = Array.from({ length: nextEx.planned_sets || 3 }, (_, i) => ({
                 session_exercise_id: nextEx.id,
@@ -162,7 +162,7 @@ function ActiveWorkoutContent() {
                 weight_used_lbs: nextEx.planned_weight_lbs
             }));
             setCurrentSetLogs(nextSets);
-            
+
             setIsResting(false);
             setRestTimer(0);
         } else {
@@ -172,7 +172,7 @@ function ActiveWorkoutContent() {
 
     const completeWorkout = () => {
         const duration = Math.floor((new Date().getTime() - startTime.getTime()) / 60000);
-        router.push(`/workouts/complete?session=${sessionId}&duration=${duration}`);
+        router.push(/workouts/complete?session=&duration=);
     };
 
     if (loading) {
@@ -211,7 +211,7 @@ function ActiveWorkoutContent() {
                     <div className="w-full bg-gray-800 rounded-full h-2">
                         <div
                             className="bg-turquoise-surf h-2 rounded-full transition-all shadow-[0_0_10px_rgba(8,172,214,0.5)]"
-                            style={{ width: `${progress}%` }}
+                            style={{ width: ${progress}% }}
                         ></div>
                     </div>
                 </div>
@@ -226,7 +226,8 @@ function ActiveWorkoutContent() {
 
                 {/* Batch Entry Matrix */}
                 <div className="mb-10">
-                    <BatchEntryMatrix 
+                    <BatchEntryMatrix
+                        exerciseId={currentExercise.exercise_id}
                         sets={currentSetLogs}
                         onUpdateSet={handleUpdateSet}
                         plannedReps={currentExercise.planned_reps}
@@ -248,14 +249,14 @@ function ActiveWorkoutContent() {
                             <>Save Exercise & Next <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg></>
                         )}
                     </button>
-                    
+
                     <button
                         onClick={completeWorkout}
                         className="w-full px-6 py-4 bg-green-500/10 text-green-400 font-black rounded-2xl transition-all border border-green-500/20 uppercase tracking-widest"
                     >
                         Finish Entire Workout
                     </button>
-                    
+
                     <div className="flex gap-4">
                         <button
                             onClick={() => router.push('/workouts/templates')}

@@ -1,4 +1,5 @@
 import { query } from '../config/db';
+import NotificationService, { NotificationType } from '../services/NotificationService';
 
 export interface Achievement {
     id: string;
@@ -58,6 +59,19 @@ class AchievementModel {
                 [userId, achievement.id]
             );
             newAwards.push(achievement);
+
+            // Send notification for new achievement
+            try {
+                await NotificationService.notify({
+                    user_id: userId,
+                    type: NotificationType.ACHIEVEMENT,
+                    title: `New Achievement: ${achievement.name}!`,
+                    message: achievement.description,
+                    delivery_method: 'both' as any // Using 'both' for achievements
+                });
+            } catch (notifyError) {
+                console.error(`Failed to notify user ${userId} of achievement ${achievement.name}:`, notifyError);
+            }
         }
 
         return newAwards;

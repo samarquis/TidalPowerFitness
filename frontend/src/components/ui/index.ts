@@ -8,3 +8,4 @@ export { default as FilterBar } from './FilterBar';
 export { default as TrainerCard } from './TrainerCard';
 export { default as ClassCard } from './ClassCard';
 export { default as BlackGlassCard } from './BlackGlassCard';
+export { default as PulseIndicator } from './PulseIndicator';

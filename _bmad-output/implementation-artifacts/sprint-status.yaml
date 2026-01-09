@@ -40,49 +40,52 @@ development_status:
   1-4-mobile-first-management-tables: done
   epic-1-retrospective: optional
 
-  epic-2: backlog
+  epic-2: done
   2-1-availability-management-module: done
   2-2-live-class-schedule-sync: done
-  2-3-multi-day-class-recurrence: in-progress
+  2-3-multi-day-class-recurrence: done
   epic-2-retrospective: optional
 
-  epic-3: backlog
-  3-1-black-glass-batch-entry-matrix: in-progress
-  3-2-progressive-overload-pulse-engine: in-progress
-  3-3-high-fidelity-mission-accomplished-state: backlog
-  3-4-cross-role-workout-visibility: backlog
+  epic-3: done
+  3-1-black-glass-batch-entry-matrix: done
+  3-2-progressive-overload-pulse-engine: done
+  3-3-high-fidelity-mission-accomplished-state: done
+  3-4-cross-role-workout-visibility: done
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-multi-week-program-builder: backlog
-  4-2-program-template-mapping: backlog
-  4-3-client-program-assignment: backlog
-  4-4-dynamic-todays-workout-injection: backlog
+  epic-4: done
+  4-1-multi-week-program-builder: done
+  4-1-multi-week-program-builder: done
+  4-2-program-template-mapping: done
+  4-3-client-program-assignment: done
+  4-4-dynamic-todays-workout-injection: done
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-multi-item-cart-checkout: backlog
-  5-2-credit-token-reconciliation: backlog
-  5-3-recurring-membership-enrollment: backlog
-  5-4-tiered-access-auto-replenishment: backlog
+  epic-5: done
+  5-1-multi-item-cart-checkout: done
+  5-2-credit-token-reconciliation: done
+  5-3-recurring-membership-enrollment: done
+  5-4-tiered-access-auto-replenishment: done
   epic-5-retrospective: optional
 
-  epic-6: backlog
-  6-1-class-global-leaderboards: backlog
-  6-2-centralized-notification-infrastructure: backlog
-  6-3-automated-achievement-engine: backlog
+  epic-6: done
+  6-1-class-global-leaderboards: done
+  6-2-centralized-notification-infrastructure: done
+  6-3-automated-achievement-engine: done
   epic-6-retrospective: optional
 
-  epic-7: backlog
-  7-1-multimedia-exercise-library: backlog
-  7-2-trainer-performance-analytics: backlog
-  7-3-admin-revenue-dashboard: backlog
+  epic-7: done
+  7-1-multimedia-exercise-library: done
+  7-2-trainer-performance-analytics: done
+  7-3-admin-revenue-dashboard: done
   epic-7-retrospective: optional
 
-  epic-8: backlog
-  8-1-trainer-profile-management-fix: backlog
-  8-2-responsive-user-integrity-table: backlog
+  epic-8: done
+  8-1-trainer-profile-management-fix: done
+  8-2-responsive-user-integrity-table: done
   epic-8-retrospective: optional
+
+
 
 
 

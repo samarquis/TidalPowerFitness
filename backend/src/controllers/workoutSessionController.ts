@@ -58,6 +58,56 @@ class WorkoutSessionController {
         }
     }
 
+    async getSessionSummary(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const userId = req.user?.id;
+
+            if (!userId) {
+                res.status(401).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            // Get session basic details
+            const session = await WorkoutSession.getById(id);
+            if (!session) {
+                res.status(404).json({ error: 'Session not found' });
+                return;
+            }
+
+            // Get exercise logs for this session and user
+            const logs = await WorkoutSession.getSessionLogs(id);
+            const userLogs = logs.filter(l => l.client_id === userId || l.logged_by === userId);
+
+            // Calculate stats
+            const totalSets = userLogs.length;
+            const totalVolume = userLogs.reduce((sum, l) => sum + (Number(l.weight_used_lbs || 0) * Number(l.reps_completed || 0)), 0);
+            
+            // Exercises completed count
+            const exerciseIds = new Set(userLogs.map(l => l.exercise_id));
+            const exercisesCount = exerciseIds.size;
+
+            // Get PRs achieved in this session
+            const prs = await ProgressModel.getPersonalRecords(userId);
+            const sessionPrs = prs.filter((pr: any) => 
+                userLogs.some(l => l.log_id === pr.exercise_log_id)
+            );
+
+            res.json({
+                session_id: id,
+                total_sets: totalSets,
+                total_volume_lbs: totalVolume,
+                exercises_completed: exercisesCount,
+                personal_records: sessionPrs,
+                duration_minutes: session.duration_minutes,
+                session_date: session.session_date
+            });
+        } catch (error) {
+            console.error('Error generating session summary:', error);
+            res.status(500).json({ error: 'Failed to generate summary' });
+        }
+    }
+
     // Create new session
     async createSession(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {

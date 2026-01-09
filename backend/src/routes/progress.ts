@@ -19,5 +19,8 @@ router.get('/personal-records/:clientId', progressController.getPersonalRecords)
 router.get('/volume-trend', progressController.getVolumeTrend);
 router.get('/volume-trend/:clientId', progressController.getVolumeTrend);
 
+// Exercise Best
+router.get('/exercise-best/:exerciseId', progressController.getExerciseBest);
+
 export default router;
 

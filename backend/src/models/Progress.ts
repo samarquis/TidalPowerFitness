@@ -1,4 +1,4 @@
-import { query } from '../config/db';
+﻿import { query } from '../config/db';
 import { QueryResult } from 'pg';
 
 export interface ProgressMetric {
@@ -33,12 +33,7 @@ class ProgressModel {
     // Log body measurement
     async logMetric(data: Partial<ProgressMetric>): Promise<ProgressMetric> {
         const result: QueryResult = await query(
-            `INSERT INTO client_progress_metrics (
-                client_id, log_date, weight_lbs, body_fat_percentage,
-                muscle_mass_lbs, chest_inches, waist_inches, hips_inches,
-                bicep_inches, thigh_inches, notes, recorded_by
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-            RETURNING *`,
+            'INSERT INTO client_progress_metrics (client_id, log_date, weight_lbs, body_fat_percentage, muscle_mass_lbs, chest_inches, waist_inches, hips_inches, bicep_inches, thigh_inches, notes, recorded_by) VALUES (, , , , , , , , , , , ) RETURNING *',
             [
                 data.client_id,
                 data.log_date || new Date(),
@@ -60,9 +55,7 @@ class ProgressModel {
     // Get metrics history
     async getMetrics(clientId: string): Promise<ProgressMetric[]> {
         const result: QueryResult = await query(
-            `SELECT * FROM client_progress_metrics 
-             WHERE client_id = $1 
-             ORDER BY log_date DESC`,
+            'SELECT * FROM client_progress_metrics WHERE client_id =  ORDER BY log_date DESC',
             [clientId]
         );
         return result.rows;
@@ -71,11 +64,7 @@ class ProgressModel {
     // Get personal records
     async getPersonalRecords(clientId: string): Promise<any[]> {
         const result: QueryResult = await query(
-            `SELECT pr.*, e.name as exercise_name
-             FROM personal_records pr
-             JOIN exercises e ON pr.exercise_id = e.id
-             WHERE pr.client_id = $1
-             ORDER BY pr.achieved_at DESC`,
+            'SELECT pr.*, e.name as exercise_name FROM personal_records pr JOIN exercises e ON pr.exercise_id = e.id WHERE pr.client_id =  ORDER BY pr.achieved_at DESC',
             [clientId]
         );
         return result.rows;
@@ -83,35 +72,35 @@ class ProgressModel {
 
     // Get workout volume trend
     async getVolumeTrend(clientId: string): Promise<any[]> {
-        const sql = `
-            SELECT 
-                ws.session_date as date,
-                SUM(el.weight_used_lbs * el.reps_completed) as volume
-            FROM workout_sessions ws
-            JOIN session_exercises se ON ws.id = se.session_id
-            JOIN exercise_logs el ON se.id = el.session_exercise_id
-            WHERE el.client_id = $1
-            GROUP BY ws.session_date
-            ORDER BY ws.session_date ASC
-            LIMIT 30
-        `;
+        const sql = 'SELECT ws.session_date as date, SUM(el.weight_used_lbs * el.reps_completed) as volume FROM workout_sessions ws JOIN session_exercises se ON ws.id = se.session_id JOIN exercise_logs el ON se.id = el.session_exercise_id WHERE el.client_id =  GROUP BY ws.session_date ORDER BY ws.session_date ASC LIMIT 30';
         const result: QueryResult = await query(sql, [clientId]);
         return result.rows;
+    }
+
+    // Get personal record and previous session best for a specific exercise
+    async getExerciseBest(clientId: string, exerciseId: string): Promise<any> {
+        // 1. Get all-time Personal Record
+        const prResult: QueryResult = await query(
+            'SELECT value, record_type, achieved_at FROM personal_records WHERE client_id =  AND exercise_id = ',
+            [clientId, exerciseId]
+        );
+
+        // 2. Get previous session's best (most recent weight handled)
+        const prevBestResult: QueryResult = await query(
+            'SELECT MAX(el.weight_used_lbs) as prev_max_weight, MAX(el.reps_completed) as prev_max_reps FROM exercise_logs el JOIN session_exercises se ON el.session_exercise_id = se.id JOIN workout_sessions ws ON se.session_id = ws.id WHERE el.client_id =  AND se.exercise_id =  AND ws.session_date < CURRENT_DATE GROUP BY ws.id, ws.session_date ORDER BY ws.session_date DESC LIMIT 1',
+            [clientId, exerciseId]
+        );
+
+        return {
+            personal_records: prResult.rows,
+            previous_best: prevBestResult.rows[0] || null
+        };
     }
 
     // Check and update PR for an exercise
     async updatePR(clientId: string, exerciseId: string, recordType: string, value: number, achievedAt: Date, logId: string): Promise<void> {
         await query(
-            `INSERT INTO personal_records (
-                client_id, exercise_id, record_type, value, achieved_at, exercise_log_id
-            ) VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (client_id, exercise_id, record_type)
-            DO UPDATE SET
-                value = EXCLUDED.value,
-                achieved_at = EXCLUDED.achieved_at,
-                exercise_log_id = EXCLUDED.exercise_log_id,
-                created_at = CURRENT_TIMESTAMP
-            WHERE EXCLUDED.value > personal_records.value`,
+            'INSERT INTO personal_records (client_id, exercise_id, record_type, value, achieved_at, exercise_log_id) VALUES (, , , , , ) ON CONFLICT (client_id, exercise_id, record_type) DO UPDATE SET value = EXCLUDED.value, achieved_at = EXCLUDED.achieved_at, exercise_log_id = EXCLUDED.exercise_log_id, created_at = CURRENT_TIMESTAMP WHERE EXCLUDED.value > personal_records.value',
             [clientId, exerciseId, recordType, value, achievedAt, logId]
         );
     }
