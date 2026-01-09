@@ -10,17 +10,13 @@ declare global {
     }
 }
 
-// Authenticate middleware - verifies JWT token
+// Authenticate middleware - verifies JWT token via HttpOnly cookies
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
     try {
-        let token = req.cookies?.token;
-
-        if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-            token = req.headers.authorization.substring(7);
-        }
+        const token = req.cookies?.token;
 
         if (!token) {
-            res.status(401).json({ error: 'No token provided' });
+            res.status(401).json({ error: 'Authentication required' });
             return;
         }
 
@@ -28,7 +24,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
         const decoded = verifyToken(token);
 
         if (!decoded) {
-            res.status(401).json({ error: 'Invalid or expired token' });
+            res.status(401).json({ error: 'Invalid or expired session' });
             return;
         }
 
@@ -63,13 +59,7 @@ export const authorize = (...allowedRoles: Array<'client' | 'trainer' | 'admin'>
 // Optional authentication - doesn't fail if no token
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
     try {
-        let token;
-
-        if (req.cookies && req.cookies.token) {
-            token = req.cookies.token;
-        } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-            token = req.headers.authorization.substring(7);
-        }
+        const token = req.cookies?.token;
 
         if (token) {
             const decoded = verifyToken(token);

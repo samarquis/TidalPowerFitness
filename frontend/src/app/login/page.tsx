@@ -23,7 +23,19 @@ function LoginContent() {
         const result = await login(email, password);
 
         if (result.success) {
-            router.push(redirectPath);
+            // Determine final redirect path
+            let finalRedirect = redirectPath;
+            
+            // If we are at the default and have user info, apply role-based defaults
+            if (finalRedirect === '/' && result.user) {
+                if (result.user.roles?.includes('admin')) {
+                    finalRedirect = '/admin';
+                } else if (result.user.roles?.includes('trainer')) {
+                    finalRedirect = '/trainer';
+                }
+            }
+            
+            router.push(finalRedirect);
         } else {
             setError(result.error || 'Login failed');
             setLoading(false);

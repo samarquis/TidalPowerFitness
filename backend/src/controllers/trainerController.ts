@@ -258,8 +258,23 @@ class TrainerController {
                 return;
             }
 
-            const classes = await getClassesByInstructorId(trainerId, false);
-            res.json(classes);
+            // Fetch classes with real-time attendee counts
+            const result = await pool.query(`
+                SELECT 
+                    c.*,
+                    COALESCE(attendee_counts.count, 0)::int as attendee_count
+                FROM classes c
+                LEFT JOIN (
+                    SELECT class_id, SUM(attendee_count) as count
+                    FROM class_participants
+                    WHERE status = 'confirmed'
+                    GROUP BY class_id
+                ) attendee_counts ON c.id = attendee_counts.class_id
+                WHERE c.instructor_id = $1 AND c.is_active = true
+                ORDER BY c.day_of_week, c.start_time
+            `, [trainerId]);
+
+            res.json(result.rows);
         } catch (error) {
             console.error('Error fetching trainer classes:', error);
             res.status(500).json({ error: 'Failed to fetch classes' });

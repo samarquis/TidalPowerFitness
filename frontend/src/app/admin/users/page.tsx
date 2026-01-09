@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
+import { BlackGlassCard } from '@/components/ui';
 
 
 interface User {
@@ -359,7 +360,7 @@ export default function UserManagementPage() {
                         {/* Mobile Card View */}
                         <div className="md:hidden space-y-6 mb-12">
                             {filteredUsers.map((u) => (
-                                <div key={u.id} className="glass-card group">
+                                <BlackGlassCard key={u.id} className="group" hoverable={false}>
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pacific-cyan to-cerulean flex items-center justify-center text-white font-bold shrink-0 shadow-xl border border-white/10">
@@ -383,7 +384,7 @@ export default function UserManagementPage() {
                                                 {(['client', 'trainer', 'admin'] as const).map((role) => (
                                                     <label
                                                         key={role}
-                                                        className={`flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl border cursor-pointer transition-all ${u.roles.includes(role)
+                                                        className={`flex items-center justify-center gap-2 px-2 py-3 rounded-xl border cursor-pointer transition-all ${u.roles.includes(role)
                                                             ? getRoleBadgeColor(role)
                                                             : 'bg-white/5 text-gray-500 border-white/10'
                                                             }`}
@@ -407,7 +408,7 @@ export default function UserManagementPage() {
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => toggleUserActivation(u.id, u.is_active)}
-                                                    className={`p-2.5 rounded-xl transition-all ${u.is_active
+                                                    className={`p-3.5 rounded-xl transition-all ${u.is_active
                                                         ? 'bg-red-500/10 text-red-400 border border-red-500/20'
                                                         : 'bg-green-500/10 text-green-400 border border-green-500/20'
                                                         }`}
@@ -416,14 +417,14 @@ export default function UserManagementPage() {
                                                 </button>
                                                 <button
                                                     onClick={() => handleResetPasswordClick(u)}
-                                                    className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                                    className="p-3.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"
                                                 >
                                                     🔑
                                                 </button>
                                                 {u.roles.includes('trainer') && (
                                                     <Link
                                                         href={`/admin/trainers?edit=${u.id}`}
-                                                        className="p-2.5 rounded-xl bg-turquoise-surf/10 text-turquoise-surf border border-turquoise-surf/20"
+                                                        className="p-3.5 rounded-xl bg-turquoise-surf/10 text-turquoise-surf border border-turquoise-surf/20"
                                                     >
                                                         📝
                                                     </Link>
@@ -431,7 +432,7 @@ export default function UserManagementPage() {
                                                 {isScottMarquis && (
                                                     <button
                                                         onClick={() => handleViewAsUser(u)}
-                                                        className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                                                        className="p-3.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20"
                                                     >
                                                         👤
                                                     </button>
@@ -439,7 +440,7 @@ export default function UserManagementPage() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </BlackGlassCard>
                             ))}
                         </div>
 

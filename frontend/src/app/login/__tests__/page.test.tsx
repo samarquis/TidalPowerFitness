@@ -41,9 +41,9 @@ describe('LoginPage', () => {
         });
     });
 
-    it('should redirect to the root path if no redirect query parameter is present', async () => {
+    it('should redirect to the root path if no redirect query parameter is present and user is a client', async () => {
         mockUseSearchParams.mockReturnValue(new URLSearchParams());
-        mockLogin.mockResolvedValue({ success: true });
+        mockLogin.mockResolvedValue({ success: true, user: { roles: ['client'] } });
 
         render(<LoginPage />);
 
@@ -53,6 +53,36 @@ describe('LoginPage', () => {
 
         await waitFor(() => {
             expect(mockRouterPush).toHaveBeenCalledWith('/');
+        });
+    });
+
+    it('should redirect to /admin if no redirect query parameter is present and user is an admin', async () => {
+        mockUseSearchParams.mockReturnValue(new URLSearchParams());
+        mockLogin.mockResolvedValue({ success: true, user: { roles: ['admin'] } });
+
+        render(<LoginPage />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+        fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+
+        await waitFor(() => {
+            expect(mockRouterPush).toHaveBeenCalledWith('/admin');
+        });
+    });
+
+    it('should redirect to /trainer if no redirect query parameter is present and user is a trainer', async () => {
+        mockUseSearchParams.mockReturnValue(new URLSearchParams());
+        mockLogin.mockResolvedValue({ success: true, user: { roles: ['trainer'] } });
+
+        render(<LoginPage />);
+
+        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+        fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+
+        await waitFor(() => {
+            expect(mockRouterPush).toHaveBeenCalledWith('/trainer');
         });
     });
 

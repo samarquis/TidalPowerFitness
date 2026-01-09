@@ -7,3 +7,4 @@ export { default as ProcessStep } from './ProcessStep';
 export { default as FilterBar } from './FilterBar';
 export { default as TrainerCard } from './TrainerCard';
 export { default as ClassCard } from './ClassCard';
+export { default as BlackGlassCard } from './BlackGlassCard';

@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tidal Power Fitness - Design Directions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-gradient { background: linear-gradient(to right, #08acd6, #007ba7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-hover:hover { border-color: rgba(8, 172, 214, 0.4); transform: translateY(-4px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="p-8">
+    <header class="max-w-7xl mx-auto mb-12">
+        <h1 class="text-5xl font-black mb-4 tracking-tighter uppercase">Design <span class="text-gradient">Directions</span></h1>
+        <p class="text-gray-400 text-xl">Visual exploration for Tidal Power Fitness World-Class UX.</p>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
+        <!-- Direction 1 -->
+        <div class="glass p-8 rounded-2xl card-hover">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-2xl font-bold">1. The Command Center</h2>
+                <span class="px-3 py-1 bg-turquoise-surf/10 text-turquoise-surf text-[10px] font-bold uppercase rounded-full">Primary Structure</span>
+            </div>
+            <p class="text-gray-400 mb-6">High-density dashboard prioritizing "Next Best Action" tiles and real-time stats. Perfect for fast-moving gym floor environments.</p>
+            <div class="space-y-3 opacity-50 pointer-events-none">
+                <div class="h-12 w-full bg-white/5 rounded-lg border border-white/10 flex items-center px-4">⚡ Quick Start Workout</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="h-20 bg-white/5 rounded-lg border border-white/10"></div>
+                    <div class="h-20 bg-white/5 rounded-lg border border-white/10"></div>
+                    <div class="h-20 bg-white/5 rounded-lg border border-white/10"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 6 -->
+        <div class="glass p-8 rounded-2xl card-hover border-turquoise-surf/30">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-2xl font-bold">2. The Luxury Vault</h2>
+                <span class="px-3 py-1 bg-pacific-cyan text-black text-[10px] font-bold uppercase rounded-full">Chosen Aesthetic</span>
+            </div>
+            <p class="text-gray-400 mb-6">Deep contrast, heavy glassmorphism, and cinematic transitions. Communicates elite status and professional reliability.</p>
+            <div class="p-6 bg-black rounded-xl border border-white/10 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 text-turquoise-surf opacity-20">🌊</div>
+                <div class="h-2 w-32 bg-gradient-to-r from-cerulean to-pacific-cyan rounded-full mb-4"></div>
+                <div class="text-3xl font-black mb-2">95.5 <span class="text-sm font-normal text-gray-500">kg</span></div>
+                <div class="text-[10px] uppercase font-bold text-turquoise-surf tracking-widest">Personal Record</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/10 text-center">
+        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">Decision: Hybrid of Dashboard Efficiency and Luxury Fidelity</p>
+    </footer>
+</body>
+</html>

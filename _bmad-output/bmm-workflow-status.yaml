@@ -1,4 +1,4 @@
-# Workflow Status Template
+﻿# Workflow Status Template
 
 # This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
 # Implementation phase is tracked separately in sprint-status.yaml
@@ -25,5 +25,7 @@ workflow_path: "_bmad/bmm/workflows"
 workflow_status:
   prd: "required"
   architecture: "_bmad-output/planning-artifacts/architecture.md"
-  epics: "_bmad-output/planning-artifacts/epics.md"
-  ux: "optional"
+  epics: "_bmad-output/planning-artifacts/epics.md" # COMPLETED
+  ux: "_bmad-output/planning-artifacts/ux-design-specification.md"
+
+

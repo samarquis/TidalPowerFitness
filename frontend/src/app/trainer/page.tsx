@@ -428,7 +428,7 @@ export default function TrainerDashboardPage() {
 
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-tight">
-                                                        {classItem.duration_minutes}m • Max {classItem.max_capacity}
+                                                        {classItem.duration_minutes}m • {classItem.attendee_count || 0}/{classItem.max_capacity} Booked
                                                     </span>
                                                     <button
                                                         onClick={() => handleViewAttendees(classItem)}

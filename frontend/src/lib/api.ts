@@ -46,9 +46,13 @@ class ApiClient {
             if (response.status === 401) {
                 // Unauthorized - clear auth and redirect to login
                 if (typeof window !== 'undefined') {
-                    const currentPath = window.location.pathname.replace(/\/$/, '');
+                    const currentPath = window.location.pathname;
+                    const currentSearch = window.location.search;
+                    const fullPath = currentPath + currentSearch;
+                    
                     if (currentPath !== '/login') {
-                        window.location.href = '/login';
+                        // Include redirect parameter if not already on login page
+                        window.location.href = `/login?redirect=${encodeURIComponent(fullPath)}`;
                     }
                 }
                 return { error: 'Unauthorized - please log in' };
