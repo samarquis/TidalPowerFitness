@@ -23,6 +23,9 @@
 - [x] **Mission Accomplished State**: Implemented high-fidelity summary dashboard with PR highlights and volume tracking.
 - [x] **Date-Specific Attendee Lists**: Enhanced trainer dashboard to filter class attendees by specific instance dates.
 - [x] **BMAD Documentation**: Updated all planning artifacts and project memory to reflect 100/100 completion.
+- [x] **SR-006 & SR-007 Remediation**:
+    - **Batch Matrix UI**: Implemented "3-Text-Box" layout with explicit labels and stepper controls.
+    - **Trainer Log**: Refactored to responsive card layout with history pre-loading and full set visibility.
 
 ## 🗺️ Roadmap
 
