@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../types/auth';
 import WorkoutSession from '../models/WorkoutSession';
+import ProgressModel from '../models/Progress';
 import Program from '../models/Program';
 import ProgramService from '../services/ProgramService';
 import { AchievementService } from '../services/AchievementService';

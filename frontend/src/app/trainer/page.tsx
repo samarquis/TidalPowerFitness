@@ -411,7 +411,7 @@ export default function TrainerDashboardPage() {
                         </div>
                     ) : (
                         <div className="space-y-10">
-                            {classesByDay.filter(d => d.classes.length > 0).map(({ day, classes: dayClasses }) => (
+                            {classesByDay.filter(d => d.classes.length > 0).map(({ day, dayIndex, classes: dayClasses }) => (
                                 <div key={day}>
                                     <h3 className="text-lg font-bold mb-4 border-b border-white/10 pb-2 inline-block pr-8 uppercase tracking-wider">{day}</h3>
                                     <div className="grid md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6">

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { BlackGlassCard, PulseIndicator } from '@/components/ui';
@@ -97,13 +97,13 @@ const BatchEntryMatrix = ({
                             transition={{ duration: 0.2 }}
                         >
                             <BlackGlassCard 
-                                className={p-3 md:p-4 transition-all duration-300 \}
+                                className="p-3 md:p-4 transition-all duration-300"
                                 hoverable={isActive}
                             >
                                 <div className="grid grid-cols-12 gap-2 md:gap-4 items-center">
                                     {/* Set Number */}
                                     <div className="col-span-2 flex justify-center">
-                                        <div className={w-8 h-8 rounded-full flex items-center justify-center font-black text-sm \}>
+                                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm">
                                             {set.set_number}
                                         </div>
                                     </div>

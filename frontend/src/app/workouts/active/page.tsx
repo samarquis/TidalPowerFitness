@@ -172,7 +172,7 @@ function ActiveWorkoutContent() {
 
     const completeWorkout = () => {
         const duration = Math.floor((new Date().getTime() - startTime.getTime()) / 60000);
-        router.push(/workouts/complete?session=&duration=);
+        router.push(`/workouts/complete?session=${sessionId}&duration=${duration}`);
     };
 
     if (loading) {
@@ -211,7 +211,7 @@ function ActiveWorkoutContent() {
                     <div className="w-full bg-gray-800 rounded-full h-2">
                         <div
                             className="bg-turquoise-surf h-2 rounded-full transition-all shadow-[0_0_10px_rgba(8,172,214,0.5)]"
-                            style={{ width: ${progress}% }}
+                            style={{ width: `${progress}%` }}
                         ></div>
                     </div>
                 </div>
