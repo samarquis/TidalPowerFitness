@@ -694,19 +694,61 @@ function AssignWorkoutContent() {
                                                         <div className="grid grid-cols-4 gap-3 mb-3">
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Sets</label>
-                                                                <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_sets: Math.max(1, ex.planned_sets - 1) })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_sets: ex.planned_sets + 1 })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Reps</label>
-                                                                <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_reps: Math.max(1, ex.planned_reps - 1) })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_reps: ex.planned_reps + 1 })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Lbs</label>
-                                                                <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="input-field py-1 text-sm" />
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_weight_lbs: Math.max(0, ex.planned_weight_lbs - 5) })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
+                                                                    <button 
+                                                                        onClick={() => updateExercise(ex.unique_id, { planned_weight_lbs: ex.planned_weight_lbs + 5 })}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Rest (s)</label>
-                                                                <input type="number" min="0" value={ex.rest_seconds} onChange={(e) => updateExercise(ex.unique_id, { rest_seconds: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm" />
+                                                                <input type="number" min="0" value={ex.rest_seconds} onChange={(e) => updateExercise(ex.unique_id, { rest_seconds: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
                                                             </div>
                                                         </div>
 

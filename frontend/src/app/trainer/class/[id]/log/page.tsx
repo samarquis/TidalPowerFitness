@@ -557,20 +557,48 @@ export default function WorkoutLogPage() {
                                                                 {set.set_number}
                                                             </td>
                                                             <td className="p-2">
-                                                                <input
-                                                                    type="number"
-                                                                    value={set.reps_completed}
-                                                                    onChange={(e) => updateSet(index, 'reps_completed', parseInt(e.target.value) || 0)}
-                                                                    className="w-20 px-2 py-1 bg-black/50 border border-white/20 rounded text-center"
-                                                                />
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => updateSet(index, 'reps_completed', Math.max(0, set.reps_completed - 1))}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={set.reps_completed}
+                                                                        onChange={(e) => updateSet(index, 'reps_completed', parseInt(e.target.value) || 0)}
+                                                                        className="w-12 px-1 py-1 bg-black/50 border border-white/20 rounded text-center text-sm"
+                                                                    />
+                                                                    <button 
+                                                                        onClick={() => updateSet(index, 'reps_completed', set.reps_completed + 1)}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                             <td className="p-2">
-                                                                <input
-                                                                    type="number"
-                                                                    value={set.weight_used_lbs}
-                                                                    onChange={(e) => updateSet(index, 'weight_used_lbs', parseFloat(e.target.value) || 0)}
-                                                                    className="w-24 px-2 py-1 bg-black/50 border border-white/20 rounded text-center"
-                                                                />
+                                                                <div className="flex items-center gap-1">
+                                                                    <button 
+                                                                        onClick={() => updateSet(index, 'weight_used_lbs', Math.max(0, set.weight_used_lbs - 5))}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={set.weight_used_lbs}
+                                                                        onChange={(e) => updateSet(index, 'weight_used_lbs', parseFloat(e.target.value) || 0)}
+                                                                        className="w-16 px-1 py-1 bg-black/50 border border-white/20 rounded text-center text-sm"
+                                                                    />
+                                                                    <button 
+                                                                        onClick={() => updateSet(index, 'weight_used_lbs', set.weight_used_lbs + 5)}
+                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                             <td className="p-2">
                                                                 <select
