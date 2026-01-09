@@ -109,7 +109,13 @@ const BatchEntryMatrix = ({
                                     </div>
 
                                     {/* Reps Input */}
-                                    <div className="col-span-4">
+                                    <div className="col-span-4 flex items-center gap-1">
+                                        <button 
+                                            onClick={() => onUpdateSet(index, { reps_completed: Math.max(0, (set.reps_completed ?? 0) - 1) })}
+                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            -
+                                        </button>
                                         <input
                                             type="number"
                                             inputMode="numeric"
@@ -118,10 +124,22 @@ const BatchEntryMatrix = ({
                                             onChange={(e) => onUpdateSet(index, { reps_completed: parseInt(e.target.value) || 0 })}
                                             className="w-full bg-black/40 border border-white/5 rounded-xl py-3 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
                                         />
+                                        <button 
+                                            onClick={() => onUpdateSet(index, { reps_completed: (set.reps_completed ?? 0) + 1 })}
+                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            +
+                                        </button>
                                     </div>
 
                                     {/* Weight Input */}
-                                    <div className="col-span-4">
+                                    <div className="col-span-4 flex items-center gap-1">
+                                        <button 
+                                            onClick={() => onUpdateSet(index, { weight_used_lbs: Math.max(0, (set.weight_used_lbs ?? 0) - 5) })}
+                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            -
+                                        </button>
                                         <input
                                             type="number"
                                             inputMode="numeric"
@@ -130,6 +148,12 @@ const BatchEntryMatrix = ({
                                             onChange={(e) => onUpdateSet(index, { weight_used_lbs: parseInt(e.target.value) || 0 })}
                                             className="w-full bg-black/40 border border-white/5 rounded-xl py-3 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
                                         />
+                                        <button 
+                                            onClick={() => onUpdateSet(index, { weight_used_lbs: (set.weight_used_lbs ?? 0) + 5 })}
+                                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            +
+                                        </button>
                                     </div>
 
                                     {/* Status Indicator / Pulse */}
