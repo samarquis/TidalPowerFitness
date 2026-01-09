@@ -118,7 +118,7 @@ const BatchEntryMatrix = ({
                                                 type="number"
                                                 inputMode="numeric"
                                                 value={set.reps_completed ?? ''}
-                                                placeholder={plannedReps.toString()}
+                                                placeholder={(plannedReps ?? 0).toString()}
                                                 onChange={(e) => onUpdateSet(index, { reps_completed: parseInt(e.target.value) || 0 })}
                                                 className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
                                             />
@@ -145,7 +145,7 @@ const BatchEntryMatrix = ({
                                                 type="number"
                                                 inputMode="numeric"
                                                 value={set.weight_used_lbs ?? ''}
-                                                placeholder={plannedWeight.toString()}
+                                                placeholder={(plannedWeight ?? 0).toString()}
                                                 onChange={(e) => onUpdateSet(index, { weight_used_lbs: parseInt(e.target.value) || 0 })}
                                                 className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 text-center text-xl font-black text-turquoise-surf focus:border-turquoise-surf/50 focus:bg-black/60 outline-none transition-all"
                                             />
