@@ -41,7 +41,7 @@ interface BodyPart {
     description?: string;
 }
 
-const PATTERNS = ['Push', 'Pull', 'Legs', 'Static', 'None'];
+const PATTERNS = ['Push', 'Pull', 'Static', 'None'];
 
 interface ExerciseFormData {
     name: string;

@@ -168,7 +168,7 @@ export default function ExerciseLibraryPage() {
                             >
                                 All Movements
                             </button>
-                            {['Push', 'Pull', 'Legs'].map((pattern) => (
+                            {['Push', 'Pull'].map((pattern) => (
                                 <button
                                     key={pattern}
                                     onClick={() => setSelectedPattern(pattern)}
@@ -193,6 +193,16 @@ export default function ExerciseLibraryPage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredMuscles.map((muscle) => {
                                 const count = getMuscleExerciseCount(muscle.id);
+                                const getMuscleEmoji = (name: string) => {
+                                    const n = name.toLowerCase();
+                                    if (n.includes('chest')) return '👕';
+                                    if (n.includes('back')) return '🛶';
+                                    if (n.includes('arm') || n.includes('bicep') || n.includes('tricep')) return '💪';
+                                    if (n.includes('shoulder')) return '🤷‍♂️';
+                                    if (n.includes('core') || n.includes('abs')) return '🧱';
+                                    if (n.includes('leg') || n.includes('quad') || n.includes('hamstring') || n.includes('glute') || n.includes('lower body')) return '🍗';
+                                    return '🏋️‍♂️';
+                                };
                                 return (
                                     <button
                                         key={muscle.id}
@@ -201,7 +211,7 @@ export default function ExerciseLibraryPage() {
                                     >
                                         <div className="flex flex-col items-center">
                                             <div className="w-16 h-16 mb-4 bg-gradient-to-br from-pacific-cyan/20 to-dark-teal/20 rounded-full flex items-center justify-center text-3xl border border-white/10 group-hover:scale-110 transition-transform">
-                                                💪
+                                                {getMuscleEmoji(muscle.name)}
                                             </div>
                                             <h3 className="text-lg font-bold text-white mb-1 group-hover:text-turquoise-surf transition-colors">
                                                 {muscle.name}

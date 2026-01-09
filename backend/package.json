@@ -13,6 +13,9 @@
     "migrate:001": "ts-node -r dotenv/config src/scripts/run_migration.ts",
     "migrate:all": "ts-node -r dotenv/config src/scripts/run_all_migrations.ts",
     "db:test-neon": "ts-node -r dotenv/config src/scripts/test-neon-connection.ts",
+    "stress:init": "ts-node -r dotenv/config src/scripts/stress_test/seed_factory.ts",
+    "stress:fire": "ts-node -r dotenv/config src/scripts/stress_test/swarm.ts",
+    "stress:pressure": "ts-node -r dotenv/config src/scripts/stress_test/pressure.ts",
     "test": "jest"
   },
   "keywords": [],
