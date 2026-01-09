@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import ClassSignupModal from '@/components/ClassSignupModal';
 
 interface Class {
@@ -70,6 +71,7 @@ interface ActiveProgram {
 
 export default function UserDashboard() {
     const { user, refreshUser } = useAuth();
+    const searchParams = useSearchParams();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [classes, setClasses] = useState<Class[]>([]);
@@ -91,13 +93,14 @@ export default function UserDashboard() {
     }, [user]);
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('payment') === 'success') {
+        if (searchParams.get('payment') === 'success') {
             setSuccessMessage('Payment successful! Your credits have been updated.');
-            // Remove the query parameter from the URL
-            window.history.replaceState({}, document.title, window.location.pathname);
+            // Remove the query parameter from the URL without a full reload
+            const url = new URL(window.location.href);
+            url.searchParams.delete('payment');
+            window.history.replaceState({}, '', url.pathname);
         }
-    }, []);
+    }, [searchParams]);
 
     const fetchData = async () => {
         try {

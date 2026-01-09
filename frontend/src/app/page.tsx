@@ -5,9 +5,9 @@ import LandingPage from '@/components/LandingPage';
 import UserDashboard from '@/components/dashboard/UserDashboard';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
-export default function HomePage() {
+function HomeContent() {
   const { isAuthenticated, loading, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,5 +42,17 @@ export default function HomePage() {
     </ErrorBoundary>
   ) : (
     <LandingPage />
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
