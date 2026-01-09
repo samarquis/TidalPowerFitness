@@ -1,4 +1,14 @@
-﻿/**
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Merges tailwind classes with clsx and tailwind-merge to handle conflicts.
+ */
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
+/**
  * Converts a 24-hour time string (HH:mm) or a Date object/ISO string 
  * to a user-friendly 12-hour format (h:mm AM/PM).
  */
