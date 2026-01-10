@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api';
+import { CTAButton } from '@/components/ui';
 
 interface Class {
     id: string;
@@ -388,12 +389,15 @@ function AdminClassesContent() {
                         </h1>
                         <p className="text-gray-500 font-medium">Create and schedule upcoming training sessions</p>
                     </div>
-                    <button
+                    <CTAButton
                         onClick={openCreateModal}
-                        className="w-full md:w-auto px-8 py-4 bg-turquoise-surf text-black font-black rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(8,172,214,0.4)] flex items-center justify-center gap-2 uppercase tracking-widest"
+                        variant="primary"
+                        size="lg"
+                        className="w-full md:w-auto uppercase tracking-widest text-black font-black"
+                        icon={<span className="text-xl">+</span>}
                     >
-                        <span className="text-2xl">+</span> Add New Class
-                    </button>
+                        Add New Class
+                    </CTAButton>
                 </div>
 
                 {/* Stats */}
@@ -508,46 +512,33 @@ function AdminClassesContent() {
                                                     </div>
                     
                                                     <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-                                                        <button
+                                                        <CTAButton
                                                             onClick={() => openEditModal(classItem)}
-                                                            className="flex-1 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20 flex items-center justify-center gap-2"
+                                                            variant="secondary"
+                                                            className="flex-1"
+                                                            icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
                                                         >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                            </svg>
                                                             Edit
-                                                        </button>
-                                                        <button
+                                                        </CTAButton>
+                                                        <CTAButton
                                                             onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                            className={`flex-1 py-2 rounded-lg transition-all border flex items-center justify-center gap-2 ${classItem.is_active
-                                                                ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border-amber-500/20'
-                                                                : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
-                                                                }`}
-                                                        >
-                                                            {classItem.is_active ? (
-                                                                <>
-                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                                                    </svg>
-                                                                    Unpublish
-                                                                </>
+                                                            variant={classItem.is_active ? 'secondary' : 'primary'}
+                                                            className={`flex-1 ${classItem.is_active ? 'text-amber-400 border-amber-500/20' : 'text-black'}`}
+                                                            icon={classItem.is_active ? (
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                                             ) : (
-                                                                <>
-                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                    </svg>
-                                                                    Publish
-                                                                </>
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                                             )}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteClass(classItem.id)}
-                                                            className="p-2 bg-red-600/10 text-red-400 hover:bg-red-600/20 rounded-lg transition-all border border-red-600/20"
                                                         >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
-                                                        </button>
+                                                            {classItem.is_active ? 'Unpublish' : 'Publish'}
+                                                        </CTAButton>
+                                                        <CTAButton
+                                                            onClick={() => handleDeleteClass(classItem.id)}
+                                                            variant="danger"
+                                                            size="icon"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                        </CTAButton>
                                                     </div>
                                                 </div>
                                             ))}
@@ -595,21 +586,21 @@ function AdminClassesContent() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex gap-2">
-                                                    <button
+                                                    <CTAButton
                                                         onClick={() => openEditModal(classItem)}
-                                                        className="p-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20"
+                                                        variant="secondary"
+                                                        size="icon"
                                                         title="Edit Class"
                                                     >
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
-                                                    </button>
-                                                    <button
+                                                    </CTAButton>
+                                                    <CTAButton
                                                         onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                        className={`p-2 rounded-lg transition-all border ${classItem.is_active
-                                                            ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border-amber-500/20'
-                                                            : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
-                                                            }`}
+                                                        variant={classItem.is_active ? 'secondary' : 'primary'}
+                                                        size="icon"
+                                                        className={classItem.is_active ? 'text-amber-400 border-amber-500/20' : 'text-black'}
                                                         title={classItem.is_active ? 'Unpublish' : 'Publish'}
                                                     >
                                                         {classItem.is_active ? (
@@ -621,16 +612,17 @@ function AdminClassesContent() {
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
                                                         )}
-                                                    </button>
-                                                    <button
+                                                    </CTAButton>
+                                                    <CTAButton
                                                         onClick={() => handleDeleteClass(classItem.id)}
-                                                        className="p-2 bg-red-600/10 text-red-400 hover:bg-red-600/20 rounded-lg transition-all border border-red-600/20"
+                                                        variant="danger"
+                                                        size="icon"
                                                         title="Delete Class"
                                                     >
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
-                                                    </button>
+                                                    </CTAButton>
                                                 </div>
                                             </td>
                                         </tr>
@@ -961,27 +953,29 @@ function AdminClassesContent() {
 
                             {/* Modal Actions */}
                             <div className="flex justify-between mt-8 pt-6 border-t border-white/10">
-                                <button
+                                <CTAButton
                                     onClick={currentStep === 1 ? closeModal : prevStep}
-                                    className="btn-secondary"
+                                    variant="secondary"
                                 >
                                     {currentStep === 1 ? 'Cancel' : 'Back'}
-                                </button>
+                                </CTAButton>
 
                                 {currentStep < 4 ? (
-                                    <button
+                                    <CTAButton
                                         onClick={nextStep}
-                                        className="btn-primary uppercase tracking-widest text-black font-black"
+                                        variant="primary"
+                                        className="uppercase tracking-widest text-black font-black"
                                     >
                                         Next
-                                    </button>
+                                    </CTAButton>
                                 ) : (
-                                    <button
+                                    <CTAButton
                                         onClick={handleSubmit}
-                                        className="btn-primary uppercase tracking-widest text-black font-black"
+                                        variant="primary"
+                                        className="uppercase tracking-widest text-black font-black"
                                     >
                                         {editingClass ? 'Update Class' : 'Create Class'}
-                                    </button>
+                                    </CTAButton>
                                 )}
                             </div>
                         </div>

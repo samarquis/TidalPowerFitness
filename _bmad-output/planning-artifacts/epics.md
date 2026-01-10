@@ -1,4 +1,4 @@
-﻿---
+---
 stepsCompleted: ["step-01-validate-prerequisites", "step-02-design-epics", "step-03-create-stories", "step-04-final-validation"]
 inputDocuments: [
   "_bmad-output/project-context/project-context.md",
@@ -122,6 +122,42 @@ FR20: Epic 7 - Detailed business analytics for admins
 ### Epic 8: Administrative Control & Remediation
 **Goal**: Resolve administrative bottlenecks including profile editing functionality and fully responsive management tables.
 **FRs covered**: FR5, FR6
+
+## Epic 9: Platform Refinement & Maintenance
+**Goal**: Address feedback from Site Review 008, focusing on data hygiene and workout assignment workflow improvements.
+
+### Story 9.1: Database Hygiene & User Cleanup
+As an admin,
+I want to remove all test users except for the core stakeholders (Scott and Lisa),
+So that the production database is clean and easy to manage.
+
+**Acceptance Criteria:**
+**Given** the current user database with multiple test accounts
+**When** the cleanup script is executed
+**Then** only 'samarquis4@gmail.com' and 'lisa.baumgard@t...' should remain.
+**And** all related data for deleted users should be handled safely (cascade or specific deletion).
+
+### Story 9.2: Workout Assignment UX Overhaul
+As a trainer,
+I want to assign a workout by first selecting a class/client, then the date/time,
+So that the flow feels more natural and intuitive.
+
+**Acceptance Criteria:**
+**Given** I am on the Assign Workout page
+**When** I start the process
+**Then** the first step should be selecting the target (Class or Client).
+**And** the subsequent steps (Date, Time, Template) should follow logically.
+
+### Story 9.3: Template Visibility Fix
+As a trainer,
+I want to see all my created workout templates when assigning a workout,
+So that I can use the content I have prepared.
+
+**Acceptance Criteria:**
+**Given** I have created 3 templates (Today, Leg Pull, Scott Testing)
+**When** I open the template selection dropdown/modal
+**Then** all 3 templates should be visible and selectable.
+**And** the list should not be artificially filtered or empty.
 
 
 ## Epic 1: Professional Infrastructure & Authentication
@@ -446,5 +482,3 @@ So that I can manage users from a tablet or mobile device without layout breakag
 **When** the screen width is reduced (e.g., mobile view)
 **Then** the user table should gracefully collapse into a card-based layout or allow for side-scrolling without breaking the container.
 **And** all toggles for 'Active' status and 'Roles' must remain functional and correctly sized for touch.
-
-

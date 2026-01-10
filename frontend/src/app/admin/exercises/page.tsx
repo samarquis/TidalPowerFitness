@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { CTAButton } from '@/components/ui';
 
 interface Exercise {
     id: string;
@@ -358,12 +359,14 @@ export default function AdminExercisesPage() {
                         </h1>
                         <p className="text-gray-400">Manage exercise library and classifications</p>
                     </div>
-                    <button
+                    <CTAButton
                         onClick={openCreateModal}
-                        className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all transform hover:scale-105"
+                        variant="primary"
+                        className="text-black font-bold"
+                        icon={<span className="text-xl">+</span>}
                     >
-                        + Add New Exercise
-                    </button>
+                        Add New Exercise
+                    </CTAButton>
                 </div>
 
                 {/* Stats */}
@@ -499,38 +502,26 @@ export default function AdminExercisesPage() {
                                                 </div>
                 
                                                 <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-                                                    <button
+                                                    <CTAButton
                                                         onClick={() => openEditModal(exercise)}
-                                                        className="flex-1 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20 flex items-center justify-center gap-2"
+                                                        variant="secondary"
+                                                        className="flex-1"
+                                                        icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
                                                     >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
                                                         Edit
-                                                    </button>
-                                                    <button
+                                                    </CTAButton>
+                                                    <CTAButton
                                                         onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
-                                                        className={`flex-1 py-2 rounded-lg transition-all border flex items-center justify-center gap-2 ${exercise.is_active
-                                                            ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
-                                                            : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
-                                                            }`}
-                                                    >
-                                                        {exercise.is_active ? (
-                                                            <>
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                                                </svg>
-                                                                Deactivate
-                                                            </>
+                                                        variant={exercise.is_active ? 'danger' : 'secondary'}
+                                                        className="flex-1"
+                                                        icon={exercise.is_active ? (
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                                                         ) : (
-                                                            <>
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                </svg>
-                                                                Activate
-                                                            </>
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                                         )}
-                                                    </button>
+                                                    >
+                                                        {exercise.is_active ? 'Deactivate' : 'Activate'}
+                                                    </CTAButton>
                                                 </div>
                                             </div>
                                         ))}
@@ -592,21 +583,20 @@ export default function AdminExercisesPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
-                                                <button
+                                                <CTAButton
                                                     onClick={() => openEditModal(exercise)}
-                                                    className="p-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all border border-blue-500/20"
+                                                    variant="secondary"
+                                                    size="icon"
                                                     title="Edit Exercise"
                                                 >
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
-                                                </button>
-                                                <button
+                                                </CTAButton>
+                                                <CTAButton
                                                     onClick={() => toggleExerciseStatus(exercise.id, exercise.is_active)}
-                                                    className={`p-2 rounded-lg transition-all border ${exercise.is_active
-                                                        ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20'
-                                                        : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border-green-500/20'
-                                                        }`}
+                                                    variant={exercise.is_active ? 'danger' : 'secondary'}
+                                                    size="icon"
                                                     title={exercise.is_active ? 'Deactivate' : 'Activate'}
                                                 >
                                                     {exercise.is_active ? (
@@ -618,7 +608,7 @@ export default function AdminExercisesPage() {
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                         </svg>
                                                     )}
-                                                </button>
+                                                </CTAButton>
                                             </div>
                                         </td>
                                     </tr>
@@ -888,27 +878,29 @@ export default function AdminExercisesPage() {
 
                         {/* Modal Actions */}
                         <div className="flex justify-between mt-8">
-                            <button
+                            <CTAButton
                                 onClick={currentStep === 1 ? closeModal : prevStep}
-                                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
+                                variant="secondary"
                             >
                                 {currentStep === 1 ? 'Cancel' : 'Back'}
-                            </button>
+                            </CTAButton>
 
                             {currentStep < 4 ? (
-                                <button
+                                <CTAButton
                                     onClick={nextStep}
-                                    className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                    variant="primary"
+                                    className="text-black font-bold"
                                 >
                                     Next
-                                </button>
+                                </CTAButton>
                             ) : (
-                                <button
+                                <CTAButton
                                     onClick={handleSubmit}
-                                    className="px-6 py-3 bg-gradient-to-r from-turquoise-surf to-pacific-cyan hover:from-pacific-cyan hover:to-turquoise-surf text-black font-bold rounded-lg transition-all"
+                                    variant="primary"
+                                    className="text-black font-bold"
                                 >
                                     {editingExercise ? 'Update Exercise' : 'Create Exercise'}
-                                </button>
+                                </CTAButton>
                             )}
                         </div>
                     </div>

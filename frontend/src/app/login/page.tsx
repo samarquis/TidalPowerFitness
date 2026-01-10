@@ -57,7 +57,10 @@ function LoginContent() {
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
-                            <div className="bg-red-600/20 border border-red-600 text-red-500 px-4 py-3 rounded-lg text-sm">
+                            <div 
+                                data-testid="login-error"
+                                className="bg-red-600/20 border border-red-600 text-red-500 px-4 py-3 rounded-lg text-sm"
+                            >
                                 {error}
                             </div>
                         )}
@@ -68,6 +71,7 @@ function LoginContent() {
                             </label>
                             <input
                                 id="email"
+                                data-testid="login-email"
                                 type="email"
                                 required
                                 value={email}
@@ -83,6 +87,7 @@ function LoginContent() {
                             </label>
                             <input
                                 id="password"
+                                data-testid="login-password"
                                 type="password"
                                 required
                                 value={password}
@@ -94,6 +99,7 @@ function LoginContent() {
 
                         <button
                             type="submit"
+                            data-testid="login-submit"
                             disabled={loading}
                             className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         >

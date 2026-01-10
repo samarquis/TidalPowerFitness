@@ -117,6 +117,7 @@ const BatchEntryMatrix = ({
                                             <input
                                                 type="number"
                                                 inputMode="numeric"
+                                                data-testid={`reps-input-${set.set_number}`}
                                                 value={set.reps_completed ?? ''}
                                                 placeholder={(plannedReps ?? 0).toString()}
                                                 onChange={(e) => onUpdateSet(index, { reps_completed: parseInt(e.target.value) || 0 })}
@@ -144,6 +145,7 @@ const BatchEntryMatrix = ({
                                             <input
                                                 type="number"
                                                 inputMode="numeric"
+                                                data-testid={`weight-input-${set.set_number}`}
                                                 value={set.weight_used_lbs ?? ''}
                                                 placeholder={(plannedWeight ?? 0).toString()}
                                                 onChange={(e) => onUpdateSet(index, { weight_used_lbs: parseInt(e.target.value) || 0 })}
@@ -159,7 +161,10 @@ const BatchEntryMatrix = ({
                                     </div>
 
                                     {/* Status Indicator */}
-                                    <div className="flex-none w-10 flex justify-center pt-4 md:pt-0">
+                                    <div 
+                                        className="flex-none w-10 flex justify-center pt-4 md:pt-0"
+                                        data-testid={`status-indicator-${set.set_number}`}
+                                    >
                                         {pulseType !== 'none' ? (
                                             <PulseIndicator type={pulseType} />
                                         ) : set.reps_completed !== undefined && set.weight_used_lbs !== undefined ? (

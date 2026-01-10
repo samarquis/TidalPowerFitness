@@ -241,6 +241,7 @@ function ActiveWorkoutContent() {
                     <button
                         onClick={completeBatchWorkout}
                         disabled={saving}
+                        data-testid="save-next-exercise"
                         className="w-full px-6 py-5 bg-turquoise-surf text-black font-black rounded-2xl text-xl transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(8,172,214,0.4)] uppercase tracking-widest flex items-center justify-center gap-3"
                     >
                         {saving ? (
@@ -252,6 +253,7 @@ function ActiveWorkoutContent() {
 
                     <button
                         onClick={completeWorkout}
+                        data-testid="finish-workout"
                         className="w-full px-6 py-4 bg-green-500/10 text-green-400 font-black rounded-2xl transition-all border border-green-500/20 uppercase tracking-widest"
                     >
                         Finish Entire Workout
@@ -260,6 +262,7 @@ function ActiveWorkoutContent() {
                     <div className="flex gap-4">
                         <button
                             onClick={() => router.push('/workouts/templates')}
+                            data-testid="cancel-workout"
                             className="px-6 py-3 bg-white/5 text-gray-500 font-bold rounded-xl hover:bg-white/10 transition-all text-sm"
                         >
                             Cancel
@@ -267,6 +270,7 @@ function ActiveWorkoutContent() {
                         {currentExerciseIndex < exercises.length - 1 && (
                             <button
                                 onClick={nextExercise}
+                                data-testid="skip-exercise"
                                 className="flex-1 px-6 py-3 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 font-bold rounded-xl transition-all text-sm"
                             >
                                 Skip Exercise

@@ -203,6 +203,7 @@ export default function ClassesPage() {
                         <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Pick Booking Date</label>
                         <input 
                             type="date"
+                            data-testid="booking-date"
                             value={targetDate}
                             onChange={(e) => {
                                 const newDate = e.target.value;
@@ -220,12 +221,18 @@ export default function ClassesPage() {
 
                 {/* Error/Success Messages */}
                 {error && (
-                    <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl mb-8 animate-shake">
+                    <div 
+                        data-testid="booking-error"
+                        className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl mb-8 animate-shake"
+                    >
                         {error}
                     </div>
                 )}
                 {success && (
-                    <div className="bg-green-500/20 border border-green-500/50 text-green-200 px-6 py-4 rounded-xl mb-8">
+                    <div 
+                        data-testid="booking-success"
+                        className="bg-green-500/20 border border-green-500/50 text-green-200 px-6 py-4 rounded-xl mb-8"
+                    >
                         {success}
                     </div>
                 )}
@@ -292,13 +299,20 @@ export default function ClassesPage() {
                                                 <div className="flex items-center gap-3">
                                                     <button 
                                                         onClick={() => setAttendeeCount(Math.max(1, attendeeCount - 1))}
+                                                        data-testid="attendee-minus"
                                                         className="text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors text-xl font-bold"
                                                     >
                                                         -
                                                     </button>
-                                                    <span className="text-lg font-bold text-foreground w-4 text-center">{attendeeCount}</span>
+                                                    <span 
+                                                        data-testid="attendee-count"
+                                                        className="text-lg font-bold text-foreground w-4 text-center"
+                                                    >
+                                                        {attendeeCount}
+                                                    </span>
                                                     <button 
                                                         onClick={() => setAttendeeCount(Math.min(5, attendeeCount + 1))}
+                                                        data-testid="attendee-plus"
                                                         className="text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors text-xl font-bold"
                                                     >
                                                         +
@@ -308,6 +322,7 @@ export default function ClassesPage() {
 
                                             <button
                                                 onClick={() => handleBookClass(classItem.id)}
+                                                data-testid={`book-button-${classItem.id}`}
                                                 disabled={bookingClass === classItem.id || (isAuthenticated && (!user || user.credits < attendeeCount))}
                                                 className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest transition-all ${
                                                     isAuthenticated 

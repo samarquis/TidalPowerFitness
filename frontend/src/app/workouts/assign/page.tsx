@@ -36,12 +36,12 @@ interface AvailableExercise {
     name: string;
     description?: string;
     workout_type_name?: string;
-    muscle_group_name?: string; // Corrected from primary_muscle_group_name
-    movement_pattern?: string; // e.g. Push, Pull, Legs
+    muscle_group_name?: string; 
+    movement_pattern?: string; 
 }
 
 interface SelectedExercise {
-    unique_id: string; // internal ID for UI list handling
+    unique_id: string; 
     exercise_id: string;
     name: string;
     workout_type_name?: string;
@@ -66,11 +66,18 @@ function AssignWorkoutContent() {
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
 
-    // Step 1: Date & Time
+    // Step 1: Recipient Selection (Previously Step 3)
+    const [recipientMode, setRecipientMode] = useState<'class' | 'clients'>('class');
+    const [classes, setClasses] = useState<Class[]>([]);
+    const [clients, setClients] = useState<Client[]>([]);
+    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedClients, setSelectedClients] = useState<string[]>([]);
+
+    // Step 2: Date & Time (Previously Step 1)
     const [sessionDate, setSessionDate] = useState('');
     const [startTime, setStartTime] = useState('');
 
-    // Step 2: Workout Selection
+    // Step 3: Workout Selection (Previously Step 2)
     const [workoutMode, setWorkoutMode] = useState<'template' | 'custom'>('template');
     const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
     const [templatesLoading, setTemplatesLoading] = useState(false);
@@ -87,14 +94,7 @@ function AssignWorkoutContent() {
     const [filterBodyPart, setFilterBodyPart] = useState('');
     const [filterMovement, setFilterMovement] = useState('');
 
-    // Step 3: Recipient Selection
-    const [recipientMode, setRecipientMode] = useState<'class' | 'clients'>('class');
-    const [classes, setClasses] = useState<Class[]>([]);
-    const [clients, setClients] = useState<Client[]>([]);
-    const [selectedClass, setSelectedClass] = useState('');
-    const [selectedClients, setSelectedClients] = useState<string[]>([]);
-
-    // Step 4: Notes
+    // Step 4: Review & Notes
     const [notes, setNotes] = useState('');
     const [saveAsTemplate, setSaveAsTemplate] = useState(false);
     const [newTemplateName, setNewTemplateName] = useState('');
@@ -122,9 +122,9 @@ function AssignWorkoutContent() {
         }
     }, [searchParams]);
 
-    // Fetch templates and available exercises
+    // Fetch metadata
     useEffect(() => {
-        const fetchTemplatesAndExercises = async () => {
+        const fetchMetadata = async () => {
             try {
                 const [templatesRes, exercisesRes, bodyPartsRes, musclesRes] = await Promise.all([
                     apiClient.getWorkoutTemplates(),
@@ -133,7 +133,12 @@ function AssignWorkoutContent() {
                     fetch('/api/exercises/body-focus-areas').then(res => res.json())
                 ]);
 
-                if (templatesRes.data) setTemplates(templatesRes.data);
+                if (templatesRes.data) {
+                    console.log('Templates fetched successfully:', templatesRes.data);
+                    setTemplates(templatesRes.data);
+                } else if (templatesRes.error) {
+                    console.error('Error fetching templates:', templatesRes.error);
+                }
                 if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
                 if (Array.isArray(bodyPartsRes)) setBodyPartsList(bodyPartsRes);
                 if (Array.isArray(musclesRes)) setMusclesList(musclesRes);
@@ -143,7 +148,7 @@ function AssignWorkoutContent() {
         };
 
         if (user) {
-            fetchTemplatesAndExercises();
+            fetchMetadata();
         }
     }, [user]);
 
@@ -161,7 +166,6 @@ function AssignWorkoutContent() {
                     setClasses(response.data);
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
                 console.error('Error fetching classes:', error);
             }
         };
@@ -178,7 +182,6 @@ function AssignWorkoutContent() {
                     setClients(response.data);
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
                 console.error('Error fetching clients:', error);
             }
         };
@@ -194,14 +197,10 @@ function AssignWorkoutContent() {
         return availableExercises.filter(ex => {
             const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
             
-            // Filter by Body Part Hierarchy
             let matchesBodyPart = true;
             if (filterBodyPart) {
-                // Check if the exercise's muscle group belongs to this body part
                 const muscle = musclesList.find(m => m.name === ex.muscle_group_name);
                 const bodyPart = bodyPartsList.find(bp => bp.id === muscle?.body_part_id);
-                
-                // Direct match on muscle group name (fallback) OR match on Body Part ID/Name
                 matchesBodyPart = (ex.muscle_group_name === filterBodyPart) || 
                                  (bodyPart?.id === filterBodyPart) || 
                                  (bodyPart?.name === filterBodyPart);
@@ -254,27 +253,27 @@ function AssignWorkoutContent() {
     // --- Navigation & Submission ---
 
     const handleNext = () => {
-        if (step === 1 && !sessionDate) {
-            setError('Please select a date');
-            return;
-        }
-        if (step === 2) {
-            if (workoutMode === 'template' && !selectedTemplate) {
-                setError('Please select a template');
-                return;
-            }
-            if (workoutMode === 'custom' && selectedCustomExercises.length === 0) {
-                setError('Please select at least one exercise for your custom workout');
-                return;
-            }
-        }
-        if (step === 3) {
+        if (step === 1) {
             if (recipientMode === 'class' && !selectedClass) {
                 setError('Please select a class');
                 return;
             }
             if (recipientMode === 'clients' && selectedClients.length === 0) {
                 setError('Please select at least one client');
+                return;
+            }
+        }
+        if (step === 2 && !sessionDate) {
+            setError('Please select a date');
+            return;
+        }
+        if (step === 3) {
+            if (workoutMode === 'template' && !selectedTemplate) {
+                setError('Please select a template');
+                return;
+            }
+            if (workoutMode === 'custom' && selectedCustomExercises.length === 0) {
+                setError('Please select at least one exercise for your custom workout');
                 return;
             }
         }
@@ -291,13 +290,12 @@ function AssignWorkoutContent() {
     const handleSubmit = async () => {
         if (!isAuthenticated) return;
 
-        setTemplatesLoading(true);
+        setLoading(true);
         setError('');
 
         try {
             let finalTemplateId = selectedTemplate;
 
-            // 1. Create Template if requested
             if (workoutMode === 'custom' && saveAsTemplate) {
                 if (!newTemplateName.trim()) {
                     throw new Error('Please provide a name for the new template');
@@ -307,7 +305,7 @@ function AssignWorkoutContent() {
                     trainer_id: user?.id,
                     name: newTemplateName,
                     description: notes || 'Created from custom session assignment',
-                    is_public: false, // Private by default
+                    is_public: false,
                     exercises: selectedCustomExercises.map((ex, index) => ({
                         exercise_id: ex.exercise_id,
                         order_in_template: index + 1,
@@ -337,9 +335,6 @@ function AssignWorkoutContent() {
                 payload.template_id = finalTemplateId;
             }
 
-            // Always include exercises if it was custom mode (even if we just made a template),
-            // to preserve specific tweaks made for this session that might differ slightly
-            // or just to be safe. If we made a template, we pass BOTH template_id and exercises.
             if (workoutMode === 'custom') {
                  payload.exercises = selectedCustomExercises.map((ex, index) => ({
                     exercise_id: ex.exercise_id,
@@ -366,17 +361,12 @@ function AssignWorkoutContent() {
                 throw new Error(response.error || 'Failed to assign workout');
             }
 
-            // Success Redirect
-            if (recipientMode === 'class' && selectedClass) {
-                 router.push('/admin/classes'); 
-            } else {
-                router.push('/admin/calendar');
-            }
+            setIsSuccess(true);
             
         } catch (error: any) {
             setError(error.message);
         } finally {
-            setTemplatesLoading(false);
+            setLoading(false);
         }
     };
 
@@ -394,9 +384,7 @@ function AssignWorkoutContent() {
         return null;
     }
 
-    // Extract unique values for filters
     const bodyParts = Array.from(new Set(availableExercises.map(e => e.muscle_group_name).filter(Boolean))) as string[];
-    // const movements = Array.from(new Set(availableExercises.map(e => e.movement_pattern_name).filter(Boolean))) as string[];
 
     return (
         <div className="min-h-screen pt-24 pb-16 px-4 page-container">
@@ -414,7 +402,7 @@ function AssignWorkoutContent() {
                 </div>
 
                 <div className="glass rounded-2xl p-8 shadow-2xl border border-white/5">
-                                        {isSuccess ? (
+                    {isSuccess ? (
                         <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
                             <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50">
                                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
@@ -427,7 +415,7 @@ function AssignWorkoutContent() {
                                 <Link href="/trainer" className="btn-primary">
                                     Return to Dashboard
                                 </Link>
-                                <button onClick={() => window.location.reload()} className="btn-secondary">
+                                <button onClick={() => { setIsSuccess(false); setStep(1); }} className="btn-secondary">
                                     Assign Another
                                 </button>
                             </div>
@@ -437,7 +425,7 @@ function AssignWorkoutContent() {
                         {/* Progress Bar */}
                     <div className="mb-10">
                         <div className="flex justify-between mb-3 px-2">
-                            {['Date & Time', 'Session Builder', 'Recipients', 'Review'].map((label, index) => (
+                            {['Recipients', 'Date & Time', 'Session Builder', 'Review'].map((label, index) => (
                                 <span
                                     key={label}
                                     className={`text-sm font-bold uppercase tracking-wider ${step > index + 0.5 ? 'text-turquoise-surf' : 'text-gray-600'
@@ -462,8 +450,91 @@ function AssignWorkoutContent() {
                         </div>
                     )}
 
-                    {/* Step 1: Date & Time */}
+                    {/* Step 1: Recipient Selection */}
                     {step === 1 && (
+                        <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto border border-white/10">
+                                <label className={`flex items-center gap-3 px-6 py-3 rounded-lg cursor-pointer transition-all ${recipientMode === 'class' ? 'bg-pacific-cyan/10 border border-pacific-cyan shadow-lg shadow-pacific-cyan/5' : 'hover:bg-white/5 border border-transparent'}`}>
+                                    <input type="radio" name="recipientMode" value="class" checked={recipientMode === 'class'} onChange={() => setRecipientMode('class')} className="hidden" />
+                                    <div className="text-2xl">🏫</div>
+                                    <div>
+                                        <div className={`font-bold ${recipientMode === 'class' ? 'text-pacific-cyan' : 'text-foreground'}`}>Class</div>
+                                        <div className="text-xs text-gray-500">Assign to all attendees</div>
+                                    </div>
+                                </label>
+                                <label className={`flex items-center gap-3 px-6 py-3 rounded-lg cursor-pointer transition-all ${recipientMode === 'clients' ? 'bg-pacific-cyan/10 border border-pacific-cyan shadow-lg shadow-pacific-cyan/5' : 'hover:bg-white/5 border border-transparent'}`}>
+                                    <input type="radio" name="recipientMode" value="clients" checked={recipientMode === 'clients'} onChange={() => setRecipientMode('clients')} className="hidden" />
+                                    <div className="text-2xl">👤</div>
+                                    <div>
+                                        <div className={`font-bold ${recipientMode === 'clients' ? 'text-pacific-cyan' : 'text-foreground'}`}>Individual</div>
+                                        <div className="text-xs text-gray-500">Select specific clients</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {recipientMode === 'class' && (
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                        Select Class *
+                                    </label>
+                                    <div className="grid gap-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                        {/* Since classes depend on date, and we moved date to step 2, 
+                                            we should show ALL recurring classes or ask them to select date first?
+                                            Actually, Lisa said "pick a class more than pick date and time".
+                                            Let's show a list of unique class names/definitions.
+                                        */}
+                                        {Array.from(new Set(classes.map(c => c.name))).length === 0 ? (
+                                             <div className="p-4 bg-white/5 border border-white/10 rounded-lg text-gray-400 text-center">
+                                                Loading classes...
+                                             </div>
+                                        ) : (
+                                            classes.filter((v, i, a) => a.findIndex(t => t.name === v.name) === i).map((cls) => (
+                                                <div
+                                                    key={cls.id}
+                                                    onClick={() => setSelectedClass(cls.id)}
+                                                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                                                        selectedClass === cls.id
+                                                            ? 'bg-pacific-cyan/10 border-pacific-cyan'
+                                                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                                    }`}
+                                                >
+                                                    <div className="font-bold text-foreground">{cls.name}</div>
+                                                    <div className="text-xs text-gray-500">{cls.start_time}</div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {recipientMode === 'clients' && (
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                        Select Clients * ({selectedClients.length})
+                                    </label>
+                                    <div className="bg-white/5 border border-white/10 rounded-xl max-h-80 overflow-y-auto custom-scrollbar p-2">
+                                        {clients.map((client) => (
+                                            <label
+                                                key={client.id}
+                                                className="flex items-center p-3 hover:bg-white/5 cursor-pointer rounded-lg transition-all"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedClients.includes(client.id)}
+                                                    onChange={() => toggleClient(client.id)}
+                                                    className="mr-4 w-5 h-5 text-pacific-cyan rounded border-white/20 bg-white/5 focus:ring-offset-0 focus:ring-pacific-cyan"
+                                                />
+                                                <span className="text-foreground font-medium">{client.full_name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Step 2: Date & Time */}
+                    {step === 2 && (
                         <div className="max-w-xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-300">
                             <div>
                                 <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
@@ -487,15 +558,19 @@ function AssignWorkoutContent() {
                                     onChange={(e) => setStartTime(e.target.value)}
                                     className="input-field text-lg py-4"
                                 />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    {recipientMode === 'class' && selectedClass ? 
+                                        `Default for this class: ${classes.find(c => c.id === selectedClass)?.start_time || 'N/A'}` : 
+                                        'Leave blank to use default.'}
+                                </p>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 2: Workout Builder */}
-                    {step === 2 && (
+                    {/* Step 3: Workout Builder */}
+                    {step === 3 && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                             
-                            {/* Mode Selection */}
                             <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto border border-white/10">
                                 <button
                                     onClick={() => setWorkoutMode('template')}
@@ -568,7 +643,6 @@ function AssignWorkoutContent() {
                                     )}
                                 </div>
                             ) : (
-                                /* CUSTOM BUILDER UI */
                                 <div className="grid lg:grid-cols-2 gap-8 h-[700px]">
                                     {/* Left: Exercise Library */}
                                     <div className="flex flex-col h-full bg-black/5 dark:bg-black/20 rounded-xl border border-white/10 overflow-hidden">
@@ -578,7 +652,6 @@ function AssignWorkoutContent() {
                                                 Library
                                             </h3>
                                             
-                                            {/* Search */}
                                             <div className="relative">
                                                 <svg className="absolute left-3 top-3 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                                 <input 
@@ -590,7 +663,6 @@ function AssignWorkoutContent() {
                                                 />
                                             </div>
 
-                                            {/* Filters */}
                                             <div className="flex gap-2">
                                                 <select 
                                                     value={filterMovement}
@@ -608,13 +680,6 @@ function AssignWorkoutContent() {
                                                 >
                                                     <option value="" className="bg-card text-foreground">All Body Parts</option>
                                                     {bodyPartsList.map(bp => <option key={bp.id} value={bp.id} className="bg-card text-foreground">{bp.name}</option>)}
-                                                    {/* Fallback for legacy muscle groups not mapped to body parts */}
-                                                    {availableExercises
-                                                        .map(e => e.muscle_group_name)
-                                                        .filter(name => name && !musclesList.some(m => m.name === name))
-                                                        .filter((v, i, a) => a.indexOf(v) === i)
-                                                        .map(name => <option key={name} value={name!} className="bg-card text-foreground italic">{name}</option>)
-                                                    }
                                                 </select>
                                             </div>
                                         </div>
@@ -651,9 +716,6 @@ function AssignWorkoutContent() {
                                                     </div>
                                                 );
                                             })}
-                                            {getFilteredExercises().length === 0 && (
-                                                <div className="text-center py-10 text-gray-500 text-sm">No exercises found.</div>
-                                            )}
                                         </div>
                                     </div>
 
@@ -671,7 +733,6 @@ function AssignWorkoutContent() {
                                                 <div className="h-full flex flex-col items-center justify-center text-gray-500">
                                                     <svg className="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                                     <p>No exercises added yet.</p>
-                                                    <p className="text-xs mt-2">Add exercises from the library on the left.</p>
                                                 </div>
                                             ) : (
                                                 selectedCustomExercises.map((ex, idx) => (
@@ -690,165 +751,28 @@ function AssignWorkoutContent() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Inputs Grid */}
                                                         <div className="grid grid-cols-4 gap-3 mb-3">
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Sets</label>
-                                                                <div className="flex items-center gap-1">
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_sets: Math.max(1, ex.planned_sets - 1) })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_sets: ex.planned_sets + 1 })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
+                                                                <input type="number" min="1" value={ex.planned_sets} onChange={(e) => updateExercise(ex.unique_id, { planned_sets: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Reps</label>
-                                                                <div className="flex items-center gap-1">
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_reps: Math.max(1, ex.planned_reps - 1) })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_reps: ex.planned_reps + 1 })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
+                                                                <input type="number" min="1" value={ex.planned_reps} onChange={(e) => updateExercise(ex.unique_id, { planned_reps: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Lbs</label>
-                                                                <div className="flex items-center gap-1">
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_weight_lbs: Math.max(0, ex.planned_weight_lbs - 5) })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
-                                                                    <button 
-                                                                        onClick={() => updateExercise(ex.unique_id, { planned_weight_lbs: ex.planned_weight_lbs + 5 })}
-                                                                        className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-xs hover:bg-white/10"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
+                                                                <input type="number" min="0" value={ex.planned_weight_lbs} onChange={(e) => updateExercise(ex.unique_id, { planned_weight_lbs: parseFloat(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
                                                             </div>
                                                             <div>
                                                                 <label className="text-[10px] uppercase text-gray-500 font-bold">Rest (s)</label>
                                                                 <input type="number" min="0" value={ex.rest_seconds} onChange={(e) => updateExercise(ex.unique_id, { rest_seconds: parseInt(e.target.value) || 0 })} className="input-field py-1 text-sm text-center" />
                                                             </div>
                                                         </div>
-
-                                                        {/* Toggles & Notes */}
-                                                        <div className="flex items-center gap-4">
-                                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                                <input type="checkbox" checked={ex.is_warmup} onChange={(e) => updateExercise(ex.unique_id, { is_warmup: e.target.checked })} className="rounded bg-white/10 border-white/20 text-orange-500 focus:ring-0" />
-                                                                <span className={`text-xs font-bold uppercase ${ex.is_warmup ? 'text-orange-500' : 'text-gray-500'}`}>Warmup</span>
-                                                            </label>
-                                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                                <input type="checkbox" checked={ex.is_cooldown} onChange={(e) => updateExercise(ex.unique_id, { is_cooldown: e.target.checked })} className="rounded bg-white/10 border-white/20 text-blue-500 focus:ring-0" />
-                                                                <span className={`text-xs font-bold uppercase ${ex.is_cooldown ? 'text-blue-500' : 'text-gray-500'}`}>Cooldown</span>
-                                                            </label>
-                                                            <input 
-                                                                type="text" 
-                                                                placeholder="Notes..." 
-                                                                value={ex.notes} 
-                                                                onChange={(e) => updateExercise(ex.unique_id, { notes: e.target.value })}
-                                                                className="flex-1 bg-transparent border-b border-white/10 text-xs text-foreground focus:border-pacific-cyan outline-none py-1 ml-2"
-                                                            />
-                                                        </div>
                                                     </div>
                                                 ))
                                             )}
                                         </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Step 3: Recipient Selection */}
-                    {step === 3 && (
-                        <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="flex gap-4 p-1 bg-white/5 rounded-xl w-fit mx-auto border border-white/10">
-                                <label className={`flex items-center gap-3 px-6 py-3 rounded-lg cursor-pointer transition-all ${recipientMode === 'class' ? 'bg-pacific-cyan/10 border border-pacific-cyan shadow-lg shadow-pacific-cyan/5' : 'hover:bg-white/5 border border-transparent'}`}>
-                                    <input type="radio" name="recipientMode" value="class" checked={recipientMode === 'class'} onChange={() => setRecipientMode('class')} className="hidden" />
-                                    <div className="text-2xl">🏫</div>
-                                    <div>
-                                        <div className={`font-bold ${recipientMode === 'class' ? 'text-pacific-cyan' : 'text-foreground'}`}>Class</div>
-                                        <div className="text-xs text-gray-500">Assign to all attendees</div>
-                                    </div>
-                                </label>
-                                <label className={`flex items-center gap-3 px-6 py-3 rounded-lg cursor-pointer transition-all ${recipientMode === 'clients' ? 'bg-pacific-cyan/10 border border-pacific-cyan shadow-lg shadow-pacific-cyan/5' : 'hover:bg-white/5 border border-transparent'}`}>
-                                    <input type="radio" name="recipientMode" value="clients" checked={recipientMode === 'clients'} onChange={() => setRecipientMode('clients')} className="hidden" />
-                                    <div className="text-2xl">👤</div>
-                                    <div>
-                                        <div className={`font-bold ${recipientMode === 'clients' ? 'text-pacific-cyan' : 'text-foreground'}`}>Individual</div>
-                                        <div className="text-xs text-gray-500">Select specific clients</div>
-                                    </div>
-                                </label>
-                            </div>
-
-                            {recipientMode === 'class' && (
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
-                                        Select Class *
-                                    </label>
-                                    {classes.length === 0 ? (
-                                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-700 dark:text-yellow-200/80 text-sm flex gap-3 items-center">
-                                            <span className="text-xl">⚠️</span>
-                                            No classes found for {new Date(sessionDate).toLocaleDateString()}.
-                                        </div>
-                                    ) : (
-                                        <select
-                                            value={selectedClass}
-                                            onChange={(e) => setSelectedClass(e.target.value)}
-                                            className="input-field"
-                                        >
-                                            <option value="" className="bg-background">-- Select a class --</option>
-                                            {classes.map((cls) => (
-                                                <option key={cls.id} value={cls.id} className="bg-background">
-                                                    {cls.name} - {cls.start_time}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    )}
-                                </div>
-                            )}
-
-                            {recipientMode === 'clients' && (
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">
-                                        Select Clients * ({selectedClients.length})
-                                    </label>
-                                    <div className="bg-white/5 border border-white/10 rounded-xl max-h-80 overflow-y-auto custom-scrollbar p-2">
-                                        {clients.map((client) => (
-                                            <label
-                                                key={client.id}
-                                                className="flex items-center p-3 hover:bg-white/5 cursor-pointer rounded-lg transition-all"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedClients.includes(client.id)}
-                                                    onChange={() => toggleClient(client.id)}
-                                                    className="mr-4 w-5 h-5 text-pacific-cyan rounded border-white/20 bg-white/5 focus:ring-offset-0 focus:ring-pacific-cyan"
-                                                />
-                                                <span className="text-foreground font-medium">{client.full_name}</span>
-                                            </label>
-                                        ))}
                                     </div>
                                 </div>
                             )}
@@ -886,14 +810,6 @@ function AssignWorkoutContent() {
                                             ) : (
                                                 <div>
                                                     <div className="mb-2 text-pacific-cyan">Custom Session ({selectedCustomExercises.length} Exercises)</div>
-                                                    <div className="text-sm text-gray-500 space-y-1 pl-4 border-l-2 border-white/10">
-                                                        {selectedCustomExercises.map((ex, i) => (
-                                                            <div key={ex.unique_id} className="flex justify-between">
-                                                                <span>{i+1}. {ex.name}</span>
-                                                                <span className="font-mono text-xs">{ex.planned_sets}x{ex.planned_reps} @ {ex.planned_weight_lbs}lb</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -901,7 +817,6 @@ function AssignWorkoutContent() {
                                 </div>
                             </div>
 
-                            {/* Save as Template Option (Custom Only) */}
                             {workoutMode === 'custom' && (
                                 <div className="glass-card p-6 rounded-2xl border border-dashed border-white/20 bg-white/5">
                                     <label className="flex items-center gap-3 cursor-pointer">
@@ -926,7 +841,6 @@ function AssignWorkoutContent() {
                                                 className="input-field"
                                                 placeholder="e.g. Full Body Strength A"
                                             />
-                                            <p className="text-xs text-gray-500 mt-2">This will be saved to your templates library for future use.</p>
                                         </div>
                                     )}
                                 </div>

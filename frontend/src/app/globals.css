@@ -142,7 +142,7 @@
   .btn-primary {
     padding: 0.75rem 1.5rem;
     background-image: linear-gradient(to right, var(--turquoise-surf), var(--cerulean));
-    color: #fefefe; /* Always white text for primary buttons */
+    color: #000000; /* Black text for primary buttons per UX Spec */
     font-weight: 700;
     border-radius: 0.75rem;
     transition: all 0.3s;

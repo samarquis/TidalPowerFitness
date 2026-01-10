@@ -281,27 +281,34 @@ class TrainerController {
         }
     }
 
-    // Get all clients who have attended trainer's classes
+    // Get all clients who have attended trainer's classes OR are explicitly assigned
     async getMyClients(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const trainerId = req.user!.id;
 
             const result = await pool.query(`
-                SELECT DISTINCT
+                WITH ClassClients AS (
+                    SELECT DISTINCT u.id
+                    FROM users u
+                    JOIN class_participants cp ON u.id = cp.user_id
+                    JOIN classes c ON cp.class_id = c.id
+                    WHERE c.instructor_id = $1 AND cp.status = 'confirmed'
+                ),
+                AssignedClients AS (
+                    SELECT client_id as id
+                    FROM trainer_clients
+                    WHERE trainer_id = $1 AND status = 'active'
+                )
+                SELECT 
                     u.id,
                     u.first_name,
                     u.last_name,
                     u.email,
                     u.phone,
-                    COUNT(DISTINCT cp.id) as total_bookings,
-                    MAX(cp.booking_date) as last_booking_date
+                    u.profile_image_url
                 FROM users u
-                JOIN class_participants cp ON u.id = cp.user_id
-                JOIN classes c ON cp.class_id = c.id
-                WHERE c.instructor_id = $1
-                    AND cp.status = 'confirmed'
-                GROUP BY u.id, u.first_name, u.last_name, u.email, u.phone
-                ORDER BY MAX(cp.booking_date) DESC
+                WHERE u.id IN (SELECT id FROM ClassClients UNION SELECT id FROM AssignedClients)
+                ORDER BY u.last_name, u.first_name
             `, [trainerId]);
 
             res.json(result.rows);

@@ -17,9 +17,11 @@ class WorkoutTemplateController {
             let templates;
             if (isAdmin) {
                 templates = await WorkoutTemplate.getAll();
+                console.log(`Admin ${trainerId} fetched ${templates.length} total templates`);
             } else {
                 const includePublic = req.query.include_public !== 'false';
                 templates = await WorkoutTemplate.getByTrainer(trainerId, includePublic);
+                console.log(`Trainer ${trainerId} fetched ${templates.length} templates (public: ${includePublic})`);
             }
             
             res.json(templates);

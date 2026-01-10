@@ -2,49 +2,82 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 const MotionLink = motion(Link);
+const MotionButton = motion.button;
 
 interface CTAButtonProps {
-    href: string;
+    href?: string;
+    onClick?: () => void;
     children: React.ReactNode;
-    variant?: 'primary' | 'secondary' | 'outline';
-    size?: 'sm' | 'md' | 'lg';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+    size?: 'sm' | 'md' | 'lg' | 'icon';
     icon?: React.ReactNode;
     className?: string;
+    disabled?: boolean;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 export default function CTAButton({
     href,
+    onClick,
     children,
     variant = 'primary',
     size = 'md',
     icon,
-    className = ''
+    className = '',
+    disabled = false,
+    type = 'button'
 }: CTAButtonProps) {
-    // Removed active:scale-95 from baseStyles as Framer Motion handles it
-    const baseStyles = 'inline-flex items-center justify-center gap-2 transition-colors';
+    const baseStyles = 'inline-flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variantStyles = {
-        primary: 'btn-primary hover:!transform-none', // Disable CSS transform to let Motion handle it
+        primary: 'btn-primary hover:!transform-none',
         secondary: 'btn-secondary hover:!transform-none',
-        outline: 'border-2 border-pacific-cyan text-turquoise-surf hover:bg-pacific-cyan/10 rounded-lg font-bold'
+        outline: 'border border-turquoise-surf/30 text-turquoise-surf hover:bg-turquoise-surf/10 rounded-xl font-bold',
+        ghost: 'btn-ghost hover:!transform-none',
+        danger: 'bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white border border-red-600/20 rounded-xl font-bold'
     };
 
     const sizeStyles = {
-        sm: 'px-4 py-2 text-sm',
-        md: 'px-6 py-3 text-base',
-        lg: 'px-8 py-4 text-lg'
+        sm: 'px-4 py-2 text-xs',
+        md: 'px-6 py-3 text-sm',
+        lg: 'px-8 py-4 text-base',
+        icon: 'p-2.5 rounded-xl'
     };
 
-    return (
-        <MotionLink
-            href={href}
-            className={`${baseStyles} ${variantStyles[variant]} ${variant !== 'outline' ? '' : sizeStyles[size]} ${className}`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
+    const content = (
+        <>
             {children}
-            {icon && <span>{icon}</span>}
-        </MotionLink>
+            {icon && <span className={children ? 'ml-1' : ''}>{icon}</span>}
+        </>
+    );
+
+    const animationProps = {
+        whileHover: disabled ? {} : { scale: 1.05 },
+        whileTap: disabled ? {} : { scale: 0.95 },
+        transition: { type: "spring", stiffness: 400, damping: 17 }
+    };
+
+    if (href) {
+        return (
+            <MotionLink
+                href={href}
+                className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
+                {...animationProps}
+            >
+                {content}
+            </MotionLink>
+        );
+    }
+
+    return (
+        <MotionButton
+            type={type}
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
+            {...animationProps}
+        >
+            {content}
+        </MotionButton>
     );
 }

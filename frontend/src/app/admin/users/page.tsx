@@ -199,9 +199,15 @@ export default function UserManagementPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
-                    <Link href="/admin" className="text-turquoise-surf hover:text-pacific-cyan mb-6 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-xs transition-colors">
-                        ← Back to Admin
-                    </Link>
+                    <CTAButton 
+                        href="/admin" 
+                        variant="ghost" 
+                        size="sm" 
+                        className="mb-6 !p-0 opacity-60 hover:opacity-100"
+                        icon={<span>←</span>}
+                    >
+                        Back to Admin
+                    </CTAButton>
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         User <span className="text-gradient">Management</span>
                     </h1>
@@ -313,40 +319,45 @@ export default function UserManagementPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <button
+                                                        <CTAButton
                                                             onClick={() => toggleUserActivation(u.id, u.is_active)}
-                                                            className={`p-2.5 rounded-xl transition-all ${u.is_active
-                                                                ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white'
-                                                                : 'bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500 hover:text-white'
-                                                                }`}
+                                                            variant={u.is_active ? 'danger' : 'secondary'}
+                                                            size="icon"
+                                                            className="!rounded-xl"
                                                             title={u.is_active ? 'Deactivate' : 'Activate'}
                                                         >
                                                             {u.is_active ? '🚫' : '✅'}
-                                                        </button>
-                                                        <button
+                                                        </CTAButton>
+                                                        <CTAButton
                                                             onClick={() => handleResetPasswordClick(u)}
-                                                            className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-white transition-all"
+                                                            variant="secondary"
+                                                            size="icon"
+                                                            className="!rounded-xl text-blue-400 border-blue-500/20"
                                                             title="Reset Password"
                                                         >
                                                             🔑
-                                                        </button>
+                                                        </CTAButton>
                                                         {u.roles.includes('trainer') && (
-                                                            <Link
+                                                            <CTAButton
                                                                 href={`/admin/trainers?edit=${u.id}`}
-                                                                className="p-2.5 rounded-xl bg-turquoise-surf/10 text-turquoise-surf border border-turquoise-surf/20 hover:bg-turquoise-surf hover:text-white transition-all"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                className="!rounded-xl"
                                                                 title="Edit Trainer Profile"
                                                             >
                                                                 📝
-                                                            </Link>
+                                                            </CTAButton>
                                                         )}
                                                         {isScottMarquis && (
-                                                            <button
+                                                            <CTAButton
                                                                 onClick={() => handleViewAsUser(u)}
-                                                                className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500 hover:text-white transition-all"
+                                                                variant="secondary"
+                                                                size="icon"
+                                                                className="!rounded-xl text-purple-400 border-purple-500/20"
                                                                 title="View as User"
                                                             >
                                                                 👤
-                                                            </button>
+                                                            </CTAButton>
                                                         )}
                                                     </div>
                                                 </td>
@@ -406,36 +417,41 @@ export default function UserManagementPage() {
                                                 Joined {new Date(u.created_at).toLocaleDateString()}
                                             </div>
                                             <div className="flex gap-2">
-                                                <button
+                                                <CTAButton
                                                     onClick={() => toggleUserActivation(u.id, u.is_active)}
-                                                    className={`p-3.5 rounded-xl transition-all ${u.is_active
-                                                        ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-                                                        : 'bg-green-500/10 text-green-400 border border-green-500/20'
-                                                        }`}
+                                                    variant={u.is_active ? 'danger' : 'secondary'}
+                                                    size="icon"
+                                                    className="!p-3.5 !rounded-xl"
                                                 >
                                                     {u.is_active ? '🚫' : '✅'}
-                                                </button>
-                                                <button
+                                                </CTAButton>
+                                                <CTAButton
                                                     onClick={() => handleResetPasswordClick(u)}
-                                                    className="p-3.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                                    variant="secondary"
+                                                    size="icon"
+                                                    className="!p-3.5 !rounded-xl text-blue-400"
                                                 >
                                                     🔑
-                                                </button>
+                                                </CTAButton>
                                                 {u.roles.includes('trainer') && (
-                                                    <Link
+                                                    <CTAButton
                                                         href={`/admin/trainers?edit=${u.id}`}
-                                                        className="p-3.5 rounded-xl bg-turquoise-surf/10 text-turquoise-surf border border-turquoise-surf/20"
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="!p-3.5 !rounded-xl"
                                                     >
                                                         📝
-                                                    </Link>
+                                                    </CTAButton>
                                                 )}
                                                 {isScottMarquis && (
-                                                    <button
+                                                    <CTAButton
                                                         onClick={() => handleViewAsUser(u)}
-                                                        className="p-3.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                                                        variant="secondary"
+                                                        size="icon"
+                                                        className="!p-3.5 !rounded-xl text-purple-400"
                                                     >
                                                         👤
-                                                    </button>
+                                                    </CTAButton>
                                                 )}
                                             </div>
                                         </div>
@@ -507,20 +523,21 @@ export default function UserManagementPage() {
                             )}
 
                             <div className="flex flex-col sm:flex-row gap-3">
-                                <button
-                                    type="button"
+                                <CTAButton
                                     onClick={() => setShowResetModal(false)}
-                                    className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-lg border border-white/10 transition-colors order-2 sm:order-1"
+                                    variant="secondary"
+                                    className="flex-1 order-2 sm:order-1"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </CTAButton>
+                                <CTAButton
                                     type="submit"
                                     disabled={resetLoading}
-                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal text-white font-bold rounded-lg transition-all disabled:opacity-50 shadow-lg shadow-cerulean/20 order-1 sm:order-2"
+                                    variant="primary"
+                                    className="flex-1 order-1 sm:order-2"
                                 >
                                     {resetLoading ? 'Saving...' : 'Save Password'}
-                                </button>
+                                </CTAButton>
                             </div>
                         </form>
                     </div>
