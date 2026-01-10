@@ -14,6 +14,7 @@ interface CTAButtonProps {
     className?: string;
     disabled?: boolean;
     type?: 'button' | 'submit' | 'reset';
+    title?: string;
 }
 
 export default function CTAButton({
@@ -25,7 +26,8 @@ export default function CTAButton({
     icon,
     className = '',
     disabled = false,
-    type = 'button'
+    type = 'button',
+    title
 }: CTAButtonProps) {
     const baseStyles = 'inline-flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -61,6 +63,7 @@ export default function CTAButton({
         return (
             <MotionLink
                 href={href}
+                title={title}
                 className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
                 {...animationProps}
             >
@@ -74,6 +77,7 @@ export default function CTAButton({
             type={type}
             onClick={onClick}
             disabled={disabled}
+            title={title}
             className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
             {...animationProps}
         >
