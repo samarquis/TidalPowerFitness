@@ -1,8 +1,15 @@
 -- Migration 030: Create site_feedback table
 -- Stores user feedback, bug reports, and feature requests
 
-CREATE TYPE feedback_type AS ENUM ('bug', 'feature', 'review');
-CREATE TYPE feedback_status AS ENUM ('open', 'in_progress', 'resolved', 'closed');
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'feedback_type') THEN
+        CREATE TYPE feedback_type AS ENUM ('bug', 'feature', 'review');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'feedback_status') THEN
+        CREATE TYPE feedback_status AS ENUM ('open', 'in_progress', 'resolved', 'closed');
+    END IF;
+END$$;
 
 CREATE TABLE IF NOT EXISTS site_feedback (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -20,9 +27,10 @@ CREATE TABLE IF NOT EXISTS site_feedback (
 );
 
 -- Index for user lookups
-CREATE INDEX idx_site_feedback_user ON site_feedback(user_id);
-CREATE INDEX idx_site_feedback_status ON site_feedback(status);
+CREATE INDEX IF NOT EXISTS idx_site_feedback_user ON site_feedback(user_id);
+CREATE INDEX IF NOT EXISTS idx_site_feedback_status ON site_feedback(status);
 
 -- Trigger for updated_at
+DROP TRIGGER IF EXISTS update_site_feedback_updated_at ON site_feedback;
 CREATE TRIGGER update_site_feedback_updated_at BEFORE UPDATE ON site_feedback
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

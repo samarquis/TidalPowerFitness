@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS processed_webhooks (
 );
 
 -- Index for fast lookup during webhook receipt
-CREATE INDEX idx_processed_webhooks_event_id ON processed_webhooks(event_id);
+CREATE INDEX IF NOT EXISTS idx_processed_webhooks_event_id ON processed_webhooks(event_id);
 
 -- Update documentation reference if it exists
 -- The docs mentioned payment_transactions, let's keep that in mind for future logging
