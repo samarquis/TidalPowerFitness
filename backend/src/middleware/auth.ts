@@ -1,25 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, JWTPayload } from '../utils/jwt';
-
-// Extend Express Request to include user
-declare global {
-    namespace Express {
-        interface Request {
-            user?: JWTPayload;
-        }
-    }
-}
+import { query } from '../config/db';
+import logger from '../utils/logger';
 
 // Authenticate middleware - verifies JWT token via HttpOnly cookies or System Key
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // 1. Check for system-level key (for automated scripts)
         const systemKey = req.get('x-system-key');
         if (systemKey && systemKey === process.env.SYSTEM_API_KEY) {
+            // Find the primary admin dynamically to avoid UUID mismatches
+            const adminRes = await query("SELECT id, email FROM users WHERE 'admin' = ANY(roles) LIMIT 1");
+            const primaryAdmin = adminRes.rows[0];
+
+            if (!primaryAdmin) {
+                logger.error('System bypass failed: No admin user found in database.');
+                res.status(500).json({ error: 'System configuration error' });
+                return;
+            }
+
             // Attach a virtual system user linked to the primary admin
             req.user = {
-                id: 'ae361afc-230c-4772-9ee0-568b4926e0ee', // Scott's ID
-                userId: 'ae361afc-230c-4772-9ee0-568b4926e0ee',
+                id: primaryAdmin.id,
+                userId: primaryAdmin.id,
                 email: 'system@tidalpower.local',
                 roles: ['admin'],
                 is_demo_mode_enabled: false
