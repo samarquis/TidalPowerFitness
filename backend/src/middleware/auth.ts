@@ -3,6 +3,15 @@ import { verifyToken, JWTPayload } from '../utils/jwt';
 import { query } from '../config/db';
 import logger from '../utils/logger';
 
+// Extend Express Request to include user
+declare global {
+    namespace Express {
+        interface Request {
+            user?: JWTPayload;
+        }
+    }
+}
+
 // Authenticate middleware - verifies JWT token via HttpOnly cookies or System Key
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
