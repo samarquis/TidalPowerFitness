@@ -237,7 +237,12 @@ export default function AdminChangelogPage() {
                                         </div>
                                         <time className="text-xs text-gray-500 font-medium mb-3">
                                             {entry.published_at
-                                                ? new Date(entry.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+                                                ? new Date(entry.published_at).toLocaleDateString(undefined, { 
+                                                    weekday: 'long',
+                                                    year: 'numeric', 
+                                                    month: 'long', 
+                                                    day: 'numeric' 
+                                                  }) + ' at ' + new Date(entry.published_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                                                 : 'Unpublished'}
                                         </time>
                                     </div>

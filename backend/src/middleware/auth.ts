@@ -10,9 +10,23 @@ declare global {
     }
 }
 
-// Authenticate middleware - verifies JWT token via HttpOnly cookies
+// Authenticate middleware - verifies JWT token via HttpOnly cookies or System Key
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
     try {
+        // 1. Check for system-level key (for automated scripts)
+        const systemKey = req.headers['x-system-key'];
+        if (systemKey && systemKey === process.env.SYSTEM_API_KEY) {
+            // Attach a virtual system user
+            req.user = {
+                id: '00000000-0000-0000-0000-000000000000',
+                userId: '00000000-0000-0000-0000-000000000000',
+                email: 'system@tidalpower.local',
+                roles: ['admin'],
+                is_demo_mode_enabled: false
+            };
+            return next();
+        }
+
         const token = req.cookies?.token;
 
         if (!token) {
