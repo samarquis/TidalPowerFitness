@@ -37,6 +37,7 @@ import changelogRoutes from './routes/changelog';
 import adminRoutes from './routes/admin';
 import programRoutes from './routes/programs';
 import challengeRoutes from './routes/challenges';
+import supportRoutes from './routes/support';
 import { setupSwagger } from './config/swagger';
 
 const app = express();
@@ -187,6 +188,9 @@ app.use('/api/leaderboard', leaderboardRoutes);
 
 // Changelog routes
 app.use('/api/changelog', changelogRoutes);
+
+// Support & Feedback routes
+app.use('/api/support', supportRoutes);
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {

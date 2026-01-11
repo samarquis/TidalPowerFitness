@@ -24,6 +24,8 @@ Critical keys that must be configured in the Render Dashboard:
 *   `JWT_SECRET`: Signing key for HttpOnly cookies.
 *   `SQUARE_ACCESS_TOKEN` / `SQUARE_LOCATION_ID`: Payment API credentials.
 *   `SQUARE_WEBHOOK_SIGNATURE_KEY`: For validating incoming webhooks.
+*   `GITHUB_PAT`: GitHub Personal Access Token (for automated issue creation).
+*   `GITHUB_REPO`: Target repository (e.g., `samarquis/TidalPowerFitness`).
 *   `ACUITY_USER_ID` / `ACUITY_API_KEY`: Calendar sync credentials.
 
 ### Webhook Configuration

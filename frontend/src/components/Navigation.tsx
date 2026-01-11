@@ -133,6 +133,13 @@ export default function Navigation() {
                                                 >
                                                     {isDemoModeEnabled ? 'Demo Mode: ON' : 'Demo Mode: OFF'}
                                                 </button>
+                                                <Link
+                                                    href="/support"
+                                                    onClick={() => setManagementOpen(false)}
+                                                    className="block w-full text-left px-4 py-2 text-sm font-semibold transition-colors text-turquoise-surf hover:bg-white/10 hover:text-pacific-cyan border-t border-white/5 mt-1"
+                                                >
+                                                    🚀 Support & Feedback
+                                                </Link>
                                             </div>
                                         )}
                                     </div>
@@ -235,6 +242,14 @@ export default function Navigation() {
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 My Profile
+                            </Link>
+
+                            <Link
+                                href="/support"
+                                className="block p-4 bg-turquoise-surf/5 border border-turquoise-surf/20 rounded-xl text-center font-bold text-turquoise-surf"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                Support & Feedback
                             </Link>
 
                             <button

@@ -612,6 +612,24 @@ class ApiClient {
     async deleteChangelog(id: string) {
         return this.request<any>(`/changelog/${id}`, { method: 'DELETE' });
     }
+
+    // Support & Feedback endpoints
+    async submitFeedback(data: { 
+        type: 'bug' | 'feature' | 'review'; 
+        title: string; 
+        description: string; 
+        priority?: string;
+        metadata?: any;
+    }) {
+        return this.request<any>('/support/feedback', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async getMyFeedback() {
+        return this.request<any[]>('/support/my-feedback', { method: 'GET' });
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

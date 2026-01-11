@@ -276,6 +276,12 @@ export default function TrainerDashboardPage() {
                     >
                         🗓️ Workout Programs
                     </Link>
+                    <Link
+                        href="/support"
+                        className="px-6 py-2 bg-pacific-cyan/10 border border-pacific-cyan/30 text-pacific-cyan hover:bg-pacific-cyan hover:text-black rounded-lg transition-all text-sm font-bold flex items-center gap-2"
+                    >
+                        🚀 Feedback & Support
+                    </Link>
                 </div>
 
                 {/* Today's Sessions */}
