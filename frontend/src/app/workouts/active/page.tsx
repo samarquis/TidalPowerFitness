@@ -171,8 +171,7 @@ function ActiveWorkoutContent() {
     };
 
     const completeWorkout = () => {
-        const duration = Math.floor((new Date().getTime() - startTime.getTime()) / 60000);
-        router.push(`/workouts/complete?session=${sessionId}&duration=${duration}`);
+        router.push(`/workouts/complete/${sessionId}`);
     };
 
     if (loading) {

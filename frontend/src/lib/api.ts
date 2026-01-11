@@ -378,7 +378,7 @@ class ApiClient {
         return this.request<any>(`/workout-sessions/${id}`, { method: 'GET' });
     }
 
-    async getSessionSummary(id: string) {
+    async getWorkoutSummary(id: string) {
         return this.request<any>(`/workout-sessions/${id}/summary`, { method: 'GET' });
     }
 

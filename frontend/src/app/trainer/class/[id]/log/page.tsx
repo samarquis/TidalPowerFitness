@@ -355,6 +355,29 @@ export default function WorkoutLogPage() {
         }
     };
 
+    const finishWorkout = async () => {
+        if (!session) return;
+        
+        setSaving(true);
+        try {
+            // 1. Save all pending logs first
+            await saveAllLogs();
+            
+            // 2. Mark session as finished (end_time)
+            await apiClient.updateWorkoutSession(sessionId, {
+                end_time: new Date().toISOString()
+            });
+            
+            // 3. Redirect to celebration!
+            router.push(`/workouts/complete/${sessionId}`);
+        } catch (error) {
+            console.error('Error finishing workout:', error);
+            setSaveMessage('Failed to finish workout');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (!isAuthenticated || (!user?.roles?.includes('trainer') && !user?.roles?.includes('admin'))) {
         return null;
     }
@@ -401,13 +424,22 @@ export default function WorkoutLogPage() {
                             {session.workout_type_name && ` • ${session.workout_type_name}`}
                         </p>
                     </div>
-                    <button
-                        onClick={saveAllLogs}
-                        disabled={saving}
-                        className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 rounded-lg font-bold transition-all disabled:opacity-50"
-                    >
-                        {saving ? 'Saving...' : '💾 Save All Logs'}
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={saveAllLogs}
+                            disabled={saving}
+                            className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-bold transition-all disabled:opacity-50"
+                        >
+                            {saving ? 'Saving...' : '💾 Save Draft'}
+                        </button>
+                        <button
+                            onClick={finishWorkout}
+                            disabled={saving}
+                            className="px-6 py-3 bg-gradient-to-r from-cerulean to-pacific-cyan hover:from-dark-teal hover:to-dark-teal rounded-lg font-black text-white shadow-lg shadow-pacific-cyan/20 transition-all disabled:opacity-50"
+                        >
+                            🏁 Finish Workout
+                        </button>
+                    </div>
                 </div>
 
                 {saveMessage && (

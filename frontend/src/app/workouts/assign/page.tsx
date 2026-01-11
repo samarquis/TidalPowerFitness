@@ -106,21 +106,45 @@ function AssignWorkoutContent() {
         }
     }, [user, router]);
 
-    // Handle URL parameters for pre-filling
+    // Handle URL parameters for pre-filling and frictionless auto-start
     useEffect(() => {
         if (!searchParams) return;
         const dateParam = searchParams.get('date');
-        const classIdParam = searchParams.get('class_id');
+        const classIdParam = searchParams.get('class_id') || searchParams.get('classId'); // Handle both cases
 
-        if (dateParam) {
+        if (dateParam && classIdParam) {
             setSessionDate(dateParam);
-        }
-
-        if (classIdParam) {
             setRecipientMode('class');
             setSelectedClass(classIdParam);
+            
+            // Check for existing session to skip wizard entirely
+            const checkExisting = async () => {
+                setLoading(true);
+                try {
+                    const response = await apiClient.getWorkoutSessions();
+                    if (response.data) {
+                        const existing = response.data.find((s: any) => 
+                            s.class_id === classIdParam && 
+                            s.session_date.split('T')[0] === dateParam
+                        );
+                        if (existing) {
+                            router.push(`/trainer/class/${existing.id}/log`);
+                            return;
+                        }
+                    }
+                    // No existing session, skip to workout selection (Step 3)
+                    setStep(3);
+                } catch (e) {
+                    console.error('Error checking sessions:', e);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            checkExisting();
+        } else if (dateParam) {
+            setSessionDate(dateParam);
         }
-    }, [searchParams]);
+    }, [searchParams, router]);
 
     // Fetch metadata
     useEffect(() => {
@@ -361,7 +385,11 @@ function AssignWorkoutContent() {
                 throw new Error(response.error || 'Failed to assign workout');
             }
 
-            setIsSuccess(true);
+            if (response.data?.id) {
+                router.push(`/trainer/class/${response.data.id}/log`);
+            } else {
+                setIsSuccess(true);
+            }
             
         } catch (error: any) {
             setError(error.message);

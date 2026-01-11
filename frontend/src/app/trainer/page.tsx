@@ -434,16 +434,19 @@ export default function TrainerDashboardPage() {
                                                     {classItem.description}
                                                 </p>
 
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-tight">
-                                                        {classItem.duration_minutes}m • {classItem.attendee_count || 0}/{classItem.max_capacity} Booked
-                                                    </span>
+                                                <div className="flex items-center justify-between gap-3">
                                                     <button
                                                         onClick={() => handleViewAttendees(classItem, dayIndex)}
-                                                        className="btn-primary py-1.5 px-3 md:py-2 md:px-4 text-[10px] md:text-xs"
+                                                        className="btn-secondary py-1.5 px-3 md:py-2 md:px-4 text-[10px] md:text-xs flex-1"
                                                     >
                                                         Attendees
                                                     </button>
+                                                    <Link
+                                                        href={`/workouts/assign?classId=${classItem.id}&date=${new Date(new Date().setDate(new Date().getDate() + (dayIndex - new Date().getDay()))).toISOString().split('T')[0]}`}
+                                                        className="btn-primary py-1.5 px-3 md:py-2 md:px-4 text-[10px] md:text-xs flex-1 text-center"
+                                                    >
+                                                        📝 Log
+                                                    </Link>
                                                 </div>
                                             </div>
                                         ))}
