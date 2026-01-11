@@ -58,6 +58,19 @@ Stack Trace: ${stack_trace}"
                 if (githubIssue) {
                     await ErrorLogModel.updateGithubInfo(entry.id, githubIssue.url, githubIssue.number);
                 }
+
+                // Notify Admin of CRITICAL Error
+                try {
+                    await NotificationService.notify({
+                        user_id: '00000000-0000-0000-0000-000000000000',
+                        type: NotificationType.SUPPORT_REQUEST,
+                        title: '🔴 SYSTEM CRASH REPORTED',
+                        message: `A new error has been fingerprinted: ${message}\n\nLocation: ${url}\n${githubIssue ? `GitHub Issue: ${githubIssue.url}` : ''}`,
+                        delivery_method: DeliveryMethod.BOTH
+                    });
+                } catch (notifyError) {
+                    logger.error('Failed to notify admin of crash:', notifyError);
+                }
             }
 
             res.status(200).json({ 
@@ -128,10 +141,10 @@ ${description}
             // 4. Notify Admin (Scott)
             try {
                 await NotificationService.notify({
-                    user_id: '00000000-0000-0000-0000-000000000000', // Assuming admin notification logic handles this
-                    type: NotificationType.ACHIEVEMENT, // Reusing existing type for now
-                    title: 'New Site Feedback Received',
-                    message: `New ${type} submitted: ${title}. ${githubIssue ? `GitHub Issue #${githubIssue.number}` : ''}`,
+                    user_id: '00000000-0000-0000-0000-000000000000', // System marker
+                    type: NotificationType.SUPPORT_REQUEST,
+                    title: `New Site ${type.toUpperCase()}: ${title}`,
+                    message: `User ${userEmail} submitted a ${type}.\n\nPriority: ${priority}\nDescription: ${description.substring(0, 100)}${description.length > 100 ? '...' : ''}\n\n${githubIssue ? `GitHub Issue: ${githubIssue.url}` : ''}`,
                     delivery_method: DeliveryMethod.BOTH
                 });
             } catch (notifyError) {
