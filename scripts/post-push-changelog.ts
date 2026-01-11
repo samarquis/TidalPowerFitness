@@ -76,6 +76,7 @@ async function generateChangelog() {
             method: 'POST',
             headers: {
                 'x-system-key': SYSTEM_KEY,
+                'X-TPF-Request': 'true',
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(payload)
             }

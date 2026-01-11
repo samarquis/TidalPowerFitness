@@ -14,7 +14,7 @@ declare global {
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
     try {
         // 1. Check for system-level key (for automated scripts)
-        const systemKey = req.headers['x-system-key'];
+        const systemKey = req.get('x-system-key');
         if (systemKey && systemKey === process.env.SYSTEM_API_KEY) {
             // Attach a virtual system user
             req.user = {
