@@ -37,6 +37,7 @@ import changelogRoutes from './routes/changelog';
 import adminRoutes from './routes/admin';
 import programRoutes from './routes/programs';
 import challengeRoutes from './routes/challenges';
+import { setupSwagger } from './config/swagger';
 
 const app = express();
 
@@ -75,6 +76,9 @@ app.set('trust proxy', 1); // Trust first proxy
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(requestContext);
+
+// Setup Swagger UI
+setupSwagger(app);
 
 // Middleware
 import { apiLimiter, authLimiter } from './middleware/rateLimit';
