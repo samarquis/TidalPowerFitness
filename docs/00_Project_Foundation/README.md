@@ -11,6 +11,7 @@ Welcome to the Tidal Power Fitness documentation hub. This section contains the 
 
 ### 2. Architecture & Design
 - **[Technical Architecture](../01_Architecture_and_Design/architecture.md)**: System design patterns and Phase 2 roadmap.
+- **[System Hardening](../01_Architecture_and_Design/System_Hardening.md)**: Concurrency, Idempotency, and Enterprise resilience.
 - **[System Logic & Services](../01_Architecture_and_Design/System_Logic_and_Services.md)**: Deep-dive into business logic (Intelligence, Payments, Credits).
 - **[Database ERD](../01_Architecture_and_Design/Database_ERD_Description.md)**: Logical schema and table relationships.
 - **[UI/UX Map](../01_Architecture_and_Design/UI_UX_Component_Map.md)**: Frontend organization and the "Luxury Vault" design system.

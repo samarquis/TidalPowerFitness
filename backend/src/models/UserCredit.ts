@@ -48,11 +48,23 @@ class UserCreditModel {
 
     // Deduct credit from user
     // This logic is complex: we need to find the oldest expiring credit and deduct from it
-    async deductCredit(userId: string, amount: number = 1): Promise<boolean> {
-        // 1. Get available credits ordered by expiration
-        const credits = await this.getUserCredits(userId);
+    // Hardened with row-level locking (FOR UPDATE) to prevent race conditions
+    async deductCredit(userId: string, amount: number = 1, transactionClient?: any): Promise<boolean> {
+        const db = transactionClient || { query };
+        
+        // 1. Get available credits ordered by expiration, with a row lock
+        const result: QueryResult = await db.query(
+            `SELECT * FROM user_credits 
+             WHERE user_id = $1 
+             AND remaining_credits > 0 
+             AND (expires_at IS NULL OR expires_at > NOW())
+             ORDER BY expires_at ASC
+             FOR UPDATE`, // Row-level lock
+            [userId]
+        );
+        const credits = result.rows;
 
-        if (credits.reduce((sum, c) => sum + c.remaining_credits, 0) < amount) {
+        if (credits.reduce((sum, c) => sum + (c.remaining_credits || 0), 0) < amount) {
             return false; // Insufficient funds
         }
 
@@ -63,7 +75,7 @@ class UserCreditModel {
 
             const deductAmount = Math.min(credit.remaining_credits, remainingToDeduct);
 
-            await query(
+            await db.query(
                 'UPDATE user_credits SET remaining_credits = remaining_credits - $1 WHERE id = $2',
                 [deductAmount, credit.id]
             );

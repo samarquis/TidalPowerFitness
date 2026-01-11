@@ -285,25 +285,47 @@ class PaymentService {
             throw new Error('Invalid Square webhook signature');
         }
 
-        const eventType = body.type;
-        if (eventType === 'payment.updated') {
-            const payment = body.data.object.payment;
-            if (payment.status === 'COMPLETED') {
-                const orderId = payment.order_id;
-                if (!orderId) {
-                    logger.error('Square webhook: Missing order_id in payment.updated event');
-                    return;
-                }
+        const eventId = body.event_id;
+        if (!eventId) {
+            logger.error('Square webhook: Missing event_id');
+            return;
+        }
 
-                if (!this.squareClient) return;
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
 
-                try {
+            // 1. Idempotency Check
+            const existing = await client.query('SELECT 1 FROM processed_webhooks WHERE event_id = $1', [eventId]);
+            if (existing.rows.length > 0) {
+                logger.info(`Square webhook: Event ${eventId} already processed. Skipping.`);
+                await client.query('ROLLBACK');
+                return;
+            }
+
+            const eventType = body.type;
+            if (eventType === 'payment.updated') {
+                const payment = body.data.object.payment;
+                if (payment.status === 'COMPLETED') {
+                    const orderId = payment.order_id;
+                    if (!orderId) {
+                        logger.error('Square webhook: Missing order_id in payment.updated event');
+                        await client.query('ROLLBACK');
+                        return;
+                    }
+
+                    if (!this.squareClient) {
+                        await client.query('ROLLBACK');
+                        return;
+                    }
+
                     // Fetch the order to get metadata and line items
                     const orderResponse = await this.squareClient.orders.get({ orderId });
                     const order: any = (orderResponse as any).result?.order || (orderResponse as any).order;
 
                     if (!order) {
                         logger.error(`Square webhook: Could not retrieve order ${orderId}`);
+                        await client.query('ROLLBACK');
                         return;
                     }
 
@@ -313,6 +335,7 @@ class PaymentService {
 
                     if (!userId) {
                         logger.error(`Square webhook: Missing userId in order ${orderId} metadata`);
+                        await client.query('ROLLBACK');
                         return;
                     }
 
@@ -336,13 +359,11 @@ class PaymentService {
                                     package_id: packageId,
                                     status: 'active',
                                     current_period_start: new Date()
-                                    // Note: Real Square subscription ID would come from subscription.created event
                                 });
                                 await CreditService.assignCreditsForPackage(userId, packageId);
                             }
                         }
                     } else if (type === 'cart_purchase') {
-                        // For cart purchase, we process all line items from the Square Order
                         const lineItems = order.lineItems || [];
                         let totalCreditsPurchased = 0;
                         
@@ -367,14 +388,10 @@ class PaymentService {
                     }
 
                     logger.info(`Square webhook: Successfully processed ${type} for userId: ${userId}, orderId: ${orderId}`);
-                } catch (error) {
-                    logger.error(`Square webhook: Error processing order ${orderId}:`, error);
                 }
-            }
-        } else if (eventType === 'subscription.created' || eventType === 'subscription.updated') {
-            const subscription = body.data.object.subscription;
-            if (subscription) {
-                try {
+            } else if (eventType === 'subscription.created' || eventType === 'subscription.updated') {
+                const subscription = body.data.object.subscription;
+                if (subscription) {
                     await SubscriptionModel.upsert({
                         square_subscription_id: subscription.id,
                         status: subscription.status.toLowerCase(),
@@ -383,10 +400,19 @@ class PaymentService {
                         cancel_at_period_end: subscription.canceled_date !== undefined
                     });
                     logger.info(`Square webhook: Successfully synced subscription ${subscription.id}`);
-                } catch (error) {
-                    logger.error(`Square webhook: Error syncing subscription ${subscription.id}:`, error);
                 }
             }
+
+            // 2. Mark event as processed within the same transaction
+            await client.query('INSERT INTO processed_webhooks (event_id, provider) VALUES ($1, $2)', [eventId, 'square']);
+
+            await client.query('COMMIT');
+        } catch (error) {
+            await client.query('ROLLBACK');
+            logger.error(`Square webhook: Transaction failed for event ${eventId}:`, error);
+            throw error;
+        } finally {
+            client.release();
         }
     }
 }

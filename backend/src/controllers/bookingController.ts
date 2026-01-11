@@ -9,6 +9,7 @@ import { AuthenticatedRequest } from '../types/auth';
 class BookingController {
     // Book a class
     async createBooking(req: AuthenticatedRequest, res: Response) {
+        const client = await pool.connect();
         try {
             const { class_id, attendee_count = 1 } = req.body;
             const userId = req.user.id;
@@ -21,50 +22,45 @@ class BookingController {
                 return res.status(400).json({ error: 'Attendee count must be at least 1' });
             }
 
+            await client.query('BEGIN');
+
             // Fetch class details for the notification later
-            // Keeping direct query here for now as it relates to Class model, not Booking
-            const classResult = await pool.query('SELECT name, start_time FROM classes WHERE id = $1', [class_id]);
+            const classResult = await client.query('SELECT name, start_time FROM classes WHERE id = $1', [class_id]);
             if (classResult.rows.length === 0) {
+                await client.query('ROLLBACK');
                 return res.status(404).json({ error: 'Class not found' });
             }
             const classDetails = classResult.rows[0];
 
-            // 1. Check if user has sufficient credits
-            const credits = await UserCreditModel.getUserCredits(userId);
-            const totalCredits = credits.reduce((sum, c) => sum + c.remaining_credits, 0);
-
-            if (totalCredits < attendee_count) {
-                return res.status(400).json({
-                    error: 'Insufficient credits',
-                    message: `You need at least ${attendee_count} credits to book this class for ${attendee_count} people. Please purchase more packages.`
-                });
-            }
-
-            // 2. Check if user already has an active booking for this class on this date
+            // 1. Check if user already has an active booking for this class on this date
             const targetDate = req.body.target_date || new Date().toISOString().split('T')[0];
             const existingBooking = await BookingModel.findActiveBooking(class_id, userId, targetDate);
 
             if (existingBooking) {
+                await client.query('ROLLBACK');
                 return res.status(400).json({
                     error: 'Already booked',
                     message: 'You have already booked this class for this date. To change the number of attendees, please cancel and re-book.'
                 });
             }
 
-            // 3. Deduct credit
-            const deducted = await UserCreditModel.deductCredit(userId, attendee_count);
+            // 2. Deduct credit (Hardened with FOR UPDATE inside this transaction)
+            const deducted = await UserCreditModel.deductCredit(userId, attendee_count, client);
 
             if (!deducted) {
-                return res.status(500).json({
-                    error: 'Failed to deduct credits',
-                    message: 'An error occurred while processing your booking.'
+                await client.query('ROLLBACK');
+                return res.status(400).json({
+                    error: 'Insufficient credits',
+                    message: `You need at least ${attendee_count} credits to book this class.`
                 });
             }
 
-            // 4. Create booking
+            // 3. Create booking
             const booking = await BookingModel.create(class_id, userId, attendee_count, attendee_count, targetDate);
 
-            // 5. Send Notification
+            await client.query('COMMIT');
+
+            // 4. Send Notification (Out-of-transaction)
             try {
                 await NotificationService.notify({
                     user_id: userId,
@@ -77,7 +73,7 @@ class BookingController {
                 console.error('Failed to send booking notification:', notifyError);
             }
 
-            // 6. Check for Achievements (Bookings Count)
+            // 5. Check for Achievements (Bookings Count)
             try {
                 const totalAttendees = await BookingModel.getTotalAttendeeCount(userId);
                 await AchievementModel.checkAndAward(userId, 'bookings_count', totalAttendees);
@@ -96,11 +92,14 @@ class BookingController {
             });
 
         } catch (error: any) {
+            await client.query('ROLLBACK');
             console.error('Booking error:', error);
             res.status(500).json({
                 error: 'Failed to book class',
                 message: error.message
             });
+        } finally {
+            client.release();
         }
     }
 
