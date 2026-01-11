@@ -16,10 +16,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
         // 1. Check for system-level key (for automated scripts)
         const systemKey = req.get('x-system-key');
         if (systemKey && systemKey === process.env.SYSTEM_API_KEY) {
-            // Attach a virtual system user
+            // Attach a virtual system user linked to the primary admin
             req.user = {
-                id: '00000000-0000-0000-0000-000000000000',
-                userId: '00000000-0000-0000-0000-000000000000',
+                id: 'ae361afc-230c-4772-9ee0-568b4926e0ee', // Scott's ID
+                userId: 'ae361afc-230c-4772-9ee0-568b4926e0ee',
                 email: 'system@tidalpower.local',
                 roles: ['admin'],
                 is_demo_mode_enabled: false
