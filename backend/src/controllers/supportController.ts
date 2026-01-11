@@ -4,8 +4,75 @@ import pool from '../config/db';
 import GitHubService from '../services/GitHubService';
 import NotificationService, { NotificationType, DeliveryMethod } from '../services/NotificationService';
 import logger from '../utils/logger';
+import ErrorLogModel from '../models/ErrorLog';
 
 class SupportController {
+    async reportError(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { message, stack_trace, url, component_name, browser_info } = req.body;
+            const userId = req.user?.id;
+            const userRole = req.user?.roles?.[0];
+
+            // 1. Log and Deduplicate
+            const { entry, isNew } = await ErrorLogModel.report({
+                message,
+                stack_trace,
+                url,
+                component_name,
+                user_id: userId,
+                user_role: userRole,
+                browser_info
+            });
+
+            // 2. If it's a new error, create a GitHub Issue
+            if (isNew) {
+                const issueBody = `
+## 🚨 Automated System Error
+**Message:** ${message}
+**Location:** ${url || 'Unknown'}
+**Component:** ${component_name || 'N/A'}
+**User Role:** ${userRole || 'Guest'}
+
+### 💻 Stack Trace
+\`\`\`
+${stack_trace || 'No stack trace available'}
+\`\`\`
+
+### 🤖 AI Troubleshooting Prompt
+[COPY THIS INTO GEMINI/CLAUDE]
+"I have a runtime error in my Tidal Power Fitness app. 
+Error: ${message}
+Location: ${url}
+Stack Trace: ${stack_trace}"
+
+---
+*Local Database ID: ${entry.id}*
+                `;
+
+                const githubIssue = await GitHubService.createIssue({
+                    title: `[CRASH] ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+                    body: issueBody,
+                    labels: ['bug', 'automated-report', 'vault-sentry']
+                });
+
+                if (githubIssue) {
+                    await ErrorLogModel.updateGithubInfo(entry.id, githubIssue.url, githubIssue.number);
+                }
+            }
+
+            res.status(200).json({ 
+                success: true, 
+                id: entry.id, 
+                is_new: isNew,
+                github_url: entry.github_issue_url 
+            });
+
+        } catch (error) {
+            logger.error('Error reporting system crash:', error);
+            res.status(500).json({ error: 'Failed to record error' });
+        }
+    }
+
     async submitFeedback(req: AuthenticatedRequest, res: Response) {
         const client = await pool.connect();
         try {

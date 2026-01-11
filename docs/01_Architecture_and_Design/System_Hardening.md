@@ -37,4 +37,8 @@ Multi-step business processes are wrapped in `BEGIN...COMMIT` blocks to prevent 
 ## 5. Resilience & Monitoring
 *   **Request Timeouts:** 10-second timeouts on the frontend to prevent UI hangs.
 *   **Error Boundaries:** Granular React Error Boundaries to isolate component failures.
+*   **Vault Sentry (Automated Error Tracking):** 
+    *   **Logic:** Every uncaught frontend error or backend crash is captured, fingerprinted (SHA-256 deduplication), and logged to the `error_logs` table.
+    *   **Automation:** New errors automatically trigger a **GitHub Issue** creation with an "AI Troubleshooting Prompt" pre-built for instant resolution.
+    *   **Deduplication:** Prevents "Error Storms" by incrementing `occurrence_count` for existing fingerprints rather than spamming GitHub.
 *   **Structured Logging:** Winston-based JSON logging for production log analysis.

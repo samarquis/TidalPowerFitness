@@ -1,6 +1,6 @@
 import express from 'express';
 import supportController from '../controllers/supportController';
-import { authenticate } from '../middleware/auth';
+import { authenticate, optionalAuth } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -10,6 +10,29 @@ const router = express.Router();
  *   name: Support
  *   description: User feedback and support requests
  */
+
+/**
+ * @swagger
+ * /support/report-error:
+ *   post:
+ *     summary: Automatically report a system error or crash
+ *     tags: [Support]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [message]
+ *             properties:
+ *               message: { type: string }
+ *               stack_trace: { type: string }
+ *               url: { type: string }
+ *               component_name: { type: string }
+ *     responses:
+ *       200: { description: Error recorded }
+ */
+router.post('/report-error', optionalAuth, supportController.reportError);
 
 /**
  * @swagger

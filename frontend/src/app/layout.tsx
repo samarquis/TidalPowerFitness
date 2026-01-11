@@ -6,6 +6,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { DemoModeProvider } from "@/contexts/DemoModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import GlobalErrorListener from "@/components/GlobalErrorListener";
 import Navigation from "@/components/Navigation";
 import PwaInstaller from "@/components/PwaInstaller";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} logo-watermark`}>
+        <GlobalErrorListener />
         <ErrorBoundary>
           <ThemeProvider>
             <AuthProvider>

@@ -630,6 +630,19 @@ class ApiClient {
     async getMyFeedback() {
         return this.request<any[]>('/support/my-feedback', { method: 'GET' });
     }
+
+    async reportError(data: {
+        message: string;
+        stack_trace?: string;
+        url?: string;
+        component_name?: string;
+        browser_info?: any;
+    }) {
+        return this.request<any>('/support/report-error', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
