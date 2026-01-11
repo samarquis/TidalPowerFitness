@@ -6,6 +6,12 @@ import { Request, Response, NextFunction } from 'express';
  * effectively blocks them for AJAX requests.
  */
 export const csrfCheck = (req: Request, res: Response, next: NextFunction): void => {
+    // 1. Allow system-level bypass (for automated scripts)
+    const systemKey = req.get('x-system-key');
+    if (systemKey && systemKey === process.env.SYSTEM_API_KEY) {
+        return next();
+    }
+
     // Skip GET, HEAD, OPTIONS requests
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
         return next();

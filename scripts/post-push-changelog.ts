@@ -23,7 +23,7 @@ function getEnvVar(name: string): string | undefined {
     return process.env[name];
 }
 
-const API_URL = getEnvVar('NEXT_PUBLIC_API_URL') || 'https://tidal-power-backend.onrender.com/api';
+const API_URL = 'https://tidal-power-backend.onrender.com/api';
 const SYSTEM_KEY = getEnvVar('SYSTEM_API_KEY');
 
 async function generateChangelog() {
