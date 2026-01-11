@@ -61,6 +61,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 *   **Missing Imports:** Ensure `express` is explicitly imported in all route files where `express.Router()` is used.
 *   **Async/Await:** Prefer `async/await` for asynchronous operations, always wrapped in `try/catch` blocks for robust error handling.
 *   **Backend Error Handling:** Controllers should return JSON error responses with appropriate HTTP status codes, and log errors for debugging.
+*   **Idempotency & Transactions:** ALL financial or credit-related webhooks must use the `processed_webhooks` idempotency layer. Multi-step operations must be wrapped in explicit database transactions to prevent partial state corruption.
+*   **Concurrency Locking:** Use `FOR UPDATE` row-level locking when modifying critical resources like `user_credits` to prevent race conditions.
 
 ### Framework-Specific Rules
 
@@ -69,11 +71,13 @@ _This file contains critical rules and patterns that AI agents must follow when 
 *   **Component Structure:** Organize components into logical, reusable units. Adhere to Next.js App Router conventions for page components (e.g., `page.tsx`, `layout.tsx`).
 *   **Global State Management:** Utilize React Context API, often wrapped in custom hooks (e.g., `useAuth`, `useCart`), for managing global application state.
 *   **Styling:** Consistently apply styling using Tailwind CSS classes.
+*   **Automated Error Tracking:** All components are monitored by the `GlobalErrorListener` and `ErrorBoundary`. Ensure component names are passed to ErrorBoundaries for precise reporting.
 
 **Backend (Express):**
 *   **API Structure:** Design RESTful API endpoints, ensuring clear resource identification and standard HTTP methods.
 *   **Middleware Usage:** Employ Express middleware for cross-cutting concerns such as authentication, authorization, logging, and error handling.
 *   **Routing:** Define API routes explicitly within the `backend/src/routes` directory, linking them to appropriate controller functions.
+*   **Documentation:** All new routes must be documented using Swagger JSDoc decorators to keep the `/api-docs` playground accurate.
 
 ### Testing Rules
 

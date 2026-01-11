@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import bcrypt from 'bcrypt';
+import pool from '../config/db';
 import User from '../models/User';
 import { generateToken } from '../utils/jwt';
 import UserCreditModel from '../models/UserCredit';
@@ -15,15 +16,22 @@ class UserController {
             if (role && typeof role === 'string') {
                 users = await User.findByRole(role as 'client' | 'trainer' | 'admin');
             } else {
-                // Get all active users
-                const clients = await User.findByRole('client');
-                const trainers = await User.findByRole('trainer');
-                const admins = await User.findByRole('admin');
-                users = [...clients, ...trainers, ...admins];
+                // Fetch all users uniquely using a direct query
+                const result = await pool.query(`
+                    SELECT * FROM users 
+                    ORDER BY created_at DESC
+                `);
+                
+                // Use the model's mapping helper to ensure roles and encryption are handled correctly
+                // Since mapRowToUser is private, we manually map here to mirror its logic
+                users = result.rows.map(row => ({
+                    ...row,
+                    roles: row.roles || (row.role ? [row.role] : ['client'])
+                }));
             }
 
             // Remove password hashes from response
-            const sanitizedUsers = users.map(user => ({
+            const sanitizedUsers = users.map((user: any) => ({
                 id: user.id,
                 email: user.email,
                 first_name: user.first_name,
