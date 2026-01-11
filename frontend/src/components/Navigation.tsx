@@ -56,12 +56,20 @@ export default function Navigation() {
                         </Link>
 
                         {isAuthenticated && (
-                            <Link 
-                                href={getDashboardLink()}
-                                className="text-sm font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors"
-                            >
-                                Dashboard
-                            </Link>
+                            <div className="flex items-center space-x-6">
+                                <Link 
+                                    href={getDashboardLink()}
+                                    className="text-sm font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors"
+                                >
+                                    Dashboard
+                                </Link>
+                                <Link 
+                                    href="/support"
+                                    className="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                                >
+                                    Support
+                                </Link>
+                            </div>
                         )}
                     </div>
 

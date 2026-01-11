@@ -603,6 +603,21 @@ export default function UserDashboard() {
                                 </Link>
                             </div>
                         </div>
+
+                        {/* Help & Support */}
+                        <div className="glass-card border-pacific-cyan/20 bg-pacific-cyan/5">
+                            <h2 className="text-xl font-bold mb-4">Need Help?</h2>
+                            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
+                                Found a bug or have a suggestion for a new feature? Our automated support system is here to help.
+                            </p>
+                            <Link 
+                                href="/support" 
+                                className="flex items-center justify-center gap-2 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest text-turquoise-surf transition-all"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                Contact Support
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
