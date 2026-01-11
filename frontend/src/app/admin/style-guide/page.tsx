@@ -13,7 +13,7 @@ export default function StyleGuidePage() {
                         ← Back to Admin
                     </Link>
                     <h1 className="text-gradient">Visual Style Guide</h1>
-                    <p className="text-gray-400 text-xl mt-4">Standardized tokens and components for the "Luxury Vault" aesthetic.</p>
+                    <p className="text-gray-400 text-xl mt-4">Standardized tokens and components for the &quot;Luxury Vault&quot; aesthetic.</p>
                 </header>
 
                 <section className="mb-20">

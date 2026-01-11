@@ -42,10 +42,6 @@ export default function AdminChangelogPage() {
         }
     }, [user, loading, router]);
 
-    useEffect(() => {
-        fetchChangelogs();
-    }, []);
-
     const fetchChangelogs = async () => {
         setIsLoading(true);
         const response = await apiClient.getChangelogs();
@@ -56,6 +52,13 @@ export default function AdminChangelogPage() {
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        const loadData = async () => {
+            await fetchChangelogs();
+        };
+        loadData();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

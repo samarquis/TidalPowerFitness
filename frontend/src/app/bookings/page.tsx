@@ -108,7 +108,7 @@ export default function MyBookingsPage() {
 
                         {upcomingBookings.length === 0 ? (
                             <div className="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10">
-                                <p className="text-gray-500 mb-6 text-lg">You don't have any upcoming classes booked.</p>
+                                <p className="text-gray-500 mb-6 text-lg">You don&apos;t have any upcoming classes booked.</p>
                                 <Link 
                                     href="/classes"
                                     className="inline-block px-8 py-4 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold transition-all"

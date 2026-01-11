@@ -109,7 +109,7 @@ function LoginContent() {
 
                     {/* Footer */}
                     <div className="mt-6 text-center text-sm text-gray-400">
-                        Don't have an account?{' '}
+                        Don&apos;t have an account?{' '}
                         <Link href="/register" className="text-turquoise-surf hover:text-pacific-cyan font-semibold">
                             Sign up
                         </Link>

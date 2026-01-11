@@ -19,25 +19,6 @@ export default function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchNotifications();
-            // Poll for new notifications every 60 seconds
-            const interval = setInterval(fetchNotifications, 60000);
-            return () => clearInterval(interval);
-        }
-    }, [isAuthenticated]);
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
     const fetchNotifications = async () => {
         try {
             const response = await apiClient.getUnreadNotifications();
@@ -48,6 +29,18 @@ export default function NotificationBell() {
             console.error('Error fetching notifications:', error);
         }
     };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const loadData = async () => {
+                await fetchNotifications();
+            };
+            loadData();
+            // Poll for new notifications every 60 seconds
+            const interval = setInterval(fetchNotifications, 60000);
+            return () => clearInterval(interval);
+        }
+    }, [isAuthenticated]);
 
     const markRead = async (id: string) => {
         try {

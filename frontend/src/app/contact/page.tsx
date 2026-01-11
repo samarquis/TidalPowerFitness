@@ -55,7 +55,7 @@ export default function ContactPage() {
                         Get In <span className="text-gradient">Touch</span>
                     </h1>
                     <p className="text-xl text-gray-400">
-                        Ready to start your fitness journey? We're here to help.
+                        Ready to start your fitness journey? We&apos;re here to help.
                     </p>
                 </div>
 
@@ -70,7 +70,7 @@ export default function ContactPage() {
                             </div>
                             <h2 className="text-3xl font-bold mb-4">Message Sent!</h2>
                             <p className="text-gray-400 mb-8">
-                                Thank you for reaching out. We'll get back to you within 24 hours.
+                                Thank you for reaching out. We&apos;ll get back to you within 24 hours.
                             </p>
                             <button
                                 onClick={() => setSubmitted(false)}
