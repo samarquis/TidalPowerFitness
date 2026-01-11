@@ -69,37 +69,31 @@ When starting a new session, use the `/next` command to:
 
 See [.agent/workflows/](.agent/workflows/) for detailed workflow documentation.
 
-## 📚 Documentation
+## 📚 Documentation & BMAD Framework
 
-- [TODO.md](TODO.md) - Current development roadmap and pending tasks
-- [PROGRESS.md](PROGRESS.md) - Daily progress log
-- [docs/](docs/) - Additional documentation and archived guides
+This project strictly adheres to the **BMAD (BMM Methodology Analysis, Planning, and Solutioning)** framework for management and development.
 
-All deployment guides have been archived to `docs/archive/`:
-- `DEPLOYMENT.md` - Docker deployment guide
-- `QUICK_DEPLOY.md` - Quick Render deployment steps
-- `RENDER_DEPLOYMENT.md` - Detailed Render deployment guide
-- `HOW_TO_BECOME_ADMIN.md` - Admin setup instructions
+Comprehensive documentation is organized in the `docs/` directory:
 
-## 🔐 Making Yourself Admin
+- **[00 Project Foundation](docs/00_Project_Foundation/README.md)**: Rules, Memory, and Project Status.
+- **[01 Architecture & Design](docs/01_Architecture_and_Design/architecture.md)**: System Logic, Database ERD, and UI/UX Maps.
+- **[02 Product Strategy](docs/02_Product_Strategy/epics.md)**: Epics, Stories, and Site Review Remediations.
+- **[03 Operations & Guides](docs/03_Operations_and_Guides/Operational_Workflows.md)**: Backups, Migrations, and Testing/Automation.
+- **[04 Changelog & Logs](docs/04_Changelog_and_Logs/CURRENT.md)**: Session history and incident reports.
 
-After registering on the deployed site:
-1. Connect to the production database using a PostgreSQL client
-2. Run: `UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';`
-3. Logout and login again to see admin features
+All legacy deployment guides have been moved to `docs/99_Archive/`.
 
 ## 🏗️ Project Structure
 
 ```
 TidalPowerFitness/
+├── _bmad/            # BMAD Framework Core Configuration
+├── _bmad-output/     # Living Documentation (Sprint Status, UX Specs)
 ├── .agent/           # AI workflow definitions
-│   └── workflows/    # Daily workflow commands (/eod, /next)
-├── frontend/         # Next.js frontend application
-├── backend/          # Express backend API
-├── docs/            # Documentation
-│   └── archive/     # Archived deployment guides
-├── TODO.md          # Development roadmap
-└── PROGRESS.md      # Daily progress log
+├── frontend/         # Next.js 16 (React 19) Application
+├── backend/          # Express 5 (TypeScript) API
+├── docs/            # Structured Project Documentation
+└── cypress/         # E2E Testing Suite
 ```
 
 ## 🤝 Contributing
