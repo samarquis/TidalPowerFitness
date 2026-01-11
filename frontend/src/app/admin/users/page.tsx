@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
-import { BlackGlassCard } from '@/components/ui';
+import { BlackGlassCard, CTAButton } from '@/components/ui';
 
 
 interface User {

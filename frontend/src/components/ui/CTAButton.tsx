@@ -56,7 +56,7 @@ export default function CTAButton({
     const animationProps = {
         whileHover: disabled ? {} : { scale: 1.05 },
         whileTap: disabled ? {} : { scale: 0.95 },
-        transition: { type: "spring", stiffness: 400, damping: 17 }
+        transition: { type: "spring" as const, stiffness: 400, damping: 17 }
     };
 
     if (href) {
@@ -64,7 +64,7 @@ export default function CTAButton({
             <MotionLink
                 href={href}
                 title={title}
-                className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
+                className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
                 {...animationProps}
             >
                 {content}
@@ -78,7 +78,7 @@ export default function CTAButton({
             onClick={onClick}
             disabled={disabled}
             title={title}
-            className={`${baseStyles} ${variantStyles[variant]} ${variant === 'outline' || variant === 'danger' ? sizeStyles[size] : ''} ${className}`}
+            className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
             {...animationProps}
         >
             {content}
