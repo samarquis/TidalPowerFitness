@@ -66,21 +66,20 @@ function AssignWorkoutContent() {
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
 
-    // Step 1: Recipient Selection (Previously Step 3)
+    // Step 1: Recipient Selection
     const [recipientMode, setRecipientMode] = useState<'class' | 'clients'>('class');
     const [classes, setClasses] = useState<Class[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedClients, setSelectedClients] = useState<string[]>([]);
 
-    // Step 2: Date & Time (Previously Step 1)
+    // Step 2: Date & Time
     const [sessionDate, setSessionDate] = useState('');
     const [startTime, setStartTime] = useState('');
 
-    // Step 3: Workout Selection (Previously Step 2)
+    // Step 3: Workout Selection
     const [workoutMode, setWorkoutMode] = useState<'template' | 'custom'>('template');
     const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
-    const [templatesLoading, setTemplatesLoading] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState('');
     
     // Custom Workout State
@@ -146,26 +145,26 @@ function AssignWorkoutContent() {
         }
     }, [searchParams, router]);
 
-    // Fetch metadata
+    // Fetch metadata (Templates, Exercises, Classes, Clients)
     useEffect(() => {
         const fetchMetadata = async () => {
             try {
-                const [templatesRes, exercisesRes, bodyPartsRes, musclesRes] = await Promise.all([
+                const [templatesRes, exercisesRes, classesRes, clientsRes, bodyPartsRes, musclesRes] = await Promise.all([
                     apiClient.getWorkoutTemplates(),
                     apiClient.getExercises(),
+                    apiClient.getClasses(), // Fetch ALL classes now
+                    apiClient.getMyClients(),
                     fetch('/api/exercises/body-parts').then(res => res.json()),
                     fetch('/api/exercises/body-focus-areas').then(res => res.json())
                 ]);
 
-                if (templatesRes.data) {
-                    console.log('Templates fetched successfully:', templatesRes.data);
-                    setTemplates(templatesRes.data);
-                } else if (templatesRes.error) {
-                    console.error('Error fetching templates:', templatesRes.error);
-                }
+                if (templatesRes.data) setTemplates(templatesRes.data);
                 if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
+                if (classesRes.data) setClasses(classesRes.data);
+                if (clientsRes.data) setClients(clientsRes.data);
                 if (Array.isArray(bodyPartsRes)) setBodyPartsList(bodyPartsRes);
                 if (Array.isArray(musclesRes)) setMusclesList(musclesRes);
+
             } catch (error) {
                 console.error('Error fetching metadata:', error);
             }
@@ -176,46 +175,7 @@ function AssignWorkoutContent() {
         }
     }, [user]);
 
-    // Fetch classes when date is selected
-    useEffect(() => {
-        const fetchClasses = async () => {
-            if (!sessionDate) return;
-
-            try {
-                const date = new Date(sessionDate);
-                const dayOfWeek = date.getDay();
-
-                const response = await apiClient.getClassesByDay(dayOfWeek);
-                if (response.data) {
-                    setClasses(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching classes:', error);
-            }
-        };
-
-        fetchClasses();
-    }, [sessionDate]);
-
-    // Fetch clients
-    useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const response = await apiClient.getMyClients();
-                if (response.data) {
-                    setClients(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching clients:', error);
-            }
-        };
-
-        if (user) {
-            fetchClients();
-        }
-    }, [user]);
-
-    // --- Helper Functions for Custom Workout Builder ---
+    // --- Helper Functions ---
 
     const getFilteredExercises = () => {
         return availableExercises.filter(ex => {
@@ -272,6 +232,14 @@ function AssignWorkoutContent() {
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         [newArr[index], newArr[targetIndex]] = [newArr[targetIndex], newArr[index]];
         setSelectedCustomExercises(newArr);
+    };
+
+    const toggleClient = (clientId: string) => {
+        setSelectedClients(prev =>
+            prev.includes(clientId)
+                ? prev.filter(id => id !== clientId)
+                : [...prev, clientId]
+        );
     };
 
     // --- Navigation & Submission ---
@@ -398,21 +366,11 @@ function AssignWorkoutContent() {
         }
     };
 
-    const toggleClient = (clientId: string) => {
-        setSelectedClients(prev =>
-            prev.includes(clientId)
-                ? prev.filter(id => id !== clientId)
-                : [...prev, clientId]
-        );
-    };
-
     const isTrainerOrAdmin = user?.roles.includes('trainer') || user?.roles.includes('admin');
 
     if (!user || !isTrainerOrAdmin) {
         return null;
     }
-
-    const bodyParts = Array.from(new Set(availableExercises.map(e => e.muscle_group_name).filter(Boolean))) as string[];
 
     return (
         <div className="min-h-screen pt-24 pb-16 px-4 page-container">
@@ -506,17 +464,12 @@ function AssignWorkoutContent() {
                                         Select Class *
                                     </label>
                                     <div className="grid gap-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                        {/* Since classes depend on date, and we moved date to step 2, 
-                                            we should show ALL recurring classes or ask them to select date first?
-                                            Actually, Lisa said "pick a class more than pick date and time".
-                                            Let's show a list of unique class names/definitions.
-                                        */}
-                                        {Array.from(new Set(classes.map(c => c.name))).length === 0 ? (
+                                        {classes.length === 0 ? (
                                              <div className="p-4 bg-white/5 border border-white/10 rounded-lg text-gray-400 text-center">
-                                                Loading classes...
+                                                No classes found. <Link href="/admin/classes" className="text-pacific-cyan underline">Create one first?</Link>
                                              </div>
                                         ) : (
-                                            classes.filter((v, i, a) => a.findIndex(t => t.name === v.name) === i).map((cls) => (
+                                            classes.map((cls) => (
                                                 <div
                                                     key={cls.id}
                                                     onClick={() => setSelectedClass(cls.id)}
@@ -526,8 +479,12 @@ function AssignWorkoutContent() {
                                                             : 'bg-white/5 border-white/10 hover:bg-white/10'
                                                     }`}
                                                 >
-                                                    <div className="font-bold text-foreground">{cls.name}</div>
-                                                    <div className="text-xs text-gray-500">{cls.start_time}</div>
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="font-bold text-foreground">{cls.name}</div>
+                                                        <div className="text-xs text-gray-500 font-mono bg-white/5 px-2 py-1 rounded">
+                                                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][cls.day_of_week]} @ {cls.start_time}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             ))
                                         )}
@@ -575,6 +532,11 @@ function AssignWorkoutContent() {
                                     className="input-field text-lg py-4"
                                     min={new Date().toISOString().split('T')[0]}
                                 />
+                                {recipientMode === 'class' && selectedClass && (
+                                    <p className="text-xs text-turquoise-surf mt-2">
+                                        Tip: This class usually meets on {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][classes.find(c => c.id === selectedClass)?.day_of_week || 0]}.
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">

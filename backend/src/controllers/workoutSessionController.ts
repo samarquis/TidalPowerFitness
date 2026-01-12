@@ -219,21 +219,30 @@ class WorkoutSessionController {
     // Bulk log exercises
     async bulkLogExercises(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            const { logs } = req.body;
+            const { logs } = req.query.body || req.body; // Robustness check
+            console.log(`[WorkoutSessionController] Bulk Logging Request received. Payload size: ${logs?.length}`);
 
             if (!Array.isArray(logs) || logs.length === 0) {
+                console.warn('[WorkoutSessionController] Bulk Log failed: Empty logs array.');
                 res.status(400).json({ error: 'Logs must be a non-empty array' });
                 return;
             }
 
             const results = [];
             for (const logData of logs) {
-                const log = await WorkoutSession.logExercise({
-                    ...logData,
-                    logged_by: req.user?.id
-                });
-                results.push(log);
+                try {
+                    const log = await WorkoutSession.logExercise({
+                        ...logData,
+                        logged_by: req.user?.id
+                    });
+                    results.push(log);
+                } catch (innerError: any) {
+                    console.error(`[WorkoutSessionController] Failed to log individual set: ${innerError.message}`, logData);
+                    // Don't fail the whole bulk request, but track the error
+                }
             }
+
+            console.log(`[WorkoutSessionController] Bulk Logging complete. Successfully logged ${results.length} sets.`);
 
             // After all logs are processed, check for achievements for the user.
             const workoutUserId = logs[0]?.client_id;
@@ -242,9 +251,9 @@ class WorkoutSessionController {
             }
 
             res.status(201).json(results);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error bulk logging exercises:', error);
-            res.status(500).json({ error: 'Failed to bulk log exercises' });
+            res.status(500).json({ error: 'Failed to bulk log exercises', details: error.message });
         }
     }
 

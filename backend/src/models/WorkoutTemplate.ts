@@ -56,14 +56,14 @@ class WorkoutTemplateModel {
             FROM workout_templates wt
             LEFT JOIN workout_types ON wt.workout_type_id = workout_types.id
             LEFT JOIN template_exercises te ON wt.id = te.template_id
-            WHERE wt.trainer_id = $1
+            WHERE (wt.trainer_id = $1
         `;
 
         if (includePublic) {
             sql += ' OR wt.is_public = true';
         }
 
-        sql += ' GROUP BY wt.id, workout_types.name ORDER BY wt.created_at DESC';
+        sql += ') GROUP BY wt.id, workout_types.name ORDER BY wt.created_at DESC';
 
         const result: QueryResult = await query(sql, [trainerId]);
         return result.rows;

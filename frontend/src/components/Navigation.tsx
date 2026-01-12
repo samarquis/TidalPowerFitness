@@ -45,27 +45,27 @@ export default function Navigation() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo & Dashboard Link */}
-                    <div className="flex items-center space-x-8">
-                        <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
+                    <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-8 min-w-0">
+                        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                             <img
                                 src="/logo.jpg"
                                 alt="Tidal Power Fitness Logo"
-                                className="h-10 w-auto object-contain"
+                                className="h-8 sm:h-10 w-auto object-contain"
                             />
-                            <span className="text-foreground font-bold text-base lg:text-lg hidden lg:block">Tidal Power Fitness</span>
+                            <span className="text-foreground font-bold text-sm sm:text-base lg:text-lg hidden sm:block truncate max-w-[120px] lg:max-w-none">Tidal Power Fitness</span>
                         </Link>
 
                         {isAuthenticated && (
-                            <div className="flex items-center space-x-6">
+                            <div className="flex items-center space-x-3 sm:space-x-6 overflow-hidden">
                                 <Link 
                                     href={getDashboardLink()}
-                                    className="text-sm font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors"
+                                    className="text-[10px] sm:text-sm font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors whitespace-nowrap"
                                 >
                                     Dashboard
                                 </Link>
                                 <Link 
                                     href="/support"
-                                    className="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                                    className="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors whitespace-nowrap"
                                 >
                                     Support
                                 </Link>

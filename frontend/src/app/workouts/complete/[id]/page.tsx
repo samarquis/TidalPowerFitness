@@ -101,7 +101,7 @@ export default function MissionAccomplishedPage() {
                         className="glass-card p-8 text-center"
                     >
                         <div className="text-4xl font-black text-white mb-1">
-                            {summary?.total_volume_lbs.toLocaleString()}
+                            {summary?.total_volume_lbs?.toLocaleString() || 0}
                         </div>
                         <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Lbs Moved</div>
                     </motion.div>
@@ -114,7 +114,7 @@ export default function MissionAccomplishedPage() {
                         className="glass-card p-8 text-center border-pacific-cyan/30"
                     >
                         <div className="text-4xl font-black text-pacific-cyan mb-1">
-                            {summary?.exercises_completed}
+                            {summary?.exercises_completed || 0}
                         </div>
                         <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Exercises Nailed</div>
                     </motion.div>
@@ -127,7 +127,7 @@ export default function MissionAccomplishedPage() {
                         className="glass-card p-8 text-center"
                     >
                         <div className="text-4xl font-black text-white mb-1">
-                            {summary?.personal_records.length || 0}
+                            {summary?.personal_records?.length || 0}
                         </div>
                         <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">New PRs Set 🔥</div>
                     </motion.div>
