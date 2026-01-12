@@ -55,6 +55,7 @@ interface ExerciseFormData {
     difficulty_level: string;
     video_url: string;
     instructions: string;
+    secondary_muscle_group_ids: string[];
 }
 
 const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
@@ -87,7 +88,8 @@ export default function AdminExercisesPage() {
         equipment_required: '',
         difficulty_level: '',
         video_url: '',
-        instructions: ''
+        instructions: '',
+        secondary_muscle_group_ids: []
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof ExerciseFormData, string>>>({});
@@ -227,7 +229,8 @@ export default function AdminExercisesPage() {
             equipment_required: '',
             difficulty_level: '',
             video_url: '',
-            instructions: ''
+            instructions: '',
+            secondary_muscle_group_ids: []
         });
         setErrors({});
         setCurrentStep(1);

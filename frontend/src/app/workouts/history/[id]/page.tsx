@@ -8,6 +8,7 @@ import { apiClient } from '@/lib/api';
 
 interface ExerciseLog {
     id: string;
+    session_exercise_id: string;
     exercise_name: string;
     set_number: number;
     reps_completed?: number;
