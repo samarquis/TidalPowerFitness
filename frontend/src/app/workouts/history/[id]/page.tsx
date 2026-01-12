@@ -31,12 +31,15 @@ type GroupedLogs = {
 
 
 export default function SessionDetailsPage() {
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const params = useParams();
     const [session, setSession] = useState<WorkoutSession | null>(null);
     const [logs, setLogs] = useState<ExerciseLog[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
@@ -68,10 +71,54 @@ export default function SessionDetailsPage() {
         try {
             const response = await apiClient.getSessionLogs(id);
             if (response.data) {
-                setLogs(response.data);
+                // Filter logs to only show the user's own data if they are a client
+                const allLogs = response.data;
+                const userLogs = (user?.roles?.includes('trainer') || user?.roles?.includes('admin'))
+                    ? allLogs
+                    : allLogs.filter((l: any) => l.client_id === user?.id);
+                setLogs(userLogs);
             }
         } catch (error) {
             console.error('Error fetching session logs:', error);
+        }
+    };
+
+    const handleUpdateLog = (logId: string, field: keyof ExerciseLog, value: any) => {
+        setLogs(prev => prev.map(log => 
+            log.id === logId ? { ...log, [field]: value } : log
+        ));
+    };
+
+    const saveChanges = async () => {
+        setIsSaving(true);
+        setSaveError(null);
+        try {
+            // Find logs that were edited (simplified: save all displayed logs)
+            const promises = logs.map(log => {
+                // Find corresponding session_exercise_id
+                const sessionEx = session?.exercises?.find((se: any) => se.exercise_name === log.exercise_name);
+                
+                return apiClient.logExercise({
+                    session_exercise_id: log.session_exercise_id, // We should ensure this is in the log object
+                    client_id: user?.id,
+                    set_number: log.set_number,
+                    reps_completed: log.reps_completed,
+                    weight_used_lbs: log.weight_used_lbs,
+                    notes: log.notes
+                });
+            });
+
+            const results = await Promise.all(promises);
+            const error = results.find(r => r.error);
+            if (error) {
+                setSaveError(error.error || 'Failed to save some changes');
+            } else {
+                setIsEditMode(false);
+            }
+        } catch (err: any) {
+            setSaveError(err.message || 'Error saving changes');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -115,76 +162,155 @@ export default function SessionDetailsPage() {
         <div className="min-h-screen pt-24 pb-16">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="mb-8">
-                    <Link href="/workouts/history" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block">
-                        ← Back to History
-                    </Link>
-                    <h1 className="text-4xl font-bold mb-2">
-                        {session.workout_type_name || session.class_name || 'Workout Session'}
-                    </h1>
-                    <div className="text-gray-400">
-                        {new Date(session.session_date).toLocaleDateString(undefined, {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
+                <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                    <div>
+                        <Link href="/workouts/history" className="text-turquoise-surf hover:text-pacific-cyan mb-4 inline-block font-medium">
+                            ← Back to History
+                        </Link>
+                        <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tighter uppercase italic">
+                            {session.workout_type_name || session.class_name || 'Workout Session'}
+                        </h1>
+                        <div className="text-gray-400 font-medium">
+                            {new Date(session.session_date).toLocaleDateString(undefined, {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        {isEditMode ? (
+                            <>
+                                <button
+                                    onClick={() => setIsEditMode(false)}
+                                    disabled={isSaving}
+                                    className="px-6 py-2 bg-white/5 hover:bg-white/10 text-gray-400 font-bold rounded-lg transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={saveChanges}
+                                    disabled={isSaving}
+                                    className="px-6 py-2 bg-turquoise-surf text-black font-black rounded-lg transition-all shadow-lg shadow-turquoise-surf/20 flex items-center gap-2"
+                                >
+                                    {isSaving ? (
+                                        <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin rounded-full"></div>
+                                    ) : '💾'} Save Changes
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => setIsEditMode(true)}
+                                className="px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-turquoise-surf font-bold rounded-lg transition-all flex items-center gap-2"
+                            >
+                                📝 Edit Logs
+                            </button>
+                        )}
                     </div>
                 </div>
 
+                {saveError && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
+                        {saveError}
+                    </div>
+                )}
+
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div className="glass p-4 rounded-xl text-center">
-                        <div className="text-sm text-gray-400 mb-1">Duration</div>
-                        <div className="text-2xl font-bold">{session.duration_minutes || 0}m</div>
+                    <div className="glass p-6 rounded-2xl text-center border-white/5">
+                        <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Duration</div>
+                        <div className="text-3xl font-black tracking-tighter text-white">{session.duration_minutes || 0}m</div>
                     </div>
-                    <div className="glass p-4 rounded-xl text-center">
-                        <div className="text-sm text-gray-400 mb-1">Exercises</div>
-                        <div className="text-2xl font-bold">{Object.keys(groupedLogs).length || 0}</div>
+                    <div className="glass p-6 rounded-2xl text-center border-white/5">
+                        <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Exercises</div>
+                        <div className="text-3xl font-black tracking-tighter text-white">{Object.keys(groupedLogs).length || 0}</div>
                     </div>
                 </div>
 
                 {/* Notes */}
                 {session.notes && (
-                    <div className="glass rounded-xl p-6 mb-8">
-                        <h3 className="text-xl font-bold mb-4">Notes</h3>
-                        <p className="text-gray-300">{session.notes}</p>
+                    <div className="glass rounded-2xl p-8 mb-8 border-white/5 bg-white/[0.02]">
+                        <h3 className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4">Trainer Notes</h3>
+                        <p className="text-gray-300 leading-relaxed italic">"{session.notes}"</p>
                     </div>
                 )}
 
                 {/* Exercises List */}
-                <div className="glass rounded-xl p-6">
-                    <h2 className="text-2xl font-bold mb-6">Exercises Performed</h2>
-                    <div className="space-y-6">
-                        {Object.keys(groupedLogs).map((exerciseName) => (
-                            <div key={exerciseName} className="bg-white/5 rounded-lg p-4">
-                                <h3 className="text-lg font-bold mb-4">{exerciseName}</h3>
-                                <table className="w-full text-sm">
+                <div className="space-y-8">
+                    {Object.keys(groupedLogs).map((exerciseName) => (
+                        <div key={exerciseName} className="glass rounded-3xl p-8 border-white/5">
+                            <h3 className="text-2xl font-black mb-6 tracking-tight uppercase text-gradient">{exerciseName}</h3>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
                                     <thead>
                                         <tr className="border-b border-white/10">
-                                            <th className="text-left pb-2 font-semibold text-gray-400">Set</th>
-                                            <th className="text-left pb-2 font-semibold text-gray-400">Reps</th>
-                                            <th className="text-left pb-2 font-semibold text-gray-400">Weight (lbs)</th>
-                                            <th className="text-left pb-2 font-semibold text-gray-400">Notes</th>
+                                            <th className="text-left pb-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Set</th>
+                                            <th className="text-left pb-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Reps</th>
+                                            <th className="text-left pb-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Weight (lbs)</th>
+                                            <th className="text-left pb-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Notes</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-white/5">
                                         {groupedLogs[exerciseName].map((log) => (
-                                            <tr key={log.id} className="border-b border-white/5">
-                                                <td className="py-2">{log.set_number}</td>
-                                                <td className="py-2">{log.reps_completed ?? '-'}</td>
-                                                <td className="py-2">{log.weight_used_lbs ?? '-'}</td>
-                                                <td className="py-2">{log.notes ?? '-'}</td>
+                                            <tr key={log.id} className="group transition-colors hover:bg-white/[0.01]">
+                                                <td className="py-4 font-black text-gray-400">{log.set_number}</td>
+                                                <td className="py-2">
+                                                    {isEditMode ? (
+                                                        <input 
+                                                            type="number" 
+                                                            value={log.reps_completed ?? ''} 
+                                                            onChange={(e) => handleUpdateLog(log.id, 'reps_completed', parseInt(e.target.value) || 0)}
+                                                            className="w-20 bg-black/40 border border-white/10 rounded-lg px-3 py-1 text-sm font-bold focus:border-turquoise-surf outline-none"
+                                                        />
+                                                    ) : (
+                                                        <span className="font-bold text-lg">{log.reps_completed ?? '-'}</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-2">
+                                                    {isEditMode ? (
+                                                        <input 
+                                                            type="number" 
+                                                            value={log.weight_used_lbs ?? ''} 
+                                                            onChange={(e) => handleUpdateLog(log.id, 'weight_used_lbs', parseFloat(e.target.value) || 0)}
+                                                            className="w-24 bg-black/40 border border-white/10 rounded-lg px-3 py-1 text-sm font-bold focus:border-turquoise-surf outline-none"
+                                                        />
+                                                    ) : (
+                                                        <span className="font-bold text-lg text-turquoise-surf">{log.weight_used_lbs ?? '-'}<span className="text-[10px] text-gray-600 ml-1 uppercase">lbs</span></span>
+                                                    )}
+                                                </td>
+                                                <td className="py-2">
+                                                    {isEditMode ? (
+                                                        <input 
+                                                            type="text" 
+                                                            value={log.notes ?? ''} 
+                                                            onChange={(e) => handleUpdateLog(log.id, 'notes', e.target.value)}
+                                                            placeholder="Add note..."
+                                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-1 text-sm focus:border-turquoise-surf outline-none"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-gray-400 text-sm italic">{log.notes || '-'}</span>
+                                                    )}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        ))}
-                        {Object.keys(groupedLogs).length === 0 && (
-                            <p className="text-gray-400 text-center py-4">No exercises recorded for this session.</p>
-                        )}
-                    </div>
+                        </div>
+                    ))}
+                    {Object.keys(groupedLogs).length === 0 && (
+                        <div className="glass rounded-3xl p-12 text-center border-dashed border-white/10">
+                            <p className="text-gray-500 mb-4 font-medium">No exercises recorded for this session.</p>
+                            <button
+                                onClick={() => setIsEditMode(true)}
+                                className="text-turquoise-surf font-black uppercase tracking-widest text-xs hover:underline"
+                            >
+                                + Add Logs Manually
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

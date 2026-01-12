@@ -481,6 +481,14 @@ class ApiClient {
         return this.request<any>('/admin/reports/revenue', { method: 'GET' });
     }
 
+    async getTrainerPerformanceReport(startDate?: string, endDate?: string) {
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        const query = params.toString() ? `?${params.toString()}` : '';
+        return this.request<any[]>('/admin/reports/trainer-performance' + query, { method: 'GET' });
+    }
+
     // Cart endpoints
     async getCart() {
         return this.request<any>('/cart', { method: 'GET' });

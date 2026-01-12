@@ -148,14 +148,15 @@ function AssignWorkoutContent() {
     // Fetch metadata (Templates, Exercises, Classes, Clients)
     useEffect(() => {
         const fetchMetadata = async () => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             try {
                 const [templatesRes, exercisesRes, classesRes, clientsRes, bodyPartsRes, musclesRes] = await Promise.all([
                     apiClient.getWorkoutTemplates(),
                     apiClient.getExercises(),
                     apiClient.getClasses(), // Fetch ALL classes now
                     apiClient.getMyClients(),
-                    fetch('/api/exercises/body-parts').then(res => res.json()),
-                    fetch('/api/exercises/body-focus-areas').then(res => res.json())
+                    fetch(`${apiUrl}/exercises/body-parts`).then(res => res.json()),
+                    fetch(`${apiUrl}/exercises/body-focus-areas`).then(res => res.json())
                 ]);
 
                 if (templatesRes.data) setTemplates(templatesRes.data);

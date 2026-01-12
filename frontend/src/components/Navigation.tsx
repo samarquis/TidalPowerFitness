@@ -56,35 +56,36 @@ export default function Navigation() {
                         </Link>
 
                         {isAuthenticated && (
-                            <div className="flex items-center space-x-3 sm:space-x-6 overflow-hidden">
+                            <div className="flex items-center space-x-2 sm:space-x-4 overflow-hidden">
                                 <Link 
                                     href={getDashboardLink()}
-                                    className="text-[10px] sm:text-sm font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors whitespace-nowrap"
+                                    className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-turquoise-surf hover:text-pacific-cyan transition-colors whitespace-nowrap"
                                 >
                                     Dashboard
                                 </Link>
                                 <Link 
                                     href="/support"
-                                    className="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors whitespace-nowrap"
+                                    className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                                 >
-                                    Support
+                                    <span className="hidden xl:inline">Support</span>
+                                    <span className="xl:hidden" title="Support">🚀</span>
                                 </Link>
                             </div>
                         )}
                     </div>
 
                     {/* Desktop Right Actions */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
                         {isAuthenticated ? (
                             <>
                                 {/* Credit Counter */}
                                 <Link
                                     href="/packages"
-                                    className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full hover:border-turquoise-surf/50 transition-all group"
+                                    className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-2 lg:px-3 py-1.5 rounded-full hover:border-turquoise-surf/50 transition-all group"
                                 >
                                     <span className="w-1.5 h-1.5 rounded-full bg-turquoise-surf animate-pulse"></span>
                                     <span className="text-xs font-bold text-foreground">{user?.credits || 0}</span>
-                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold group-hover:text-turquoise-surf transition-colors">Tokens</span>
+                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold group-hover:text-turquoise-surf transition-colors hidden lg:inline">Tokens</span>
                                 </Link>
 
                                 <NotificationBell />

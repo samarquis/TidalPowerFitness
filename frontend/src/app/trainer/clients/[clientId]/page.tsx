@@ -21,6 +21,8 @@ interface ClientInfo {
     first_name: string;
     last_name: string;
     email: string;
+    total_bookings: number;
+    last_booking_date: string;
 }
 
 interface ActiveProgram {
@@ -41,6 +43,7 @@ export default function ClientWorkoutsPage() {
     const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [activeTab, setActiveTab] = useState<'workouts' | 'info'>('workouts');
 
     useEffect(() => {
         if (authLoading) return;
@@ -53,6 +56,7 @@ export default function ClientWorkoutsPage() {
         if (isAuthenticated && clientId) {
             fetchClientWorkouts();
             fetchActiveProgram();
+            fetchClientInfo();
         } else if (!isAuthenticated) {
             router.push(`/login?redirect=/trainer/clients/${clientId}`);
         }

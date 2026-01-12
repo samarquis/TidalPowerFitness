@@ -78,3 +78,36 @@ export const getRevenueReport = async (req: AuthenticatedRequest, res: Response)
     res.status(500).json({ error: 'Failed to generate revenue report' });
   }
 };
+
+export const getTrainerPerformanceReport = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { start_date, end_date } = req.query;
+    
+    const startDate = start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const endDate = end_date || new Date().toISOString().split('T')[0];
+
+    const result = await query(`
+      SELECT 
+        u.id as trainer_id,
+        u.first_name || ' ' || u.last_name as trainer_name,
+        u.email,
+        COUNT(DISTINCT ws.id) as class_count,
+        COUNT(sp.client_id) as total_attendees,
+        COUNT(DISTINCT sp.client_id) as unique_clients
+      FROM users u
+      JOIN workout_sessions ws ON u.id = ws.trainer_id
+      LEFT JOIN session_participants sp ON ws.id = sp.session_id
+      WHERE u.roles @> ARRAY['trainer'::text]
+        AND ws.session_date >= $1 
+        AND ws.session_date <= $2
+      GROUP BY u.id, u.first_name, u.last_name, u.email
+      ORDER BY class_count DESC
+    `, [startDate, endDate]);
+
+    res.json(result.rows);
+  } catch (error) {
+    logger.error('Error in getTrainerPerformanceReport:', error);
+    res.status(500).json({ error: 'Failed to generate trainer performance report' });
+  }
+};
+

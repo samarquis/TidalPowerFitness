@@ -261,7 +261,7 @@ class WorkoutSessionModel {
 
     async getSessionLogs(sessionId: string): Promise<any[]> {
         const result = await query(
-            `SELECT se.id as session_exercise_id, se.exercise_id, e.name as exercise_name, el.id as log_id, el.set_number, el.reps_completed, el.weight_used_lbs, el.notes as log_notes, el.logged_at
+            `SELECT se.id as session_exercise_id, se.exercise_id, e.name as exercise_name, el.id as log_id, el.set_number, el.reps_completed, el.weight_used_lbs, el.notes as log_notes, el.logged_at, el.client_id, el.logged_by
              FROM session_exercises se
              JOIN exercises e ON se.exercise_id = e.id
              LEFT JOIN exercise_logs el ON se.id = el.session_exercise_id

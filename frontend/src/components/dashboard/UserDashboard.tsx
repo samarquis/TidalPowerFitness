@@ -282,9 +282,38 @@ export default function UserDashboard() {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Left Column: Calendar & Selected Day Classes */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* Quick Actions (Moved to Top) */}
+                        <div className="glass-card bg-gradient-to-br from-dark-teal/20 to-black border-teal-500/20">
+                            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                                <h2 className="text-xl font-bold uppercase tracking-widest text-turquoise-surf">Quick Actions</h2>
+                                <Link href="/programs/my-program" className="text-xs font-bold text-gray-500 hover:text-white uppercase tracking-wider transition-colors">
+                                    View Full Program →
+                                </Link>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <Link href="/classes" className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-turquoise-surf/50 transition-all group">
+                                    <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">🏫</span>
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white">Classes</span>
+                                </Link>
+                                <Link href="/workouts/templates" className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-turquoise-surf/50 transition-all group">
+                                    <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📝</span>
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white">Templates</span>
+                                </Link>
+                                <Link href="/workouts/history" className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-turquoise-surf/50 transition-all group">
+                                    <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📅</span>
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white">History</span>
+                                </Link>
+                                <Link href="/leaderboard" className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-turquoise-surf/50 transition-all group">
+                                    <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">🏆</span>
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white">Rankings</span>
+                                </Link>
+                            </div>
+                        </div>
+
                         {/* Active Program Card */}
                         {activeProgram && (
                             <div className="bg-gradient-to-br from-cerulean/20 to-dark-teal/20 border border-turquoise-surf/30 rounded-2xl p-8 relative overflow-hidden group">
+                                {/* ... contents remain same ... */}
                                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                                     <span className="text-8xl">🗓️</span>
                                 </div>
@@ -322,31 +351,9 @@ export default function UserDashboard() {
                             </div>
                         )}
 
-                        {/* AI Recommendations */}
-                        {recommendations.length > 0 && (
-                            <div className="glass-card border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <span className="text-xl">🤖</span>
-                                    <h2 className="text-xl font-bold">AI Coaching Insights</h2>
-                                </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Based on your recent training volume, we recommend adding these exercises to balance your physique:</p>
-                                <div className="grid md:grid-cols-3 gap-4">
-                                    {recommendations.map(rec => (
-                                        <Link 
-                                            key={rec.id}
-                                            href={`/exercises/${rec.id}`}
-                                            className="p-4 bg-white/5 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all group"
-                                        >
-                                            <p className="text-[10px] font-bold text-purple-500 dark:text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
-                                            <h4 className="font-bold text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">{rec.name}</h4>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
                         {/* Overall Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            {/* ... stats ... */}
                             <div className="glass-card text-center relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:scale-110 transition-transform">
                                     <span className="text-4xl">🔥</span>
@@ -376,22 +383,67 @@ export default function UserDashboard() {
 
                         {/* Calendar Section */}
                         <div className="glass-card">
-                            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                                <h2 className="text-2xl font-bold">Class Schedule</h2>
+                            <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                                <h2 className="text-2xl font-bold uppercase tracking-tighter italic">Class <span className="text-gradient">Schedule</span></h2>
                                 <div className="flex items-center gap-4 bg-white/5 p-1 rounded-xl border border-white/10">
-                                    <button onClick={handlePrevMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors">←</button>
-                                    <span className="font-bold w-32 text-center text-sm">
+                                    <button onClick={handlePrevMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-xs font-bold">PREV</button>
+                                    <span className="font-black w-32 text-center text-[10px] uppercase tracking-widest text-turquoise-surf">
                                         {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                                     </span>
-                                    <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors">→</button>
+                                    <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-xs font-bold">NEXT</button>
                                 </div>
                             </div>
 
-                            {/* Calendar Grid */}
-                            <div className="grid grid-cols-7 gap-2 mb-2 text-center text-gray-500 text-[10px] font-bold uppercase tracking-wider">
-                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                            {/* Weekly Strip (Premium UI Upgrade) */}
+                            <div className="flex justify-between gap-2 mb-10 overflow-x-auto pb-4 custom-scrollbar">
+                                {Array.from({ length: 7 }).map((_, i) => {
+                                    // Calculate dates for the current week starting from Sunday or current selected date
+                                    const startOfWeek = new Date(selectedDate);
+                                    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
+                                    
+                                    const dateObj = new Date(startOfWeek);
+                                    dateObj.setDate(startOfWeek.getDate() + i);
+                                    
+                                    const isSelected = dateObj.toDateString() === selectedDate.toDateString();
+                                    const isToday = dateObj.toDateString() === new Date().toDateString();
+                                    const dayClasses = classes.filter(c => {
+                                        const days = c.days_of_week && c.days_of_week.length > 0 ? c.days_of_week : [c.day_of_week];
+                                        return days.includes(dateObj.getDay());
+                                    });
+
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={() => setSelectedDate(dateObj)}
+                                            className={`
+                                                flex-1 min-w-[60px] py-4 rounded-2xl flex flex-col items-center transition-all duration-300
+                                                ${isSelected 
+                                                    ? 'bg-gradient-to-b from-cerulean to-pacific-cyan text-black shadow-[0_0_20px_rgba(8,172,214,0.4)] scale-105 z-10' 
+                                                    : 'bg-white/5 hover:bg-white/10 border border-white/5 text-gray-500'}
+                                            `}
+                                        >
+                                            <span className={`text-[10px] font-black uppercase tracking-tighter mb-1 ${isSelected ? 'text-black/60' : 'text-gray-600'}`}>
+                                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()]}
+                                            </span>
+                                            <span className={`text-xl font-black ${isSelected ? 'text-black' : 'text-white'}`}>
+                                                {dateObj.getDate()}
+                                            </span>
+                                            {dayClasses.length > 0 && (
+                                                <div className={`w-1 h-1 rounded-full mt-2 ${isSelected ? 'bg-black' : 'bg-turquoise-surf'}`}></div>
+                                            )}
+                                            {isToday && !isSelected && (
+                                                <div className="absolute -top-1 px-1.5 py-0.5 bg-turquoise-surf text-black text-[8px] font-black uppercase rounded-full">Today</div>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            <div className="grid grid-cols-7 gap-2">
+
+                            {/* Monthly Calendar Grid (Compact) */}
+                            <div className="grid grid-cols-7 gap-1 mb-2 text-center text-gray-600 text-[8px] font-black uppercase tracking-widest opacity-50">
+                                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                            </div>
+                            <div className="grid grid-cols-7 gap-1">
                                 {Array.from({ length: firstDay }).map((_, i) => (
                                     <div key={`empty-${i}`} className="aspect-square"></div>
                                 ))}
@@ -409,19 +461,14 @@ export default function UserDashboard() {
                                             key={day}
                                             onClick={() => setSelectedDate(dateObj)}
                                             className={`
-                                                aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all relative p-1
-                                                ${isSelected ? 'bg-gradient-to-br from-cerulean to-pacific-cyan text-white ring-2 ring-turquoise-surf shadow-lg shadow-turquoise-surf/20' : 'bg-white/5 hover:bg-white/10 border border-white/5'}
-                                                ${isToday && !isSelected ? 'border-2 border-turquoise-surf' : ''}
+                                                aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all relative
+                                                ${isSelected ? 'bg-turquoise-surf/20 ring-1 ring-turquoise-surf' : 'hover:bg-white/5'}
+                                                ${isToday ? 'bg-white/5' : ''}
                                             `}
                                         >
-                                            <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-foreground'}`}>{day}</span>
+                                            <span className={`text-[10px] font-bold ${isSelected ? 'text-turquoise-surf' : isToday ? 'text-white' : 'text-gray-600'}`}>{day}</span>
                                             {hasClasses && (
-                                                <div className="flex gap-1 mt-1">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-500' : 'bg-turquoise-surf'}`}></div>
-                                                    {dayClasses.length > 1 && (
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${hasBookedClass ? 'bg-green-500 shadow-sm' : 'bg-turquoise-surf'}`}></div>
-                                                    )}
-                                                </div>
+                                                <div className={`w-1 h-1 rounded-full mt-0.5 ${hasBookedClass ? 'bg-green-500' : 'bg-turquoise-surf/40'}`}></div>
                                             )}
                                         </div>
                                     );
@@ -501,6 +548,28 @@ export default function UserDashboard() {
 
                     {/* Right Column: PRs & Achievements */}
                     <div className="space-y-8">
+                        {/* AI Recommendations (Moved here) */}
+                        {recommendations.length > 0 && (
+                            <div className="glass-card border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="text-xl">🤖</span>
+                                    <h2 className="text-xl font-bold italic">AI Insights</h2>
+                                </div>
+                                <div className="space-y-3">
+                                    {recommendations.slice(0, 3).map(rec => (
+                                        <Link 
+                                            key={rec.id}
+                                            href={`/exercises/${rec.id}`}
+                                            className="block p-4 bg-white/5 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all group"
+                                        >
+                                            <p className="text-[10px] font-bold text-purple-500 dark:text-purple-400 uppercase mb-1 tracking-widest">{rec.muscle_group_name}</p>
+                                            <h4 className="font-bold text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors text-sm">{rec.name}</h4>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Personal Records */}
                         <div className="glass-card">
                             <div className="flex justify-between items-center mb-6">
@@ -528,6 +597,7 @@ export default function UserDashboard() {
                         </div>
 
                         {/* Achievements */}
+                        {/* ... */}
                         <div className="glass-card">
                             <h2 className="text-xl font-bold mb-6">Achievements</h2>
                             {achievements.length === 0 ? (
@@ -575,33 +645,6 @@ export default function UserDashboard() {
                                     ))}
                                 </div>
                             )}
-                        </div>
-
-                        {/* Quick Actions */}
-                        <div className="glass-card bg-gradient-to-br from-dark-teal/20 to-black border-teal-500/20">
-                            <h2 className="text-xl font-bold mb-6">Quick Actions</h2>
-                            <div className="grid grid-cols-1 gap-3">
-                                <Link href="/classes" className="btn-primary w-full text-sm">
-                                    Browse Classes
-                                </Link>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Link href="/workouts/templates" className="btn-secondary w-full text-[10px] uppercase font-bold">
-                                        Templates
-                                    </Link>
-                                    <Link href="/workouts/history" className="btn-secondary w-full text-[10px] uppercase font-bold">
-                                        History
-                                    </Link>
-                                    <Link href="/leaderboard" className="btn-secondary w-full text-[10px] uppercase font-bold">
-                                        Leaderboard
-                                    </Link>
-                                    <Link href="/challenges" className="btn-secondary w-full text-[10px] uppercase font-bold">
-                                        Challenges
-                                    </Link>
-                                </div>
-                                <Link href="/programs/my-program" className="btn-secondary w-full text-sm">
-                                    My Full Program
-                                </Link>
-                            </div>
                         </div>
 
                         {/* Help & Support */}

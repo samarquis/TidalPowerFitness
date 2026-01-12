@@ -16,6 +16,16 @@ interface AttendanceRecord {
     total_attendees: string;
 }
 
+interface Attendee {
+    booking_id: string;
+    user_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    status: string;
+}
+
 export default function TrainerReportsPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
@@ -26,6 +36,10 @@ export default function TrainerReportsPage() {
         start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         end: new Date().toISOString().split('T')[0]
     });
+    
+    const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [attendees, setAttendees] = useState<{ [key: string]: Attendee[] }>({});
+    const [attendeesLoading, setAttendeesLoading] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
@@ -44,6 +58,7 @@ export default function TrainerReportsPage() {
 
     const fetchReport = async () => {
         setLoading(true);
+        setError('');
         try {
             const response = await apiClient.getAttendanceReport(dateRange.start, dateRange.end);
             if (response.data) {
@@ -56,6 +71,27 @@ export default function TrainerReportsPage() {
             setError('Failed to fetch report');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAttendees = async (classId: string, date: string) => {
+        const key = `${classId}-${date}`;
+        if (attendees[key]) {
+            setExpandedRow(expandedRow === key ? null : key);
+            return;
+        }
+
+        setAttendeesLoading(key);
+        try {
+            const response = await apiClient.getClassAttendees(classId, date);
+            if (response.data && response.data.attendees) {
+                setAttendees(prev => ({ ...prev, [key]: response.data.attendees }));
+                setExpandedRow(key);
+            }
+        } catch (error) {
+            console.error('Error fetching attendees:', error);
+        } finally {
+            setAttendeesLoading(null);
         }
     };
 
@@ -128,43 +164,90 @@ export default function TrainerReportsPage() {
                         No attendance records found for this period.
                     </div>
                 ) : (
-                    <div className="glass rounded-xl overflow-hidden overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-white/5 border-b border-white/10">
-                                <tr>
-                                    <th className="px-6 py-4 font-bold text-gray-300">Date</th>
-                                    <th className="px-6 py-4 font-bold text-gray-300">Class</th>
-                                    <th className="px-6 py-4 font-bold text-gray-300">Time</th>
-                                    <th className="px-6 py-4 font-bold text-gray-300">Bookings</th>
-                                    <th className="px-6 py-4 font-bold text-gray-300">Total People</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {report.map((row, index) => (
-                                    <tr key={index} className="hover:bg-white/5 transition-colors">
-                                        <td className="px-6 py-4 text-white">
-                                            {new Date(row.target_date).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-4 text-white font-semibold">
-                                            {row.class_name}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-400">
-                                            {formatTime12Hour(row.start_time)}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-sm font-bold">
-                                                {row.booking_count}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-sm font-bold">
-                                                {row.total_attendees}
-                                            </span>
-                                        </td>
+                    <div className="glass rounded-xl overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-white/5 border-b border-white/10">
+                                    <tr>
+                                        <th className="px-6 py-4 font-bold text-gray-300">Date</th>
+                                        <th className="px-6 py-4 font-bold text-gray-300">Class</th>
+                                        <th className="px-6 py-4 font-bold text-gray-300 text-center">Bookings</th>
+                                        <th className="px-6 py-4 font-bold text-gray-300 text-center">Total People</th>
+                                        <th className="px-6 py-4 font-bold text-gray-300 text-right">Action</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {report.map((row, index) => {
+                                        const key = `${row.class_id}-${row.target_date}`;
+                                        const isExpanded = expandedRow === key;
+                                        const isLoading = attendeesLoading === key;
+
+                                        return (
+                                            <React.Fragment key={index}>
+                                                <tr 
+                                                    className={`hover:bg-white/10 transition-colors cursor-pointer ${isExpanded ? 'bg-white/5' : ''}`}
+                                                    onClick={() => fetchAttendees(row.class_id, row.target_date)}
+                                                >
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-white font-medium">{new Date(row.target_date).toLocaleDateString()}</div>
+                                                        <div className="text-[10px] text-gray-500 uppercase tracking-widest">{formatTime12Hour(row.start_time)}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-white font-bold">
+                                                        {row.class_name}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-black">
+                                                            {row.booking_count}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-black">
+                                                            {row.total_attendees}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <button className="text-turquoise-surf hover:text-white transition-colors">
+                                                            {isLoading ? (
+                                                                <div className="w-4 h-4 border-2 border-turquoise-surf border-t-transparent animate-spin rounded-full inline-block"></div>
+                                                            ) : isExpanded ? '↑ Hide' : 'View Details →'}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                {isExpanded && (
+                                                    <tr className="bg-black/40 border-l-4 border-turquoise-surf">
+                                                        <td colSpan={5} className="px-8 py-6">
+                                                            <div className="space-y-4">
+                                                                <h4 className="text-sm font-black uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-turquoise-surf animate-pulse"></span>
+                                                                    Attendee List
+                                                                </h4>
+                                                                {attendees[key]?.length === 0 ? (
+                                                                    <p className="text-gray-500 italic text-sm">No attendees recorded for this session.</p>
+                                                                ) : (
+                                                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                        {attendees[key].map((attendee) => (
+                                                                            <div key={attendee.user_id} className="bg-white/5 p-4 rounded-xl border border-white/5 flex items-center gap-4">
+                                                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-turquoise-surf/20 to-cerulean/20 flex items-center justify-center text-turquoise-surf font-bold text-sm">
+                                                                                    {attendee.first_name[0]}{attendee.last_name[0]}
+                                                                                </div>
+                                                                                <div className="min-w-0">
+                                                                                    <div className="text-white font-bold text-sm truncate">{attendee.first_name} {attendee.last_name}</div>
+                                                                                    <div className="text-[10px] text-gray-500 truncate">{attendee.email}</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>

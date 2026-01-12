@@ -106,8 +106,21 @@ export default function ChangelogPage() {
                                     <div className={`w-full sm:w-[45%] pl-10 sm:pl-0 group`}>
                                         <div className="bg-gray-900/40 hover:bg-gray-900/60 transition-colors border border-white/5 p-6 rounded-3xl backdrop-blur-sm">
                                             <h3 className="text-xl font-bold leading-tight mb-4 text-white group-hover:text-pacific-cyan transition-colors">{entry.title}</h3>
-                                            <div className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
-                                                {entry.content}
+                                            <div className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap changelog-content">
+                                                {entry.content.split('\n').map((line, i) => {
+                                                    if (line.trim().startsWith('-') || line.trim().startsWith('*')) {
+                                                        return (
+                                                            <div key={i} className="flex gap-2 mb-1 pl-2">
+                                                                <span className="text-turquoise-surf">•</span>
+                                                                <span>{line.trim().substring(1).trim()}</span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if (line.trim().startsWith('#')) {
+                                                        return <div key={i} className="text-white font-bold mt-4 mb-2 uppercase tracking-widest text-[10px]">{line.trim().replace(/^#+\s*/, '')}</div>;
+                                                    }
+                                                    return <p key={i} className={line.trim() ? 'mb-2' : 'h-2'}>{line}</p>;
+                                                })}
                                             </div>
                                         </div>
                                     </div>
