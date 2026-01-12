@@ -521,21 +521,21 @@ export default function UserDashboard() {
                         
                         {/* AI Insights (Top of Right Column) */}
                         {recommendations.length > 0 && (
-                            <div className="glass-card border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-transparent p-8">
+                            <div className="glass-card border-pacific-cyan/20 bg-gradient-to-br from-pacific-cyan/10 to-transparent p-8">
                                 <div className="flex items-center gap-4 mb-8">
-                                    <div className="w-10 h-10 rounded-2xl bg-purple-500/20 flex items-center justify-center text-xl">🤖</div>
-                                    <h2 className="text-xl font-black uppercase tracking-tighter italic text-white">AI <span className="text-purple-400">Insights</span></h2>
+                                    <div className="w-10 h-10 rounded-2xl bg-pacific-cyan/20 flex items-center justify-center text-xl text-turquoise-surf border border-pacific-cyan/30">🤖</div>
+                                    <h2 className="text-xl font-black uppercase tracking-tighter italic text-white">AI <span className="text-pacific-cyan">Insights</span></h2>
                                 </div>
                                 <div className="space-y-4">
                                     {recommendations.slice(0, 3).map(rec => (
                                         <Link 
                                             key={rec.id}
                                             href={`/exercises/${rec.id}`}
-                                            className="block p-5 bg-white/[0.03] border border-white/5 rounded-[1.5rem] hover:border-purple-500/30 transition-all group relative overflow-hidden"
+                                            className="block p-5 bg-white/[0.03] border border-white/5 rounded-[1.5rem] hover:border-pacific-cyan/30 transition-all group relative overflow-hidden"
                                         >
-                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            <p className="text-[9px] font-black text-purple-400 uppercase mb-2 tracking-[0.2em]">{rec.muscle_group_name}</p>
-                                            <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors text-sm">{rec.name}</h4>
+                                            <div className="absolute inset-0 bg-gradient-to-br from-pacific-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <p className="text-[9px] font-black text-pacific-cyan uppercase mb-2 tracking-[0.2em]">{rec.muscle_group_name}</p>
+                                            <h4 className="font-bold text-white group-hover:text-turquoise-surf transition-colors text-sm">{rec.name}</h4>
                                         </Link>
                                     ))}
                                 </div>

@@ -187,15 +187,15 @@ export default function TrainerDashboardPage() {
 
                 {/* Program Builder CTA */}
                 <div className="mb-12 grid md:grid-cols-2 gap-6">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 p-8 shadow-lg group">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cerulean to-pacific-cyan p-8 shadow-lg group">
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-2 text-white">Assign Workout</h2>
-                            <p className="text-blue-100 mb-6 max-w-md">
+                            <h2 className="text-3xl font-bold mb-2 text-black">Assign Workout</h2>
+                            <p className="text-black/70 mb-6 max-w-md font-medium">
                                 Design a workout session and assign it to a class or specific client. This is where you set the program for the day.
                             </p>
                             <Link
                                 href="/workouts/assign"
-                                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-blue-600 transition-all hover:scale-105 active:scale-95 shadow-xl"
+                                className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                             >
                                 🚀 Launch Wizard
                             </Link>

@@ -6,7 +6,9 @@ class PackageController {
     // Get all active packages
     async getPackages(req: Request, res: Response): Promise<void> {
         try {
-            const packages = await Package.getAllActive();
+            const allPackages = await Package.getAllActive();
+            // Final Rollback: Ensure only one-time token packages are served
+            const packages = allPackages.filter(p => p.type === 'one_time');
             res.json(packages);
         } catch (error) {
             console.error('Error fetching packages:', error);
