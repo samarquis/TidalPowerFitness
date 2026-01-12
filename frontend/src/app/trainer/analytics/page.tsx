@@ -20,6 +20,10 @@ interface PopularExercise {
 interface AnalyticsData {
     popular_classes: PopularClass[];
     popular_exercises: PopularExercise[];
+    summary: {
+        unique_clients: string;
+        total_volume_lbs: string;
+    };
 }
 
 export default function TrainerAnalyticsPage() {
@@ -78,6 +82,23 @@ export default function TrainerAnalyticsPage() {
                     <p className="text-xl text-gray-300">
                         Insights into your most popular classes and frequently used exercises
                     </p>
+                </div>
+
+                {/* Summary Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    <div className="glass rounded-2xl p-8 border-turquoise-surf/20 bg-gradient-to-br from-turquoise-surf/10 to-transparent">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Unique Clients Coached</div>
+                        <div className="text-5xl font-black text-white italic">{data?.summary?.unique_clients || 0}</div>
+                        <div className="mt-4 text-xs text-turquoise-surf font-bold uppercase tracking-tighter">Individuals trained across all sessions</div>
+                    </div>
+                    <div className="glass rounded-2xl p-8 border-cerulean/20 bg-gradient-to-br from-cerulean/10 to-transparent">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Total Volume Coached</div>
+                        <div className="text-5xl font-black text-white italic">
+                            {data?.summary?.total_volume_lbs ? (parseInt(data.summary.total_volume_lbs) / 1000).toFixed(1) + 'k' : '0'}
+                            <span className="text-xl ml-2 not-italic text-gray-600">LBS</span>
+                        </div>
+                        <div className="mt-4 text-xs text-cerulean font-bold uppercase tracking-tighter">Cumulative weight lifted by your clients</div>
+                    </div>
                 </div>
 
                 {loading ? (

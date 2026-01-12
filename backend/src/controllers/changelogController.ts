@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from '../types/auth'; // Added import
 
 export const getChangelogs = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const isAdmin = req.user?.roles.includes('admin');
+        const isAdmin = req.user?.roles?.includes('admin') || false;
         const changelogs = await Changelog.findAll(!isAdmin);
         res.status(200).json({ changelogs });
     } catch (error) {

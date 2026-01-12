@@ -477,8 +477,12 @@ class ApiClient {
         return this.request<any>('/admin/migrate', { method: 'POST' });
     }
 
-    async getRevenueReport() {
-        return this.request<any>('/admin/reports/revenue', { method: 'GET' });
+    async getRevenueReport(startDate?: string, endDate?: string) {
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        const query = params.toString() ? `?${params.toString()}` : '';
+        return this.request<any>('/admin/reports/revenue' + query, { method: 'GET' });
     }
 
     async getTrainerPerformanceReport(startDate?: string, endDate?: string) {

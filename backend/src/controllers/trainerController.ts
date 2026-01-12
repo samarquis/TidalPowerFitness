@@ -473,9 +473,22 @@ class TrainerController {
                 LIMIT 10
             `, [trainerId]);
 
+            // 3. Overall Stats (Volume & Unique Clients)
+            const overallStats = await pool.query(`
+                SELECT 
+                    COUNT(DISTINCT sp.client_id) as unique_clients,
+                    SUM(el.reps_completed * el.weight_used_lbs) as total_volume_lbs
+                FROM workout_sessions ws
+                LEFT JOIN session_participants sp ON ws.id = sp.session_id
+                LEFT JOIN session_exercises se ON ws.id = se.session_id
+                LEFT JOIN exercise_logs el ON se.id = el.session_exercise_id
+                WHERE ws.trainer_id = $1
+            `, [trainerId]);
+
             res.json({
                 popular_classes: popularClasses.rows,
-                popular_exercises: popularExercises.rows
+                popular_exercises: popularExercises.rows,
+                summary: overallStats.rows[0]
             });
         } catch (error) {
             console.error('Error fetching trainer analytics:', error);

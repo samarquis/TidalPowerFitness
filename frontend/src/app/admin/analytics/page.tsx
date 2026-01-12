@@ -76,8 +76,9 @@ export default function AdminAnalyticsPage() {
     }, [isAuthenticated, user, router, authLoading]);
 
     const fetchAnalytics = async () => {
+        setLoading(true);
         try {
-            const response = await apiClient.getRevenueReport();
+            const response = await apiClient.getRevenueReport(dateRange.start, dateRange.end);
             if (response.data) {
                 setData(response.data);
             } else {
@@ -89,6 +90,11 @@ export default function AdminAnalyticsPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleRefreshAll = () => {
+        fetchAnalytics();
+        fetchTrainerStats();
     };
 
     const fetchTrainerStats = async () => {
@@ -143,12 +149,37 @@ export default function AdminAnalyticsPage() {
                         </p>
                     </div>
 
-                    <button 
-                        onClick={handlePrint}
-                        className="print:hidden px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold flex items-center gap-2 transition-all"
-                    >
-                        🖨️ Print as PDF
-                    </button>
+                    <div className="flex items-center gap-4 print:hidden">
+                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-xl">
+                            <input 
+                                type="date" 
+                                value={dateRange.start}
+                                onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
+                                className="bg-transparent border-none text-xs font-bold focus:ring-0 outline-none"
+                            />
+                            <span className="text-gray-500 text-xs">to</span>
+                            <input 
+                                type="date" 
+                                value={dateRange.end}
+                                onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
+                                className="bg-transparent border-none text-xs font-bold focus:ring-0 outline-none"
+                            />
+                        </div>
+                        
+                        <button 
+                            onClick={handleRefreshAll}
+                            className="px-6 py-3 bg-turquoise-surf text-black rounded-xl font-black uppercase text-xs hover:scale-105 transition-all shadow-lg shadow-turquoise-surf/20"
+                        >
+                            🔄 Refresh Data
+                        </button>
+
+                        <button 
+                            onClick={handlePrint}
+                            className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold flex items-center gap-2 transition-all text-xs uppercase tracking-widest"
+                        >
+                            🖨️ PDF
+                        </button>
+                    </div>
                 </div>
 
                 {/* Summary Stats */}

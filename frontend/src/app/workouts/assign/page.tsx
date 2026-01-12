@@ -153,7 +153,7 @@ function AssignWorkoutContent() {
                 const [templatesRes, exercisesRes, classesRes, clientsRes, bodyPartsRes, musclesRes] = await Promise.all([
                     apiClient.getWorkoutTemplates(),
                     apiClient.getExercises(),
-                    apiClient.getClasses(), // Fetch ALL classes now
+                    apiClient.getClassesByDay(new Date().getDay()), // Use assignment-specific endpoint
                     apiClient.getMyClients(),
                     fetch(`${apiUrl}/exercises/body-parts`).then(res => res.json()),
                     fetch(`${apiUrl}/exercises/body-focus-areas`).then(res => res.json())
@@ -161,7 +161,16 @@ function AssignWorkoutContent() {
 
                 if (templatesRes.data) setTemplates(templatesRes.data);
                 if (exercisesRes.data) setAvailableExercises(exercisesRes.data);
-                if (classesRes.data) setClasses(classesRes.data);
+                
+                // Robust class loading: handle both direct array and paginated structure
+                if (classesRes.data) {
+                    if (Array.isArray(classesRes.data)) {
+                        setClasses(classesRes.data);
+                    } else if (classesRes.data && typeof classesRes.data === 'object' && Array.isArray((classesRes.data as any).data)) {
+                        setClasses((classesRes.data as any).data);
+                    }
+                }
+                
                 if (clientsRes.data) setClients(clientsRes.data);
                 if (Array.isArray(bodyPartsRes)) setBodyPartsList(bodyPartsRes);
                 if (Array.isArray(musclesRes)) setMusclesList(musclesRes);

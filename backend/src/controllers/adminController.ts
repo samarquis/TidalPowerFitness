@@ -33,17 +33,23 @@ export const updateSetting = async (req: AuthenticatedRequest, res: Response) =>
 
 export const getRevenueReport = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // 1. Total Revenue by Period (last 30 days)
+    const { start_date, end_date } = req.query;
+    
+    const startDate = start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const endDate = end_date || new Date().toISOString().split('T')[0];
+
+    // 1. Total Revenue by Period
     const revenueTrendResult = await query(`
       SELECT 
         DATE_TRUNC('day', created_at) as date,
         SUM(amount_cents) as amount_cents
       FROM payments
       WHERE status = 'completed'
-        AND created_at >= CURRENT_DATE - INTERVAL '30 days'
+        AND created_at >= $1
+        AND created_at <= ($2::date + 1)
       GROUP BY date
       ORDER BY date ASC
-    `);
+    `, [startDate, endDate]);
 
     // 2. Sales by Package Type
     const packageStatsResult = await query(`
@@ -55,9 +61,11 @@ export const getRevenueReport = async (req: AuthenticatedRequest, res: Response)
       FROM payments pay
       LEFT JOIN packages p ON pay.description ILIKE '%' || p.name || '%'
       WHERE pay.status = 'completed'
+        AND pay.created_at >= $1
+        AND pay.created_at <= ($2::date + 1)
       GROUP BY p.name, p.type
       ORDER BY total_revenue_cents DESC
-    `);
+    `, [startDate, endDate]);
 
     // 3. Overall Totals
     const summaryResult = await query(`
@@ -66,7 +74,9 @@ export const getRevenueReport = async (req: AuthenticatedRequest, res: Response)
         COUNT(id) as total_transactions
       FROM payments
       WHERE status = 'completed'
-    `);
+        AND created_at >= $1
+        AND created_at <= ($2::date + 1)
+    `, [startDate, endDate]);
 
     res.json({
       summary: summaryResult.rows[0],

@@ -90,8 +90,14 @@ class WorkoutSessionController {
 
             // Get PRs achieved in this session
             const prs = await ProgressModel.getPersonalRecords(userId);
+            
+            // Match PRs by exercise and values, rather than just log_id which can be inconsistent in some flows
             const sessionPrs = prs.filter((pr: any) => 
-                userLogs.some(l => l.log_id === pr.exercise_log_id)
+                userLogs.some(l => 
+                    l.exercise_id === pr.exercise_id && 
+                    Number(l.weight_used_lbs) === Number(pr.value) &&
+                    new Date(l.logged_at).getTime() >= new Date(pr.achieved_at).getTime() - 5000 // Within 5s of the record timestamp
+                )
             );
 
             res.json({

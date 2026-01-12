@@ -23,8 +23,8 @@ export interface Class {
 
 export const getAllClasses = async (activeOnly: boolean = true): Promise<Class[]> => {
     const sql = activeOnly
-        ? 'SELECT * FROM classes WHERE is_active = true ORDER BY day_of_week, start_time'
-        : 'SELECT * FROM classes ORDER BY day_of_week, start_time';
+        ? 'SELECT * FROM classes WHERE is_active = true ORDER BY days_of_week[1], start_time'
+        : 'SELECT * FROM classes ORDER BY days_of_week[1], start_time';
 
     const result = await query(sql);
     return result.rows;
@@ -33,7 +33,7 @@ export const getAllClasses = async (activeOnly: boolean = true): Promise<Class[]
 export const getPaginatedClasses = async (params: PaginationParams, activeOnly: boolean = true): Promise<PaginatedResult<Class>> => {
     return listPaginated<Class>('classes', params, {
         where: activeOnly ? 'is_active = true' : undefined,
-        orderBy: 'day_of_week, start_time'
+        orderBy: 'days_of_week[1], start_time'
     });
 };
 
