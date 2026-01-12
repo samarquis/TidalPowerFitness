@@ -40,18 +40,21 @@ export default function PackagesPage() {
         fetchPackages();
     }, []);
 
+    // Rollback: Filter only for one-time token packs
     const oneTimePackages = packages.filter(pkg => pkg.type === 'one_time');
-    const subscriptions = packages.filter(pkg => pkg.type === 'subscription');
 
     return (
-        <div className="min-h-screen bg-background page-container">
-            <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                        Membership & <span className="text-gradient">Tokens</span>
+        <div className="min-h-screen bg-background page-container relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-turquoise-surf/5 rounded-full blur-[120px] pointer-events-none" />
+            
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="text-center mb-16">
+                    <h1 className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter uppercase italic">
+                        Token <span className="text-gradient">Vault</span>
                     </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Choose the plan that fits your lifestyle.
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 max-w-2xl mx-auto">
+                        Secure your tactical credits • Deploy at will
                     </p>
                 </div>
 
@@ -60,44 +63,21 @@ export default function PackagesPage() {
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
                     </div>
                 ) : error ? (
-                    <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg text-center max-w-2xl mx-auto">
+                    <div className="bg-red-900/20 border border-red-900/50 text-red-200 p-6 rounded-2xl text-center max-w-2xl mx-auto backdrop-blur-xl">
                         {error}
                     </div>
                 ) : (
                     <div className="space-y-16">
-                        {/* Subscriptions Section */}
-                        {subscriptions.length > 0 && (
-                            <div>
-                                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                                    <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                                    Monthly Memberships
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {subscriptions.map((pkg) => (
-                                        <PackageCard key={pkg.id} pkg={pkg} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
                         {/* One-time Section */}
-                        {oneTimePackages.length > 0 && (
-                            <div>
-                                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                                    <span className="w-2 h-2 rounded-full bg-turquoise-surf"></span>
-                                    Token Packs
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {oneTimePackages.map((pkg) => (
-                                        <PackageCard key={pkg.id} pkg={pkg} />
-                                    ))}
-                                </div>
+                        {oneTimePackages.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {oneTimePackages.map((pkg) => (
+                                    <PackageCard key={pkg.id} pkg={pkg} />
+                                ))}
                             </div>
-                        )}
-
-                        {packages.length === 0 && (
-                            <div className="text-center text-gray-400 py-12 glass-card border-dashed">
-                                No packages available at the moment.
+                        ) : (
+                            <div className="text-center text-gray-600 font-bold uppercase tracking-widest py-20 glass-card border-dashed border-white/10">
+                                No token packs currently available in the vault.
                             </div>
                         )}
                     </div>
