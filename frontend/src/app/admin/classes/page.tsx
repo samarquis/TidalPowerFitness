@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CTAButton } from '@/components/ui';
 import { formatTime12Hour } from "@/lib/utils";
 
@@ -47,8 +47,6 @@ interface ClassFormData {
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function AdminClassesContent() {
-
-
     const { user, isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -108,75 +106,71 @@ function AdminClassesContent() {
     }, [searchParams]);
 
     useEffect(() => {
-        if (isAuthenticated && !user?.roles?.includes('admin')) {
-            router.push('/');
-            return;
+        if (isAuthenticated && user?.roles?.includes('admin')) {
+            fetchInitialData();
+        } else if (!loading && (!isAuthenticated || !user?.roles?.includes('admin'))) {
+            router.push('/login');
         }
-
-        if (isAuthenticated) {
-            fetchClasses();
-            fetchTrainers();
-        }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, user, router, loading]);
 
     useEffect(() => {
-        let filtered = classes;
+        filterClasses();
+    }, [searchTerm, dayFilter, categoryFilter, statusFilter, classes]);
 
-        // Filter by status
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(c =>
-                statusFilter === 'active' ? c.is_active : !c.is_active
-            );
-        }
-
-        // Filter by day
-        if (dayFilter !== null) {
-            filtered = filtered.filter(c => c.day_of_week === dayFilter);
-        }
-
-        // Filter by category
-        if (categoryFilter !== 'all') {
-            filtered = filtered.filter(c => c.category === categoryFilter);
-        }
-
-        // Filter by search term
-        if (searchTerm) {
-            filtered = filtered.filter(c =>
-                c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                c.instructor_name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-
-        setFilteredClasses(filtered);
-    }, [classes, statusFilter, dayFilter, categoryFilter, searchTerm]);
-
-    const fetchClasses = async () => {
+    const fetchInitialData = async () => {
         try {
-            const { data, error } = await apiClient.getClasses();
-            if (data) {
+            setLoading(true);
+            const [classesRes, trainersRes] = await Promise.all([
+                fetch('/api/classes'),
+                fetch('/api/users/trainers')
+            ]);
+
+            if (classesRes.ok) {
+                const data = await classesRes.json();
                 setClasses(data);
-                setFilteredClasses(data);
-            } else {
-                console.error('Error fetching classes:', error);
+            }
+
+            if (trainersRes.ok) {
+                const data = await trainersRes.json();
+                setTrainers(data);
             }
         } catch (error) {
-            console.error('Error fetching classes:', error);
+            console.error('Error fetching data:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchTrainers = async () => {
-        try {
-            const { data, error } = await apiClient.getTrainerUsers();
-            if (data) {
-                setTrainers(data);
-            } else {
-                console.error('Error fetching trainers:', error);
-            }
-        } catch (error) {
-            console.error('Error fetching trainers:', error);
+    const filterClasses = () => {
+        let filtered = [...classes];
+
+        if (searchTerm) {
+            filtered = filtered.filter(c => 
+                c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                c.instructor_name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
+
+        if (dayFilter !== null) {
+            filtered = filtered.filter(c => {
+                if (c.days_of_week && c.days_of_week.length > 0) {
+                    return c.days_of_week.includes(dayFilter);
+                }
+                return c.day_of_week === dayFilter;
+            });
+        }
+
+        if (categoryFilter !== 'all') {
+            filtered = filtered.filter(c => c.category === categoryFilter);
+        }
+
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(c => 
+                statusFilter === 'active' ? c.is_active : !c.is_active
+            );
+        }
+
+        setFilteredClasses(filtered);
     };
 
     const openCreateModal = () => {
@@ -184,7 +178,7 @@ function AdminClassesContent() {
         setFormData({
             name: '',
             description: '',
-            category: '',
+            category: 'Strength Training',
             instructor_id: '',
             instructor_name: '',
             day_of_week: 1,
@@ -195,17 +189,26 @@ function AdminClassesContent() {
             price_cents: 2000,
             acuity_appointment_type_id: ''
         });
-        // Initialize time components
         setTimeHour('9');
         setTimeMinute('00');
         setTimePeriod('am');
-        setErrors({});
         setCurrentStep(1);
+        setErrors({});
         setShowModal(true);
     };
 
     const openEditModal = (classItem: Class) => {
         setEditingClass(classItem);
+        
+        // Parse time
+        const [hourStr, minuteStr] = classItem.start_time.split(':');
+        let hour = parseInt(hourStr);
+        const minute = minuteStr;
+        const period = hour >= 12 ? 'pm' : 'am';
+        
+        if (hour > 12) hour -= 12;
+        if (hour === 0) hour = 12;
+
         setFormData({
             name: classItem.name,
             description: classItem.description,
@@ -220,77 +223,85 @@ function AdminClassesContent() {
             price_cents: classItem.price_cents,
             acuity_appointment_type_id: classItem.acuity_appointment_type_id || ''
         });
-        // Convert 24-hour time to 12-hour components
-        const time12 = convertTo12Hour(classItem.start_time);
-        setTimeHour(time12.hour);
-        setTimeMinute(time12.minute);
-        setTimePeriod(time12.period);
-        setErrors({});
+        
+        setTimeHour(hour.toString());
+        setTimeMinute(minute);
+        setTimePeriod(period);
         setCurrentStep(1);
+        setErrors({});
         setShowModal(true);
     };
 
-    const closeModal = () => {
-        setShowModal(false);
-        setEditingClass(null);
-        setCurrentStep(1);
-        setErrors({});
+    const toggleDay = (dayIndex: number) => {
+        setFormData(prev => {
+            const currentDays = [...prev.days_of_week];
+            const exists = currentDays.indexOf(dayIndex);
+            
+            if (exists !== -1) {
+                // Don't remove if it's the last one
+                if (currentDays.length > 1) {
+                    currentDays.splice(exists, 1);
+                }
+            } else {
+                currentDays.push(dayIndex);
+            }
+            
+            return {
+                ...prev,
+                days_of_week: currentDays.sort((a, b) => a - b),
+                day_of_week: currentDays[0] // Legacy support
+            };
+        });
     };
 
-    const validateStep = (step: number): boolean => {
+    const validateStep1 = () => {
         const newErrors: Partial<Record<keyof ClassFormData, string>> = {};
-
-        if (step === 1) {
-            if (!formData.name.trim()) newErrors.name = 'Class name is required';
-            if (!formData.description.trim()) newErrors.description = 'Description is required';
-            if (!formData.category) newErrors.category = 'Category is required';
-        } else if (step === 2) {
-            if (!formData.days_of_week || formData.days_of_week.length === 0) newErrors.day_of_week = 'Please select at least one day';
-            if (!formData.start_time) newErrors.start_time = 'Start time is required';
-            if (formData.duration_minutes < 15) newErrors.duration_minutes = 'Duration must be at least 15 minutes';
-        } else if (step === 3) {
-            if (!formData.instructor_id) newErrors.instructor_id = 'Instructor is required';
-            if (formData.max_capacity < 1) newErrors.max_capacity = 'Capacity must be at least 1';
-            if (formData.price_cents < 0) newErrors.price_cents = 'Price cannot be negative';
-        }
-
+        if (!formData.name) newErrors.name = 'Name is required';
+        if (!formData.category) newErrors.category = 'Category is required';
+        if (!formData.instructor_id) newErrors.instructor_id = 'Instructor is required';
+        
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const nextStep = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(currentStep + 1);
-        }
+    const validateStep2 = () => {
+        const newErrors: Partial<Record<keyof ClassFormData, string>> = {};
+        if (formData.days_of_week.length === 0) newErrors.days_of_week = 'At least one day is required' as any;
+        if (formData.duration_minutes <= 0) newErrors.duration_minutes = 'Duration must be positive';
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
-    const prevStep = () => {
-        setCurrentStep(currentStep - 1);
-    };
+    const handleSave = async () => {
+        // Format time back to 24h
+        let hour = parseInt(timeHour);
+        if (timePeriod === 'pm' && hour < 12) hour += 12;
+        if (timePeriod === 'am' && hour === 12) hour = 0;
+        const formattedTime = `${hour.toString().padStart(2, '0')}:${timeMinute}`;
 
-    const handleSubmit = async () => {
-        if (!validateStep(3)) return;
+        const finalData = {
+            ...formData,
+            start_time: formattedTime,
+            instructor_name: trainers.find(t => t.id === formData.instructor_id)?.full_name || ''
+        };
 
         try {
-            // Convert 12-hour time to 24-hour format before submitting
-            const time24 = convertTo24Hour(timeHour, timeMinute, timePeriod);
-            const submitData = {
-                ...formData,
-                start_time: time24
-            };
+            const url = editingClass ? `/api/classes/${editingClass.id}` : '/api/classes';
+            const method = editingClass ? 'PUT' : 'POST';
 
-            let result;
-            if (editingClass) {
-                result = await apiClient.updateClass(editingClass.id, submitData);
-            } else {
-                result = await apiClient.createClass(submitData);
-            }
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(finalData)
+            });
 
-            if (result.data) {
-                fetchClasses();
-                closeModal();
+            if (response.ok) {
+                setShowModal(false);
+                fetchInitialData();
             } else {
-                alert(result.error || 'Failed to save class');
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
             }
         } catch (error) {
             console.error('Error saving class:', error);
@@ -298,653 +309,374 @@ function AdminClassesContent() {
         }
     };
 
-    const toggleClassStatus = async (classId: string, currentStatus: boolean) => {
+    const toggleStatus = async (classItem: Class) => {
         try {
-            const { data, error } = await apiClient.updateClass(classId, { is_active: !currentStatus });
-            if (data) {
-                fetchClasses();
-            } else {
-                console.error('Error toggling class status:', error);
+            const response = await fetch(`/api/classes/${classItem.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...classItem, is_active: !classItem.is_active })
+            });
+
+            if (response.ok) {
+                fetchInitialData();
             }
         } catch (error) {
-            console.error('Error toggling class status:', error);
+            console.error('Error toggling status:', error);
         }
     };
 
-    const handleDeleteClass = async (classId: string) => {
-        if (!window.confirm('Are you sure you want to delete this class? This action cannot be undone.')) {
-            return;
-        }
-
-        try {
-            const { error } = await apiClient.deleteClass(classId);
-            if (!error) {
-                fetchClasses();
-            } else {
-                alert(error || 'Failed to delete class');
-            }
-        } catch (error) {
-            console.error('Error deleting class:', error);
-            alert('Failed to delete class');
-        }
-    };
-
-    const handleTrainerChange = (trainerId: string) => {
-        const trainer = trainers.find(t => t.id === trainerId);
-        setFormData({
-            ...formData,
-            instructor_id: trainerId,
-            instructor_name: trainer ? trainer.full_name : ''
-        });
-    };
-
-    if (!isAuthenticated || !user?.roles?.includes('admin')) {
-        return null;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
+            </div>
+        );
     }
 
-    const activeClasses = classes.filter(c => c.is_active);
-    const inactiveClasses = classes.filter(c => !c.is_active);
-    const categoryCounts = classes.reduce((acc, c) => {
-        acc[c.category] = (acc[c.category] || 0) + 1;
-        return acc;
-    }, {} as Record<string, number>);
-
     return (
-        <div className="min-h-screen pt-32 pb-16 bg-background/50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div className="min-h-screen bg-black p-4 md:p-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter">
-                            CLASS <span className="text-gradient uppercase">CONTROL</span>
-                        </h1>
-                        <p className="text-gray-500 font-medium">Create and schedule upcoming training sessions</p>
+                        <h1 className="text-3xl font-bold text-white mb-2">Class Management</h1>
+                        <p className="text-gray-400">Create and manage gym classes and schedules</p>
                     </div>
-                    <CTAButton
-                        onClick={openCreateModal}
-                        variant="primary"
-                        size="lg"
-                        className="w-full md:w-auto uppercase tracking-widest text-black font-black"
-                        icon={<span className="text-xl">+</span>}
-                    >
-                        Add New Class
+                    <CTAButton onClick={openCreateModal}>
+                        + Create New Class
                     </CTAButton>
                 </div>
 
-                {/* Stats */}
-                <div className="grid md:grid-cols-4 gap-6 mb-8">
-                    <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-turquoise-surf">{classes.length}</div>
-                        <div className="text-gray-400 mt-1">Total Classes</div>
-                    </div>
-                    <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-green-400">{activeClasses.length}</div>
-                        <div className="text-gray-400 mt-1">Active</div>
-                    </div>
-                    <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-gray-400">{inactiveClasses.length}</div>
-                        <div className="text-gray-400 mt-1">Inactive</div>
-                    </div>
-                    <div className="glass rounded-xl p-6">
-                        <div className="text-3xl font-bold text-blue-400">{Object.keys(categoryCounts).length}</div>
-                        <div className="text-gray-400 mt-1">Categories</div>
-                    </div>
-                </div>
-
                 {/* Filters */}
-                <div className="glass rounded-xl p-6 mb-8">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {/* Search */}
-                        <input
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white/5 p-4 rounded-xl border border-white/10">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Search</label>
+                        <input 
                             type="text"
-                            placeholder="Search classes or instructors..."
+                            placeholder="Search name or trainer..."
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-turquoise-surf outline-none"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input-field"
                         />
-
-                        {/* Status filter */}
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="input-field"
-                        >
-                            <option value="all" className="bg-background">All Status</option>
-                            <option value="active" className="bg-background">Active Only</option>
-                            <option value="inactive" className="bg-background">Inactive Only</option>
-                        </select>
-
-                        {/* Day filter */}
-                        <select
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Day</label>
+                        <select 
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-turquoise-surf outline-none"
                             value={dayFilter === null ? 'all' : dayFilter}
                             onChange={(e) => setDayFilter(e.target.value === 'all' ? null : parseInt(e.target.value))}
-                            className="input-field"
                         >
-                            <option value="all" className="bg-background">All Days</option>
-                            {DAYS.map((day, index) => (
-                                <option key={index} value={index} className="bg-background">{day}</option>
+                            <option value="all">All Days</option>
+                            {DAYS.map((day, i) => (
+                                <option key={i} value={i}>{day}</option>
                             ))}
                         </select>
-
-                        {/* Category filter */}
-                        <select
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
+                        <select 
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-turquoise-surf outline-none"
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="input-field"
                         >
-                            <option value="all" className="bg-background">All Categories</option>
-                            {CATEGORIES.map((cat) => (
-                                <option key={cat} value={cat} className="bg-background">{cat}</option>
-                            ))}
+                            <option value="all">All Categories</option>
+                            <option value="Strength Training">Strength Training</option>
+                            <option value="Cardio">Cardio</option>
+                            <option value="Yoga">Yoga</option>
+                            <option value="HIIT">HIIT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Status</label>
+                        <select 
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-turquoise-surf outline-none"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value as any)}
+                        >
+                            <option value="all">All Status</option>
+                            <option value="active">Active Only</option>
+                            <option value="inactive">Inactive Only</option>
                         </select>
                     </div>
                 </div>
 
-                {/* Classes table */}
-                {loading ? (
-                    <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-turquoise-surf"></div>
-                        <p className="mt-4 text-gray-400">Loading classes...</p>
-                    </div>
-                ) : (
-                                    <>
-                                        {/* Mobile Card View */}
-                                        <div className="md:hidden space-y-4 mb-8">
-                                            {filteredClasses.map((classItem) => (
-                                                <div key={classItem.id} className="glass rounded-xl p-6 space-y-4">
-                                                    <div className="flex justify-between items-start">
-                                                        <div>
-                                                            <h3 className="text-lg font-bold text-white">{classItem.name}</h3>
-                                                            <span className="text-sm text-turquoise-surf font-semibold">{classItem.category}</span>
-                                                        </div>
-                                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${classItem.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
-                                                            }`}>
-                                                            {classItem.is_active ? 'Published' : 'Draft'}
-                                                        </span>
-                                                    </div>
-                    
-                                                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
-                                                        <div>
-                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Instructor</span>
-                                                            <span className="text-gray-300">{classItem.instructor_name}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Price</span>
-                                                            <span className="text-gray-300">${(classItem.price_cents / 100).toFixed(2)}</span>
-                                                        </div>
-                                                        <div className="col-span-2">
-                                                            <span className="text-gray-500 block text-xs uppercase tracking-wider">Schedule</span>
-                                                            <span className="text-gray-300">
-                                                                {classItem.days_of_week && classItem.days_of_week.length > 0
-                                                                    ? classItem.days_of_week.map(d => DAYS[d].substring(0, 3)).join(', ')
-                                                                    : DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                    
-                                                    <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-                                                        <CTAButton
-                                                            onClick={() => openEditModal(classItem)}
-                                                            variant="secondary"
-                                                            className="flex-1"
-                                                            icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
-                                                        >
-                                                            Edit
-                                                        </CTAButton>
-                                                        <CTAButton
-                                                            onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                            variant={classItem.is_active ? 'secondary' : 'primary'}
-                                                            className={`flex-1 ${classItem.is_active ? 'text-amber-400 border-amber-500/20' : 'text-black'}`}
-                                                            icon={classItem.is_active ? (
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                                                            ) : (
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                                            )}
-                                                        >
-                                                            {classItem.is_active ? 'Unpublish' : 'Publish'}
-                                                        </CTAButton>
-                                                        <CTAButton
-                                                            onClick={() => handleDeleteClass(classItem.id)}
-                                                            variant="danger"
-                                                            size="icon"
-                                                        >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                        </CTAButton>
-                                                    </div>
-                                                </div>
-                                            ))}
-                    
-                                            {filteredClasses.length === 0 && (
-                                                <div className="text-center py-12 text-gray-400 glass rounded-xl">
-                                                    No classes found matching your criteria.
-                                                </div>
-                                            )}
-                                        </div>
-                    
-                                        <div className="hidden md:block glass rounded-xl overflow-hidden">
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full">                                <thead className="bg-white/5">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Class Name</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Instructor</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Schedule</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Capacity</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Price</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/10">
-                                    {filteredClasses.map((classItem) => (
-                                        <tr key={classItem.id} className="hover:bg-white/5 transition-colors">
-                                            <td className="px-6 py-4">
-                                                <div className="font-medium text-white">{classItem.name}</div>
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-400">{classItem.category}</td>
-                                            <td className="px-6 py-4 text-gray-400">{classItem.instructor_name}</td>
-                                            <td className="px-6 py-4 text-gray-400">
-                                                {classItem.days_of_week && classItem.days_of_week.length > 0
-                                                    ? classItem.days_of_week.map(d => DAYS[d].substring(0, 3)).join(', ')
-                                                    : DAYS[classItem.day_of_week]} {formatTime12Hour(classItem.start_time)}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-400">{classItem.max_capacity}</td>
-                                            <td className="px-6 py-4 text-gray-400">${(classItem.price_cents / 100).toFixed(2)}</td>
-                                            <td className="px-6 py-4">
-                                                <span className={"px-3 py-1 rounded-full text-sm font-semibold " + (classItem.is_active ? "bg-green-500/20 text-green-400" : "bg-gray-500/20 text-gray-400")}>
-                                                    {classItem.is_active ? 'Published' : 'Draft'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex gap-2">
-                                                    <CTAButton
-                                                        onClick={() => openEditModal(classItem)}
-                                                        variant="secondary"
-                                                        size="icon"
-                                                        title="Edit Class"
-                                                    >
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </CTAButton>
-                                                    <CTAButton
-                                                        onClick={() => toggleClassStatus(classItem.id, classItem.is_active)}
-                                                        variant={classItem.is_active ? 'secondary' : 'primary'}
-                                                        size="icon"
-                                                        className={classItem.is_active ? 'text-amber-400 border-amber-500/20' : 'text-black'}
-                                                        title={classItem.is_active ? 'Unpublish' : 'Publish'}
-                                                    >
-                                                        {classItem.is_active ? (
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        )}
-                                                    </CTAButton>
-                                                    <CTAButton
-                                                        onClick={() => handleDeleteClass(classItem.id)}
-                                                        variant="danger"
-                                                        size="icon"
-                                                        title="Delete Class"
-                                                    >
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </CTAButton>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {filteredClasses.length === 0 && (
-                            <div className="text-center py-12 text-gray-400">
-                                No classes found matching your criteria.
+                {/* Class List */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredClasses.map(classItem => (
+                        <div key={classItem.id} className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-turquoise-surf/30 transition-all flex flex-col">
+                            <div className="p-6 flex-grow">
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className="px-3 py-1 bg-turquoise-surf/10 text-turquoise-surf text-xs font-bold rounded-full border border-turquoise-surf/20">
+                                        {classItem.category}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`w-2 h-2 rounded-full ${classItem.is_active ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-red-500'}`}></span>
+                                        <span className="text-xs text-gray-400 capitalize">{classItem.is_active ? 'Active' : 'Inactive'}</span>
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">{classItem.name}</h3>
+                                <p className="text-sm text-gray-400 mb-4 line-clamp-2">{classItem.description}</p>
+                                
+                                <div className="space-y-2 mb-6">
+                                    <div className="flex items-center text-sm text-gray-300">
+                                        <span className="w-5 text-turquoise-surf">📅</span>
+                                        <span>
+                                            {classItem.days_of_week && classItem.days_of_week.length > 0 
+                                                ? classItem.days_of_week.map(d => DAYS[d].substring(0, 3)).join(', ')
+                                                : DAYS[classItem.day_of_week]}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-300">
+                                        <span className="w-5 text-turquoise-surf">🕒</span>
+                                        <span>{formatTime12Hour(classItem.start_time)} ({classItem.duration_minutes}m)</span>
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-300">
+                                        <span className="w-5 text-turquoise-surf">👤</span>
+                                        <span>{classItem.instructor_name}</span>
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-300">
+                                        <span className="w-5 text-turquoise-surf">👥</span>
+                                        <span>{classItem.max_capacity} capacity</span>
+                                    </div>
+                                </div>
                             </div>
-                        )}
+                            
+                            <div className="p-4 bg-white/5 border-t border-white/10 flex items-center justify-between gap-2">
+                                <button 
+                                    onClick={() => openEditModal(classItem)}
+                                    className="flex-grow py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-lg transition-colors border border-white/10"
+                                >
+                                    Edit Class
+                                </button>
+                                <button 
+                                    onClick={() => toggleStatus(classItem)}
+                                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors border ${
+                                        classItem.is_active 
+                                            ? 'border-red-500/30 text-red-500 hover:bg-red-500/10' 
+                                            : 'border-green-500/30 text-green-500 hover:bg-green-500/10'
+                                    }`}
+                                >
+                                    {classItem.is_active ? 'Disable' : 'Enable'}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {filteredClasses.length === 0 && (
+                    <div className="text-center py-20 bg-white/5 rounded-2xl border border-dashed border-white/10">
+                        <div className="text-4xl mb-4">🔍</div>
+                        <h3 className="text-xl font-bold text-white mb-2">No classes found</h3>
+                        <p className="text-gray-400">Try adjusting your filters or search term</p>
                     </div>
-                </>
                 )}
             </div>
 
             {/* Modal */}
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="glass rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
-                        <div className="p-8">
-                            {/* Modal Header */}
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-3xl font-bold">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-black border border-white/10 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        {/* Modal Header */}
+                        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white">
                                     {editingClass ? 'Edit Class' : 'Create New Class'}
                                 </h2>
-                                <button
-                                    onClick={closeModal}
-                                    className="btn-ghost text-2xl"
-                                >
-                                    ×
-                                </button>
+                                <p className="text-gray-400 text-sm">Step {currentStep} of 2</p>
                             </div>
+                            <button 
+                                onClick={() => setShowModal(false)}
+                                className="p-2 hover:bg-white/10 rounded-full text-gray-400"
+                            >
+                                ✕
+                            </button>
+                        </div>
 
-                            {/* Progress Steps */}
-                            <div className="flex justify-between mb-8">
-                                {[1, 2, 3, 4].map((step) => (
-                                    <div key={step} className="flex items-center">
-                                        <div className={"w-10 h-10 rounded-full flex items-center justify-center font-bold " + (currentStep >= step ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white shadow-lg shadow-turquoise-surf/20" : "bg-white/10 text-gray-400")}>
-                                            {step}
-                                        </div>
-                                        {step < 4 && (
-                                            <div className={"w-16 h-1 mx-2 " + (currentStep > step ? "bg-turquoise-surf" : "bg-white/10")}></div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Step 1: Basic Info */}
+                        {/* Modal Content */}
+                        <div className="p-8 max-h-[70vh] overflow-y-auto">
                             {currentStep === 1 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Basic Information</h3>
-
+                                <div className="space-y-6">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Class Name *</label>
-                                        <input
+                                        <label className="block text-sm font-bold text-gray-400 mb-2">Class Name</label>
+                                        <input 
                                             type="text"
+                                            className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} rounded-xl p-3 text-white outline-none focus:border-turquoise-surf`}
                                             value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="input-field"
-                                            placeholder="e.g., Power Yoga"
+                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            placeholder="e.g. Morning Strength Elite"
                                         />
-                                        {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Description *</label>
-                                        <textarea
+                                        <label className="block text-sm font-bold text-gray-400 mb-2">Description</label>
+                                        <textarea 
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white h-24 outline-none focus:border-turquoise-surf"
                                             value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="input-field"
-                                            rows={4}
-                                            placeholder="Describe the class..."
+                                            onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                            placeholder="What is this class about?"
                                         />
-                                        {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
-                                        <select
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="input-field"
-                                        >
-                                            <option value="" className="bg-background">Select a category</option>
-                                            {CATEGORIES.map((cat) => (
-                                                <option key={cat} value={cat} className="bg-background">{cat}</option>
-                                            ))}
-                                        </select>
-                                        {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Category</label>
+                                            <select 
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                value={formData.category}
+                                                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                            >
+                                                <option value="Strength Training">Strength Training</option>
+                                                <option value="Cardio">Cardio</option>
+                                                <option value="Yoga">Yoga</option>
+                                                <option value="HIIT">HIIT</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Instructor</label>
+                                            <select 
+                                                className={`w-full bg-white/5 border ${errors.instructor_id ? 'border-red-500' : 'border-white/10'} rounded-xl p-3 text-white outline-none focus:border-turquoise-surf`}
+                                                value={formData.instructor_id}
+                                                onChange={(e) => setFormData({...formData, instructor_id: e.target.value})}
+                                            >
+                                                <option value="">Select Instructor</option>
+                                                {trainers.map(t => (
+                                                    <option key={t.id} value={t.id}>{t.full_name}</option>
+                                                ))}
+                                            </select>
+                                            {errors.instructor_id && <p className="text-red-500 text-xs mt-1">{errors.instructor_id}</p>}
+                                        </div>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Step 2: Schedule */}
                             {currentStep === 2 && (
                                 <div className="space-y-6">
-                                    <h3 className="text-xl font-bold mb-4">Schedule</h3>
-
-                                    {/* Quick Date Picker */}
-                                    <div className="p-4 bg-turquoise-surf/5 border border-turquoise-surf/20 rounded-xl mb-6">
-                                        <label className="block text-sm font-bold text-turquoise-surf uppercase tracking-wider mb-2">
-                                            Pick from Calendar (Auto-selects Day)
-                                        </label>
-                                        <input
-                                            type="date"
-                                            onChange={(e) => {
-                                                if (e.target.value) {
-                                                    const date = new Date(e.target.value + 'T00:00:00');
-                                                    const dayIndex = date.getDay();
-                                                    const currentDays = formData.days_of_week || [];
-                                                    if (!currentDays.includes(dayIndex)) {
-                                                        setFormData({ 
-                                                            ...formData, 
-                                                            days_of_week: [...currentDays, dayIndex].sort(),
-                                                            day_of_week: dayIndex 
-                                                        });
-                                                    }
-                                                }
-                                            }}
-                                            className="input-field border-turquoise-surf/30"
-                                            min={new Date().toISOString().split('T')[0]}
-                                        />
-                                        <p className="text-[10px] text-gray-500 mt-2 italic">
-                                            Selecting a date above will automatically toggle the correct day of the week below.
-                                        </p>
-                                    </div>
-
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Days of Week *</label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {DAYS.map((day, index) => (
+                                        <label className="block text-sm font-bold text-gray-400 mb-3">Schedule (Select Days)</label>
+                                        <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+                                            {DAYS.map((day, i) => (
                                                 <button
-                                                    key={index}
+                                                    key={i}
                                                     type="button"
-                                                    onClick={() => {
-                                                        const currentDays = formData.days_of_week || [];
-                                                        const newDays = currentDays.includes(index)
-                                                            ? currentDays.filter(d => d !== index)
-                                                            : [...currentDays, index];
-                                                        setFormData({ ...formData, days_of_week: newDays.sort() });
-                                                    }}
-                                                    className={"px-3 py-2 rounded-lg text-sm font-semibold transition-all " + (formData.days_of_week?.includes(index) ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white shadow-lg shadow-turquoise-surf/20" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    onClick={() => toggleDay(i)}
+                                                    className={`py-2 text-xs font-bold rounded-lg border transition-all ${
+                                                        formData.days_of_week.includes(i)
+                                                            ? 'bg-turquoise-surf text-black border-turquoise-surf'
+                                                            : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/30'
+                                                    }`}
                                                 >
                                                     {day.substring(0, 3)}
                                                 </button>
                                             ))}
                                         </div>
-                                        {errors.day_of_week && <p className="text-red-400 text-sm mt-1">{errors.day_of_week}</p>}
+                                        {errors.days_of_week && <p className="text-red-500 text-xs mt-1">At least one day is required</p>}
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Start Time *</label>
-                                        <div className="flex gap-2">
-                                            {/* Hour dropdown */}
-                                            <select
-                                                value={timeHour}
-                                                onChange={(e) => setTimeHour(e.target.value)}
-                                                className="input-field flex-1"
-                                            >
-                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(h => (
-                                                    <option key={h} value={h.toString()} className="bg-background">{h}</option>
-                                                ))}
-                                            </select>
-
-                                            {/* Minute dropdown */}
-                                            <select
-                                                value={timeMinute}
-                                                onChange={(e) => setTimeMinute(e.target.value)}
-                                                className="input-field flex-1"
-                                            >
-                                                {['00', '15', '30', '45'].map(m => (
-                                                    <option key={m} value={m} className="bg-background">{m}</option>
-                                                ))}
-                                            </select>
-
-                                            {/* AM/PM toggle */}
-                                            <div className="flex gap-1">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setTimePeriod('am')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'am' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Start Time</label>
+                                            <div className="flex items-center gap-2">
+                                                <select 
+                                                    className="flex-grow bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                    value={timeHour}
+                                                    onChange={(e) => setTimeHour(e.target.value)}
                                                 >
-                                                    AM
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setTimePeriod('pm')}
-                                                    className={"px-4 py-3 rounded-lg font-semibold transition-all " + (timePeriod === 'pm' ? "bg-gradient-to-r from-turquoise-surf to-pacific-cyan text-white" : "bg-white/10 text-gray-400 hover:bg-white/20")}
+                                                    {[12,1,2,3,4,5,6,7,8,9,10,11].map(h => (
+                                                        <option key={h} value={h}>{h}</option>
+                                                    ))}
+                                                </select>
+                                                <span className="text-white">:</span>
+                                                <select 
+                                                    className="flex-grow bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                    value={timeMinute}
+                                                    onChange={(e) => setTimeMinute(e.target.value)}
                                                 >
-                                                    PM
-                                                </button>
+                                                    {['00','15','30','45'].map(m => (
+                                                        <option key={m} value={m}>{m}</option>
+                                                    ))}
+                                                </select>
+                                                <select 
+                                                    className="w-20 bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                    value={timePeriod}
+                                                    onChange={(e) => setTimePeriod(e.target.value as any)}
+                                                >
+                                                    <option value="am">AM</option>
+                                                    <option value="pm">PM</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        {errors.start_time && <p className="text-red-400 text-sm mt-1">{errors.start_time}</p>}
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Duration (Min)</label>
+                                            <input 
+                                                type="number"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                value={formData.duration_minutes}
+                                                onChange={(e) => setFormData({...formData, duration_minutes: parseInt(e.target.value)})}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Capacity</label>
+                                            <input 
+                                                type="number"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                value={formData.max_capacity}
+                                                onChange={(e) => setFormData({...formData, max_capacity: parseInt(e.target.value)})}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-400 mb-2">Price (Cents)</label>
+                                            <input 
+                                                type="number"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
+                                                value={formData.price_cents}
+                                                onChange={(e) => setFormData({...formData, price_cents: parseInt(e.target.value)})}
+                                            />
+                                        </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Duration (minutes) *</label>
-                                        <input
+                                        <label className="block text-sm font-bold text-gray-400 mb-2">Acuity Appointment Type ID</label>
+                                        <input 
                                             type="text"
-                                            inputMode="numeric"
-                                            pattern="[0-9]*"
-                                            value={formData.duration_minutes}
-                                            onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 0 })}
-                                            className="input-field"
-                                            placeholder="60"
-                                        />
-                                        {errors.duration_minutes && <p className="text-red-400 text-sm mt-1">{errors.duration_minutes}</p>}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 3: Details */}
-                            {currentStep === 3 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Class Details</h3>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Instructor *</label>
-                                        <select
-                                            value={formData.instructor_id}
-                                            onChange={(e) => handleTrainerChange(e.target.value)}
-                                            className="input-field"
-                                        >
-                                            <option value="" className="bg-background">Select an instructor</option>
-                                            {trainers.map((trainer) => (
-                                                <option key={trainer.id} value={trainer.id} className="bg-background">
-                                                    {trainer.full_name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {errors.instructor_id && <p className="text-red-400 text-sm mt-1">{errors.instructor_id}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Max Capacity *</label>
-                                        <input
-                                            type="text"
-                                            inputMode="numeric"
-                                            pattern="[0-9]*"
-                                            value={formData.max_capacity}
-                                            onChange={(e) => setFormData({ ...formData, max_capacity: parseInt(e.target.value) || 0 })}
-                                            className="input-field"
-                                            placeholder="20"
-                                        />
-                                        {errors.max_capacity && <p className="text-red-400 text-sm mt-1">{errors.max_capacity}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Price (USD) *</label>
-                                        <input
-                                            type="text"
-                                            inputMode="decimal"
-                                            value={(formData.price_cents / 100).toString()}
-                                            onChange={(e) => setFormData({ ...formData, price_cents: Math.round(parseFloat(e.target.value || '0') * 100) })}
-                                            className="input-field"
-                                            placeholder="20.00"
-                                        />
-                                        {errors.price_cents && <p className="text-red-400 text-sm mt-1">{errors.price_cents}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-400 mb-2">Acuity Appointment Type ID</label>
-                                        <input
-                                            type="text"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-turquoise-surf"
                                             value={formData.acuity_appointment_type_id}
-                                            onChange={(e) => setFormData({ ...formData, acuity_appointment_type_id: e.target.value })}
-                                            className="input-field"
-                                            placeholder="Optional (e.g., 12345678)"
+                                            onChange={(e) => setFormData({...formData, acuity_appointment_type_id: e.target.value})}
+                                            placeholder="Optional: for direct booking links"
                                         />
-                                        <p className="text-xs text-gray-500 mt-1">ID from Acuity Scheduling for direct booking integration.</p>
                                     </div>
                                 </div>
                             )}
+                        </div>
 
-                            {/* Step 4: Preview */}
-                            {currentStep === 4 && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold mb-4">Review & Confirm</h3>
-
-                                    <div className="glass-card space-y-3">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Class Name</span>
-                                            <span className="font-bold">{formData.name}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Category</span>
-                                            <span className="font-semibold">{formData.category}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Instructor</span>
-                                            <span className="font-semibold">{formData.instructor_name}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Schedule</span>
-                                            <span className="font-semibold">
-                                                {formData.days_of_week?.map(d => DAYS[d].substring(0, 3)).join(', ')} at {timeHour}:{timeMinute} {timePeriod}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Duration</span>
-                                            <span className="font-semibold">{formData.duration_minutes} minutes</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Max Capacity</span>
-                                            <span className="font-semibold">{formData.max_capacity} people</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Price</span>
-                                            <span className="font-semibold text-turquoise-surf">${(formData.price_cents / 100).toFixed(2)}</span>
-                                        </div>
-                                        {formData.acuity_appointment_type_id && (
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider">Acuity ID</span>
-                                                <span className="font-mono text-sm">{formData.acuity_appointment_type_id}</span>
-                                            </div>
-                                        )}
-                                        <div className="pt-3 border-t border-white/10">
-                                            <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-2 block">Description</span>
-                                            <p className="text-sm">{formData.description}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Modal Actions */}
-                            <div className="flex justify-between mt-8 pt-6 border-t border-white/10">
-                                <CTAButton
-                                    onClick={currentStep === 1 ? closeModal : prevStep}
-                                    variant="secondary"
+                        {/* Modal Footer */}
+                        <div className="p-6 border-t border-white/10 bg-white/5 flex justify-between">
+                            {currentStep === 2 ? (
+                                <button 
+                                    onClick={() => setCurrentStep(1)}
+                                    className="px-6 py-2 text-gray-400 hover:text-white transition-colors"
                                 >
-                                    {currentStep === 1 ? 'Cancel' : 'Back'}
-                                </CTAButton>
-
-                                {currentStep < 4 ? (
-                                    <CTAButton
-                                        onClick={nextStep}
-                                        variant="primary"
-                                        className="uppercase tracking-widest text-black font-black"
-                                    >
-                                        Next
+                                    Back
+                                </button>
+                            ) : (
+                                <div></div>
+                            )}
+                            
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setShowModal(false)}
+                                    className="px-6 py-2 text-gray-400 hover:text-white transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                {currentStep === 1 ? (
+                                    <CTAButton onClick={() => validateStep1() && setCurrentStep(2)}>
+                                        Next Step
                                     </CTAButton>
                                 ) : (
-                                    <CTAButton
-                                        onClick={handleSubmit}
-                                        variant="primary"
-                                        className="uppercase tracking-widest text-black font-black"
-                                    >
+                                    <CTAButton onClick={() => validateStep2() && handleSave()}>
                                         {editingClass ? 'Update Class' : 'Create Class'}
                                     </CTAButton>
                                 )}

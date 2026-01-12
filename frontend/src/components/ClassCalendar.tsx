@@ -28,7 +28,11 @@ interface WorkoutSession {
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 interface ClassCalendarProps {
-
+    classes: Class[];
+    sessions?: WorkoutSession[];
+    weekStartDate: Date | null;
+    onClassClick?: (classItem: any, date?: Date) => void;
+}
 
 // Helper to get color based on category
 function getCategoryColor(category: string): string {
@@ -77,7 +81,7 @@ export default function ClassCalendar({ classes, sessions = [], weekStartDate, o
                 {DAYS.map((day, index) => (
                     <div key={day} className="flex flex-col gap-4">
                         {/* Day Header */}
-                        <div className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div className="text-center p-3 bg-white/5 rounded-lg border border-white/10">    
                             <h3 className="font-bold text-white">{day}</h3>
                             {weekStartDate && (
                                 <div className="text-sm text-gray-400 mt-1">
@@ -95,7 +99,7 @@ export default function ClassCalendar({ classes, sessions = [], weekStartDate, o
                                     const session = sessions?.find(s =>
                                         s.class_id === classItem.id &&
                                         date &&
-                                        new Date(s.session_date).toDateString() === date.toDateString()
+                                        new Date(s.session_date).toDateString() === date.toDateString()   
                                     );
 
                                     return (
@@ -113,7 +117,7 @@ export default function ClassCalendar({ classes, sessions = [], weekStartDate, o
                                             </div>
 
                                             {session && (
-                                                <div className="mt-2 pt-2 border-t border-white/20">
+                                                <div className="mt-2 pt-2 border-t border-white/20">      
                                                     <div className="text-xs font-bold text-white flex items-center gap-1">
                                                         <span className="w-2 h-2 rounded-full bg-green-400"></span>
                                                         Workout Assigned
