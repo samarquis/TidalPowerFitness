@@ -8,5 +8,6 @@ router.use(authenticate);
 
 router.get('/volume', leaderboardController.getVolumeLeaderboard);
 router.get('/attendance', leaderboardController.getAttendanceLeaderboard);
+router.get('/exercise/:exerciseId', leaderboardController.getExerciseLeaderboard);
 
 export default router;

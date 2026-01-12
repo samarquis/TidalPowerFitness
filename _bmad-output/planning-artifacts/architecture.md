@@ -75,11 +75,6 @@ Tracks a specific client's progress through an assigned program.
 4. If the user clicks "Start Workout", a new `workout_session` is created by copying exercises from the referenced `workout_template`.
 5. Upon session completion, the `current_week`/`day` in `program_assignments` is updated via a transaction.
 
-### Subscription Integration
-- Leverage **Square Subscriptions API**.
-- Webhook listener in `backend/src/services/paymentService.ts` to handle `subscription.created` and `subscription.updated`.
-- New `user_subscriptions` table to link Square `subscription_id` to local `user_id` and track tier access.
-
 ### Scheduling & Classes (Updated)
 Classes now support multi-day recurrence patterns using a PostgreSQL array.
 

@@ -246,7 +246,8 @@ export default function AdminExercisesPage() {
             equipment_required: exercise.equipment_required || '',
             difficulty_level: exercise.difficulty_level || '',
             video_url: exercise.video_url || '',
-            instructions: exercise.instructions || ''
+            instructions: exercise.instructions || '',
+            secondary_muscle_group_ids: (exercise as any).secondary_muscle_groups?.map((m: any) => m.id) || []
         });
         setErrors({});
         setCurrentStep(1);
@@ -768,6 +769,38 @@ export default function AdminExercisesPage() {
                                 </div>
 
                                 <div>
+                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Secondary Muscle Groups</label>
+                                    <div className="flex flex-wrap gap-2 p-4 bg-black/30 border border-white/5 rounded-xl">
+                                        {bodyFocusAreas
+                                            .filter(area => area.id !== formData.primary_muscle_group)
+                                            .map((area) => {
+                                                const isSelected = formData.secondary_muscle_group_ids?.includes(area.id);
+                                                return (
+                                                    <button
+                                                        key={area.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const current = formData.secondary_muscle_group_ids || [];
+                                                            const next = isSelected 
+                                                                ? current.filter(id => id !== area.id)
+                                                                : [...current, area.id];
+                                                            setFormData({ ...formData, secondary_muscle_group_ids: next });
+                                                        }}
+                                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${
+                                                            isSelected 
+                                                                ? 'bg-cerulean/20 border-cerulean text-turquoise-surf shadow-lg shadow-cerulean/10' 
+                                                                : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/20'
+                                                        }`}
+                                                    >
+                                                        {area.name}
+                                                    </button>
+                                                );
+                                            })}
+                                    </div>
+                                    <p className="text-[10px] text-gray-600 mt-2 italic font-medium">Select all additional muscles that are significantly engaged.</p>
+                                </div>
+
+                                <div>
                                     <label className="block text-sm font-semibold text-gray-300 mb-2">Movement Pattern</label>
                                     <select
                                         value={formData.movement_pattern}
@@ -850,6 +883,14 @@ export default function AdminExercisesPage() {
                                         <span className="text-gray-400">Muscle Group:</span>
                                         <span className="text-white">{bodyFocusAreas.find(a => a.id === formData.primary_muscle_group)?.name || '-'}</span>
                                     </div>
+                                    {formData.secondary_muscle_group_ids && formData.secondary_muscle_group_ids.length > 0 && (
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Secondary:</span>
+                                            <span className="text-turquoise-surf text-xs font-bold text-right">
+                                                {formData.secondary_muscle_group_ids.map(id => bodyFocusAreas.find(a => a.id === id)?.name).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">Equipment:</span>
                                         <span className="text-white">{formData.equipment_required || 'None'}</span>

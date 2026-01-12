@@ -195,7 +195,7 @@ export default function TrainerDashboardPage() {
                             </p>
                             <Link
                                 href="/workouts/assign"
-                                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-blue-600 transition-transform hover:scale-105"
+                                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-blue-600 transition-all hover:scale-105 active:scale-95 shadow-xl"
                             >
                                 🚀 Launch Wizard
                             </Link>
@@ -214,7 +214,7 @@ export default function TrainerDashboardPage() {
                             <div className="flex gap-4">
                                 <Link
                                     href="/workouts/templates"
-                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-orange-600 transition-transform hover:scale-105"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-orange-600 transition-all hover:scale-105 active:scale-95 shadow-xl"
                                 >
                                     Manage Templates
                                 </Link>
@@ -230,13 +230,13 @@ export default function TrainerDashboardPage() {
                 <div className="mb-12 flex flex-wrap gap-4">
                     <Link
                         href="/trainer/clients"
-                        className="btn-primary"
+                        className="btn-primary active:scale-95 transition-all"
                     >
                         👥 My Clients
                     </Link>
                     <Link
                         href="/trainer/calendar"
-                        className="btn-secondary"
+                        className="btn-secondary active:scale-95 transition-all"
                     >
                         📅 View Full Calendar
                     </Link>

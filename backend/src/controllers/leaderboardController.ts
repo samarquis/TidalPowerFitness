@@ -74,6 +74,42 @@ class LeaderboardController {
             res.status(500).json({ error: 'Failed to fetch attendance leaderboard' });
         }
     }
+
+    /**
+     * Get exercise-specific leaderboard (Max Weight)
+     */
+    async getExerciseLeaderboard(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            const { exerciseId } = req.params;
+            
+            if (!exerciseId) {
+                res.status(400).json({ error: 'Exercise ID is required' });
+                return;
+            }
+
+            const sql = `
+                SELECT 
+                    u.id as user_id,
+                    u.first_name,
+                    u.last_name,
+                    MAX(el.weight_used_lbs) as max_weight
+                FROM exercise_logs el
+                JOIN users u ON el.client_id = u.id
+                JOIN session_exercises se ON el.session_exercise_id = se.id
+                WHERE se.exercise_id = $1
+                  AND el.weight_used_lbs > 0
+                GROUP BY u.id, u.first_name, u.last_name
+                ORDER BY max_weight DESC
+                LIMIT 20
+            `;
+
+            const result = await query(sql, [exerciseId]);
+            res.json(result.rows);
+        } catch (error) {
+            console.error('Error fetching exercise leaderboard:', error);
+            res.status(500).json({ error: 'Failed to fetch exercise leaderboard' });
+        }
+    }
 }
 
 export default new LeaderboardController();

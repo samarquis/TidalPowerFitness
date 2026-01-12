@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import MuscleMap from '@/components/exercises/MuscleMap';
 
 interface Exercise {
     id: string;
@@ -141,60 +142,66 @@ export default function ExerciseDetailPage() {
                     </div>
                 </div>
 
-                {/* Video Section */}
-                {embedUrl && (
-                    <div className="glass rounded-2xl p-8 mb-8">
-                        <h2 className="text-2xl font-bold mb-4">Video Demonstration</h2>
-                        <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                            <iframe
-                                src={embedUrl}
-                                className="w-full h-full"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
+                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                    {/* Video Section */}
+                    {embedUrl ? (
+                        <div className="glass rounded-[2.5rem] p-8 flex flex-col h-full">
+                            <h2 className="text-xl font-black uppercase tracking-tighter italic mb-6">Video <span className="text-turquoise-surf">Demonstration</span></h2>
+                            <div className="aspect-video rounded-3xl overflow-hidden bg-black border border-white/5 shadow-2xl flex-1">
+                                <iframe
+                                    src={embedUrl}
+                                    className="w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div className="glass rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center bg-white/[0.02]">
+                            <div className="text-6xl mb-4 opacity-20">🎥</div>
+                            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">No video demonstration available</p>
+                        </div>
+                    )}
 
-                {/* Instructions Section */}
-                {exercise.instructions && (
-                    <div className="glass rounded-2xl p-8 mb-8">
-                        <h2 className="text-2xl font-bold mb-4">Instructions</h2>
+                    {/* Anatomical Mapping */}
+                    <MuscleMap 
+                        primaryMuscle={exercise.muscle_group_name}
+                        secondaryMuscles={exercise.secondary_muscle_groups?.map(m => m.name) || []}
+                        className="h-full"
+                    />
+                </div>
+
+                {/* Instructions & Equipment Grid */}
+                <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 glass rounded-[2.5rem] p-10 border-white/5">
+                        <h2 className="text-xl font-black uppercase tracking-tighter italic mb-8">Tactical <span className="text-turquoise-surf">Instructions</span></h2>
                         <div className="prose prose-invert max-w-none">
-                            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-                                {exercise.instructions}
+                            <p className="text-gray-400 whitespace-pre-wrap leading-loose text-sm font-medium">
+                                {exercise.instructions || 'No specific instructions provided. Consult your trainer for proper form.'}
                             </p>
                         </div>
                     </div>
-                )}
 
-                {/* Equipment & Details */}
-                <div className="glass rounded-2xl p-8">
-                    <h2 className="text-2xl font-bold mb-4">Details</h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 mb-2">Equipment Required</h3>
-                            <p className="text-white text-lg">
-                                {exercise.equipment_required || 'None'}
+                    <div className="space-y-8">
+                        <div className="glass rounded-[2.5rem] p-8 border-white/5">
+                            <h2 className="text-xl font-black uppercase tracking-tighter italic mb-6 text-white">Equipment</h2>
+                            <p className="text-white text-lg font-bold uppercase tracking-tight">
+                                {exercise.equipment_required || 'Bodyweight'}
                             </p>
                         </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 mb-2">Primary Muscle</h3>
-                            <p className="text-white text-lg">
-                                {exercise.muscle_group_name || 'N/A'}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 mb-2">Difficulty</h3>
-                            <p className="text-white text-lg">
-                                {exercise.difficulty_level || 'N/A'}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 mb-2">Workout Type</h3>
-                            <p className="text-white text-lg">
-                                {exercise.workout_type_name || 'N/A'}
-                            </p>
+
+                        <div className="glass rounded-[2.5rem] p-8 border-white/5">
+                            <h2 className="text-xl font-black uppercase tracking-tighter italic mb-6 text-white">Focus</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Workout Type</p>
+                                    <p className="text-white font-bold">{exercise.workout_type_name || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Intensity Level</p>
+                                    <p className="text-turquoise-surf font-bold">{exercise.difficulty_level || 'N/A'}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

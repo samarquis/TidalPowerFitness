@@ -242,6 +242,22 @@ export default function UserDashboard() {
                     </div>
                 )}
 
+                {/* Credits Banner */}
+                <div className="glass-card mb-12 flex flex-wrap items-center justify-between gap-4 border-turquoise-surf/20 bg-gradient-to-br from-turquoise-surf/5 to-transparent p-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-turquoise-surf/10 flex items-center justify-center border border-turquoise-surf/20 shadow-lg shadow-turquoise-surf/10">
+                            <span className="text-3xl font-black text-turquoise-surf italic">{user?.credits || 0}</span>
+                        </div>
+                        <div>
+                            <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Available Tokens</p>
+                            <p className="font-bold text-white text-base">Tactical Deployment Ready</p>
+                        </div>
+                    </div>
+                    <Link href="/packages" className="bg-turquoise-surf text-black px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-turquoise-surf/20">
+                        Refill
+                    </Link>
+                </div>
+
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Left Column: Core Flow */}
                     <div className="lg:col-span-2 space-y-8">
@@ -319,21 +335,31 @@ export default function UserDashboard() {
 
                         {/* Overall Stats Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {[
-                                { label: 'Streak', value: user?.current_streak || 0, unit: 'Days', color: 'text-orange-500', icon: '🔥' },
-                                { label: 'Workouts', value: stats?.total_workouts || 0, unit: 'Sessions', color: 'text-turquoise-surf', icon: '⚡' },
-                                { label: 'Sets', value: stats?.total_sets || 0, unit: 'Completed', color: 'text-blue-400', icon: '💪' },
-                                { label: 'Volume', value: stats?.total_volume_lbs ? (stats.total_volume_lbs / 1000).toFixed(1) + 'k' : '0', unit: 'Lbs', color: 'text-purple-400', icon: '🏋️' }
-                            ].map((stat) => (
-                                <div key={stat.label} className="glass-card text-center relative overflow-hidden group p-6 border-white/5 hover:border-white/10 transition-all">
-                                    <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:scale-110 transition-transform">
-                                        <span className="text-4xl">{stat.icon}</span>
+                            {loading ? (
+                                [1, 2, 3, 4].map(i => (
+                                    <div key={i} className="glass-card p-6 border-white/5 h-32 animate-pulse">
+                                        <Skeleton className="h-2 w-1/2 mb-4 opacity-20" />
+                                        <Skeleton className="h-8 w-3/4 mb-2" />
+                                        <Skeleton className="h-2 w-1/3 opacity-10" />
                                     </div>
-                                    <p className="text-gray-500 text-[8px] sm:text-[10px] font-black uppercase mb-2 tracking-[0.2em]">{stat.label}</p>
-                                    <p className={`text-3xl sm:text-4xl font-black tracking-tighter ${stat.color} italic`}>{stat.value}</p>
-                                    <p className="text-[8px] sm:text-[10px] text-gray-600 font-black uppercase mt-1 tracking-widest">{stat.unit}</p>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                [
+                                    { label: 'Streak', value: user?.current_streak || 0, unit: 'Days', color: 'text-orange-500', icon: '🔥' },
+                                    { label: 'Workouts', value: stats?.total_workouts || 0, unit: 'Sessions', color: 'text-turquoise-surf', icon: '⚡' },
+                                    { label: 'Sets', value: stats?.total_sets || 0, unit: 'Completed', color: 'text-blue-400', icon: '💪' },
+                                    { label: 'Volume', value: stats?.total_volume_lbs ? (stats.total_volume_lbs / 1000).toFixed(1) + 'k' : '0', unit: 'Lbs', color: 'text-purple-400', icon: '🏋️' }
+                                ].map((stat) => (
+                                    <div key={stat.label} className="glass-card text-center relative overflow-hidden group p-6 border-white/5 hover:border-white/10 transition-all active:scale-95 cursor-default">
+                                        <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:scale-110 transition-transform">
+                                            <span className="text-4xl">{stat.icon}</span>
+                                        </div>
+                                        <p className="text-gray-500 text-[8px] sm:text-[10px] font-black uppercase mb-2 tracking-[0.2em]">{stat.label}</p>
+                                        <p className={`text-3xl sm:text-4xl font-black tracking-tighter ${stat.color} italic shrink-text`}>{stat.value}</p>
+                                        <p className="text-[8px] sm:text-[10px] text-gray-600 font-black uppercase mt-1 tracking-widest">{stat.unit}</p>
+                                    </div>
+                                ))
+                            )}
                         </div>
 
                         {/* Class Schedule Section (Premium Upgrade) */}
@@ -517,18 +543,28 @@ export default function UserDashboard() {
                         )}
 
                         {/* Personal Records (High Fidelity) */}
-                        <div className="glass-card p-8 border-white/5">
+                        <div className="glass-card p-8 border-white/5 min-h-[300px] flex flex-col">
                             <div className="flex justify-between items-center mb-8">
-                                <h2 className="text-xl font-black uppercase tracking-tighter italic">The <span className="text-gradient">Vault</span></h2>
-                                <Link href="/progress" className="text-[10px] font-black text-turquoise-surf hover:underline uppercase tracking-widest">All Records →</Link>
+                                <h2 className="text-xl font-black uppercase tracking-tighter italic text-white">The <span className="text-gradient">Vault</span></h2>
+                                <Link href="/progress" className="text-[10px] font-black text-turquoise-surf hover:underline uppercase tracking-widest active:scale-95 transition-all">All Records →</Link>
                             </div>
                             
-                            {personalRecords.length === 0 ? (
-                                <p className="text-gray-600 text-xs font-bold uppercase tracking-widest italic">No records stored yet.</p>
+                            {loading ? (
+                                <div className="space-y-4 flex-1">
+                                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-20 w-full bg-white/5 rounded-2xl opacity-20" />)}
+                                </div>
+                            ) : personalRecords.length === 0 ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/10 rounded-3xl bg-white/[0.01]">
+                                    <span className="text-4xl mb-4 opacity-20">🛡️</span>
+                                    <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.2em] mb-6 leading-loose">The vault is currently empty.<br/>No records secured.</p>
+                                    <Link href="/workouts/templates" className="px-6 py-2.5 bg-turquoise-surf/10 border border-turquoise-surf/30 text-turquoise-surf rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-turquoise-surf hover:text-black transition-all active:scale-95">
+                                        Log First LIFT
+                                    </Link>
+                                </div>
                             ) : (
                                 <div className="grid gap-4">
                                     {personalRecords.slice(0, 4).map((pr) => (
-                                        <div key={pr.id} className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 relative group overflow-hidden">
+                                        <div key={pr.id} className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 relative group overflow-hidden hover:border-white/10 transition-all">
                                             <div className="absolute right-0 top-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
                                                 <span className="text-4xl">🏆</span>
                                             </div>

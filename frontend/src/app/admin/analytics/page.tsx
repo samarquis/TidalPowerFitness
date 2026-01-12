@@ -267,31 +267,33 @@ export default function AdminAnalyticsPage() {
                         <div className="px-6 py-6 border-b border-white/5 print:border-black">
                             <h2 className="text-xl font-bold">Package Performance</h2>
                         </div>
-                        <table className="w-full">
-                            <thead className="bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-500 border-b border-white/5 print:bg-gray-100 print:text-black print:border-black">
-                                <tr>
-                                    <th className="px-6 py-4 text-left">Package</th>
-                                    <th className="px-6 py-4 text-center">Sales</th>
-                                    <th className="px-6 py-4 text-right">Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5 print:divide-black">
-                                {data.package_stats.map((pkg, i) => (
-                                    <tr key={i} className="hover:bg-white/[0.02] transition-colors print:bg-white">
-                                        <td className="px-6 py-4">
-                                            <div className="font-bold text-white print:text-black">{pkg.package_name || 'Unknown Item'}</div>
-                                            <div className="text-[10px] text-gray-500 uppercase tracking-tighter print:text-gray-600">{pkg.package_type}</div>
-                                        </td>
-                                        <td className="px-6 py-4 text-center font-medium text-turquoise-surf print:text-black">
-                                            {pkg.sales_count}
-                                        </td>
-                                        <td className="px-6 py-4 text-right font-bold text-white print:text-black">
-                                            {(parseInt(pkg.total_revenue_cents) / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[500px] md:min-w-0">
+                                <thead className="bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-500 border-b border-white/5 print:bg-gray-100 print:text-black print:border-black">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left">Package</th>
+                                        <th className="px-6 py-4 text-center">Sales</th>
+                                        <th className="px-6 py-4 text-right">Revenue</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-white/5 print:divide-black">
+                                    {data.package_stats.map((pkg, i) => (
+                                        <tr key={i} className="hover:bg-white/[0.02] transition-colors print:bg-white">
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-white print:text-black">{pkg.package_name || 'Unknown Item'}</div>
+                                                <div className="text-[10px] text-gray-500 uppercase tracking-tighter print:text-gray-600">{pkg.package_type}</div>
+                                            </td>
+                                            <td className="px-6 py-4 text-center font-medium text-turquoise-surf print:text-black">
+                                                {pkg.sales_count}
+                                            </td>
+                                            <td className="px-6 py-4 text-right font-bold text-white print:text-black">
+                                                {(parseInt(pkg.total_revenue_cents) / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

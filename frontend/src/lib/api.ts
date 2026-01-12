@@ -463,6 +463,11 @@ class ApiClient {
         return this.request<any[]>(`/leaderboard/attendance?period=${period}`, { method: 'GET' });
     }
 
+    async getExerciseLeaderboard(exerciseId: string) {
+        return this.request<any[]>(`/leaderboard/exercise/${exerciseId}`, { method: 'GET' });
+    }
+
+
     // Package endpoints
     async getPackages() {
         return this.request<any>('/packages', { method: 'GET' });

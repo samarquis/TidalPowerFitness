@@ -348,21 +348,6 @@ class PaymentService {
                                 await AchievementModel.checkAndAward(userId, 'purchased_credits', pkg.credit_count);
                             }
                         }
-                    } else if (type === 'subscription_purchase') {
-                        const packageId = metadata.packageId;
-                        if (packageId) {
-                            const pkg = await PackageModel.getById(packageId);
-                            if (pkg) {
-                                // Initialize local subscription
-                                await SubscriptionModel.upsert({
-                                    user_id: userId,
-                                    package_id: packageId,
-                                    status: 'active',
-                                    current_period_start: new Date()
-                                });
-                                await CreditService.assignCreditsForPackage(userId, packageId);
-                            }
-                        }
                     } else if (type === 'cart_purchase') {
                         const lineItems = order.lineItems || [];
                         let totalCreditsPurchased = 0;
