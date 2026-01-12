@@ -63,6 +63,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 *   **Backend Error Handling:** Controllers should return JSON error responses with appropriate HTTP status codes, and log errors for debugging.
 *   **Idempotency & Transactions:** ALL financial or credit-related webhooks must use the `processed_webhooks` idempotency layer. Multi-step operations must be wrapped in explicit database transactions to prevent partial state corruption.
 *   **Concurrency Locking:** Use `FOR UPDATE` row-level locking when modifying critical resources like `user_credits` to prevent race conditions.
+*   **Multi-Day Scheduling:** Always use the `days_of_week` (integer array) column for class scheduling and filtering. The legacy `day_of_week` (integer) column is kept in sync via a database trigger (`trg_sync_class_days`) for backward compatibility but should not be the primary target for new logic.
 
 ### Framework-Specific Rules
 

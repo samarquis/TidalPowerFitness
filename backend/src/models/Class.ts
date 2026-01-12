@@ -43,8 +43,9 @@ export const getClassById = async (id: string): Promise<Class | null> => {
 };
 
 export const getClassesByDay = async (dayOfWeek: number): Promise<Class[]> => {
+    // Check if the day exists in the days_of_week array
     const result = await query(
-        'SELECT * FROM classes WHERE ($1 = ANY(days_of_week) OR day_of_week = $1) AND is_active = true ORDER BY start_time',
+        'SELECT * FROM classes WHERE ($1 = ANY(days_of_week)) AND is_active = true ORDER BY start_time',
         [dayOfWeek]
     );
     return result.rows;
@@ -52,7 +53,7 @@ export const getClassesByDay = async (dayOfWeek: number): Promise<Class[]> => {
 
 export const getClassesByCategory = async (category: string): Promise<Class[]> => {
     const result = await query(
-        'SELECT * FROM classes WHERE category = $1 AND is_active = true ORDER BY day_of_week, start_time',
+        'SELECT * FROM classes WHERE category = $1 AND is_active = true ORDER BY days_of_week[1], start_time',
         [category]
     );
     return result.rows;
@@ -60,8 +61,8 @@ export const getClassesByCategory = async (category: string): Promise<Class[]> =
 
 export const getClassesByInstructorId = async (instructorId: string, activeOnly: boolean = true): Promise<Class[]> => {
     const sql = activeOnly
-        ? 'SELECT * FROM classes WHERE instructor_id = $1 AND is_active = true ORDER BY day_of_week, start_time'
-        : 'SELECT * FROM classes WHERE instructor_id = $1 ORDER BY day_of_week, start_time';
+        ? 'SELECT * FROM classes WHERE instructor_id = $1 AND is_active = true ORDER BY days_of_week[1], start_time'
+        : 'SELECT * FROM classes WHERE instructor_id = $1 ORDER BY days_of_week[1], start_time';
 
     const result = await query(sql, [instructorId]);
     return result.rows;
@@ -83,19 +84,17 @@ export const createClass = async (classData: Partial<Class>): Promise<Class> => 
         acuity_appointment_type_id
     } = classData;
 
-    // Use first day as legacy day_of_week if provided, or 0
-    const primaryDay = days_of_week && days_of_week.length > 0 ? days_of_week[0] : 0;
-
+    // The legacy day_of_week column is now handled by the database trigger
     const result = await query(
         `INSERT INTO classes (
             name, description, category, instructor_id, instructor_name,
-            day_of_week, days_of_week, start_time, duration_minutes, max_capacity, price_cents, credit_cost,
+            days_of_week, start_time, duration_minutes, max_capacity, price_cents, credit_cost,
             acuity_appointment_type_id
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *`,
         [
             name, description, category, instructor_id, instructor_name,
-            primaryDay, days_of_week || [primaryDay], start_time, duration_minutes, max_capacity, price_cents, credit_cost || 1,
+            days_of_week || [0], start_time, duration_minutes, max_capacity, price_cents, credit_cost || 1,
             acuity_appointment_type_id
         ]
     );

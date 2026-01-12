@@ -79,3 +79,28 @@ Tracks a specific client's progress through an assigned program.
 - Leverage **Square Subscriptions API**.
 - Webhook listener in `backend/src/services/paymentService.ts` to handle `subscription.created` and `subscription.updated`.
 - New `user_subscriptions` table to link Square `subscription_id` to local `user_id` and track tier access.
+
+### Scheduling & Classes (Updated)
+Classes now support multi-day recurrence patterns using a PostgreSQL array.
+
+#### 1. classes
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| id | UUID (PK) | Unique identifier |
+| name | VARCHAR | Class title |
+| days_of_week | INTEGER[] | Array of days (0-6, Sun-Sat) |
+| day_of_week | INTEGER | Legacy/Primary day (Synced via trigger) |
+| start_time | TIME | Start time |
+| duration_minutes| INTEGER | Duration |
+
+#### 2. class_participants (Bookings)
+Tracks users who have reserved a spot in a class instance.
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| id | UUID (PK) | Unique identifier |
+| class_id | UUID (FK) | Reference to 
+classes |
+| user_id | UUID (FK) | Reference to 
+users |
+| target_date | DATE | The specific date of the session |
+| status | VARCHAR | 'confirmed', 'cancelled', 'attended' |
