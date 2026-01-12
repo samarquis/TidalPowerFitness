@@ -32,6 +32,7 @@ export default function ExerciseLibraryPage() {
     const [selectedBodyPart, setSelectedBodyPart] = useState<string>('all');
     const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null);
     const [selectedPattern, setSelectedPattern] = useState<string>('all');
+    const [equipmentFilter, setEquipmentFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
@@ -66,12 +67,17 @@ export default function ExerciseLibraryPage() {
     const filteredExercises = exercises.filter(ex => {
         // Filter by Muscle (if selected)
         const matchesMuscle = !selectedMuscle || ex.primary_muscle_group === selectedMuscle;
-        
+
         // Filter by Pattern (if selected)
-        const matchesPattern = selectedPattern === 'all' || ex.movement_pattern === selectedPattern;
-        
+        const matchesPattern = selectedPattern === 'all' || ex.movement_pattern === selectedPattern;      
+
+        // Filter by Equipment (if selected)
+        const matchesEquipment = equipmentFilter === 'all' || 
+            (ex.equipment_required?.toLowerCase().includes(equipmentFilter.toLowerCase()) || 
+             ex.name.toLowerCase().includes(equipmentFilter.toLowerCase()));
+
         // Filter by Body Part (if muscle not selected, but body part is)
-        // If muscle is selected, body part is implicit. If not, check body part of the muscle group.
+        // If muscle is selected, body part is implicit. If not, check body part of the muscle group.     
         let matchesBodyPart = true;
         if (!selectedMuscle && selectedBodyPart !== 'all') {
             const muscle = muscles.find(m => m.id === ex.primary_muscle_group);
@@ -80,15 +86,15 @@ export default function ExerciseLibraryPage() {
 
         const matchesSearch = !searchTerm ||
             ex.name.toLowerCase().includes(searchTerm.toLowerCase());
-            
-        return matchesMuscle && matchesPattern && matchesBodyPart && matchesSearch;
+
+        return matchesMuscle && matchesPattern && matchesEquipment && matchesBodyPart && matchesSearch;
     });
 
     const getMuscleExerciseCount = (muscleId: string) => {
         return exercises.filter(ex => ex.primary_muscle_group === muscleId).length;
     };
 
-    const shouldShowExerciseList = selectedMuscle || selectedPattern !== 'all' || searchTerm;
+    const shouldShowExerciseList = selectedMuscle || selectedPattern !== 'all' || equipmentFilter !== 'all' || searchTerm;
 
     if (loading) {
         return (
@@ -119,7 +125,7 @@ export default function ExerciseLibraryPage() {
                                 placeholder="Search exercises..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf transition-colors"
+                                className="w-full pl-12 pr-6 py-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-turquoise-surf transition-colors"   
                             />
                         </div>
                     </div>
@@ -135,7 +141,7 @@ export default function ExerciseLibraryPage() {
                                 }}
                                 className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all border ${selectedBodyPart === 'all'
                                     ? 'bg-pacific-cyan/20 text-pacific-cyan border-pacific-cyan'
-                                    : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'
+                                    : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'     
                                     }`}
                             >
                                 All Body Parts
@@ -148,7 +154,7 @@ export default function ExerciseLibraryPage() {
                                         setSelectedMuscle(null);
                                     }}
                                     className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all border ${selectedBodyPart === part.id
-                                        ? 'bg-pacific-cyan/20 text-pacific-cyan border-pacific-cyan'
+                                        ? 'bg-pacific-cyan/20 text-pacific-cyan border-pacific-cyan'      
                                         : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'
                                         }`}
                                 >
@@ -157,13 +163,13 @@ export default function ExerciseLibraryPage() {
                             ))}
                         </div>
 
-                        {/* Row 2: Movement Patterns */}
+                        {/* Row 2: Movement Patterns & Equipment */}
                         <div className="flex flex-wrap justify-center gap-2">
                             <button
                                 onClick={() => setSelectedPattern('all')}
                                 className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all border ${selectedPattern === 'all'
-                                    ? 'bg-turquoise-surf/20 text-turquoise-surf border-turquoise-surf'
-                                    : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'
+                                    ? 'bg-turquoise-surf/20 text-turquoise-surf border-turquoise-surf'    
+                                    : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'     
                                     }`}
                             >
                                 All Movements
@@ -174,21 +180,33 @@ export default function ExerciseLibraryPage() {
                                     onClick={() => setSelectedPattern(pattern)}
                                     className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all border ${selectedPattern === pattern
                                         ? 'bg-turquoise-surf/20 text-turquoise-surf border-turquoise-surf'
-                                        : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'
+                                        : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10' 
                                         }`}
                                 >
                                     {pattern}
                                 </button>
                             ))}
+                            
+                            <div className="w-px h-8 bg-white/10 mx-2 self-center hidden sm:block"></div>
+
+                            <button
+                                onClick={() => setEquipmentFilter(equipmentFilter === 'TRX' ? 'all' : 'TRX')}
+                                className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all border ${equipmentFilter === 'TRX'
+                                    ? 'bg-cerulean/30 text-cerulean border-cerulean shadow-[0_0_15px_rgba(0,123,255,0.2)]'
+                                    : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10'
+                                    }`}
+                            >
+                                TRX Only
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 {/* Content Area */}
-                
+
                 {/* 1. Muscle Group Grid (Only show if NO specific filtering active besides body part) */}
                 {!shouldShowExerciseList && (
-                    <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">        
                         <h2 className="text-2xl font-bold mb-6 border-b border-white/10 pb-2">Select a Muscle Group</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {filteredMuscles.map((muscle) => {
@@ -198,27 +216,29 @@ export default function ExerciseLibraryPage() {
                                     if (n.includes('chest')) return '👕';
                                     if (n.includes('back')) return '🛶';
                                     if (n.includes('arm') || n.includes('bicep') || n.includes('tricep')) return '💪';
-                                    if (n.includes('shoulder')) return '🤷‍♂️';
-                                    if (n.includes('core') || n.includes('abs')) return '🧱';
-                                    if (n.includes('leg') || n.includes('quad') || n.includes('hamstring') || n.includes('glute') || n.includes('lower body')) return '🍗';
-                                    return '🏋️‍♂️';
+                                    if (n.includes('leg') || n.includes('quad') || n.includes('hamstring') || n.includes('glute')) return '🦵';
+                                    if (n.includes('core') || n.includes('abs')) return '🎯';
+                                    if (n.includes('shoulder')) return '🛡️';
+                                    return '🏋️';
                                 };
+
                                 return (
                                     <button
                                         key={muscle.id}
                                         onClick={() => setSelectedMuscle(muscle.id)}
-                                        className="glass rounded-xl p-6 hover:border-turquoise-surf transition-all group text-left"
+                                        className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-turquoise-surf/50 rounded-2xl p-6 transition-all duration-300 text-left overflow-hidden"
                                     >
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-16 h-16 mb-4 bg-gradient-to-br from-pacific-cyan/20 to-dark-teal/20 rounded-full flex items-center justify-center text-3xl border border-white/10 group-hover:scale-110 transition-transform">
-                                                {getMuscleEmoji(muscle.name)}
-                                            </div>
-                                            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-turquoise-surf transition-colors">
-                                                {muscle.name}
-                                            </h3>
-                                            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                                                {count} exercises
-                                            </p>
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <span className="text-4xl">{getMuscleEmoji(muscle.name)}</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-white group-hover:text-turquoise-surf transition-colors mb-1">
+                                            {muscle.name}
+                                        </h3>
+                                        <p className="text-gray-400 text-sm">
+                                            {count} Exercises
+                                        </p>
+                                        <div className="mt-4 flex items-center text-xs text-turquoise-surf font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">
+                                            View Exercises →
                                         </div>
                                     </button>
                                 );
@@ -227,89 +247,82 @@ export default function ExerciseLibraryPage() {
                     </div>
                 )}
 
-                {/* 2. Exercise List (Show if muscle selected, OR pattern selected, OR searching) */}
+                {/* 2. Exercise List (Shown when filtering) */}
                 {shouldShowExerciseList && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                            <h2 className="text-2xl font-bold">
-                                {selectedMuscle 
-                                    ? `${muscles.find(m => m.id === selectedMuscle)?.name} Exercises`
-                                    : `Exercises (${filteredExercises.length})`}
+                        <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+                            <h2 className="text-2xl font-bold flex items-center gap-3">
+                                {selectedMuscle ? muscles.find(m => m.id === selectedMuscle)?.name : 'Filtered Results'}
+                                <span className="text-sm font-normal text-gray-500 bg-white/5 px-2 py-1 rounded-md">
+                                    {filteredExercises.length} found
+                                </span>
                             </h2>
-                            
-                            {(selectedMuscle || selectedPattern !== 'all' || searchTerm) && (
+                            <button
+                                onClick={() => {
+                                    setSelectedMuscle(null);
+                                    setSelectedPattern('all');
+                                    setEquipmentFilter('all');
+                                    setSearchTerm('');
+                                }}
+                                className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                            >
+                                ✕ Clear All
+                            </button>
+                        </div>
+
+                        {filteredExercises.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredExercises.map((ex) => (
+                                    <Link
+                                        key={ex.id}
+                                        href={`/exercises/${ex.id}`}
+                                        className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-turquoise-surf/30 rounded-2xl p-6 transition-all duration-300"
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${ex.difficulty_level?.toLowerCase() === 'advanced' ? 'bg-red-500/20 text-red-400' :
+                                                    ex.difficulty_level?.toLowerCase() === 'intermediate' ? 'bg-orange-500/20 text-orange-400' :
+                                                        'bg-green-500/20 text-green-400'
+                                                }`}>
+                                                {ex.difficulty_level || 'Beginner'}
+                                            </span>
+                                            {ex.equipment_required?.toLowerCase().includes('trx') && (
+                                                <span className="bg-cerulean/20 text-cerulean px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-cerulean/20">
+                                                    TRX
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-turquoise-surf transition-colors">
+                                            {ex.name}
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2 mt-4">
+                                            <span className="text-xs bg-white/5 text-gray-400 px-2 py-1 rounded">
+                                                {ex.equipment_required || 'No Equipment'}
+                                            </span>
+                                            {ex.movement_pattern && (
+                                                <span className="text-xs bg-white/5 text-gray-400 px-2 py-1 rounded">
+                                                    {ex.movement_pattern}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                <span className="text-5xl mb-4 block">🔍</span>
+                                <h3 className="text-xl font-bold text-white mb-2">No matching exercises</h3>
+                                <p className="text-gray-400">Try adjusting your filters or search term</p>
                                 <button
                                     onClick={() => {
                                         setSelectedMuscle(null);
                                         setSelectedPattern('all');
+                                        setEquipmentFilter('all');
                                         setSearchTerm('');
                                     }}
-                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all text-sm font-semibold flex items-center gap-2"
+                                    className="mt-6 text-turquoise-surf hover:underline font-bold"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                    Clear Filters
+                                    Clear all filters
                                 </button>
-                            )}
-                        </div>
-
-                        {filteredExercises.length === 0 ? (
-                            <div className="glass rounded-xl p-12 text-center border border-dashed border-gray-700">
-                                <div className="text-4xl mb-4 opacity-30">🔍</div>
-                                <p className="text-gray-400 text-lg">No exercises found matching your filters.</p>
-                                <button 
-                                    onClick={() => {
-                                        setSelectedMuscle(null);
-                                        setSelectedPattern('all');
-                                        setSearchTerm('');
-                                        setSelectedBodyPart('all');
-                                    }}
-                                    className="mt-4 text-turquoise-surf hover:underline font-bold uppercase tracking-wider text-sm"
-                                >
-                                    Reset All
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredExercises.map((exercise) => (
-                                    <Link
-                                        key={exercise.id}
-                                        href={`/exercises/${exercise.id}`}
-                                        className="glass rounded-xl p-6 hover:border-turquoise-surf transition-all group flex flex-col h-full"
-                                    >
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-turquoise-surf transition-colors line-clamp-1">
-                                                {exercise.name}
-                                            </h3>
-                                            <div className="flex flex-wrap items-center gap-2 mb-4">
-                                                {exercise.difficulty_level && (
-                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${exercise.difficulty_level === 'Beginner' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                        exercise.difficulty_level === 'Intermediate' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
-                                                            'bg-red-500/10 text-red-400 border-red-500/20'
-                                                        }`}>
-                                                        {exercise.difficulty_level}
-                                                    </span>
-                                                )}
-                                                {exercise.movement_pattern && (
-                                                    <span className="px-2 py-0.5 bg-turquoise-surf/10 text-turquoise-surf rounded text-[10px] font-bold uppercase tracking-widest border border-turquoise-surf/20">
-                                                        {exercise.movement_pattern}
-                                                    </span>
-                                                )}
-                                                {exercise.muscle_group_name && (
-                                                     <span className="px-2 py-0.5 bg-white/5 text-gray-400 rounded text-[10px] font-bold uppercase tracking-widest border border-white/10">
-                                                        {exercise.muscle_group_name}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {exercise.equipment_required && (
-                                            <div className="pt-4 border-t border-white/5 mt-auto">
-                                                <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                                                    Required: <span className="text-gray-300">{exercise.equipment_required}</span>
-                                                </p>
-                                            </div>
-                                        )}
-                                    </Link>
-                                ))}
                             </div>
                         )}
                     </div>
