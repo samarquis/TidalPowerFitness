@@ -187,40 +187,40 @@ export default function TrainerDashboardPage() {
 
                 {/* Program Builder CTA */}
                 <div className="mb-12 grid md:grid-cols-2 gap-6">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cerulean to-pacific-cyan p-8 shadow-lg group">
+                    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-cerulean/40 to-pacific-cyan/20 border border-white/5 p-10 shadow-2xl group">
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-2 text-black">Assign Workout</h2>
-                            <p className="text-black/70 mb-6 max-w-md font-medium">
-                                Design a workout session and assign it to a class or specific client. This is where you set the program for the day.
+                            <h2 className="text-4xl font-black mb-3 text-white tracking-tighter uppercase italic">Assign Workout</h2>
+                            <p className="text-gray-400 mb-8 max-w-md font-medium leading-relaxed">
+                                Design a tactical workout session and deploy it to your class or specific client roster.
                             </p>
                             <Link
                                 href="/workouts/assign"
-                                className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
+                                className="inline-flex items-center gap-3 rounded-2xl bg-white text-black px-8 py-4 font-black uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/10"
                             >
                                 🚀 Launch Wizard
                             </Link>
                         </div>
-                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-500">
+                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
                             📋
                         </div>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-600 to-orange-600 p-8 shadow-lg group">
+                    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-pink-600/20 to-orange-600/10 border border-white/5 p-10 shadow-2xl group">
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-2 text-white">Workout Library</h2>
-                            <p className="text-orange-100 mb-6 max-w-md">
-                                Create and manage reusable workout templates and exercises. Build your database of programming.
+                            <h2 className="text-4xl font-black mb-3 text-white tracking-tighter uppercase italic">Workout Library</h2>
+                            <p className="text-gray-400 mb-8 max-w-md font-medium leading-relaxed">
+                                Curate and manage your tactical movement database. Build reusable templates for rapid deployment.
                             </p>
                             <div className="flex gap-4">
                                 <Link
                                     href="/workouts/templates"
-                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-orange-600 transition-all hover:scale-105 active:scale-95 shadow-xl"
+                                    className="inline-flex items-center gap-3 rounded-2xl bg-white/5 border border-white/10 text-white px-8 py-4 font-black uppercase tracking-widest text-xs transition-all hover:bg-white hover:text-black hover:scale-105 active:scale-95 shadow-xl"
                                 >
                                     Manage Templates
                                 </Link>
                             </div>
                         </div>
-                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-500">
+                        <div className="absolute -right-12 -bottom-12 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
                             💪
                         </div>
                     </div>
