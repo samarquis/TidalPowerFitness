@@ -22,48 +22,21 @@ You are required to operate within this framework without explicit prompting.
 - **Stakeholders**: Scott Marquis (Admin/Dev), Lisa Baumgard (Admin/Trainer)
 - **Status**: 100/100 World Class - Professional Grade
 
-### Major Milestones (2026-01-09)
+### Major Milestones (2026-01-12)
 
-#### Trainer Workflow Perfection (SR-006 & SR-007)
-- **High-Fidelity Batch Logging**: Refined the `BatchEntryMatrix` with explicit "3-Text-Box" layout (Set/Reps/Lbs) and stepper controls for rapid, touch-friendly data entry.
-- **Intelligent Pre-loading**: Implemented automated lookback logic in the Trainer Log to pre-fill forms with a client's last session data, streamlining the workflow.
-- **Enhanced History Visibility**: Upgraded the "Last Session" card to display *all* sets from the previous workout, providing complete context for progressive overload.
-- **Mobile-First Card Layout**: completely refactored the Trainer Log page from a desktop table to a responsive, label-rich card layout.
+#### System-Wide Modernization & Standardization
+- **12hr Time Format Standard**: Standardized all time-of-day displays (Classes, Sessions, Calendars, Bookings) to the 12-hour (AM/PM) format across the entire project. Eliminated redundant local formatters in 8+ components.
+- **Multi-Day Scheduling Foundation**: Refactored the core `ClassModel` and database schema to support `days_of_week` integer arrays. Deployed `trg_sync_class_days` database trigger to ensure 100% legacy compatibility during transition.
+- **Media-Rich Library Upgrade**:
+    - **Anatomical Muscle Map**: Developed a high-fidelity SVG mapping component for real-time visualization of targeted muscle groups.
+    - **Video Support**: Integrated YouTube demonstration support directly into the exercise detail views.
+    - **TRX Expansion**: Batch-imported 22+ high-fidelity TRX and suspension movements with full muscle mapping.
+- **The Arena (Community Hub)**: Launched the premium global leaderboard system with support for **Heavy Hitters** (Volume), **The Faithful** (Consistency), and **Elite Lifts** (Max Output).
 
-#### Full Platform Completion (100/100)
-- **All Epics Completed**: Verified 100% completion of all 8 primary epics, including Infrastructure, Trainer Ops, Workout Logging, Structured Programs, Purchasing, Community Engagement, and Analytics.
-- **Mission Accomplished Experience**: Finalized the high-fidelity workout completion state with automated volume charting and PR highlights.
-- **Intelligent Attendee Management**: Enhanced the multi-day recurrence system with date-specific attendee lists for trainers.
-- **Robust Verification**: Executed and passed the full backend and frontend test suite, ensuring stability across all core services (Auth, Payments, Programs, Achievements).
-
-### Major Milestones (2026-01-08)
-
-#### Professional Grade Implementation
-- **Strict Security Baseline**: Enforced global HttpOnly cookie authentication, removing legacy Bearer token support from all middleware and dashboards (Story 1.2).
-- **Intelligent Navigation**: Implemented intent-based login redirection and role-specific dashboard defaulting (Story 1.1).
-- **Build Integrity**: Resolved comprehensive Next.js build bailout issues by wrapping all `useSearchParams` logic in `Suspense` boundaries across the entire application.
-- **Admin Command Center**: Expanded the Admin Dashboard to include 16 quick-access tiles covering every functional module in the system.
-
-#### Solutioning & Design (BMAD Managed)
-- **World-Class UX Spec**: Completed a 14-step UX design workflow, defining "The Pulse of Progress" interaction model and the "Luxury Vault" aesthetic.
-- **Implementable Roadmap**: Generated 27 detailed user stories with BDD acceptance criteria, organized into 8 strategic epics in `_bmad-output/planning-artifacts/epics.md`.
-- **Sprint Live**: Initialized `sprint-status.yaml` tracking for the implementation of all Phase 2 features.
-
-### Major Milestones (2026-01-06)
-
-### World Class UX (100/100)
-- **Progressive Overload Intelligence**: Automated historical trend lookup in the Workout Logger with visual "Overload" badges.
-- **Batch Entry System**: Intelligent Sets/Reps/Lbs entry for both trainers and clients, pre-loaded with workout design targets.
-- **Mission Accomplished State**: High-fidelity success feedback replacing generic alerts in the Assignment Wizard.
-- **Premium UI Overhaul**: Implemented "Black Glass" inputs, branded "Tsunami" color schemes, and animated skeleton loaders.
-- **System-Wide 12hr Time**: Standardized all time displays to AM/PM format.
-
-### Professional Grade Infrastructure
-- **Security**: Hardened with Helmet.js headers and strict header-based CSRF protection.
-- **Resilience**: Centralized error handling with malformed URI protection.
-- **Monitoring**: Structured JSON logging (Winston) integrated for production log analysis.
-- **Performance**: Scaled database with targeted indexes on logging and session tables (Migration 028).
-- **Integrity**: Full API validation layer using express-validator for all core workflows.
+#### Enterprise Integrity & Rollback
+- **Subscription Model Purge**: Successfully executed a system-wide rollback of the subscription infrastructure per stakeholder directive. Removed all UI, API endpoints, and logic, returning to a pure, high-performance token-based model.
+- **Build Resilience**: Resolved critical Next.js and TypeScript build failures on Render by fixing interface conflicts and rootDir directory violations.
+- **UX Audit (SR-010)**: Completed an adversarial UX crawl, remediating 10+ "Experience Papercuts" related to mobile responsiveness, loading skeletons, and interactive button feedback.
 
 ### Major Milestones (2026-01-11)
 
@@ -88,3 +61,5 @@ You are required to operate within this framework without explicit prompting.
 - **Backend**: Express (TypeScript), PostgreSQL (Neon), Winston Logging.
 - **Auth**: JWT with HttpOnly cookies, multi-role support (Admin, Trainer, Client).
 - **Payments**: Full Square Integration (Ordering, Webhooks).
+- **Source of Truth**: All time formatting must use `@/lib/utils/formatTime12Hour`.
+- **Database**: `days_of_week` array is the primary source for scheduling logic.
