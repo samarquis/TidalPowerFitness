@@ -1,3 +1,6 @@
+import { CTAButton } from './CTAButton';
+import { formatTime12Hour } from "@/lib/utils";
+
 interface ClassCardProps {
     id: string;
     name: string;
@@ -25,14 +28,6 @@ export default function ClassCard({
     maxCapacity,
     priceCents
 }: ClassCardProps) {
-    const formatTime = (time: string) => {
-        const [hours, minutes] = time.split(':');
-        const hour = parseInt(hours);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        return `${displayHour}:${minutes} ${ampm}`;
-    };
-
     const formatPrice = (cents: number) => {
         return `$${(cents / 100).toFixed(2)}`;
     };
@@ -71,7 +66,7 @@ export default function ClassCard({
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span>{DAYS[dayOfWeek]}s at {formatTime(startTime)}</span>
+                    <span>{DAYS[dayOfWeek]}s at {formatTime12Hour(startTime)}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-400">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

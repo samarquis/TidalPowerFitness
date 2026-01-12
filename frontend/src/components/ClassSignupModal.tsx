@@ -29,15 +29,6 @@ interface ClassSignupModalProps {
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-function formatTime(time24: string): string {
-    const [hourStr, minuteStr] = time24.split(':');
-    let hour = parseInt(hourStr);
-    const period = hour >= 12 ? 'PM' : 'AM';
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-    return `${hour}:${minuteStr || '00'} ${period}`;
-}
-
 export default function ClassSignupModal({
     classInfo,
     userCredits,

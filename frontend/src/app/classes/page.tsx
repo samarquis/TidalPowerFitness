@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import Link from 'next/link';
+import { formatTime12Hour } from "@/lib/utils";
 
 interface Class {
     id: string;
@@ -20,27 +21,6 @@ interface Class {
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// Helper functions for time conversion
-function convertTo12Hour(time24: string): { hour: string, minute: string, period: 'am' | 'pm' } {
-    const [hourStr, minuteStr] = time24.split(':');
-    let hour = parseInt(hourStr);
-    const period: 'am' | 'pm' = hour >= 12 ? 'pm' : 'am';
-
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-
-    return {
-        hour: hour.toString(),
-        minute: minuteStr || '00',
-        period
-    };
-}
-
-function formatTime12Hour(time24: string): string {
-    const { hour, minute, period } = convertTo12Hour(time24);
-    return hour + ':' + minute + ' ' + period;
-}
 
 export default function ClassesPage() {
     const { user, isAuthenticated, refreshUser } = useAuth();

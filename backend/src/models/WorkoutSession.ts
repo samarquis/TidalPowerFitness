@@ -94,7 +94,7 @@ class WorkoutSessionModel {
             params.push(filters.class_id);
             paramCount++;
         }
-        sql += " GROUP BY ws.id, wt.name, c.name ORDER BY ws.session_date DESC, ws.start_time DESC";
+        sql += " GROUP BY ws.id, ws.trainer_id, ws.class_id, ws.template_id, ws.program_assignment_id, ws.workout_type_id, ws.session_date, ws.start_time, ws.end_time, ws.duration_minutes, ws.notes, ws.is_published, ws.created_at, ws.updated_at, wt.name, c.name ORDER BY ws.session_date DESC, ws.start_time DESC";
         const result: QueryResult = await query(sql, params);
         return result.rows;
     }
@@ -133,7 +133,7 @@ class WorkoutSessionModel {
             params.push(filters.class_id);
             paramCount++;
         }
-        sql += " GROUP BY ws.id, wt.name, c.name ORDER BY ws.session_date DESC, ws.start_time DESC";
+        sql += " GROUP BY ws.id, ws.trainer_id, ws.class_id, ws.template_id, ws.program_assignment_id, ws.workout_type_id, ws.session_date, ws.start_time, ws.end_time, ws.duration_minutes, ws.notes, ws.is_published, ws.created_at, ws.updated_at, wt.name, c.name ORDER BY ws.session_date DESC, ws.start_time DESC";
         const result: QueryResult = await query(sql, params);
         return result.rows;
     }

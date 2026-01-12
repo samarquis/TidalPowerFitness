@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 import Skeleton from '@/components/ui/Skeleton';
+import { formatTime12Hour } from "@/lib/utils";
 
 interface Class {
     id: string;
@@ -45,15 +46,6 @@ interface WorkoutSession {
 }
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-function formatTime(time24: string): string {
-    const [hourStr, minuteStr] = time24.split(':');
-    let hour = parseInt(hourStr);
-    const period = hour >= 12 ? 'PM' : 'AM';
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-    return `${hour}:${minuteStr || '00'} ${period}`;
-}
 
 export default function TrainerDashboardPage() {
     const { user, isAuthenticated, loading: authLoading, token } = useAuth();
@@ -344,7 +336,7 @@ export default function TrainerDashboardPage() {
                                         </div>
                                         {session.start_time && (
                                             <span className="text-sm text-turquoise-surf font-bold shrink-0 ml-2">
-                                                {formatTime(session.start_time)}
+                                                {formatTime12Hour(session.start_time)}
                                             </span>
                                         )}
                                     </div>
@@ -440,7 +432,7 @@ export default function TrainerDashboardPage() {
                                                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1 truncate">{classItem.category}</p>
                                                     </div>
                                                     <span className="text-xs md:text-sm font-bold text-turquoise-surf bg-turquoise-surf/10 px-2 py-1 rounded-md shrink-0 ml-2">
-                                                        {formatTime(classItem.start_time)}
+                                                        {formatTime12Hour(classItem.start_time)}
                                                     </span>
                                                 </div>
 
@@ -481,7 +473,7 @@ export default function TrainerDashboardPage() {
                                     <div>
                                         <h2 className="text-2xl font-bold text-white">{selectedClass.name}</h2>
                                         <p className="text-white/80 text-sm font-medium uppercase tracking-wider mt-1">
-                                            {formatTime(selectedClass.start_time)} • {selectedClass.duration_minutes} min
+                                            {formatTime12Hour(selectedClass.start_time)} • {selectedClass.duration_minutes} min
                                         </p>
                                     </div>
                                     <button

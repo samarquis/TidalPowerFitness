@@ -40,16 +40,6 @@ interface AdminMonthCalendarProps {
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Helper to format time
-function formatTime(time24: string): string {
-    const [hourStr, minuteStr] = time24.split(':');
-    let hour = parseInt(hourStr);
-    const period = hour >= 12 ? 'pm' : 'am';
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-    return `${hour}:${minuteStr || '00'} ${period}`;
-}
-
 // Helper to get color based on category
 function getCategoryColor(category: string): string {
     const colors: Record<string, string> = {
