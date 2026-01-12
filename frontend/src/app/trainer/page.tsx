@@ -199,7 +199,7 @@ export default function TrainerDashboardPage() {
                             </p>
                             <Link
                                 href="/workouts/assign"
-                                className="inline-flex items-center gap-3 rounded-2xl bg-turquoise-surf text-black px-8 py-4 font-black uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-xl shadow-turquoise-surf/20"
+                                className="inline-flex items-center gap-3 rounded-2xl bg-white text-black px-8 py-4 font-black uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/10"
                             >
                                 🚀 Launch Wizard
                             </Link>
